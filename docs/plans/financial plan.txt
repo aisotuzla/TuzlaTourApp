@@ -1,0 +1,32 @@
+
+## Naziv projekta
+**Tuzla Tourism Platform - digitalna turistička infrastruktura grada Tuzle**
+*Android verzija
+*PC Web verzija
+*PWA verzija
+
+## Prijavitelj
+**[Naziv NGO partnera]**
+
+## Traženi iznos
+**2.200 KM**
+
+## Finansijski plan
+
+| Stavka | Opis | Iznos (KM) |
+|---|---|---:|
+| Tehnička dorada platforme | Finalne funkcionalne prilagodbe, ispravke i priprema za javnu upotrebu           | 200 |
+| Sadržaj i prevod | Uređivanje turističkih tekstova, višejezična obrada i priprema sadržaja                   | 300 |
+| Dizajn i vizuelni identitet | Grafički materijali, QR oznake, promotivni layout i priprema za objavu         | 300 |
+| Partner materijali | Print stikeri, QR kartice, promo materijal za shopove i partnere                        | 600 |
+| Promocija projekta | Digitalna promocija, objave, osnovni PR materijali i predstavljanje projekta            | 400 |
+| Hosting, domen i tehnički alati | Godišnji troškovi web objave i osnovnih alata za distribuciju              | 200 |
+| Terenska koordinacija | Troškovi kontakta sa partnerima i prikupljanja materijala                            | 200 |
+| **Ukupno** |                                                                                             | **2.200** |
+
+## Napomena o troškovima
+Ovaj budžet ne uključuje neprihvatljive troškove definirane javnim pozivom, kao što su plate, redovni uredski troškovi, dugovi, kamate, kupovina vozila, kupovina zemljišta ili građevina, reprezentacija, hrana i alkoholna pića.
+
+## Opravdanost budžeta
+Predloženi troškovi direktno su vezani za razvoj, promociju i javnu implementaciju turističke platforme, te doprinose obogaćivanju turističke ponude grada Tuzle.
+

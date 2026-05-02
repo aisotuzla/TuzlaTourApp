@@ -1,0 +1,110 @@
+/* -------------------------------------------------
+   Splash container – fills the whole viewport
+   ------------------------------------------------- */
+.splashContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+    touch-action: manipulation;
+}
+
+/* -------------------------------------------------
+   Impact Ripple Effect
+   ------------------------------------------------- */
+.ripple {
+    position: absolute;
+    border: 2px solid rgba(30, 144, 255, 0.6);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    animation: rippleEffect 0.6s ease-out forwards;
+}
+
+@keyframes rippleEffect {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(4);
+        opacity: 0;
+    }
+}
+
+/* -------------------------------------------------
+   3D Teardrop Droplet
+   ------------------------------------------------- */
+.drop {
+    position: absolute;
+    width: 4px;
+    /* Thinner */
+    height: 12px;
+    background: radial-gradient(circle at 30% 30%, #ffffff, #1e90ff 40%, #0066cc);
+    /* Teardrop shape */
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    pointer-events: none;
+    transform-origin: center center;
+    opacity: 0;
+    filter: drop-shadow(0 0 2px rgba(0, 102, 204, 0.4));
+}
+
+.drop::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 1px;
+    width: 6px;
+    height: 8px;
+    background: inherit;
+    border-radius: 50% 50% 0 0;
+    transform: scaleX(0.8);
+}
+
+/* 3D outward animation */
+.animateDrop {
+    animation: splash3D var(--duration) var(--easing) forwards;
+}
+
+@keyframes splash3D {
+    0% {
+        opacity: 1;
+        transform: translate3d(var(--startX), var(--startY), 0) scale(0.2) rotate(var(--rotation));
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate3d(calc(var(--startX) + cos(var(--angle)) * var(--distance)),
+                calc(var(--startY) + sin(var(--angle)) * var(--distance)),
+                var(--depth)) scale(var(--endScale)) rotate(var(--rotation));
+    }
+}
+
+/* -------------------------------------------------
+   Custom Scrollbar for Sidebar
+   ------------------------------------------------- */
+:global(.custom-scrollbar)::-webkit-scrollbar {
+    width: 4px;
+}
+
+:global(.custom-scrollbar)::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+:global(.custom-scrollbar)::-webkit-scrollbar-thumb {
+    background: rgba(30, 144, 255, 0.2);
+    border-radius: 10px;
+}
+
+:global(.custom-scrollbar)::-webkit-scrollbar-thumb:hover {
+    background: rgba(30, 144, 255, 0.4);
+}

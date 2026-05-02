@@ -1,0 +1,56 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+android/.gradle/
+android/gradle/.tmp/
+android/gradle/caches/
+android/gradle/daemon/
+android/gradle/native/
+android/gradle/wrapper/dists/
+android/build/
+android/app/build/
+android/local.properties
+android/keystore.properties
+android/**/*.jks
+*.aab
+*.apk
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local Gemini/Tooling files
+.gemini/
+tsc_output.txt
+metadata.json
+
+# Bundled Gradle (use wrapper instead)
+
+
+# Temp files
+sync.sh
+wsl_output.log
+npm_wsl.log
+.vercel
+
+# Gradle build directories
+build/
+.agent/
+README.md

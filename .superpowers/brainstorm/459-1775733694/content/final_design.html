@@ -1,0 +1,35 @@
+<h2>Final Design: Bulletproof Offline Maps</h2>
+<p class="subtitle">Here is the proposed architectural change to ensure maps work every time.</p>
+
+<div class="mockup">
+  <div class="mockup-header">New Logic Flow</div>
+  <div class="mockup-body" style="background: #1e293b; padding: 20px;">
+    <ol style="color: #cbd5e1; line-height: 1.8;">
+      <li><strong>Initial Load:</strong> Try Jawg Streets.</li>
+      <li><strong>Error Catch:</strong> If <code>Failed to fetch</code> or <code>NetworkError</code> occurs...</li>
+      <li><strong>Immediate Switch:</strong> Load <code>assets/tuzla-map.geojson</code> (fixing the root-slash issue).</li>
+      <li><strong>Visual Confirmation:</strong> Show a subtle "Offline / Saved Map" badge in the top right.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="section">
+  <h3>The "Offline Badge"</h3>
+  <div style="background: #0f172a; padding: 30px; border-radius: 12px; display: flex; justify-content: center;">
+    <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.4); padding: 8px 16px; border-radius: 99px; display: flex; align-items: center; gap: 8px;">
+      <div style="width: 8px; height: 8px; background: #60a5fa; border-radius: 50%; box-shadow: 0 0 10px #60a5fa;"></div>
+      <span style="color: #60a5fa; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;">Saved Offline Map Data</span>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons">
+  <div class="pros">
+    <h4>Next Steps</h4>
+    <ul>
+      <li>I'll convert the GeoJSON to standard UTF-8 if it's currently UTF-16.</li>
+      <li>I'll update <code>MapQuestView.tsx</code> and <code>MapView.tsx</code> with the new logic.</li>
+      <li>I'll verify the PWA config one last time.</li>
+    </ul>
+  </div>
+</div>

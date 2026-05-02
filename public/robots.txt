@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tuzla-virtual-tour-guide.com/sitemap.xml

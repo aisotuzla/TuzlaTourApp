@@ -1,0 +1,33 @@
+<h2>Solutions: Making Offline Maps Bulletproof</h2>
+<p class="subtitle">Since both App and Browser failed, we need a solution that works regardless of platform.</p>
+
+<div class="options">
+  <div class="option" data-choice="approach1" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <h3>Active Fallback + Relative Pathing</h3>
+      <p>Instead of relying on <code>navigator.onLine</code>, we'll try to load the online style. If it fails (for any reason), we immediately switch to the local <code>geojson</code> using a relative path that works in both Capacitor and Browser.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="approach2" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <h3>Optimized GeoJSON + UI Feedback</h3>
+      <p>14MB is heavy for a single frame. I'll check if we can compress the data. Plus, I'll add a "Low Connectivity / Offline" overlay so walkers know the app has switched to "Eco/Map Mode".</p>
+    </div>
+  </div>
+  <div class="option" data-choice="approach3" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <h3>Force Pre-cache Priority</h3>
+      <p>Modify the Service Worker to treat the map data as "Critical Infrastructure"—ensuring it's fully downloaded and verified the moment the app is first opened online.</p>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons">
+  <div class="pros">
+    <h4>My Recommendation</h4>
+    <p>I suggest <strong>Approach 1 + 2</strong>. Combined, they fix the loading logic, handle the pathing issue, and ensure the UI doesn't look "broken" when it's actually just in offline mode.</p>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<h2>Investigating Offline Map Issues</h2>
+<p class="subtitle">I've analyzed the current implementation. Here's how it's designed to work:</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">ONLINE MODE</div>
+    <div class="mockup-body">
+      <div style="background: #1e293b; height: 150px; display: flex; align-items: center; justify-content: center; color: #60a5fa; font-weight: 900;">
+        JAWG STREETS (Tiles)
+      </div>
+      <p style="padding: 10px; font-size: 12px; color: #94a3b8;">Loads rich vector tiles from <code>api.jawg.io</code>. Caches to <code>jawg-maps-cache</code>.</p>
+    </div>
+  </div>
+  <div class="mockup">
+    <div class="mockup-header">OFFLINE MODE</div>
+    <div class="mockup-body">
+      <div style="background: #0f172a; height: 150px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-weight: 900; border: 2px dashed #3b82f633;">
+        LOCAL GEOJSON
+      </div>
+      <p style="padding: 10px; font-size: 12px; color: #94a3b8;">Loads 14MB <code>tuzla-map.geojson</code>. Simple roads and paths rendering.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>What did you experience?</h3>
+  <div class="options" data-choice="incident_type">
+    <div class="option" data-choice="blank" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>Completely Blank</h3>
+        <p>No map data visible at all, even after waiting.</p>
+      </div>
+    </div>
+    <div class="option" data-choice="glitchy" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>Glitchy / Partially Loaded</h3>
+        <p>Some roads visible, but very slow or missing detail.</p>
+      </div>
+    </div>
+    <div class="option" data-choice="tiles_failed" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>Stuck on "Online" Map</h3>
+        <p>Still trying to load tiles but showing grey squares.</p>
+      </div>
+    </div>
+    <div class="option" data-choice="performance" onclick="toggleSelect(this)">
+      <div class="letter">D</div>
+      <div class="content">
+        <h3>Performance Issues</h3>
+        <p>Map loaded but app became very laggy/unresponsive.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons">
+  <div class="pros">
+    <h4>Why it might fail</h4>
+    <ul>
+      <li>14MB GeoJSON is too big for some devices</li>
+      <li>Network detection thinks you're online when you're not</li>
+      <li>Path to GeoJSON is incorrect in relative vs absolute</li>
+    </ul>
+  </div>
+</div>

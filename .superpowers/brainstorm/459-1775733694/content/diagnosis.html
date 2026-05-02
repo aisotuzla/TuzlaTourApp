@@ -1,0 +1,62 @@
+<h2>Diagnosis: The "Blank Map" Mystery</h2>
+<p class="subtitle">A completely blank map usually means the instructions (Style) failed to load at all.</p>
+
+<div class="cards">
+  <div class="card" data-choice="path" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #1e293b; padding: 20px; color: #f87171; font-family: monospace;">
+      404 NOT FOUND<br>
+      /assets/tuzla-map.geojson
+    </div>
+    <div class="card-body">
+      <h3>Incorrect Pathing</h3>
+      <p>The app uses <code>/assets/...</code> but PWA/Capacitor might need <code>assets/...</code> (relative). This causes the map to give up.</p>
+    </div>
+  </div>
+  <div class="card" data-choice="sw" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #1e293b; padding: 20px; color: #fbbf24; font-family: monospace;">
+      Fetch Event Ignored<br>
+      (Service Worker)
+    </div>
+    <div class="card-body">
+      <h3>Service Worker Skip</h3>
+      <p>The 14MB file might be too large for the default cache strategy, or it wasn't pre-cached during the first visit.</p>
+    </div>
+  </div>
+  <div class="card" data-choice="detection" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #1e293b; padding: 20px; color: #60a5fa; font-family: monospace;">
+      isOnline: true<br>
+      (Falsely Positive)
+    </div>
+    <div class="card-body">
+      <h3>False Online Status</h3>
+      <p>If the app thinks it's online, it tries to fetch Jawg tiles. When they fail, it doesn't switch to the local file.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Which platform did you test on?</h3>
+  <div class="options">
+    <div class="option" data-choice="android_cap" onclick="toggleSelect(this)">
+      <div class="letter">📱</div>
+      <div class="content">
+        <h3>Android (App/Apk)</h3>
+        <p>Testing via Capacitor/Android Studio.</p>
+      </div>
+    </div>
+    <div class="option" data-choice="android_browser" onclick="toggleSelect(this)">
+      <div class="letter">🌐</div>
+      <div class="content">
+        <h3>Mobile Browser (Chrome)</h3>
+        <p>Visiting the URL directly on your phone.</p>
+      </div>
+    </div>
+    <div class="option" data-choice="desktop" onclick="toggleSelect(this)">
+      <div class="letter">💻</div>
+      <div class="content">
+        <h3>Desktop Browser</h3>
+        <p>Testing via DevTools (Toggle Offline).</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#1e3a8a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Tuzla Virtual Tour Guide - Discover Panononica & More</title>
+  <meta name="description" content="Explore Tuzla, Bosnia and Herzegovina with our Virtual Tour Guide. Discover Panononica Lakes, historical sites, user quests, and interactive maps.">
+  <meta name="keywords" content="Tuzla, Tour Guide, Virtual Tour, Panononica, Bosnia and Herzegovina, Travel, Tourist Attraction, Quest, Map">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Tuzla Virtual Tour Guide">
+  <meta property="og:description" content="Explore the beautiful city of Tuzla through interactive quests, tours, and rich history.">
+  <meta property="og:type" content="website">
+
+  <!-- JSON-LD Structured Data for AI Agents and Search Engines -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Tuzla Virtual Tour Guide",
+    "url": "https://tuzla-virtual-tour-guide.com",
+    "description": "Interactive virtual guide for tourists visiting Tuzla, featuring maps and quests."
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    "name": "Pannonian Lakes (Panonika)",
+    "description": "Saltwater lakes located in the center of Tuzla, offering summer beach experiences.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Tuzla",
+      "addressCountry": "BA"
+    }
+  }
+  </script>
+
+  <!-- AI Agent / Web Crawler Docs -->
+  <link rel="help" type="text/plain" title="LLM documentation" href="/llms.txt">
+  <link rel="manifest" href="/manifest.webmanifest">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=MedievalSharp&family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Della+Respira&display=swap"
+    rel="stylesheet">
+  
+  <!-- Pannellum for Virtual Tours -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+</head>
+
+<body class="bg-white text-gray-800" spellcheck="false">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
+</html>

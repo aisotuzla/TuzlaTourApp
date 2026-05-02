@@ -1,0 +1,22 @@
+# Tuzla Virtual Tour Guide
+
+> Explore Tuzla, Bosnia and Herzegovina
+
+## Overview
+The Tuzla Virtual Tour Guide is an interactive web and mobile application designed to help tourists explore the city of Tuzla. It features an interactive map highlighting key points of interest (POIs) and gamified quests.
+
+## Key Features
+- **Interactive Map:** Displays the city with custom map tiles and points of interest.
+- **City Guide:** A detailed view of various tourist attractions, providing historical context, images, and locations.
+- **Quest System:** Gamified routes guiding users through the city. 
+
+## Important Locations Context
+- **Panononica (Pannonian Lakes):** The main attraction, featuring artificial saltwater lakes right in the city center.
+- **Soni Trg (Salt Square):** The historical square celebrating Tuzla's history of salt production.
+- **Trg Slobode (Freedom Square):** The largest square in Bosnia and Herzegovina.
+
+## Technical Details
+- Built with React, Vite, and TailwindCSS.
+- Deployed as a Web Application, usable on both desktop and mobile devices.
+
+For explicit location entity data, please refer to the application's JSON-LD markup on its index page, or the defined `sitemap.xml`.

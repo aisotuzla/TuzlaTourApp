@@ -1,0 +1,51 @@
+<h2>Visual Style: The "Zmajevi" Cartoon Look</h2>
+<p class="subtitle">Which artistic style should the 30 player cards follow?</p>
+
+<div class="options">
+  <div class="option" data-choice="chibi" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Funko / Chibi Style</h3>
+      <p>Cute, oversized heads with simplified features. High collectibility factor, feels like a toy set.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="comic" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Comic Book / Heroic</h3>
+      <p>Strong outlines, dynamic shadows, and high-energy poses. Makes the players look like superheroes.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="minimalist" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Flat Vector / Premium</h3>
+      <p>Clean lines, vibrant flat colors, and geometric shapes. Feels modern, professional, and fits the "Tour App" aesthetic.</p>
+    </div>
+  </div>
+</div>
+
+<div class="split">
+  <div class="card" style="width: 150px; height: 210px; background: #fff; border-radius: 12px; border: 2px solid #2563eb; overflow: hidden; display: flex; flex-direction: column;">
+    <div style="flex: 1; background: #dbeafe; display: flex; align-items: center; justify-content: center;">
+      <!-- Chibi Placeholder -->
+      <div style="width: 60px; height: 60px; background: #2563eb; border-radius: 50%;"></div>
+      <div style="width: 80px; height: 40px; background: #2563eb; border-radius: 20px; position: absolute; margin-top: 50px;"></div>
+    </div>
+    <div style="padding: 10px; text-align: center;">
+      <div class="label" style="font-size: 8px;">STRIKER</div>
+      <div style="font-weight: 900; font-size: 14px;">EDIN DŽEKO</div>
+    </div>
+  </div>
+
+  <div class="card" style="width: 150px; height: 210px; background: #fff; border-radius: 12px; border: 2px solid #ef4444; overflow: hidden; display: flex; flex-direction: column;">
+    <div style="flex: 1; background: #fee2e2; display: flex; align-items: center; justify-content: center; clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);">
+      <!-- Comic Placeholder -->
+      <div style="width: 100px; height: 100px; background: #ef4444; transform: skew(-10deg);"></div>
+    </div>
+    <div style="padding: 10px; text-align: center;">
+      <div class="label" style="font-size: 8px; color: #ef4444;">HERO</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase;">Džeko #9</div>
+    </div>
+  </div>
+</div>

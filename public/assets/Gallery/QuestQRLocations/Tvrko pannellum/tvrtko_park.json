@@ -1,0 +1,148 @@
+{
+    "default": {
+        "firstScene": "entrance",
+        "sceneFadeDuration": 1000,
+        "type": "flat",
+        "autoLoad": true,
+        "showControls": true,
+        "compass": false
+    },
+    "scenes": {
+        "entrance": {
+            "title": "Park Entrance - Central Park Tuzla",
+            "panorama": "/assets/Gallery/QuestQRLocations/Tvrko pannellum/KraljTvrko7.webp",
+            "hotSpots": [
+                {
+                    "pitch": -5,
+                    "yaw": 0,
+                    "type": "scene",
+                    "text": "Walk into the Park",
+                    "sceneId": "path1"
+                }
+            ]
+        },
+        "path1": {
+            "title": "Walking Path",
+            "panorama": "/assets/Gallery/QuestQRLocations/Tvrko pannellum/KraljTvrko8.webp",
+            "hotSpots": [
+                {
+                    "pitch": -5,
+                    "yaw": 0,
+                    "type": "scene",
+                    "text": "Continue Path",
+                    "sceneId": "path2"
+                },
+                {
+                    "pitch": -5,
+                    "yaw": 180,
+                    "type": "scene",
+                    "text": "Back to Entrance",
+                    "sceneId": "entrance"
+                }
+            ]
+        },
+        "path2": {
+            "title": "Monument Trail",
+            "panorama": "/assets/Gallery/QuestQRLocations/Tvrko pannellum/KraljTvrko9.webp",
+            "hotSpots": [
+                {
+                    "pitch": -5,
+                    "yaw": 0,
+                    "type": "scene",
+                    "text": "Approach the Plaza",
+                    "sceneId": "closer"
+                },
+                {
+                    "pitch": -5,
+                    "yaw": 180,
+                    "type": "scene",
+                    "text": "Back",
+                    "sceneId": "path1"
+                }
+            ]
+        },
+        "closer": {
+            "title": "Royal Plaza Approaching",
+            "panorama": "/assets/Gallery/QuestQRLocations/Tvrko pannellum/KraljTvrko10.webp",
+            "hotSpots": [
+                {
+                    "pitch": -2,
+                    "yaw": 0,
+                    "type": "scene",
+                    "text": "Go to the Statue",
+                    "sceneId": "statue_view"
+                },
+                {
+                    "pitch": -5,
+                    "yaw": 180,
+                    "type": "scene",
+                    "text": "Back to Trail",
+                    "sceneId": "path2"
+                }
+            ]
+        },
+        "statue_view": {
+            "title": "King Tvrtko I Monument",
+            "panorama": "/assets/Gallery/QuestQRLocations/Tvrko pannellum/KraljTvrko11.webp",
+            "hotSpots": [
+                {
+                    "pitch": 5,
+                    "yaw": 0,
+                    "type": "scene",
+                    "text": "Look Closer at Statue",
+                    "sceneId": "statue_closeup"
+                },
+                {
+                    "pitch": -10,
+                    "yaw": 15,
+                    "type": "info",
+                    "text": "SECRET FOUND! Locate the physical QR icon nearby.",
+                    "attributes": {
+                        "class": "custom-hotspot-quest",
+                        "id": "quest-hotspot-park"
+                    }
+                },
+                {
+                    "pitch": -5,
+                    "yaw": 180,
+                    "type": "scene",
+                    "text": "Back",
+                    "sceneId": "closer"
+                }
+            ]
+        },
+        "statue_closeup": {
+            "title": "Statue Detail",
+            "panorama": "/assets/Gallery/QuestQRLocations/Tvrko pannellum/KraljTvrko12.webp",
+            "hotSpots": [
+                {
+                    "pitch": 10,
+                    "yaw": 0,
+                    "type": "scene",
+                    "text": "Look up to Crown",
+                    "sceneId": "statue_top"
+                },
+                {
+                    "pitch": -5,
+                    "yaw": 180,
+                    "type": "scene",
+                    "text": "Back to Base",
+                    "sceneId": "statue_view"
+                }
+            ]
+        },
+        "statue_top": {
+            "title": "Royal Crown View",
+            "panorama": "/assets/Gallery/QuestQRLocations/Tvrko pannellum/KraljTvrko13.webp",
+            "hotSpots": [
+                {
+                    "pitch": -10,
+                    "yaw": 180,
+                    "type": "scene",
+                    "text": "Back",
+                    "sceneId": "statue_closeup"
+                }
+            ]
+        }
+    }
+}

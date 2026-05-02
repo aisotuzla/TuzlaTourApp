@@ -1,0 +1,291 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+/* Tuzla Virtual Guide - Global Styles */
+
+@import "tailwindcss";
+
+body {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    overflow-x: hidden;
+    background: #ffffff;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Safe area bottom padding */
+.safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Modern Glossy Effect */
+.glassy {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Glowing Blue Borders */
+.glow-blue {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    border: 1px solid rgba(44, 173, 248, 0.4);
+}
+
+.glow-blue-strong {
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
+    border: 2px solid rgba(59, 130, 246, 0.5);
+}
+
+.glow-blue-strong {
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
+    border: 2px solid rgba(59, 130, 246, 0.5);
+}
+
+.glow-line-bottom {
+    border-bottom: 2px solid rgba(59, 130, 246, 0.5);
+    box-shadow: 0 4px 10px -2px rgba(59, 130, 246, 0.3);
+}
+
+/* PDF Scroll Shadow */
+.pdf-page-shadow {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 0 10px rgba(59, 130, 246, 0.1);
+}
+
+/* History 3D Card Depth */
+.history-card-3d {
+    background: rgb(83, 31, 1);
+    box-shadow:
+        0 1px 1px rgba(0, 0, 0, 0.11),
+        0 2px 2px rgba(0, 0, 0, 0.11),
+        0 4px 4px rgba(0, 0, 0, 0.11),
+        0 8px 8px rgba(0, 0, 0, 0.11),
+        0 16px 16px rgba(0, 0, 0, 0.11),
+        0 32px 32px rgba(0, 0, 0, 0.11);
+    transform: perspective(1000px) rotateX(1deg);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.history-card-3d:hover {
+    transform: perspective(1000px) rotateX(0deg) translateY(-10px) scale(1.02);
+    box-shadow:
+        0 2px 2px rgba(0, 0, 0, 0.15),
+        0 4px 4px rgba(0, 0, 0, 0.15),
+        0 8px 8px rgba(0, 0, 0, 0.15),
+        0 16px 16px rgba(0, 0, 0, 0.15),
+        0 32px 32px rgba(0, 0, 0, 0.15),
+        0 64px 64px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 10px;
+}
+
+@keyframes rotate-3d {
+    0% {
+        transform: rotateY(0deg);
+    }
+
+    100% {
+        transform: rotateY(360deg);
+    }
+}
+
+.animate-rotate-3d {
+    animation: rotate-3d 8s linear infinite;
+    transform-style: preserve-3d;
+}
+
+.animate-bounce-short {
+    animation: bounce-short 3s ease-in-out infinite;
+}
+
+@keyframes jump {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+.animate-jump {
+    animation: jump 3s ease-in-out infinite;
+}
+
+/* Scanner Video Styling */
+#reader video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 2rem;
+}
+
+.font-quicksand {
+    font-family: 'Quicksand', sans-serif !important;
+}
+
+/* MapLibre GL Overrides */
+.maplibregl-popup-content {
+    border-radius: 16px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25) !important;
+    border: 1px solid rgba(0,0,0,0.05) !important;
+}
+
+.maplibregl-popup-close-button {
+    padding: 10px !important;
+    font-size: 18px !important;
+    color: #94a3b8 !important;
+    border-radius: 0 16px 0 12px !important;
+    transition: all 0.2s;
+}
+.maplibregl-popup-close-button:hover {
+    background: #f1f5f9 !important;
+    color: #333 !important;
+}
+
+@keyframes marker-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+}
+
+.quest-marker-pulse {
+    animation: marker-pulse 2s infinite;
+}
+
+@keyframes locked-marker-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4); }
+    70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(148, 163, 184, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(148, 163, 184, 0); }
+}
+
+.locked-quest-pulse {
+    animation: locked-marker-pulse 3s infinite;
+}
+
+
+/* Modern QR Scanner UI */
+.qr-scanner-overlay {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.qr-scanner-frame {
+    position: relative;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.4), inset 0 0 30px rgba(59, 130, 246, 0.2);
+    border-radius: 2rem;
+    overflow: hidden;
+}
+
+/* Corner Brackets */
+.qr-corner {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 4px solid #fbbf24; /* Yellow-400 */
+    z-index: 10;
+}
+
+.qr-corner-tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; border-top-left-radius: 1.5rem; }
+.qr-corner-tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; border-top-right-radius: 1.5rem; }
+.qr-corner-bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; border-bottom-left-radius: 1.5rem; }
+.qr-corner-br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; border-bottom-right-radius: 1.5rem; }
+
+/* Laser Animation */
+.qr-laser {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background: linear-gradient(to right, transparent, #3b82f6, #60a5fa, #3b82f6, transparent);
+    box-shadow: 0 0 15px 2px rgba(59, 130, 246, 0.8), 0 0 30px 5px rgba(59, 130, 246, 0.4);
+    z-index: 5;
+    animation: scanner-laser 2.5s ease-in-out infinite;
+    border-radius: 100%;
+}
+
+@keyframes scanner-laser {
+    0% { top: 15%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 85%; opacity: 0; }
+}
+
+/* Html5Qrcode video containment */
+#wallet-reader, #map-quest-reader {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#wallet-reader video, #map-quest-reader video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+/* Hide the default html5-qrcode UI elements if any leak */
+#wallet-reader__dashboard, #map-quest-reader__dashboard {
+    display: none !important;
+}
+#wallet-reader__status_span, #map-quest-reader__status_span {
+    display: none !important;
+}
+/* Premium Title Shimmer */
+.title-shimmer {
+    background: linear-gradient(
+        120deg, 
+        #1e3a8a 0%, 
+        #1e3a8a 40%, 
+        #3b82f6 50%, 
+        #1e3a8a 60%, 
+        #1e3a8a 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 150% 0; }
+    100% { background-position: -50% 0; }
+}
+
+.glass-header {
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+.font-outfit {
+    font-family: 'Outfit', sans-serif !important;
+}

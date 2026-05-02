@@ -1,0 +1,29 @@
+{
+  "skills": [
+    {
+      "source": "obra/superpowers",
+      "skills": [
+        "brainstorming"
+      ]
+    },
+    {
+      "source": "supabase/agent-skills",
+      "skills": [
+        "supabase-postgres-best-practices"
+      ]
+    },
+    {
+      "source": "vercel-labs/agent-skills",
+      "skills": [
+        "vercel-react-best-practices",
+        "vercel-react-native-skills"
+      ]
+    },
+    {
+      "source": "vercel-labs/skills",
+      "skills": [
+        "find-skills"
+      ]
+    }
+  ]
+}

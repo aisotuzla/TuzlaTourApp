@@ -1,0 +1,41 @@
+<h2>NFT Card "Pop Out" Options</h2>
+<p class="subtitle">Which interaction style feels more premium for the player cards?</p>
+
+<div class="options" data-multiselect>
+  <div class="option" data-choice="hover_tilt" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Premium Hover Lift & Tilt</h3>
+      <p>Card subtly follows the cursor movement with a 3D tilt effect and a glowing blue border. Feels very much like high-end digital collectibles.</p>
+      <div class="mockup" style="height: 150px; display: flex; align-items: center; justify-content: center; transform: perspective(500px) rotateX(10deg) rotateY(-10deg); box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5); border: 2px solid gold; border-radius: 12px; background: white; margin-top: 10px;">
+        <span class="label">Tilt Preview</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="modal_expand" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Fullscreen "Pop out" Modal</h3>
+      <p>When clicked, the card smoothly animates to the center of the screen, enlarging and showing full stats, rating badges, and NFT rarity details.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="click_rotate" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Advanced 3D Flip</h3>
+      <p>A smoother, inertia-based rotation when clicking, with "holographic" light sweeps appearing during the turn.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Metadata Questions</h3>
+  <p>To "insert metadata" properly, I need to know what additional stats you'd like to see. For example:</p>
+  <ul>
+    <li><b>Overall Rating:</b> (e.g. 85, 90, 99)</li>
+    <li><b>NFT Rarity:</b> (Common, Elite, Legendary)</li>
+    <li><b>Specific Attributes:</b> (Pace, Shooting, Dribbling, etc.)</li>
+  </ul>
+</div>
