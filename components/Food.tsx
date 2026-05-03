@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Language } from '../types';
-import { TRANSLATIONS, RESTAURANTS, ALL_TUZLA_VENUES } from '../constants';
+import { TRANSLATIONS, ALL_TUZLA_VENUES } from '../constants';
 import {
   ExternalLink,
   UtensilsCrossed,

@@ -14,6 +14,15 @@ export interface LocationData {
   image?: string;
 }
 
+export interface ParkingLot {
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  plus_code?: string;
+  hours?: string;
+}
+
 export interface Location {
 
   id: string;

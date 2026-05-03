@@ -1,4 +1,4 @@
-import { Language, TranslationSet, Location, LocationData } from "./types";
+import { Language, TranslationSet, Location, LocationData, ParkingLot } from "./types";
 
 export const TUZLA_CENTER: [number, number] = [44.5388, 18.6750];
 
@@ -466,98 +466,147 @@ const RESTAURANTS_RAW = [
     address: 'Univerzitetska 16 (Tuzlanka Mall)',
     type: { en: 'Mexican Fast Food', bs: 'Meksicka brza hrana', de: 'Mexikanisches Fast Food', tr: 'Meksika Fast Food' },
     price: '9-18 KM',
-    image: '/assets/Gallery/tacobellqr.webp',
+    image: '/assets/Gallery/Food/taco.webp',
   },
   {
     name: 'Pekara Hukic',
     address: 'Gradska 59, Tuzla',
     type: { en: 'Traditional Bakery & Pizza', bs: 'Tradicionalna pekara i pizza', de: 'Traditionelle Backerei & Pizza', tr: 'Geleneksel Fırın ve Pizza' },
     price: '3-17 KM',
-    image: '/assets/Gallery/QuestQRLocations/huka.webp',
+    image: '/assets/Gallery/Food/huka.webp',
   },
   {
     name: 'Bagi Palačinkara',
     address: 'Patriotske lige 10, Tuzla',
     type: { en: 'Famous Sweet & Sushi Pancakes', bs: 'Poznate slatke i sushi palacinke', de: 'Legendare suse Pfannkuchen & Pancake-Sushi', tr: 'Ünlü Tatlı ve Suşi Krepleri' },
     price: '3-9 KM',
-    image: '/assets/Gallery/QuestQRLocations/bagara.webp',
+    image: '/assets/Gallery/Food/bagi.webp',
   },
   {
     name: 'Libero Caffe',
     address: 'Armije Republike BiH 17, Tuzla',
     type: { en: 'Vibrant Social Hub & Italian Food', bs: 'Popularni caffe i italijanska hrana', de: 'Vibranter Social Hub & italienisches Essen', tr: 'Canlı Sosyal Merkez ve İtalyan Yemekleri' },
     price: '7-15 KM',
-    image: '/assets/Gallery/QuestQRLocations/libero.webp',
+    image: '/assets/Gallery/Food/libero.webp',
   },
   {
     name: 'Choco Loco',
     address: 'Solni trg / Prekinute mladosti 10, Tuzla',
     type: { en: 'Rich Cakes & Turkish Lokma', bs: 'Bogati kolaci i turske lokme', de: 'Kuchen & Lokma', tr: 'Zengin Pastalar ve Türk Lokması' },
     price: '3-7 KM',
-    image: '/assets/Gallery/chocoloco.webp',
+    image: '/assets/Gallery/Food/chocoloco.webp',
   },
   {
     name: 'Nota Bene Pizzeria',
     address: 'I inzinjerske brigade, Tuzla',
     type: { en: 'Quality Italian Pizza & Breakfast', bs: 'Kvalitetna italijanska pizza i dorucak', de: 'Italienische Pizza & Fruhstuck', tr: 'Kaliteli İtalyan Pizzası ve Kahvaltı' },
     price: '6-10 KM',
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400',
+    image: '/assets/Gallery/Food/notabene.webp',
   },
   {
     name: 'Restaurant Saranda',
     address: 'Maršala Tita 88, Tuzla',
     type: { en: 'Traditional Restaurant', bs: 'Tradicionalni restoran', de: 'Traditionelles Restaurant', tr: 'Geleneksel Restoran' },
     price: '10-25 KM',
-    image: '/assets/Gallery/QuestQRLocations/saranda.webp',
+    image: '/assets/Gallery/Food/saranda.webp',
   },
   {
     name: 'Pizza Trkačica',
     address: 'Nesiba Malkića 20, Tuzla',
     type: { en: 'Pizza & Delivery', bs: 'Pizza i dostava', de: 'Pizza & Lieferservice', tr: 'Pizza ve Teslimat' },
     price: '6-18 KM',
-    image: '/assets/Gallery/QuestQRLocations/trkacica.webp',
+    image: '/assets/Gallery/Food/trkacica.webp',
   },
   {
     name: 'Mamma Mia Origins',
     address: 'Trg slobode bb, Tuzla',
     type: { en: 'Steak & Wine / Upscale', bs: 'Steak & Wine / Elitno', de: 'Steak & Wein / Gehoben', tr: 'Biftek ve Şarap / Lüks' },
     price: '20-60 KM',
-    image: '/assets/Gallery/QuestQRLocations/mia.webp',
+    image: '/assets/Gallery/Food/mia.webp',
   },
   {
     name: 'Papi Gelato',
     address: 'Hadžihasanage Pašića 3, Tuzla',
     type: { en: 'Artisanal Gelato', bs: 'Artisan sladoled', de: 'Hausgemachtes Eis', tr: 'Zanaat Dondurması' },
     price: '3-10 KM',
-    image: '/assets/Gallery/QuestQRLocations/papi.webp'
+    image: '/assets/Gallery/Food/papi.webp',
   },
   {
     name: 'Restaurant Sedra',
     address: 'Slatina 5, Tuzla',
     type: { en: 'Traditional Dining', bs: 'Tradicionalna kuhinja', de: 'Traditionelle Küche', tr: 'Geleneksel Mutfak' },
     price: '8-22 KM',
-    image: '/assets/Gallery/QuestQRLocations/sedra.webp',
+    image: '/assets/Gallery/Food/sedra.webp',
   },
   {
     name: 'Alibaba Restoran',
     address: 'Toplice 1, Tuzla',
     type: { en: 'Traditional Atmosphere', bs: 'Tradicionalni ambijent', de: 'Traditionelles Ambiente', tr: 'Geleneksel Atmosfer' },
     price: '7-20 KM',
-    image: '/assets/Gallery/QuestQRLocations/alibaba.webp'
+    image: '/assets/Gallery/Food/alibaba.webp',
   },
   {
     name: 'Gradska Kafana',
     address: 'ZAVNOBiH-a 13, Tuzla',
     type: { en: 'Classic Café', bs: 'Klasična kafana', de: 'Klassisches Café', tr: 'Klasik Kafe' },
     price: '2-8 KM',
-    image: '/assets/Gallery/QuestQRLocations/kafana.webp'
+    image: '/assets/Gallery/Food/kafana.webp',
   },
   {
     name: 'Čevabdžinica Limenka',
     address: 'Patriotske lige 24, Tuzla',
     type: { en: 'Iconic Ćevapi Spot', bs: 'Kultna ćevabdžinica', de: 'Kult-Ćevapi-Laden', tr: 'İkonik Köfteci' },
     price: '5-12 KM',
-    image: '/assets/Gallery/QuestQRLocations/limenka.webp',
+    image: '/assets/Gallery/Food/limenka.webp',
+  },
+  {
+    name: 'Mozaik',
+    address: 'Turalibegova 2, Tuzla',
+    type: { en: 'International Restaurant', bs: 'Internacionalni restoran', de: 'Internationales Restaurant', tr: 'Uluslararası Restoran' },
+    price: '10-30 KM',
+    image: '/assets/Gallery/Food/mozaik.webp',
+  },
+  {
+    name: 'Fast Food King',
+    address: 'Trzni Centar, Tuzla',
+    type: { en: 'Burgers & Fries', bs: 'Burgeri i pomfrit', de: 'Burger & Pommes', tr: 'Burger ve Patates' },
+    price: '5-15 KM',
+    image: '/assets/Gallery/Food/king.webp',
+  },
+  {
+    name: 'Sezam Tennis',
+    address: 'Nesiba Malkica 20, Tuzla',
+    type: { en: 'Pizza & Grill', bs: 'Pizza i roštilj', de: 'Pizza & Grill', tr: 'Pizza ve Izgara' },
+    price: '7-20 KM',
+    image: '/assets/Gallery/Food/foodprime.webp',
+  },
+  {
+    name: 'Pizzeria La Linea',
+    address: 'Stupine B2, Tuzla',
+    type: { en: 'Pizza & Pasta', bs: 'Pizza i pasta', de: 'Pizza & Pasta', tr: 'Pizza ve Makarna' },
+    price: '6-18 KM',
+    image: '/assets/Gallery/Food/lineaaa.webp',
+  },
+  {
+    name: 'Ćevabdžinica Brajlović',
+    address: 'Gradska ulica, Tuzla',
+    type: { en: 'Traditional Ćevapi', bs: 'Tradicionalni ćevapi', de: 'Traditionelle Ćevapi', tr: 'Geleneksel Köfte' },
+    price: '7-15 KM',
+    image: '/assets/Gallery/Food/cevapibrajlovic.webp'
+  },
+  {
+    name: 'Smash Bos Burger',
+    address: 'Univerzitetska 16, Tuzla',
+    type: { en: 'Modern Smash Burgers', bs: 'Moderni smash burgeri', de: 'Moderne Smash Burger', tr: 'Modern Smash Burgerler' },
+    price: '8-16 KM',
+    image: '/assets/Gallery/Food/smashbosbur.webp'
+  },
+  {
+    name: 'Restoran Bosna',
+    address: 'Bosne Srebrene, Tuzla',
+    type: { en: 'Traditional Bosnian Food', bs: 'Tradicionalna bosanska hrana', de: 'Traditionelles bosnisches Essen', tr: 'Geleneksel Boşnak Yemeği' },
+    price: '10-30 KM',
+    image: '/assets/Gallery/Food/bosna.webp'
   },
 ];
 
@@ -582,7 +631,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.673059,
     category: 'Bakery',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/huka.webp',
+    image: '/assets/Gallery/Food/huka.webp',
   },
   {
     name: 'Libero Caffe',
@@ -593,7 +642,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.693450,
     category: 'Restaurant',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/libero.webp',
+    image: '/assets/Gallery/Food/libero.webp',
   },
   {
     name: 'Nota Bene Pizzeria',
@@ -604,7 +653,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.698330,
     category: 'Restaurant',
     type: 'Dining',
-    image: '/assets/Gallery/Food/envie.webp',
+    image: '/assets/Gallery/Food/notabene.webp',
   },
   {
     name: 'Mozaik',
@@ -615,7 +664,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.674936,
     category: 'Restaurant',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/mozaik.webp',
+    image: '/assets/Gallery/Food/mozaik.webp',
   },
   {
     name: 'Pizza Trkačica',
@@ -626,7 +675,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.696539,
     category: 'Restaurant',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/trkacica.webp',
+    image: '/assets/Gallery/Food/trkacica.webp',
     website: 'http://trkacica.com/'
   },
   {
@@ -638,7 +687,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.67817,
     category: 'Fast Food',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/king.webp',
+    image: '/assets/Gallery/Food/king.webp',
   },
   {
     name: 'Sezam Tennis',
@@ -660,7 +709,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.688800,
     category: 'Restaurant',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/lineaaa.webp',
+    image: '/assets/Gallery/Food/lineaaa.webp',
   },
   {
     name: 'Restaurant Saranda',
@@ -671,7 +720,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.6944,
     category: 'Restaurant',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/saranda.webp',
+    image: '/assets/Gallery/Food/saranda.webp',
     website: 'http://www.saranda.ba/'
   },
   {
@@ -683,7 +732,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.6755,
     category: 'Restaurant',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/mia.webp',
+    image: '/assets/Gallery/Food/mia.webp',
     website: 'https://mamamiaorigins.com/'
   },
   {
@@ -695,7 +744,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.6753,
     category: 'Dessert',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/papi.webp'
+    image: '/assets/Gallery/Food/papi.webp'
   },
   {
     name: 'Restaurant Sedra',
@@ -706,7 +755,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.6630,
     category: 'Restaurant',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/sedra.webp',
+    image: '/assets/Gallery/Food/sedra.webp',
     website: 'https://sedra.ba/'
   },
   {
@@ -718,7 +767,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.6780,
     category: 'Restaurant',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/alibaba.webp'
+    image: '/assets/Gallery/Food/alibaba.webp'
   },
   {
     name: 'Gradska Kafana',
@@ -729,7 +778,7 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.6750,
     category: 'Café',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/kafana.webp'
+    image: '/assets/Gallery/Food/kafana.webp'
   },
   {
     name: 'Čevabdžinica Limenka',
@@ -740,8 +789,63 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     longitude: 18.6825,
     category: 'Fast Food',
     type: 'Dining',
-    image: '/assets/Gallery/QuestQRLocations/limenka.webp',
+    image: '/assets/Gallery/Food/limenka.webp',
     website: 'http://www.limenka.ba/'
+  },
+  {
+    name: 'Bagi Palačinkara',
+    rating: 4.9,
+    user_ratings_total: 856,
+    address: 'Patriotske lige 10, Tuzla',
+    latitude: 44.5392,
+    longitude: 18.6755,
+    category: 'Dessert',
+    type: 'Dining',
+    image: '/assets/Gallery/Food/bagi.webp'
+  },
+  {
+    name: 'Choco Loco',
+    rating: 4.8,
+    user_ratings_total: 420,
+    address: 'Prekinute mladosti 10, Tuzla',
+    latitude: 44.5385,
+    longitude: 18.6738,
+    category: 'Dessert',
+    type: 'Dining',
+    image: '/assets/Gallery/Food/chocoloco.webp'
+  },
+  {
+    name: 'Ćevabdžinica Brajlović',
+    rating: 4.7,
+    user_ratings_total: 124,
+    address: 'Gradska ulica, Tuzla',
+    latitude: 44.5389,
+    longitude: 18.6815,
+    category: 'Traditional',
+    type: 'Dining',
+    image: '/assets/Gallery/Food/cevapibrajlovic.webp'
+  },
+  {
+    name: 'Smash Bos Burger',
+    rating: 4.8,
+    user_ratings_total: 98,
+    address: 'Univerzitetska 16, Tuzla',
+    latitude: 44.5383,
+    longitude: 18.6652,
+    category: 'Fast Food',
+    type: 'Dining',
+    image: '/assets/Gallery/Food/smashbosbur.webp'
+  },
+  {
+    name: 'Restoran Bosna',
+    rating: 4.6,
+    user_ratings_total: 156,
+    address: 'Bosne Srebrene, Tuzla',
+    latitude: 44.5380,
+    longitude: 18.6740,
+    category: 'Restaurant',
+    type: 'Dining',
+    image: '/assets/Gallery/Food/bosna.webp'
   },
 ];
 
@@ -751,3 +855,70 @@ export const LOCATIONS = LOCATIONS_RAW;
 export const BINGO_STORE = BINGO_STORE_RAW;
 export const TRANSLATIONS: Record<Language, TranslationSet> = TRANSLATIONS_RAW;
 export const RESTAURANTS = RESTAURANTS_RAW;
+
+export const TUZLA_PARKING_DATA: ParkingLot[] = [
+  {
+    name: "Parkiralište Jezero Zapad",
+    address: "Džindić mahala, Tuzla",
+    plus_code: "GMRG+GR5",
+    latitude: 44.540127,
+    longitude: 18.67496
+  },
+  {
+    name: "Parking Tuzla",
+    address: "Stari grad 29, Tuzla",
+    latitude: 44.538433,
+    longitude: 18.67355
+  },
+  {
+    name: "Parking Trg Slobode",
+    address: "Trg Slobode, Tuzla",
+    plus_code: "GMQG+XC9",
+    latitude: 44.5385,
+    longitude: 18.6738
+  },
+  {
+    name: "Parking Pannonica Istok",
+    address: "Tuzla",
+    plus_code: "GMQM+97C",
+    latitude: 44.538433,
+    longitude: 18.683147
+  },
+  {
+    name: "GRADSKI Parking",
+    address: "Kulina bana 8, Tuzla",
+    latitude: 44.54078,
+    longitude: 18.676918
+  },
+  {
+    name: "Mercator Centar Tuzla",
+    address: "II korpusa, Tuzla",
+    plus_code: "GMMM+4F6",
+    latitude: 44.532795,
+    longitude: 18.683634
+  },
+  {
+    name: "Mellain Parking",
+    address: "Aleja Alije Izetbegovića 3, Tuzla",
+    latitude: 44.533123,
+    longitude: 18.682468
+  },
+  {
+    name: "Bingo City Center Parking",
+    address: "Mitra Trifunovića Uče 2, Tuzla",
+    latitude: 44.532177,
+    longitude: 18.651743
+  },
+  {
+    name: "Parking Aerodrom Tuzla",
+    address: "Dubrave Gornje, Tuzla",
+    latitude: 44.46577,
+    longitude: 18.710627
+  },
+  {
+    name: "Parking Bosne Srebrene",
+    address: "Bosne Srebrene 8, Tuzla",
+    latitude: 44.532204,
+    longitude: 18.69975
+  }
+];
