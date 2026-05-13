@@ -66,7 +66,7 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,json,geojson,webp,mp4,webm}'],
-          maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // 15MB max for precache (geojson is ~9MB)
+          maximumFileSizeToCacheInBytes: 25 * 1024 * 1024, // 25MB max for precache (accommodates ~18MB videos)
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

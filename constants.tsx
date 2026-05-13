@@ -238,6 +238,7 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     setWalletPin: 'Set Wallet PIN',
     confirmPin: 'Confirm PIN',
     enterPin: 'Enter PIN to Unlock',
+    dentalTourism: 'Dental Tourism',
   },
   bs: {
     welcome: 'Dobrodošli u Tuzlu',
@@ -311,6 +312,7 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     setWalletPin: 'Postavi PIN novčanika',
     confirmPin: 'Potvrdi PIN',
     enterPin: 'Unesi PIN za otključavanje',
+    dentalTourism: 'Stomatološki turizam',
   },
   de: {
     welcome: 'Willkommen in Tuzla!',
@@ -384,6 +386,7 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     setWalletPin: 'Wallet-PIN festlegen',
     confirmPin: 'PIN bestätigen',
     enterPin: 'PIN zum Entsperren eingeben',
+    dentalTourism: 'Zahntourismus',
   },
   tr: {
     welcome: 'Tuzla\'ya Hoşgeldiniz',
@@ -457,6 +460,7 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     setWalletPin: 'Cüzdan PIN\'ini Ayarla',
     confirmPin: 'PIN\'i Onayla',
     enterPin: 'Kilidi Açmak İçin PIN Girin',
+    dentalTourism: 'Diş Turizmi',
   },
 };
 

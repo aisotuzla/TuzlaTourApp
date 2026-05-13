@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { Wallet as WalletIcon, Lock, Camera, CheckCircle2, Trophy, Home } from 'lucide-react';
+import { Wallet as WalletIcon, Lock, Camera, CheckCircle2, Trophy, Home, Stethoscope, Globe } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 
 // TON Connect Imports
@@ -45,7 +45,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
         return () => {
             cancelled = true;
             if (html5QrCodeRef.current?.isScanning) {
-                html5QrCodeRef.current.stop().catch(() => {}).then(() => html5QrCodeRef.current?.clear()).catch(() => {});
+                html5QrCodeRef.current.stop().catch(() => { }).then(() => html5QrCodeRef.current?.clear()).catch(() => { });
             }
         };
     }, [isScanning]);
@@ -284,76 +284,112 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                         </div>
 
 
-
-                        <div className="mt-20 text-center text-blue-400/60 font-black text-[10px] uppercase tracking-[0.3em]">
-                            SECURE BLOCKCHAIN INFRASTRUCTURE: TON & SUI
-                        </div>
-                    </>
-                ) : (
-                    <div className="fixed inset-0 z-[600] flex flex-col items-center justify-center qr-scanner-overlay animate-in fade-in duration-500">
-                        {/* Header */}
-                        <div className="absolute top-0 w-full p-8 flex items-center justify-between z-[610]">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                                    <Camera className="w-5 h-5 text-white" />
-                                </div>
-                                <div className="flex flex-col text-left">
-                                    <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest leading-none mb-1 text-left">Secure Payment</span>
-                                    <span className="text-xl font-black text-white uppercase tracking-tight font-quicksand text-left">SCAN & PAY</span>
-                                </div>
-                            </div>
+                        <div className="mt-8 grid grid-cols-1 gap-4">
+                            {/* Dental Tourism Button */}
                             <button
-                                onClick={(e) => { e.stopPropagation(); setIsScanning(false); }}
-                                className="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10"
+                                onClick={() => window.open('https://dentist-tuzla.onhercules.app/dentist-tourism/', '_blank')}
+                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-white text-blue-600 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-50 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
                             >
-                                <span className="text-2xl font-light">×</span>
+                                <div className="absolute inset-0 bg-blue-50 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
+                                <Stethoscope className="w-5 h-5 text-blue-600" />
+                                <span className="text-[10px] sm:text-xs tracking-widest uppercase">{t.dentalTourism}</span>
+                            </button>
+
+                            {/* AISO Tuzla Button */}
+                            <button
+                                onClick={() => window.open('https://aisotuzlazip--aisotuzla.replit.app/', '_blank')}
+                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-blue-600 text-yellow-400 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-500 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
+                            >
+                                <div className="absolute inset-0 bg-blue-400 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
+                                <span className="text-[10px] sm:text-xs tracking-widest uppercase">AISO Tuzla</span>
+                            </button>
+
+                            {/* Travel Agencies Button */}
+                            <button
+                                onClick={() => { }}
+                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-white text-emerald-600 font-black py-3 rounded-2xl shadow-lg border-[3px] border-emerald-50 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
+                            >
+                                <div className="absolute inset-0 bg-emerald-50 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
+                                <Globe className="w-5 h-5 text-emerald-600" />
+                                <span className="text-[10px] sm:text-xs tracking-widest uppercase">
+                                    {lang === 'bs' ? 'Putničke agencije' : 'Travel Agencies'}
+                                </span>
                             </button>
                         </div>
 
-                        {/* Scanner Frame */}
-                        <div className="relative w-[85%] max-w-[400px] aspect-square qr-scanner-frame z-[605] transition-all">
-                            <div id={scannerContainerId} className="absolute inset-0 z-0 overflow-hidden rounded-[2rem]"></div>
-                            <div className="qr-laser" />
-                            <div className="qr-corner qr-corner-tl" />
-                            <div className="qr-corner qr-corner-tr" />
-                            <div className="qr-corner qr-corner-bl" />
-                            <div className="qr-corner qr-corner-br" />
-                            <div className="absolute inset-0 border-[30px] border-black/30 pointer-events-none" />
+                <div className="mt-20 text-center text-blue-400/60 font-black text-[10px] uppercase tracking-[0.3em]">
+                    SECURE BLOCKCHAIN INFRASTRUCTURE: TON & SUI
+                </div>
+            </>
+            ) : (
+            <div className="fixed inset-0 z-[600] flex flex-col items-center justify-center qr-scanner-overlay animate-in fade-in duration-500">
+                {/* Header */}
+                <div className="absolute top-0 w-full p-8 flex items-center justify-between z-[610]">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                            <Camera className="w-5 h-5 text-white" />
                         </div>
-
-                        {/* Footer Info */}
-                        <div className="absolute bottom-16 w-full text-center px-10 z-[610]">
-                            <div className="inline-block p-6 rounded-[2.5rem] bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                                <p className="text-white/80 font-black uppercase text-[10px] tracking-[0.3em] font-quicksand mb-2">Align QR Code within frame</p>
-                                <div className="flex items-center justify-center gap-3 text-white/40">
-                                    <div className="h-px w-8 bg-white/20"></div>
-                                    <span className="text-[10px] uppercase font-bold italic">Tuzla Secure Pay v1.0</span>
-                                    <div className="h-px w-8 bg-white/20"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Background Glows */}
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-blue-500/10 rounded-full blur-[120px] animate-pulse"></div>
+                        <div className="flex flex-col text-left">
+                            <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest leading-none mb-1 text-left">Secure Payment</span>
+                            <span className="text-xl font-black text-white uppercase tracking-tight font-quicksand text-left">SCAN & PAY</span>
                         </div>
                     </div>
-                )}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setIsScanning(false); }}
+                        className="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10"
+                    >
+                        <span className="text-2xl font-light">×</span>
+                    </button>
+                </div>
+
+                {/* Scanner Frame */}
+                <div className="relative w-[85%] max-w-[400px] aspect-square qr-scanner-frame z-[605] transition-all">
+                    <div id={scannerContainerId} className="absolute inset-0 z-0 overflow-hidden rounded-[2rem]"></div>
+                    <div className="qr-laser" />
+                    <div className="qr-corner qr-corner-tl" />
+                    <div className="qr-corner qr-corner-tr" />
+                    <div className="qr-corner qr-corner-bl" />
+                    <div className="qr-corner qr-corner-br" />
+                    <div className="absolute inset-0 border-[30px] border-black/30 pointer-events-none" />
+                </div>
+
+                {/* Footer Info */}
+                <div className="absolute bottom-16 w-full text-center px-10 z-[610]">
+                    <div className="inline-block p-6 rounded-[2.5rem] bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                        <p className="text-white/80 font-black uppercase text-[10px] tracking-[0.3em] font-quicksand mb-2">Align QR Code within frame</p>
+                        <div className="flex items-center justify-center gap-3 text-white/40">
+                            <div className="h-px w-8 bg-white/20"></div>
+                            <span className="text-[10px] uppercase font-bold italic">Tuzla Secure Pay v1.0</span>
+                            <div className="h-px w-8 bg-white/20"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Background Glows */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-blue-500/10 rounded-full blur-[120px] animate-pulse"></div>
+                </div>
             </div>
+                )}
+        </div>
 
-            {/* Popups */}
-            {successMessage && (
-                <div className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-8 py-4 rounded-full font-bold shadow-2xl z-[500] animate-bounce">
-                    {successMessage}
-                </div>
-            )}
-            {error && (
-                <div className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-red-500 text-white px-8 py-4 rounded-full font-bold shadow-2xl z-[500]">
-                    {error}
-                </div>
-            )}
+            {/* Popups */ }
+    {
+        successMessage && (
+            <div className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-8 py-4 rounded-full font-bold shadow-2xl z-[500] animate-bounce">
+                {successMessage}
+            </div>
+        )
+    }
+    {
+        error && (
+            <div className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-red-500 text-white px-8 py-4 rounded-full font-bold shadow-2xl z-[500]">
+                {error}
+            </div>
+        )
+    }
 
-            <style>{`
+    <style>{`
                 .ton-connect-custom-wrapper, .sui-connect-custom-wrapper {
                     display: flex;
                     justify-content: center;
@@ -372,7 +408,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                     backdrop-filter: blur(20px);
                 }
             `}</style>
-        </div>
+        </div >
     );
 };
 

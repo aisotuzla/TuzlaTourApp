@@ -107,6 +107,7 @@ export interface TranslationSet {
   setWalletPin: string;
   confirmPin: string;
   enterPin: string;
+  dentalTourism: string;
 }
 
 export enum AppTab {
