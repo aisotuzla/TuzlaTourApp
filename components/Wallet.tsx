@@ -1,10 +1,13 @@
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { Wallet as WalletIcon, Lock, Camera, CheckCircle2, Trophy, Home, Stethoscope, Globe } from 'lucide-react';
+import { Wallet as WalletIcon, Lock, Camera, CheckCircle2, Trophy, Home, Stethoscope, Globe, X } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Lazy load WorldCup to keep Wallet bundle small
+const WorldCup2026 = lazy(() => import('./WorldCup2026'));
 
 // TON Connect Imports
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
@@ -18,6 +21,7 @@ interface WalletProps {
 
 const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const [isScanning, setIsScanning] = useState(false);
+    const [showWorldCup, setShowWorldCup] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [bamValue, setBamValue] = useState<string>('');
@@ -105,7 +109,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
             </div>
 
             <div className="relative z-10 max-w-6xl mx-auto px-6 py-12 pb-32">
-                {!isScanning ? (
+                {!isScanning && !showWorldCup ? (
                     <>
                         <div className="flex flex-col items-center text-center space-y-8 mb-16">
                             <div className="w-24 h-24 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white shadow-2xl glow-blue-strong">
@@ -301,13 +305,25 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                     {lang === 'bs' ? 'Putničke agencije' : 'Travel Agencies'}
                                 </span>
                             </button>
+
+                            {/* World Cup 2026 Button */}
+                            <button
+                                onClick={() => setShowWorldCup(true)}
+                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-blue-50 text-blue-900 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
+                            >
+                                <div className="absolute inset-0 bg-blue-100 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
+                                <Trophy className="w-5 h-5 text-blue-900" />
+                                <span className="text-[10px] sm:text-xs tracking-widest uppercase">
+                                    {lang === 'bs' ? 'Svjetsko Prvenstvo 2026' : 'World Cup 2026'}
+                                </span>
+                            </button>
                         </div>
 
                 <div className="mt-20 text-center text-blue-400/60 font-black text-[10px] uppercase tracking-[0.3em]">
                     SECURE BLOCKCHAIN INFRASTRUCTURE: TON & SUI
                 </div>
             </>
-            ) : (
+            ) : isScanning ? (
             <div className="fixed inset-0 z-[600] flex flex-col items-center justify-center qr-scanner-overlay animate-in fade-in duration-500">
                 {/* Header */}
                 <div className="absolute top-0 w-full p-8 flex items-center justify-between z-[610]">
@@ -356,6 +372,17 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-blue-500/10 rounded-full blur-[120px] animate-pulse"></div>
                 </div>
             </div>
+                ) : (
+                    <div className="animate-in fade-in zoom-in duration-500">
+                        <Suspense fallback={
+                             <div className="flex flex-col items-center justify-center p-20">
+                                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
+                                <p className="text-blue-900 font-black uppercase text-xs tracking-widest">Loading World Cup...</p>
+                             </div>
+                        }>
+                            <WorldCup2026 lang={lang} onBack={() => setShowWorldCup(false)} />
+                        </Suspense>
+                    </div>
                 )}
         </div>
 
@@ -388,14 +415,23 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                     display: flex !important;
                     justify-content: center !important;
                     align-items: center !important;
+                    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3) !important;
                 }
                 .glassy {
                     background: rgba(255, 255, 255, 0.7);
                     backdrop-filter: blur(20px);
                 }
+                .glow-blue {
+                    box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+                }
+                .glow-blue-strong {
+                    box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
+                }
             `}</style>
         </div >
     );
 };
+
+export default Wallet;
 
 export default Wallet;

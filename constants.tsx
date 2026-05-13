@@ -142,6 +142,66 @@ const LOCATIONS_RAW: Location[] = [
     category: 'culture',
     qrCode: 'King Tvrtko',
     discount: 'Virtual Discovery',
+  },
+  {
+    id: 'bingo_city_centar',
+    name: {
+      en: 'Bingo City Center',
+      bs: 'Bingo City Centar',
+      de: 'Bingo City Einkaufszentrum',
+      tr: 'Bingo City Alışveriş Merkezi',
+    },
+    description: {
+      en: 'The largest shopping mall in the region with numerous stores, cinemas, and entertainment options.',
+      bs: 'Najveći tržni centar u regiji sa brojnim trgovinama, kinom i zabavnim sadržajima.',
+      de: 'Das größte Einkaufszentrum der Region mit zahlreichen Geschäften, Kinos und Unterhaltungsangeboten.',
+      tr: 'Bölgenin çok sayıda mağaza, sinema ve eğlence seçeneği sunan en büyük alışveriş merkezi.',
+    },
+    image: '/assets/Gallery/QuestQRLocations/Bingo City Centar.png',
+    coordinates: [44.532177, 18.651743],
+    category: 'culture',
+    qrCode: 'Bingo City Centar',
+    discount: 'Special Rewards',
+  },
+  {
+    id: 'atelje_ismet',
+    name: {
+      en: 'Atelje Ismet Mujezinovic',
+      bs: 'Atelje Ismet Mujezinović',
+      de: 'Ismet Mujezinovic Atelier',
+      tr: 'Ismet Mujezinovic Atölyesi',
+    },
+    description: {
+      en: 'The former studio and gallery of the famous Bosnian painter Ismet Mujezinović.',
+      bs: 'Bivši atelje i galerija poznatog bosanskog slikara Ismeta Mujezinovića.',
+      de: 'Das ehemalige Atelier und die Galerie des berühmten bosnischen Malers Ismet Mujezinović.',
+      tr: 'Ünlü Bosnalı ressam Ismet Mujezinović\'in eski atölyesi ve galerisi.',
+    },
+    image: '/assets/Gallery/QuestQRLocations/Atelje Ismet Mujezinovic.png',
+    coordinates: [44.5385, 18.6850],
+    category: 'culture',
+    qrCode: 'Atelje Ismet Mujezinovic',
+    discount: 'Art Reward',
+  },
+  {
+    id: 'slana_banja',
+    name: {
+      en: 'Slana Banja Park',
+      bs: 'Slana Banja',
+      de: 'Slana Banja Park',
+      tr: 'Slana Banja Parkı',
+    },
+    description: {
+      en: 'A memorial park and recreational area with beautiful walk paths and historical monuments.',
+      bs: 'Memorijalni park i rekreaciona zona sa prelijepim stazama i historijskim spomenicima.',
+      de: 'Ein Gedenkpark und Erholungsgebiet mit schönen Wanderwegen und historischen Denkmälern.',
+      tr: 'Güzel yürüyüş yolları ve tarihi anıtların bulunduğu bir anıt parkı ve dinlenme alanı.',
+    },
+    image: '/assets/Gallery/QuestQRLocations/QR Banja.png',
+    coordinates: [44.5385, 18.6820],
+    category: 'nature',
+    qrCode: 'Banja',
+    discount: 'Health Reward',
   }
 ];
 

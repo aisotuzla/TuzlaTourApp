@@ -5,12 +5,14 @@ import { motion } from 'framer-motion';
 // Reusing same styles as ParkQuestViewer for consistency
 import styles from './ParkQuestViewer.module.css';
 
+import { Language } from '../types';
+
 interface StreetViewerProps {
   panoramaUrl: string;
   title: string;
   subtitle?: string;
   onClose: () => void;
-  lang: 'en' | 'bs';
+  lang: Language;
 }
 
 declare global {

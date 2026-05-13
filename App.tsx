@@ -15,6 +15,7 @@ const Food = lazy(() => import('./components/Food'));
 const Accommodation = lazy(() => import('./components/Accommodation'));
 const ARGuide = lazy(() => import('./components/ARGuide'));
 const Parking = lazy(() => import('./components/Parking'));
+const WorldCup2026 = lazy(() => import('./components/WorldCup2026'));
 const LanguageSelector = lazy(() => import('./components/LanguageSelector'));
 
 import { Menu, QrCode } from 'lucide-react';
@@ -22,7 +23,6 @@ import { App as CapApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { AppTab, Language } from './types';
 import { Preferences } from '@capacitor/preferences';
-import WaterSplash from './components/WaterSplash';
 import { ImageProvider } from './hooks/ImageContext';
 import FullScreenImageViewer from './components/FullScreenImageViewer';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -200,6 +200,7 @@ const AppContent: React.FC = () => {
               />
             );
             case AppTab.PARKING: return <Parking lang={lang} />;
+
             default: return <LandingPage lang={lang} onNavigate={navigateToTab} />;
           }
         })()}
@@ -212,7 +213,6 @@ const AppContent: React.FC = () => {
       <Analytics />
       <ReloadPrompt />
       <OfflineIndicator lang={lang} />
-      {!features.isAndroidLight && <WaterSplash />}
 
       {/* Modern Top Bar */}
       <header className="fixed top-0 left-0 right-0 h-[88px] bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm">

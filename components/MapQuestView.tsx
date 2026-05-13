@@ -12,15 +12,19 @@ import { useNetwork } from '../hooks/useNetwork';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { QuestQualityMode } from '../utils/questRuntimePolicy';
 import { getDistance } from '../utils/geoUtils';
+import StreetViewer from './StreetViewer';
 
 const QUEST_TARGETS = [
   { id: 'irish', name: { en: 'Irish Pub', bs: 'Irish Pub' }, image: '/assets/Gallery/QuestQRLocations/44.53521, 18.68835 -Irish.webp' },
   { id: 'galerija', name: { en: 'Gallery', bs: 'Galerija' }, image: '/assets/Gallery/QuestQRLocations/44.535552, 18.688320 -Galerija.webp' },
-  { id: 'banja', name: { en: 'Banja', bs: 'Banja' }, image: '/assets/Gallery/QuestQRLocations/44.536846, 18.688140 - Banja.webp' },
+  { id: 'banja', name: { en: 'Banja', bs: 'Banja' }, image: '/assets/Gallery/QuestQRLocations/QR Banja.png' },
   { id: 'panonika', name: { en: 'Pannonica Office', bs: 'Panonika Ured' }, image: '/assets/Gallery/QuestQRLocations/44.539775, 18.682692 -panonikaoffice.webp' },
   { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, image: '/assets/Gallery/QuestQRLocations/44.540088, 18.681577 -slapovi.webp' },
-  { id: 'ismet', name: { en: 'Ismet Mujezinovic', bs: 'Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/Ismet_Mujezinović.webp' },
+  { id: 'ismet', name: { en: 'Ismet Mujezinovic', bs: 'Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/QRIsmet.webp' },
+  { id: 'atelje_ismet', name: { en: 'Atelje Ismet Mujezinovic', bs: 'Atelje Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/Atelje Ismet Mujezinovic.png' },
+  { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, image: '/assets/Gallery/QuestQRLocations/Bingo City Centar.png' },
   { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4' },
+  { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, image: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/tvrle.png', panorama: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/tvrle.png' },
 ];
 
 interface MapQuestViewProps {
@@ -52,6 +56,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+  const [viewingPanorama, setViewingPanorama] = useState<{ url: string; title: string } | null>(null);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const isOnline = useNetwork();
 
@@ -263,7 +268,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       }
     };
 
-    // 2. Attach global nav function IMMEDIATELY so buttons work even if style is loading
+    // 2. Attach global functions IMMEDIATELY so buttons work even if style is loading
     (window as any).setGlobalMapNavTarget = (locId: string) => {
       console.log("🚀 Navigating to:", locId);
       let coords: [number, number] | null = null;
@@ -297,10 +302,17 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       }
     };
 
+    (window as any).viewLocationPanorama = (locId: string) => {
+      const target = QUEST_TARGETS.find(t => t.id === locId);
+      if (target && target.panorama) {
+        setViewingPanorama({ url: target.panorama, title: target.name[lang] });
+      }
+    };
+
     map.current.on('load', () => {
       setIsLoaded(true);
       setupResources();
-      
+
       // Advanced 3D Lighting for metallic effect
       map.current?.setLight({
         anchor: 'viewport',
@@ -340,7 +352,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
       map.current.once('style.load', () => {
         if (!map.current) return;
-        
+
         // Advanced 3D Lighting
         map.current.setLight({
           anchor: 'viewport',
@@ -489,8 +501,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                       border: 2px solid ${isUnlocked ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.15)'}; 
                       display: flex; flex-direction: column; align-items: center; justify-content: center; 
                       box-shadow: ${isUtilityMode
-                        ? `0 0 ${isUnlocked ? '8px' : '4px'} ${markerColor}${isUnlocked ? '66' : '22'}`
-                        : `0 0 ${isUnlocked ? '20px' : '8px'} ${markerColor}${isUnlocked ? '99' : '22'}, 
+            ? `0 0 ${isUnlocked ? '8px' : '4px'} ${markerColor}${isUnlocked ? '66' : '22'}`
+            : `0 0 ${isUnlocked ? '20px' : '8px'} ${markerColor}${isUnlocked ? '99' : '22'}, 
                                   0 0 ${isUnlocked ? '40px' : '12px'} ${markerColor}${isUnlocked ? '44' : '11'}, 
                                   inset 0 0 15px rgba(255,255,255,${isUnlocked ? '0.5' : '0.05'})`}; 
                       transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1); 
@@ -501,6 +513,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             ${isQuest && !isUnlocked ? `<span style="font-size: 6px; font-weight: 900; color: white; text-transform: uppercase; margin-top: 2px; opacity: 0.8;">Active Quest</span>` : ''}
           </div>`;
 
+        const target = QUEST_TARGETS.find(t => t.id === loc.id);
+        const hasPanorama = !!target?.panorama;
+
         const popup = new maplibregl.Popup({ offset: 35 }).setHTML(`
           <div style="padding: 18px; font-family: 'Quicksand', sans-serif; background: #0f172a; color: white; border-radius: 24px; border: 2px solid ${markerColor}${isUnlocked ? '' : '33'}; box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px ${markerColor}${isUnlocked ? '40' : '05'};">
             <h3 style="margin: 0; font-size: 18px; font-weight: 900; color: ${isUnlocked ? markerColor : '#64748b'}; text-transform: uppercase; letter-spacing: 0.15em; text-shadow: 0 0 10px ${markerColor}44;">${isUnlocked ? loc.name[lang] : '??? Location ???'}</h3>
@@ -509,7 +524,14 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
               ${isQuest ? (!isUnlocked ? '<span style="font-size: 10px; color: #f59e0b; font-weight: 900; background: rgba(245,158,11,0.2); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);">🔒 Quest Active</span>' : '<span style="font-size: 10px; color: #10b981; font-weight: 900; background: rgba(16,185,129,0.2); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.3);">🔓 Reward Unlocked</span>') : ''}
               <span style="font-size: 10px; color: #475569; font-weight: bold; text-transform: uppercase;">Quest Target</span>
             </div>
-            <button onclick="window.setGlobalMapNavTarget('${loc.id}')" style="margin-top: 18px; width: 100%; padding: 12px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.15em; box-shadow: 0 15px 30px ${isUnlocked ? markerColor : '#000000'}33; transition: all 0.3s ease;">Set GPS Route</button>
+            <div style="display: flex; gap: 8px; margin-top: 18px;">
+              <button onclick="window.setGlobalMapNavTarget('${loc.id}')" style="flex: 1; padding: 12px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; transition: all 0.3s ease;">GPS</button>
+              ${hasPanorama ? `
+                <button onclick="window.viewLocationPanorama('${loc.id}')" style="flex: 1.5; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(59,130,246,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  360° VIEW
+                </button>
+              ` : ''}
+            </div>
           </div>
         `);
 
@@ -781,9 +803,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           <button
             key={option.value}
             onClick={() => setMode(option.value)}
-            className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors ${
-              mode === option.value ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-white/10'
-            }`}
+            className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors ${mode === option.value ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-white/10'
+              }`}
           >
             {option.label}
           </button>
@@ -868,7 +889,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                         layout
                         key={item.id}
                         className="group relative h-32 rounded-3xl overflow-hidden border border-amber-400/40 bg-white/5 shadow-xl transition-all active:scale-95"
-                        onClick={() => item.video && setPlayingVideo(item.video)}
+                        onClick={() => {
+                          if (item.video) setPlayingVideo(item.video);
+                          if (item.panorama) setViewingPanorama({ url: item.panorama, title: item.name[lang] });
+                        }}
                       >
                         <img src={item.image} alt={item.name[lang]} className={`w-full h-full object-cover brightness-[0.7] ${isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'}`} />
                         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 to-transparent p-5 flex flex-col justify-center">
@@ -878,6 +902,11 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                         {item.video && (
                           <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40">
                             <Play className="w-5 h-5 text-slate-950 fill-slate-950 ml-0.5" />
+                          </div>
+                        )}
+                        {item.panorama && (
+                          <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/40">
+                            <Gamepad2 className="w-5 h-5 text-white" />
                           </div>
                         )}
                         <div className="absolute bottom-0 left-0 h-1 bg-amber-500 transition-all duration-500 w-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
@@ -982,6 +1011,17 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {viewingPanorama && (
+          <StreetViewer
+            panoramaUrl={viewingPanorama.url}
+            title={viewingPanorama.title}
+            subtitle={lang === 'bs' ? 'Istražite lokaciju u 360°' : 'Explore location in 360°'}
+            onClose={() => setViewingPanorama(null)}
+            lang={lang}
+          />
+        )}
       </AnimatePresence>
     </div>
   );

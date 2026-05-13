@@ -7,24 +7,24 @@ interface Player {
   id: string;
   name: string;
   number: number;
-  position: 'GK' | 'DF' | 'MF' | 'FW' | 'Midfielder' | 'Forward' | 'Defender';
-  birthPlace: string;
-  caps: number;
-  goals: number;
-  height: string;
-  club: string;
+  position: string;
+  ovr: number;
+  stats: {
+    pac: number;
+    sho: number;
+    pas: number;
+    dri: number;
+    def: number;
+    psy: number;
+  };
+  birthPlace?: string;
+  caps?: number;
+  goals?: number;
+  height?: string;
+  club?: string;
   image: string;
   altImage?: string;
   rarity?: 'Legendary' | 'Common';
-  rating?: number;
-  stats?: {
-    pace: number;
-    shooting: number;
-    passing: number;
-    dribbling: number;
-    defending: number;
-    physical: number;
-  };
   folder?: string;
 }
 
@@ -50,6 +50,10 @@ const PlayerCard: React.FC<{ player: Player }> = ({ player }) => {
         <div className={styles.cardFront}>
           <div className={styles.crystalOverlay} />
           <div className={styles.holographicFoil} />
+          <div className="absolute top-2 left-2 z-10 flex flex-col items-center">
+            <span className="text-2xl font-black text-white leading-none">{player.ovr}</span>
+            <span className="text-[10px] font-bold text-white/80 uppercase">{player.position}</span>
+          </div>
           <div className={styles.playerImage}>
             <img
               src={imgSrc}
@@ -64,23 +68,37 @@ const PlayerCard: React.FC<{ player: Player }> = ({ player }) => {
           </div>
         </div>
 
-        {/* Back */}
+        {/* Back - Stats */}
         <div className={styles.cardBack}>
-          <div className={styles.statItem}>
-            <div className={styles.statLabel}>Place of Birth</div>
-            <div className={styles.statValue}>{player.birthPlace}</div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 p-4 w-full">
+            <div className="flex justify-between items-center border-b border-white/10 pb-1">
+              <span className="text-[10px] font-bold text-white/50 uppercase">PAC</span>
+              <span className="text-sm font-black text-white">{player.stats.pac}</span>
+            </div>
+            <div className="flex justify-between items-center border-b border-white/10 pb-1">
+              <span className="text-[10px] font-bold text-white/50 uppercase">DRI</span>
+              <span className="text-sm font-black text-white">{player.stats.dri}</span>
+            </div>
+            <div className="flex justify-between items-center border-b border-white/10 pb-1">
+              <span className="text-[10px] font-bold text-white/50 uppercase">SHO</span>
+              <span className="text-sm font-black text-white">{player.stats.sho}</span>
+            </div>
+            <div className="flex justify-between items-center border-b border-white/10 pb-1">
+              <span className="text-[10px] font-bold text-white/50 uppercase">DEF</span>
+              <span className="text-sm font-black text-white">{player.stats.def}</span>
+            </div>
+            <div className="flex justify-between items-center border-b border-white/10 pb-1">
+              <span className="text-[10px] font-bold text-white/50 uppercase">PAS</span>
+              <span className="text-sm font-black text-white">{player.stats.pas}</span>
+            </div>
+            <div className="flex justify-between items-center border-b border-white/10 pb-1">
+              <span className="text-[10px] font-bold text-white/50 uppercase">PSY</span>
+              <span className="text-sm font-black text-white">{player.stats.psy}</span>
+            </div>
           </div>
-          <div className={styles.statItem}>
-            <div className={styles.statLabel}>Caps / Goals</div>
-            <div className={styles.statValue}>{player.caps} / {player.goals}</div>
-          </div>
-          <div className={styles.statItem}>
-            <div className={styles.statLabel}>Height</div>
-            <div className={styles.statValue}>{player.height}</div>
-          </div>
-          <div className={styles.statItem}>
-            <div className={styles.statLabel}>Current Club</div>
-            <div className={styles.statValue}>{player.club}</div>
+          <div className="mt-auto pb-4 text-center">
+            <div className="text-[8px] font-black text-amber-400 uppercase tracking-widest">Official Roster</div>
+            <div className="text-[10px] font-bold text-white/30 uppercase">{player.club || 'National Team'}</div>
           </div>
         </div>
       </div>
@@ -94,16 +112,6 @@ const LegendaryPopOutCard: React.FC<{ player: Player; onClose: () => void }> = (
   const frontImg = `/assets/WorldCup2026/${player.folder}/${player.folder === 'Dzeko' ? 'Dzeko11.webp' : player.folder === 'Tabakovic' ? 'Tabakovic1.webp' : player.folder + '1.webp'}`;
   const backImg = `/assets/WorldCup2026/${player.folder}/${player.folder === 'Dzeko' ? 'Dzeko2.webp' : player.folder === 'Tabakovic' ? 'Tabakovic2.webp' : player.folder + '2.webp'}`;
 
-  // Agent-readable metadata
-  const agentMetadata = JSON.stringify({
-    name: player.name,
-    rarity: player.rarity,
-    rating: player.rating,
-    stats: player.stats,
-    position: player.position,
-    club: player.club
-  });
-
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8, y: 50 }}
@@ -112,32 +120,12 @@ const LegendaryPopOutCard: React.FC<{ player: Player; onClose: () => void }> = (
       className={styles.legendaryOverlay}
       onClick={onClose}
     >
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org/",
-          "@type": "Product",
-          "name": `${player.name} NFT Card`,
-          "description": `${player.rarity} World Cup 2026 card for ${player.name}`,
-          "image": frontImg,
-          "brand": {
-            "@type": "Brand",
-            "name": "Zmajevi WC2026"
-          },
-          "offers": {
-            "@type": "Offer",
-            "price": player.rating,
-            "priceCurrency": "PTS"
-          }
-        })}
-      </script>
-
       <div
         className={`${styles.legendaryCardContainer} ${isFlipped ? styles.isFlipped : ''}`}
         onClick={(e) => {
           e.stopPropagation();
           setIsFlipped(!isFlipped);
         }}
-        data-player-metadata={agentMetadata}
       >
         <div className={styles.legendaryCardInner}>
           <div className={styles.legendaryCardFront}>
@@ -163,244 +151,60 @@ interface Match {
   time: string;
 }
 
-const WC_INFO: Record<string, any> = {
-  en: {
-    title: "Zmajevi",
-    subtitle: "Bosnia and Herzegovina National Football Team",
-    learnMore: "Explore Team History",
-    teamOverview: {
-      title: "Team Overview",
-      content: `Nickname: "Zmajevi" (The Dragons) or "Zlatni Ljiljani" (Golden Lilies)
-FIFA Ranking: 71st (as of January 2026)
-Captain: Edin Džeko (their all-time leading scorer with 72 goals in 146 caps)
-Head Coach: Sergej Barbarez
-Home Stadium: Bilino Polje Stadium in Zenica`
-    },
-    wcHistory: {
-      title: "World Cup History",
-      content: `Bosnia and Herzegovina has qualified for two FIFA World Cups in their history:
-• 2014 Brazil: Their debut World Cup appearance, where they finished third in Group F with one win (3-1 vs Iran) and two losses (to Argentina and Nigeria)
-• 2026 (Canada/USA/Mexico): Their second-ever World Cup qualification`
-    },
-    qualPath: {
-      title: "2026 Qualification Path",
-      summary: "UEFA Group H - Qualifying Stage: Finished 2nd with 17 points.",
-      standings: `1. Austria - 19 pts (Qualified directly)
-2. Bosnia and Herzegovina - 17 pts (Advanced to playoffs)
-3. Romania - 13 pts
-4. Cyprus - 8 pts
-5. San Marino - 0 pts`,
-      playoffs: `UEFA Playoff Path - The Dramatic Qualification:
-• Semifinal (March 26): Wales 0-1 Bosnia (Gigović '14). Ended the playoff curse!
-• Final (March 31): Bosnia 1-1 Italy (4-1 pens). Tabaković equalizer in '79. BiH won 4-1 on penalties, ending Italy's 12-year World Cup qualification drought.`
-    },
-    wcGroup2026: {
-      title: "2026 World Cup Group Stage",
-      content: `Group B: Canada, Switzerland, Qatar
-Schedule:
-• June 12: Bosnia vs Canada (BMO Field, Toronto)
-• June 18: Bosnia vs Switzerland (SoFi Stadium, Inglewood)
-• June 24: Bosnia vs Qatar (Lumen Field, Seattle)`
-    },
-    keyPlayers: {
-      title: "Key Players and Records",
-      content: `• Edin Džeko (age 40): Legendary striker and captain (72 goals)
-• Sead Kolašinac: Defender for Atalanta (Serie A)
-• Haris Tabaković: Forward for Borussia Mönchengladbach (crucial playoff goals)
-Historical Highlights: Best rank 13th (2013), biggest win 8-1 vs Liechtenstein.`
-    },
-    significance: {
-      title: "Significance of Qualification",
-      content: `This qualification is historic because:
-1. It's only their second World Cup appearance
-2. They broke their playoff jinx (won after 7 failed attempts)
-3. They defeated a major European power (Italy)
-4. They achieved this under former legend Sergej Barbarez`
-    }
-  },
-  bs: {
-    title: "Zmajevi",
-    subtitle: "Nogometna reprezentacija Bosne i Hercegovine",
-    learnMore: "Istražite Historiju tima",
-    teamOverview: {
-      title: "Pregled tima",
-      content: `Nadimak: "Zmajevi" ili "Zlatni Ljiljani"
-FIFA Rang: 71. (januar 2026.)
-Kapiten: Edin Džeko (72 gola u 146 nastupa)
-Selektor: Sergej Barbarez
-Domaći stadion: Bilino Polje, Zenica`
-    },
-    wcHistory: {
-      title: "Historija Svjetskih prvenstava",
-      content: `BiH se kvalifikovala za dva FIFA Svjetska prvenstva:
-• Brazil 2014: Debitantski nastup, pobjeda nad Iranom (3-1)
-• 2026 (Kanada/SAD/Meksiko): Drugo učešće u istoriji`
-    },
-    qualPath: {
-      title: "Put do SP 2026.",
-      summary: "UEFA Grupa H: Završili 2. sa 17 bodova.",
-      standings: `1. Austrija - 19 bodova
-2. BiH - 17 bodova (Baraž)
-3. Rumunija - 13 bodova`,
-      playoffs: `Dramatične kvalifikacije u baražu:
-• Polufinale: Vels 0-1 BiH (Gigović '14). Kraj prokletstva baraža!
-• Finale: BiH 1-1 Italija (4-1 penali). Tabaković izjednačio u '79. Istorijska pobjeda nad četverostrukim prvakom.`
-    },
-    wcGroup2026: {
-      title: "SP 2026 - Grupna faza",
-      content: `Grupa B: Kanada, Švicarska, Katar
-Raspored:
-• 12. juni: BiH vs Kanada (Toronto)
-• 18. juni: BiH vs Švicarska (Inglewood)
-• 24. juni: BiH vs Katar (Seattle)`
-    },
-    keyPlayers: {
-      title: "Ključni igrači",
-      content: `• Edin Džeko (40 god): Legendarni kapiten (72 gola)
-• Sead Kolašinac: Atalanta (Serie A)
-• Haris Tabaković: Borussia Mönchengladbach`
-    },
-    significance: {
-      title: "Značaj kvalifikacija",
-      content: `Ovaj uspjeh je istorijski jer:
-1. Tek drugi put idemo na Mundijal
-2. Srušeno prokletstvo baraža (nakon 7 neuspjeha)
-3. Savladana velesila Italija
-4. Uspjeh pod vodstvom legende Sergeja Barbareza`
-    }
-  },
-  de: {
-    title: "Zmajevi",
-    subtitle: "Bosnisch-herzegowinische Fußballnationalmannschaft",
-    learnMore: "Teamhistorie erkunden",
-    teamOverview: {
-      title: "Team-Übersicht",
-      nickname: "Spitzname: 'Zmajevi' (Die Drachen) oder 'Zlatni Ljiljani' (Goldene Lilien)",
-      ranking: "FIFA-Rangliste: 71. (Stand Januar 2026)",
-      captain: "Kapitän: Edin Džeko (72 Tore in 146 Spielen)",
-      coach: "Trainer: Sergej Barbarez",
-      stadium: "Heimstadion: Bilino Polje Stadion in Zenica"
-    },
-    wcHistory: {
-      title: "WM-Geschichte",
-      v2014: "2014 Brasilien: Debüt, Platz 3 in Gruppe F (3:1 Sieg gegen Iran)",
-      v2026: "2026 (Kanada/USA/Mexiko): Zweite WM-Qualifikation überhaupt"
-    },
-    qualPath: {
-      title: "Qualifikationsweg 2026",
-      summary: "Platz 2 in Gruppe H mit 17 Punkten, Aufstieg in die Playoffs.",
-      results: "5 Siege, 2 Remis, 1 Niederlage. 17 Tore erzielt, 7 kassiert.",
-      playoffs: "Dramatischer Playoff-Sieg: Siege gegen Wales (1:0) und Italien (1:1, 4:1 n.E.)."
-    },
-    significance: {
-      title: "Bedeutung",
-      text: "Der Sieg gegen den 4-fachen Weltmeister Italien war eine Sensation. Erster WM-Einzug über Playoffs nach 7 Fehlversuchen."
-    }
-  },
-  tr: {
-    title: "Zmajevi",
-    subtitle: "Bosna-Hersek Millî Futbol Takımı",
-    learnMore: "Takım Tarihini Keşfedin",
-    teamOverview: {
-      title: "Takıma Genel Bakış",
-      nickname: "Takma Adı: 'Zmajevi' (Ejderhalar) veya 'Zlatni Ljiljani' (Altın Zambaklar)",
-      ranking: "FIFA Sıralaması: 71. (Ocak 2026 itibarıyla)",
-      captain: "Kaptan: Edin Džeko (146 maçta 72 gol)",
-      coach: "Teknik Direktör: Sergej Barbarez",
-      stadium: "Ana Stadyum: Zenica'daki Bilino Polje Stadyumu"
-    },
-    wcHistory: {
-      title: "Dünya Kupası Tarihi",
-      v2014: "2014 Brezilya: İlk kez katılım, F Grubu 3.lüğü (İran'a karşı 3-1 galibiyet)",
-      v2026: "2026 (Kanada/ABD/Meksika): Tarihteki ikinci Dünya Kupası katılımı"
-    },
-    qualPath: {
-      title: "2026 Eleme Yolu",
-      summary: "H Grubu'nu 17 puanla 2. sırada tamamlayarak play-off'lara kaldı.",
-      results: "5 Galibiyet, 2 Beraberlik, 1 Mağlubiyet. 17 gol attı, 7 gol yedi.",
-      playoffs: "Dramatik Play-off Galibiyeti: Galler (1-0) and İtalya'yı (1-1, 4-1 pen) yenerek 'play-off lanetini' kırdı."
-    },
-    significance: {
-      title: "Önem",
-      text: "4 kez Dünya Şampiyonu olan İtalya'yı yenmek büyük bir sürprizdi. 7 başarısız denemenin ardından Bosna'nın play-off üzerinden ilk Dünya Kupası katılımı."
-    }
-  }
-};
-
 const players: Player[] = [
   // Goalkeepers
-  { id: '1', name: 'Nikola Vasilj', number: 1, position: 'GK', birthPlace: 'Zadar (CRO)', caps: 25, goals: 0, height: '1.93m', club: 'FC St. Pauli', image: '/assets/players/Vasilj.webp' },
-  { id: '22', name: 'Martin Zlomislić', number: 22, position: 'GK', birthPlace: 'Posušje', caps: 2, goals: 0, height: '1.92m', club: 'HNK Rijeka', image: '/assets/players/Zlomislic.webp' },
-  { id: '12', name: 'Osman Hadžikić', number: 12, position: 'GK', birthPlace: 'Klosterneuburg (AUT)', caps: 0, goals: 0, height: '1.88m', club: 'NK Slaven Belupo', image: '/assets/players/Hadzikic.webp' },
+  { id: '1', name: 'Nikola Vasilj', number: 1, position: 'GK', ovr: 77, stats: { pac: 76, sho: 74, pas: 72, dri: 78, def: 45, psy: 77 }, image: '/assets/players/Vasilj.webp', club: 'FC St. Pauli' },
+  { id: '12', name: 'Osman Hadžikić', number: 12, position: 'GK', ovr: 72, stats: { pac: 71, sho: 68, pas: 65, dri: 72, def: 40, psy: 73 }, image: '/assets/players/Hadzikic.webp', club: 'Velež Mostar' },
+  { id: '22', name: 'Martin Zlomislić', number: 22, position: 'GK', ovr: 71, stats: { pac: 70, sho: 67, pas: 64, dri: 70, def: 38, psy: 72 }, image: '/assets/players/Zlomislic.webp', club: 'HNK Rijeka' },
 
   // Defenders
-  { id: '4', name: 'Tarik Muharemović', number: 4, position: 'DF', birthPlace: 'Ljubljana (SLO)', caps: 12, goals: 1, height: '1.87m', club: 'Sassuolo', image: '/assets/players/Muharemovic.webp' },
-  { id: '5', name: 'Sead Kolašinac', number: 5, position: 'DF', birthPlace: 'Karlsruhe (GER)', caps: 64, goals: 0, height: '1.83m', club: 'Atalanta', image: '/assets/players/Kolasinac.webp' },
-  { id: '18', name: 'Nikola Katić', number: 18, position: 'DF', birthPlace: 'Ljubuški', caps: 15, goals: 1, height: '1.94m', club: 'FC Schalke 04', image: '/assets/players/Katic.webp' },
-  { id: '2', name: 'Nihad Mujakić', number: 2, position: 'DF', birthPlace: 'Sarajevo', caps: 10, goals: 1, height: '1.89m', club: 'Gaziantep FK', image: '/assets/players/Mujakic.webp' },
-  { id: '21', name: 'Stjepan Radeljić', number: 21, position: 'DF', birthPlace: 'Nova Bila', caps: 4, goals: 0, height: '2.01m', club: 'HNK Rijeka', image: '/assets/players/Radeljic.webp' },
-  { id: '3', name: 'Nidal Čelik', number: 3, position: 'DF', birthPlace: 'Sarajevo', caps: 0, goals: 0, height: '1.89m', club: 'RC Lens', image: '/assets/players/Celik.webp' },
-  { id: 'hd', name: 'Dennis Hadžikadunić', number: 0, position: 'DF', birthPlace: 'Malmö (SWE)', caps: 28, goals: 0, height: '1.91m', club: 'Sampdoria', image: '/assets/players/Hadzikadunic.webp' },
-  { id: '7', name: 'Amar Dedić', number: 7, position: 'DF', birthPlace: 'Zell am See (AUT)', caps: 26, goals: 1, height: '1.80m', club: 'SL Benfica', image: '/assets/players/Dedic.webp' },
+  { id: '5', name: 'Sead Kolašinac', number: 5, position: 'LB', ovr: 80, stats: { pac: 76, sho: 62, pas: 74, dri: 75, def: 81, psy: 85 }, image: '/assets/players/Kolasinac.webp', club: 'Atalanta' },
+  { id: '7', name: 'Amar Dedić', number: 7, position: 'RB', ovr: 81, stats: { pac: 88, sho: 65, pas: 76, dri: 82, def: 78, psy: 77 }, image: '/assets/players/Dedic.webp', club: 'Benfica' },
+  { id: '18', name: 'Nikola Katić', number: 18, position: 'CB', ovr: 76, stats: { pac: 68, sho: 45, pas: 60, dri: 62, def: 77, psy: 82 }, image: '/assets/players/Katic.webp', club: 'FC Zürich' },
+  { id: '4', name: 'Tarik Muharemović', number: 4, position: 'CB', ovr: 75, stats: { pac: 72, sho: 40, pas: 63, dri: 64, def: 76, psy: 75 }, image: '/assets/players/Muharemovic.webp', club: 'Sassuolo' },
+  { id: '3', name: 'Nidal Čelik', number: 3, position: 'CB', ovr: 72, stats: { pac: 74, sho: 35, pas: 58, dri: 60, def: 73, psy: 70 }, image: '/assets/players/Celik.webp', club: 'FK Sarajevo' },
+  { id: '21', name: 'Stjepan Radeljić', number: 21, position: 'CB', ovr: 73, stats: { pac: 65, sho: 38, pas: 55, dri: 58, def: 74, psy: 80 }, image: '/assets/players/Radeljic.webp', club: 'HNK Rijeka' },
+  { id: '2', name: 'Nihad Mujakić', number: 2, position: 'CB', ovr: 74, stats: { pac: 75, sho: 42, pas: 60, dri: 62, def: 75, psy: 78 }, image: '/assets/players/Mujakic.webp', club: 'Partizan' },
+  { id: '15-def', name: 'Dennis Hadžikadunić', number: 15, position: 'CB', ovr: 75, stats: { pac: 64, sho: 35, pas: 55, dri: 58, def: 75, psy: 82 }, image: '/assets/players/Hadzikadunic.webp', club: 'Hamburg' },
 
   // Midfielders
-  { id: '14', name: 'Ivan Šunjić', number: 14, position: 'MF', birthPlace: 'Zenica', caps: 11, goals: 0, height: '1.84m', club: 'Pafos FC', image: '/assets/players/Sunjic.webp' },
-  { id: '16', name: 'Amir Hadžiahmetović', number: 16, position: 'MF', birthPlace: 'Nexø (DEN)', caps: 34, goals: 0, height: '1.79m', club: 'Hull City', image: '/assets/players/Amir Hadziahmetovic.webp' },
-  { id: '17', name: 'Dženis Burnić', number: 17, position: 'MF', birthPlace: 'Hamm (GER)', caps: 18, goals: 0, height: '1.81m', club: 'Karlsruher SC', image: '/assets/players/Burnic.webp' },
-  { id: '6', name: 'Benjamin Tahirović', number: 6, position: 'MF', birthPlace: 'Spånga (SWE)', caps: 26, goals: 2, height: '1.91m', club: 'Brøndby IF', image: '/assets/players/Tahirovic.webp' },
-  { id: '8', name: 'Armin Gigović', number: 8, position: 'MF', birthPlace: 'Lund (SWE)', caps: 18, goals: 1, height: '1.87m', club: 'BSC Young Boys', image: '/assets/players/Gigovic.webp' },
-  { id: '13', name: 'Ivan Bašić', number: 13, position: 'MF', birthPlace: 'Imotski (CRO)', caps: 15, goals: 0, height: '1.81m', club: 'FC Astana', image: '/assets/players/Besic.webp' },
-  { id: '15', name: 'Amar Memić', number: 15, position: 'MF', birthPlace: 'Tuzla', caps: 11, goals: 1, height: '1.78m', club: 'Viktoria Plzeň', image: '/assets/players/Memic.webp' },
-  { id: '20', name: 'Esmir Bajraktarević', number: 20, position: 'MF', birthPlace: 'Appleton (USA)', caps: 14, goals: 1, height: '1.75m', club: 'PSV Eindhoven', image: '/assets/players/Bajraktarevic.webp', altImage: '/assets/players/BajraktarDelux.webp' },
-  { id: '19', name: 'Kerim Alajbegović', number: 19, position: 'MF', birthPlace: 'Leverkusen (GER)', caps: 8, goals: 1, height: '1.76m', club: 'Red Bull Salzburg', image: '/assets/players/Kerim Alajbegovic.webp' },
+  { id: '14', name: 'Ivan Šunjić', number: 14, position: 'CDM', ovr: 75, stats: { pac: 68, sho: 55, pas: 68, dri: 65, def: 75, psy: 85 }, image: '/assets/players/Sunjic.webp', club: 'Pafos FC' },
+  { id: '16', name: 'Amir Hadžiahmetović', number: 16, position: 'CM', ovr: 76, stats: { pac: 72, sho: 64, pas: 75, dri: 75, def: 70, psy: 72 }, image: '/assets/players/Amir Hadziahmetovic.webp', club: 'Besiktas' },
+  { id: '17', name: 'Dženis Burnić', number: 17, position: 'CM', ovr: 72, stats: { pac: 74, sho: 62, pas: 70, dri: 72, def: 65, psy: 70 }, image: '/assets/players/Burnic.webp', club: 'Karlsruher SC' },
+  { id: '6', name: 'Benjamin Tahirović', number: 6, position: 'CM', ovr: 74, stats: { pac: 72, sho: 60, pas: 75, dri: 75, def: 68, psy: 74 }, image: '/assets/players/Tahirovic.webp', club: 'Ajax' },
+  { id: '8', name: 'Armin Gigović', number: 8, position: 'CM', ovr: 73, stats: { pac: 74, sho: 62, pas: 70, dri: 72, def: 66, psy: 75 }, image: '/assets/players/Gigovic.webp', club: 'Holstein Kiel' },
+  { id: '13', name: 'Ivan Bašić', number: 13, position: 'CAM', ovr: 71, stats: { pac: 72, sho: 68, pas: 73, dri: 74, def: 45, psy: 60 }, image: '/assets/players/Besic.webp', club: 'Orenburg' },
+  { id: '15-mid', name: 'Amar Memić', number: 15, position: 'RM', ovr: 70, stats: { pac: 82, sho: 64, pas: 65, dri: 72, def: 40, psy: 65 }, image: '/assets/players/Memic.webp', club: 'Bravo' },
+  { id: '20', name: 'Esmir Bajraktarević', number: 20, position: 'RW', ovr: 75, stats: { pac: 85, sho: 72, pas: 76, dri: 80, def: 35, psy: 62 }, image: '/assets/players/Bajraktarevic.webp', altImage: '/assets/players/BajraktarDelux.webp', club: 'New England' },
+  { id: '19', name: 'Kerim Alajbegović', number: 19, position: 'LW', ovr: 72, stats: { pac: 82, sho: 74, pas: 68, dri: 76, def: 30, psy: 55 }, image: '/assets/players/Kerim Alajbegovic.webp', club: 'Bayer Leverkusen' },
 
   // Forwards
-  { id: '10', name: 'Ermedin Demirović', number: 10, position: 'FW', birthPlace: 'Hamburg (GER)', caps: 38, goals: 4, height: '1.85m', club: 'VfB Stuttgart', image: '/assets/players/Demirovic.webp' },
-  { id: '23', name: 'Haris Tabaković', number: 23, position: 'FW', birthPlace: 'Grenchen (SUI)', caps: 10, goals: 4, height: '1.94m', club: 'Mönchengladbach', image: '/assets/players/Haris Tabakovic.webp' },
-  { id: '9', name: 'Samed Baždar', number: 9, position: 'FW', birthPlace: 'Novi Pazar (SRB)', caps: 11, goals: 1, height: '1.86m', club: 'Jagiellonia', image: '/assets/players/Bazdar.webp' },
-  { id: '11', name: 'Edin Džeko', number: 11, position: 'FW', birthPlace: 'Sarajevo', caps: 148, goals: 73, height: '1.93m', club: 'FC Schalke 04', image: '/assets/players/EdinDzeko.webp' },
+  { id: '10', name: 'Ermedin Demirović', number: 10, position: 'ST', ovr: 80, stats: { pac: 78, sho: 81, pas: 72, dri: 78, def: 45, psy: 82 }, image: '/assets/players/Demirovic.webp', club: 'Stuttgart' },
+  { id: '23', name: 'Haris Tabaković', number: 23, position: 'ST', ovr: 74, stats: { pac: 68, sho: 76, pas: 62, dri: 68, def: 38, psy: 84 }, image: '/assets/players/Haris Tabakovic.webp', club: 'Hoffenheim' },
+  { id: '9', name: 'Samed Baždar', number: 9, position: 'ST', ovr: 72, stats: { pac: 76, sho: 72, pas: 64, dri: 74, def: 35, psy: 68 }, image: '/assets/players/Bazdar.webp', club: 'Zaragoza' },
+  { id: '11', name: 'Edin Džeko', number: 11, position: 'ST', ovr: 82, stats: { pac: 65, sho: 85, pas: 74, dri: 76, def: 40, psy: 77 }, image: '/assets/players/EdinDzeko.webp', club: 'Fenerbahce' },
 ];
 
 const legendaryPlayers: Player[] = [
   {
-    id: 'l1', name: 'Sead Kolašinac', number: 5, position: 'Defender', club: 'Atalanta', birthPlace: 'Karlsruhe, Germany',
-    caps: 64, goals: 0, height: '1.83m', rarity: 'Legendary', image: '', folder: 'Kolasinac',
-    rating: 78, stats: { pace: 74, shooting: 63, passing: 79, dribbling: 73, defending: 85, physical: 94 }
+    id: 'l1', name: 'Sead Kolašinac', number: 5, position: 'LB', club: 'Atalanta', rarity: 'Legendary', image: '', folder: 'Kolasinac',
+    ovr: 80, stats: { pac: 76, sho: 62, pas: 74, dri: 75, def: 81, psy: 85 }
   },
   {
-    id: 'l2', name: 'Amar Dedić', number: 2, position: 'Defender', club: 'Benfica', birthPlace: 'Zell am See, Austria',
-    caps: 26, goals: 1, height: '1.80m', rarity: 'Legendary', image: '', folder: 'Dedic',
-    rating: 83, stats: { pace: 85, shooting: 69, passing: 77, dribbling: 74, defending: 80, physical: 80 }
+    id: 'l2', name: 'Amar Dedić', number: 2, position: 'RB', club: 'Benfica', rarity: 'Legendary', image: '', folder: 'Dedic',
+    ovr: 81, stats: { pac: 88, sho: 65, pas: 76, dri: 82, def: 78, psy: 77 }
   },
   {
-    id: 'l3', name: 'Kerim Alajbegović', number: 26, position: 'Midfielder', club: 'RB Salzburg', birthPlace: 'Koln, Germany',
-    caps: 8, goals: 1, height: '1.78m', rarity: 'Legendary', image: '', folder: 'Alajbegovic',
-    rating: 82, stats: { pace: 82, shooting: 82, passing: 80, dribbling: 83, defending: 30, physical: 65 }
+    id: 'l4', name: 'Esmir Bajraktarević', number: 24, position: 'RW', club: 'New England', rarity: 'Legendary', image: '', folder: 'Bajraktarevic',
+    ovr: 75, stats: { pac: 85, sho: 72, pas: 76, dri: 80, def: 35, psy: 62 }
   },
   {
-    id: 'l4', name: 'Esmir Bajraktarević', number: 24, position: 'Midfielder', club: 'PSV Eindhoven', birthPlace: 'Appleton, USA',
-    caps: 14, goals: 1, height: '1.75m', rarity: 'Legendary', image: '', folder: 'Bajraktarevic',
-    rating: 82, stats: { pace: 88, shooting: 87, passing: 92, dribbling: 84, defending: 28, physical: 65 }
+    id: 'l5', name: 'Ermedin Demirović', number: 9, position: 'ST', club: 'Stuttgart', rarity: 'Legendary', image: '', folder: 'Demirovic',
+    ovr: 80, stats: { pac: 78, sho: 81, pas: 72, dri: 78, def: 45, psy: 82 }
   },
   {
-    id: 'l5', name: 'Ermedin Demirović', number: 9, position: 'Forward', club: 'Stuttgart', birthPlace: 'Hamburg, Germany',
-    caps: 38, goals: 4, height: '1.85m', rarity: 'Legendary', image: '', folder: 'Demirovic',
-    rating: 79, stats: { pace: 74, shooting: 77, passing: 70, dribbling: 76, defending: 42, physical: 78 }
-  },
-  {
-    id: 'l6', name: 'Edin Džeko', number: 11, position: 'Forward', club: 'Schalke 04', birthPlace: 'Sarajevo, BiH',
-    caps: 148, goals: 73, height: '1.93m', rarity: 'Legendary', image: '', folder: 'Dzeko',
-    rating: 85, stats: { pace: 68, shooting: 92, passing: 72, dribbling: 74, defending: 38, physical: 74 }
-  },
-  {
-    id: 'l7', name: 'Haris Tabaković', number: 28, position: 'Forward', club: 'Borussia Mönchengladbach', birthPlace: 'Grenchen, Switzerland',
-    caps: 10, goals: 4, height: '1.94m', rarity: 'Legendary', image: '', folder: 'Tabakovic',
-    rating: 77, stats: { pace: 70, shooting: 79, passing: 68, dribbling: 72, defending: 35, physical: 88 }
-  },
-  {
-    id: 'l8', name: 'Tarik Muharemović', number: 4, position: 'Defender', club: 'Sassuolo', birthPlace: 'Ljubljana (SLO)',
-    caps: 12, goals: 1, height: '1.87m', rarity: 'Legendary', image: '', folder: 'Muharemovic',
-    rating: 76, stats: { pace: 72, shooting: 55, passing: 68, dribbling: 65, defending: 79, physical: 82 }
+    id: 'l6', name: 'Edin Džeko', number: 11, position: 'ST', club: 'Fenerbahce', rarity: 'Legendary', image: '', folder: 'Dzeko',
+    ovr: 82, stats: { pac: 65, sho: 85, pas: 74, dri: 76, def: 40, psy: 77 }
   },
 ];
 
@@ -410,24 +214,32 @@ const matches: Match[] = [
   { id: 'm3', opponent: 'Qatar', date: 'June 24, 2026', venue: 'Lumen Field, Seattle', time: '21:00' },
 ];
 
-const WorldCup2026: React.FC<{ lang: string }> = ({ lang }) => {
+const WorldCup2026: React.FC<{ lang: string; onBack?: () => void }> = ({ lang, onBack }) => {
   const [predictions, setPredictions] = useState<Record<string, '1' | 'X' | '2'>>({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLegendary, setSelectedLegendary] = useState<Player | null>(null);
   const [showRoster, setShowRoster] = useState(false);
-
-  const activeLang = WC_INFO[lang] || WC_INFO['en'];
 
   const handlePredict = (matchId: string, result: '1' | 'X' | '2') => {
     setPredictions(prev => ({ ...prev, [matchId]: result }));
   };
 
-  const renderSection = (title: string, pos: string) => {
+  const renderSection = (title: string, group: 'GK' | 'DF' | 'MF' | 'FW') => {
+    const positionGroups = {
+      GK: ['GK'],
+      DF: ['LB', 'RB', 'CB'],
+      MF: ['CDM', 'CM', 'CAM', 'RM', 'RW', 'LW'],
+      FW: ['ST', 'CF']
+    };
+
+    const filteredPlayers = players.filter(p => positionGroups[group].includes(p.position));
+
+    if (filteredPlayers.length === 0) return null;
+
     return (
-      <div className="relative z-10" key={pos}>
+      <div className="relative z-10 mb-12" key={group}>
         <h3 className={styles.sectionTitle}>{title}</h3>
         <div className={styles.album}>
-          {players.filter(p => p.position === pos).map(p => <PlayerCard key={p.id} player={p} />)}
+          {filteredPlayers.map(p => <PlayerCard key={p.id} player={p} />)}
         </div>
       </div>
     );
@@ -457,6 +269,15 @@ const WorldCup2026: React.FC<{ lang: string }> = ({ lang }) => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
+        <div className="absolute top-4 left-4 z-20">
+           <button 
+             onClick={onBack}
+             className="p-3 bg-white/20 backdrop-blur-md rounded-2xl text-white hover:bg-white/30 transition-all border border-white/20 shadow-xl"
+           >
+             <X size={24} />
+           </button>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -496,12 +317,6 @@ const WorldCup2026: React.FC<{ lang: string }> = ({ lang }) => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 mt-8">
-            <button
-              className={styles.learnMoreBtn}
-              onClick={() => setIsModalOpen(true)}
-            >
-              {activeLang.learnMore}
-            </button>
             <button
               className={styles.learnMoreBtn}
               onClick={() => setShowRoster(true)}
@@ -561,6 +376,7 @@ const WorldCup2026: React.FC<{ lang: string }> = ({ lang }) => {
     </div>
   );
 };
+
 
 export const NFTCollection: React.FC = () => {
   const [selectedLegendary, setSelectedLegendary] = useState<Player | null>(null);
