@@ -18,7 +18,6 @@ interface WalletProps {
 
 const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const [isScanning, setIsScanning] = useState(false);
-    const [isWorldCupOpen, setIsWorldCupOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [bamValue, setBamValue] = useState<string>('');
@@ -258,20 +257,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                             </div>
                         </div>
 
-                        {/* Action Buttons Section (World Cup & House of Salt) */}
-                        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {/* World Cup 2026 Button (Half Size) - Disabled with Coming Soon */}
-                            <button
-                                disabled
-                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-[#B0FFB0]/50 text-[#228B22]/50 font-black py-3 rounded-2xl shadow-lg border-[3px] border-[#228B22]/50 cursor-not-allowed relative overflow-hidden"
-                            >
-                                <div className="absolute inset-0 bg-white/40 flex items-center justify-center backdrop-blur-[1px] z-10">
-                                    <span className="text-[#228B22] font-black text-xs sm:text-sm tracking-widest uppercase rotate-[-5deg] bg-[#B0FFB0] px-3 py-1 rounded shadow-sm border border-[#228B22]">Coming Soon</span>
-                                </div>
-                                <span className="text-xl">⚽</span>
-                                <span className="text-xs sm:text-sm tracking-widest uppercase">World Cup 2026</span>
-                            </button>
-
+                        <div className="mt-12 grid grid-cols-1 gap-4">
                             {/* House of Salt Button (Golden-Yellow-White) */}
                             <button
                                 onClick={() => window.open('https://houseofsalt.base44.app', '_blank')}

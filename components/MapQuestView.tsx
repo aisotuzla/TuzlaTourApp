@@ -9,8 +9,6 @@ import { QrCode, Navigation, Gamepad2, CheckCircle2, Lock, Play, X, Trophy } fro
 import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNetwork } from '../hooks/useNetwork';
-import ParkQuestViewer from './ParkQuestViewer';
-import StreetViewer from './StreetViewer';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { QuestQualityMode } from '../utils/questRuntimePolicy';
 import { getDistance } from '../utils/geoUtils';
@@ -23,7 +21,6 @@ const QUEST_TARGETS = [
   { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, image: '/assets/Gallery/QuestQRLocations/44.540088, 18.681577 -slapovi.webp' },
   { id: 'ismet', name: { en: 'Ismet Mujezinovic', bs: 'Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/Ismet_Mujezinović.webp' },
   { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4' },
-  { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, image: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/KraljTvrko11.webp' },
 ];
 
 interface MapQuestViewProps {
@@ -56,8 +53,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
-  const [isShowingParkTour, setIsShowingParkTour] = useState(false);
-  const [activeStreetView, setActiveStreetView] = useState<{ url: string, title: string, subtitle?: string } | null>(null);
   const isOnline = useNetwork();
 
   const scannerContainerId = "map-quest-reader";
@@ -329,14 +324,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       }
     });
 
-    (window as any).launchParkVirtualTour = () => {
-      setIsShowingParkTour(true);
-    };
-
-    (window as any).launchStreetView = (url: string, title: string, subtitle?: string) => {
-      setActiveStreetView({ url, title, subtitle });
-    };
-
     return () => {
       map.current?.remove();
       map.current = null;
@@ -523,8 +510,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
               <span style="font-size: 10px; color: #475569; font-weight: bold; text-transform: uppercase;">Quest Target</span>
             </div>
             <button onclick="window.setGlobalMapNavTarget('${loc.id}')" style="margin-top: 18px; width: 100%; padding: 12px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.15em; box-shadow: 0 15px 30px ${isUnlocked ? markerColor : '#000000'}33; transition: all 0.3s ease;">Set GPS Route</button>
-            ${loc.id === 'tvrtko_park' ? `<button onclick="window.launchParkVirtualTour()" style="margin-top: 10px; width: 100%; padding: 12px; background: #92400e; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.15em; box-shadow: 0 15px 30px rgba(146, 64, 14, 0.3); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;">Virtual Tour 👁️</button>
-            <button onclick="window.launchStreetView('/assets/Gallery/QuestQRLocations/Tvrko pannellum/KingTvrtkoPanorama.jpg', 'Kralj Tvrtko I', 'Spomenik u Centralnom Parku')" style="margin-top: 10px; width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.15em; box-shadow: 0 15px 30px rgba(79, 70, 229, 0.3); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;">Street View 360° 🔄</button>` : ''}
           </div>
         `);
 
@@ -997,28 +982,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-      <AnimatePresence>
-        {isShowingParkTour && (
-          <ParkQuestViewer
-            lang={lang === 'bs' ? 'bs' : 'en'}
-            onClose={() => setIsShowingParkTour(false)}
-            onOpenScanner={() => {
-              setIsShowingParkTour(false);
-              setIsScanning(true);
-            }}
-          />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {activeStreetView && (
-          <StreetViewer
-            lang={lang === 'bs' ? 'bs' : 'en'}
-            panoramaUrl={activeStreetView.url}
-            title={activeStreetView.title}
-            subtitle={activeStreetView.subtitle}
-            onClose={() => setActiveStreetView(null)}
-          />
-        )}
       </AnimatePresence>
     </div>
   );
