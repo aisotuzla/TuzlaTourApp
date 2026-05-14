@@ -15,9 +15,13 @@ import { getDistance } from '../utils/geoUtils';
 import StreetViewer from './StreetViewer';
 
 const QUEST_TARGETS = [
+  { id: '1', name: { en: 'Pannonian Lakes', bs: 'Panonska jezera' }, image: '/assets/Gallery/QuestQRLocations/Panonsko jezero.png' },
+  { id: '2', name: { en: 'Old Town (Carsija)', bs: 'Stari grad (Čaršija)' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png' },
+  { id: '3', name: { en: 'Salt Square', bs: 'Trg soli' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png' },
+  { id: '4', name: { en: 'Ilincica Hill', bs: 'Brdo Ilinčica' }, image: '/assets/Gallery/QuestQRLocations/ilincicaba.webp' },
   { id: 'irish', name: { en: 'Irish Pub', bs: 'Irish Pub' }, image: '/assets/Gallery/QuestQRLocations/44.53521, 18.68835 -Irish.webp' },
   { id: 'galerija', name: { en: 'Gallery', bs: 'Galerija' }, image: '/assets/Gallery/QuestQRLocations/44.535552, 18.688320 -Galerija.webp' },
-  { id: 'banja', name: { en: 'Banja', bs: 'Banja' }, image: '/assets/Gallery/QuestQRLocations/QR Banja.png' },
+  { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, image: '/assets/Gallery/QuestQRLocations/QR Banja.png' },
   { id: 'panonika', name: { en: 'Pannonica Office', bs: 'Panonika Ured' }, image: '/assets/Gallery/QuestQRLocations/44.539775, 18.682692 -panonikaoffice.webp' },
   { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, image: '/assets/Gallery/QuestQRLocations/44.540088, 18.681577 -slapovi.webp' },
   { id: 'ismet', name: { en: 'Ismet Mujezinovic', bs: 'Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/QRIsmet.webp' },
@@ -470,7 +474,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       'panonika': '#f97316', // Orange
       'slapovi': '#0ea5e9', // Sky Blue
       'ismet': '#ef4444',  // Red
-      'tvrtko_park': '#f59e0b' // Amber/Gold
+      'tvrtko_park': '#f59e0b', // Amber/Gold
+      'slana_banja': '#fbbf24' // Yellow
     };
 
     LOCATIONS.forEach(loc => {
@@ -747,6 +752,45 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
   return (
     <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-900 font-quicksand">
+      {/* Location Permission Overlay */}
+      <AnimatePresence>
+        {!userLocation && isLoaded && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[100] flex flex-col items-center justify-center p-8 bg-slate-900/90 backdrop-blur-xl text-center"
+          >
+            <div className="w-24 h-24 bg-blue-500/20 rounded-full flex items-center justify-center mb-6 animate-pulse">
+              <Navigation className="w-12 h-12 text-blue-400" />
+            </div>
+            <h2 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter">
+              {lang === 'bs' ? 'Pristup Lokaciji' : 'Location Access'}
+            </h2>
+            <p className="text-slate-400 mb-8 max-w-xs leading-relaxed">
+              {lang === 'bs' 
+                ? 'Tuzla Tour treba vašu lokaciju kako bi vas vodio do znamenitosti i otključao nagrade.' 
+                : 'Tuzla Tour needs your location to guide you to landmarks and unlock rewards.'}
+            </p>
+            <button 
+              onClick={() => {
+                navigator.geolocation.getCurrentPosition(
+                  (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
+                  (err) => console.error(err),
+                  { enableHighAccuracy: true }
+                );
+              }}
+              className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-[0_0_40px_rgba(37,99,235,0.4)] uppercase text-sm tracking-widest active:scale-95"
+            >
+              {lang === 'bs' ? 'Dozvoli Lokaciju' : 'Enable Location'}
+            </button>
+            <p className="mt-6 text-xs text-slate-500 font-bold uppercase tracking-widest opacity-50">
+              {lang === 'bs' ? 'Privatnost Zagarantovana' : 'Privacy Guaranteed'}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* MAP VIEW */}
       <div ref={mapContainer} className="flex-grow z-0 relative h-full grayscale-[20%] brightness-[0.8]" />
 
