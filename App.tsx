@@ -33,26 +33,15 @@ import OfflineIndicator from './components/OfflineIndicator';
 // TON Connect Imports
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 
-// Sui Connect Imports
-import { createNetworkConfig, SuiClientProvider, WalletProvider } from '@mysten/dapp-kit';
-import { getJsonRpcFullnodeUrl } from '@mysten/sui/jsonRpc';
+// Sui Connect is removed
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import '@mysten/dapp-kit/dist/index.css';
-
-const { networkConfig } = createNetworkConfig({
-  mainnet: { url: getJsonRpcFullnodeUrl('mainnet'), network: 'mainnet' },
-});
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   return (
     <TonConnectUIProvider manifestUrl="https://tuzla-tour-guide.vercel.app/tonconnect-manifest.json">
       <QueryClientProvider client={queryClient}>
-        <SuiClientProvider networks={networkConfig} defaultNetwork="mainnet">
-          <WalletProvider autoConnect>
-            <AppContent />
-          </WalletProvider>
-        </SuiClientProvider>
+        <AppContent />
       </QueryClientProvider>
     </TonConnectUIProvider>
   );
@@ -68,6 +57,15 @@ const AppContent: React.FC = () => {
   const [history, setHistory] = useState<AppTab[]>([AppTab.LANDING]);
   const [isWalletUnlocked, setIsWalletUnlocked] = useState(false);
   const features = getAppFeatures();
+
+  // Automatically open sidebar after 40 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsDrawerOpen(true);
+    }, 40000); // 40 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const loadUnlocked = async () => {

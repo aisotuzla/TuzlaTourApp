@@ -12,8 +12,7 @@ const WorldCup2026 = lazy(() => import('./WorldCup2026'));
 // TON Connect Imports
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
 
-// Sui Connect Imports
-import { ConnectButton as SuiConnectButton, useCurrentAccount as useSuiAccount } from '@mysten/dapp-kit';
+// Sui Connect is removed
 
 interface WalletProps {
     lang: Language;
@@ -35,8 +34,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
     // TON Address
     const tonAddress = useTonAddress();
 
-    // Sui Account
-    const suiAccount = useSuiAccount();
+    // Sui Account is removed
 
     const t = TRANSLATIONS[lang];
     const eurValue = bamValue ? (parseFloat(bamValue) / 1.95583).toFixed(2) : '0.00';
@@ -157,170 +155,155 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                             </div>
                                         </div>
 
-                                        {/* Sui Wallet */}
-                                        <div className={`bg-white/50 p-5 rounded-2xl border border-white shadow-inner flex flex-col gap-4 transition-opacity ${!isOnline ? 'opacity-40 pointer-events-none' : ''}`}>
-                                            <div>
-                                                <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Sui Wallet Address</p>
-                                                <p className="text-sm font-mono break-all text-blue-950">
-                                                    {suiAccount ? suiAccount.address : "Not Connected"}
-                                                </p>
-                                                {suiAccount && (
-                                                    <p className="mt-1 text-[10px] font-black text-green-500 uppercase">Connected</p>
-                                                )}
-                                            </div>
-                                            <div className="w-full sui-connect-custom-wrapper">
-                                                <SuiConnectButton className="w-full flex items-center justify-center !h-[72px] !rounded-[1.5rem] !bg-blue-500 hover:!bg-blue-600 transition-colors !text-white !font-bold" />
-                                            </div>
-                                        </div>
                                     </div>
+                                </div>
 
-                                    <button
-                                        onClick={() => setIsScanning(true)}
-                                        className="w-full h-[72px] flex items-center justify-center gap-2 bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700 transition-all glow-blue"
-                                    >
-                                        <Camera className="w-5 h-5" />
-                                        SCAN & PAY
-                                    </button>
+                                <button
+                                    onClick={() => setIsScanning(true)}
+                                    className="w-full h-[72px] flex items-center justify-center gap-2 bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700 transition-all glow-blue"
+                                >
+                                    <Camera className="w-5 h-5" />
+                                    SCAN & PAY
+                                </button>
 
-                                    {/* BAM to EURO Calculator */}
-                                    <div className="mt-8 pt-8 border-t border-blue-100">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
-                                            <h3 className="text-sm font-black text-blue-950 uppercase tracking-widest">{t.bamToEur}</h3>
+                                {/* BAM to EURO Calculator */}
+                                <div className="mt-8 pt-8 border-t border-blue-100">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
+                                        <h3 className="text-sm font-black text-blue-950 uppercase tracking-widest">{t.bamToEur}</h3>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-blue-400 uppercase mb-2 block">{t.enterBam}</label>
+                                            <input
+                                                type="number"
+                                                value={bamValue}
+                                                onChange={(e) => setBamValue(e.target.value)}
+                                                placeholder="0.00"
+                                                className="w-full bg-blue-50/50 border border-blue-100 rounded-xl px-4 py-3 text-blue-950 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-mono"
+                                            />
                                         </div>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="text-[10px] font-bold text-blue-400 uppercase mb-2 block">{t.enterBam}</label>
-                                                <input
-                                                    type="number"
-                                                    value={bamValue}
-                                                    onChange={(e) => setBamValue(e.target.value)}
-                                                    placeholder="0.00"
-                                                    className="w-full bg-blue-50/50 border border-blue-100 rounded-xl px-4 py-3 text-blue-950 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-mono"
-                                                />
+                                        <div className="bg-blue-900/5 p-4 rounded-xl border border-blue-100/50">
+                                            <label className="text-[10px] font-bold text-blue-400 uppercase mb-1 block">{t.calculatedEur}</label>
+                                            <div className="text-2xl font-black text-blue-600 font-mono">
+                                                € {eurValue}
                                             </div>
-                                            <div className="bg-blue-900/5 p-4 rounded-xl border border-blue-100/50">
-                                                <label className="text-[10px] font-bold text-blue-400 uppercase mb-1 block">{t.calculatedEur}</label>
-                                                <div className="text-2xl font-black text-blue-600 font-mono">
-                                                    € {eurValue}
-                                                </div>
-                                                <p className="text-[9px] text-blue-300 mt-2 font-medium italic">{t.conversionRate}</p>
-                                            </div>
+                                            <p className="text-[9px] text-blue-300 mt-2 font-medium italic">{t.conversionRate}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Right Side: User Manual */}
-                            <div className="w-full p-8 glassy rounded-[3rem] border border-blue-100 shadow-xl space-y-8">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
-                                        <Lock className="w-5 h-5" />
-                                    </div>
-                                    <h2 className="text-xl font-black text-blue-950 uppercase tracking-tight">{t.walletManual}</h2>
+                        {/* Right Side: User Manual */}
+                        <div className="w-full p-8 glassy rounded-[3rem] border border-blue-100 shadow-xl space-y-8">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                                    <Lock className="w-5 h-5" />
+                                </div>
+                                <h2 className="text-xl font-black text-blue-950 uppercase tracking-tight">{t.walletManual}</h2>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-black text-blue-600 uppercase tracking-wider flex items-center gap-2">
+                                        <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                                        {t.howToConnect}
+                                    </h4>
+                                    <p className="text-sm text-blue-900/70 font-medium leading-relaxed whitespace-pre-line bg-blue-50/30 p-4 rounded-2xl border border-blue-50/50">
+                                        {t.connectSteps}
+                                    </p>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <h4 className="text-sm font-black text-blue-600 uppercase tracking-wider flex items-center gap-2">
-                                            <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
-                                            {t.howToConnect}
-                                        </h4>
-                                        <p className="text-sm text-blue-900/70 font-medium leading-relaxed whitespace-pre-line bg-blue-50/30 p-4 rounded-2xl border border-blue-50/50">
-                                            {t.connectSteps}
-                                        </p>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <h4 className="text-sm font-black text-blue-600 uppercase tracking-wider flex items-center gap-2">
-                                            <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
-                                            {t.safeUsage}
-                                        </h4>
-                                        <p className="text-sm text-blue-900/70 font-medium leading-relaxed whitespace-pre-line bg-blue-50/30 p-4 rounded-2xl border border-blue-50/50">
-                                            {t.safeTips}
-                                        </p>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <h4 className="text-sm font-black text-blue-600 uppercase tracking-wider flex items-center gap-2">
-                                            <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
-                                            {t.txHistory}
-                                        </h4>
-                                        <p className="text-sm text-blue-900/70 font-medium leading-relaxed bg-blue-50/30 p-4 rounded-2xl border border-blue-50/50 italic">
-                                            {t.historyLocation}
-                                        </p>
-                                    </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-black text-blue-600 uppercase tracking-wider flex items-center gap-2">
+                                        <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                                        {t.safeUsage}
+                                    </h4>
+                                    <p className="text-sm text-blue-900/70 font-medium leading-relaxed whitespace-pre-line bg-blue-50/30 p-4 rounded-2xl border border-blue-50/50">
+                                        {t.safeTips}
+                                    </p>
                                 </div>
 
-                                <div className="pt-4 flex items-center gap-3 text-green-500 bg-green-50/50 p-4 rounded-2xl border border-green-100">
-                                    <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-                                    <p className="text-[10px] font-bold uppercase tracking-wider leading-tight">
-                                        Transactions are secured by The Open Network (TON)
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-black text-blue-600 uppercase tracking-wider flex items-center gap-2">
+                                        <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                                        {t.txHistory}
+                                    </h4>
+                                    <p className="text-sm text-blue-900/70 font-medium leading-relaxed bg-blue-50/30 p-4 rounded-2xl border border-blue-50/50 italic">
+                                        {t.historyLocation}
                                     </p>
                                 </div>
                             </div>
+
+                            <div className="pt-4 flex items-center gap-3 text-green-500 bg-green-50/50 p-4 rounded-2xl border border-green-100">
+                                <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                                <p className="text-[10px] font-bold uppercase tracking-wider leading-tight">
+                                    Transactions are secured by The Open Network (TON)
+                                </p>
+                            </div>
                         </div>
+                    </div>
 
-                        <div className="mt-12 grid grid-cols-1 gap-4">
-                            {/* House of Salt Button (Golden-Yellow-White) */}
-                            <button
-                                onClick={() => window.open('https://houseofsalt.base44.app', '_blank')}
-                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-amber-900 font-black py-3 rounded-2xl shadow-lg border-[3px] border-white/50 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
-                            >
-                                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg]" />
-                                <Home className="w-5 h-5 text-amber-900" />
-                                <span className="text-xs sm:text-sm tracking-widest uppercase">House of Salt</span>
-                            </button>
-                        </div>
+                <div className="mt-12 grid grid-cols-1 gap-4">
+                    {/* House of Salt Button (Golden-Yellow-White) */}
+                    <button
+                        onClick={() => window.open('https://houseofsalt.base44.app', '_blank')}
+                        className="w-full h-[64px] flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-amber-900 font-black py-3 rounded-2xl shadow-lg border-[3px] border-white/50 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
+                    >
+                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg]" />
+                        <Home className="w-5 h-5 text-amber-900" />
+                        <span className="text-xs sm:text-sm tracking-widest uppercase">House of Salt</span>
+                    </button>
+                </div>
 
 
-                        <div className="mt-8 grid grid-cols-1 gap-4">
-                            {/* Dental Tourism Button */}
-                            <button
-                                onClick={() => window.open('https://dentist-tuzla.onhercules.app/dentist-tourism/', '_blank')}
-                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-white text-blue-600 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-50 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
-                            >
-                                <div className="absolute inset-0 bg-blue-50 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
-                                <Stethoscope className="w-5 h-5 text-blue-600" />
-                                <span className="text-[10px] sm:text-xs tracking-widest uppercase">{t.dentalTourism}</span>
-                            </button>
+                <div className="mt-8 grid grid-cols-1 gap-4">
+                    {/* Dental Tourism Button */}
+                    <button
+                        onClick={() => window.open('https://dentist-tuzla.onhercules.app/dentist-tourism/', '_blank')}
+                        className="w-full h-[64px] flex items-center justify-center gap-2 bg-white text-blue-600 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-50 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
+                    >
+                        <div className="absolute inset-0 bg-blue-50 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
+                        <Stethoscope className="w-5 h-5 text-blue-600" />
+                        <span className="text-[10px] sm:text-xs tracking-widest uppercase">{t.dentalTourism}</span>
+                    </button>
 
-                            {/* AISO Tuzla Button */}
-                            <button
-                                onClick={() => window.open('https://aisotuzlazip--aisotuzla.replit.app/', '_blank')}
-                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-blue-600 text-yellow-400 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-500 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
-                            >
-                                <div className="absolute inset-0 bg-blue-400 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
-                                <span className="text-[10px] sm:text-xs tracking-widest uppercase">AISO Tuzla</span>
-                            </button>
+                    {/* AISO Tuzla Button */}
+                    <button
+                        onClick={() => window.open('https://aisotuzlazip--aisotuzla.replit.app/', '_blank')}
+                        className="w-full h-[64px] flex items-center justify-center gap-2 bg-blue-600 text-yellow-400 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-500 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
+                    >
+                        <div className="absolute inset-0 bg-blue-400 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
+                        <span className="text-[10px] sm:text-xs tracking-widest uppercase">AISO Tuzla</span>
+                    </button>
 
-                            {/* Travel Agencies Button */}
-                            <button
-                                onClick={() => { }}
-                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-white text-emerald-600 font-black py-3 rounded-2xl shadow-lg border-[3px] border-emerald-50 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
-                            >
-                                <div className="absolute inset-0 bg-emerald-50 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
-                                <Globe className="w-5 h-5 text-emerald-600" />
-                                <span className="text-[10px] sm:text-xs tracking-widest uppercase">
-                                    {lang === 'bs' ? 'Putničke agencije' : 'Travel Agencies'}
-                                </span>
-                            </button>
+                    {/* Travel Agencies Button */}
+                    <button
+                        onClick={() => { }}
+                        className="w-full h-[64px] flex items-center justify-center gap-2 bg-white text-emerald-600 font-black py-3 rounded-2xl shadow-lg border-[3px] border-emerald-50 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
+                    >
+                        <div className="absolute inset-0 bg-emerald-50 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
+                        <Globe className="w-5 h-5 text-emerald-600" />
+                        <span className="text-[10px] sm:text-xs tracking-widest uppercase">
+                            {lang === 'bs' ? 'Putničke agencije' : 'Travel Agencies'}
+                        </span>
+                    </button>
 
-                            {/* World Cup 2026 Button */}
-                            <button
-                                onClick={() => setShowWorldCup(true)}
-                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-blue-50 text-blue-900 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
-                            >
-                                <div className="absolute inset-0 bg-blue-100 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
-                                <Trophy className="w-5 h-5 text-blue-900" />
-                                <span className="text-[10px] sm:text-xs tracking-widest uppercase">
-                                    {lang === 'bs' ? 'Svjetsko Prvenstvo 2026' : 'World Cup 2026'}
-                                </span>
-                            </button>
-                        </div>
+                    {/* World Cup 2026 Button */}
+                    <button
+                        onClick={() => setShowWorldCup(true)}
+                        className="w-full h-[64px] flex items-center justify-center gap-2 bg-blue-50 text-blue-900 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
+                    >
+                        <div className="absolute inset-0 bg-blue-100 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
+                        <Trophy className="w-5 h-5 text-blue-900" />
+                        <span className="text-[10px] sm:text-xs tracking-widest uppercase">
+                            {lang === 'bs' ? 'Svjetsko Prvenstvo 2026' : 'World Cup 2026'}
+                        </span>
+                    </button>
+                </div>
 
                 <div className="mt-20 text-center text-blue-400/60 font-black text-[10px] uppercase tracking-[0.3em]">
-                    SECURE BLOCKCHAIN INFRASTRUCTURE: TON & SUI
+                    SECURE BLOCKCHAIN INFRASTRUCTURE: TON
                 </div>
             </>
             ) : isScanning ? (
@@ -372,17 +355,17 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-blue-500/10 rounded-full blur-[120px] animate-pulse"></div>
                 </div>
             </div>
-                ) : (
-                    <div className="animate-in fade-in zoom-in duration-500">
-                        <Suspense fallback={
-                             <div className="flex flex-col items-center justify-center p-20">
-                                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
-                                <p className="text-blue-900 font-black uppercase text-xs tracking-widest">Loading World Cup...</p>
-                             </div>
-                        }>
-                            <WorldCup2026 lang={lang} onBack={() => setShowWorldCup(false)} />
-                        </Suspense>
+            ) : (
+            <div className="animate-in fade-in zoom-in duration-500">
+                <Suspense fallback={
+                    <div className="flex flex-col items-center justify-center p-20">
+                        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
+                        <p className="text-blue-900 font-black uppercase text-xs tracking-widest">Loading World Cup...</p>
                     </div>
+                }>
+                    <WorldCup2026 lang={lang} onBack={() => setShowWorldCup(false)} />
+                </Suspense>
+            </div>
                 )}
         </div>
 
@@ -403,12 +386,12 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
     }
 
     <style>{`
-                .ton-connect-custom-wrapper, .sui-connect-custom-wrapper {
+                .ton-connect-custom-wrapper {
                     display: flex;
                     justify-content: center;
                     width: 100%;
                 }
-                .ton-connect-custom-wrapper button, .sui-connect-custom-wrapper button {
+                .ton-connect-custom-wrapper button {
                     width: 100% !important;
                     height: 72px !important;
                     border-radius: 1.5rem !important;
@@ -431,7 +414,5 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
         </div >
     );
 };
-
-export default Wallet;
 
 export default Wallet;

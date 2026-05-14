@@ -155,7 +155,9 @@ export default defineConfig(({ mode }) => {
             'vendor-react': ['react', 'react-dom'],
             'vendor-ui': ['framer-motion', 'lucide-react'],
             'vendor-map': ['maplibre-gl'],
-            'vendor-qr': ['html5-qrcode']
+            'vendor-qr': ['html5-qrcode'],
+            'vendor-blockchain': ['@tonconnect/ui-react'],
+            'vendor-query': ['@tanstack/react-query']
           }
         },
       },
