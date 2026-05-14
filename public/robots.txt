@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://tuzla-virtual-tour-guide.com/sitemap.xml
+Sitemap: https://tuzla-tour-guide.vercel.app/sitemap.xml

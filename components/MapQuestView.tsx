@@ -586,7 +586,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
         el.innerHTML = `
           <div style="position: relative; width: 48px; height: 62px; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.4));">
-            <svg viewBox="0 0 44 56" style="width: 100%; height: 100%; fill: #1d4ed8; filter: drop-shadow(0 0 10px #1d4ed880)">
+            <svg viewBox="0 0 44 56" style="width: 100%; height: 100%; fill: #d97706; filter: drop-shadow(0 0 10px #d9770680)">
               <path d="M22 0C9.8 0 0 9.8 0 22C0 38.5 22 56 22 56C22 56 44 38.5 44 22C44 9.8 34.2 0 22 0Z" />
               <circle cx="22" cy="22" r="18" fill="white" fill-opacity="0.15" />
             </svg>
@@ -632,6 +632,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
               userMarker.current = new maplibregl.Marker(el)
                 .setLngLat([longitude, latitude])
                 .addTo(map.current);
+              // Fly to user on first GPS lock
+              map.current?.flyTo({ center: [longitude, latitude], zoom: 17, pitch: 60, duration: 2000 });
             } else {
               userMarker.current.setLngLat([longitude, latitude]);
             }

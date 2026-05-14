@@ -109,8 +109,8 @@ const PlayerCard: React.FC<{ player: Player }> = ({ player }) => {
 const LegendaryPopOutCard: React.FC<{ player: Player; onClose: () => void }> = ({ player, onClose }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const frontImg = `/assets/WorldCup2026/${player.folder}/${player.folder === 'Dzeko' ? 'Dzeko11.webp' : player.folder === 'Tabakovic' ? 'Tabakovic1.webp' : player.folder + '1.webp'}`;
-  const backImg = `/assets/WorldCup2026/${player.folder}/${player.folder === 'Dzeko' ? 'Dzeko2.webp' : player.folder === 'Tabakovic' ? 'Tabakovic2.webp' : player.folder + '2.webp'}`;
+  const frontImg = `/assets/WorldCup2026/${player.folder}/${player.folder}1.webp`;
+  const backImg = `/assets/WorldCup2026/${player.folder}/${player.folder}2.webp`;
 
   return (
     <motion.div
@@ -206,6 +206,10 @@ const legendaryPlayers: Player[] = [
     id: 'l6', name: 'Edin Džeko', number: 11, position: 'ST', club: 'Fenerbahce', rarity: 'Legendary', image: '', folder: 'Dzeko',
     ovr: 82, stats: { pac: 65, sho: 85, pas: 74, dri: 76, def: 40, psy: 77 }
   },
+  {
+    id: 'l7', name: 'Kerim Alajbegović', number: 19, position: 'LW', club: 'Bayer Leverkusen', rarity: 'Legendary', image: '', folder: 'Alajbegovic',
+    ovr: 72, stats: { pac: 82, sho: 74, pas: 68, dri: 76, def: 30, psy: 55 }
+  },
 ];
 
 const matches: Match[] = [
@@ -218,6 +222,7 @@ const WorldCup2026: React.FC<{ lang: string; onBack?: () => void }> = ({ lang, o
   const [predictions, setPredictions] = useState<Record<string, '1' | 'X' | '2'>>({});
   const [selectedLegendary, setSelectedLegendary] = useState<Player | null>(null);
   const [showRoster, setShowRoster] = useState(false);
+  const [showSpecialCollection, setShowSpecialCollection] = useState(false);
 
   const handlePredict = (matchId: string, result: '1' | 'X' | '2') => {
     setPredictions(prev => ({ ...prev, [matchId]: result }));
@@ -262,6 +267,58 @@ const WorldCup2026: React.FC<{ lang: string; onBack?: () => void }> = ({ lang, o
         {renderSection('Defenders', 'DF')}
         {renderSection('Midfielders', 'MF')}
         {renderSection('Forwards', 'FW')}
+      </div>
+    );
+  }
+
+  if (showSpecialCollection) {
+    return (
+      <div className={styles.container}>
+        <AnimatePresence>
+          {selectedLegendary && (
+            <LegendaryPopOutCard
+              player={selectedLegendary}
+              onClose={() => setSelectedLegendary(null)}
+            />
+          )}
+        </AnimatePresence>
+
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            onClick={() => setShowSpecialCollection(false)}
+            className="p-2 bg-amber-100 rounded-full text-amber-900 hover:bg-amber-200"
+          >
+            <X size={24} />
+          </button>
+          <h2 className="text-3xl font-black uppercase" style={{ background: 'linear-gradient(90deg, #f59e0b, #fde68a, #d97706)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            SPECIAL COLLECTION
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {legendaryPlayers.map((p, i) => (
+            <motion.button
+              key={p.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setSelectedLegendary(p)}
+              className="relative overflow-hidden rounded-2xl border-2 border-amber-400/60 p-5 shadow-lg hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] transition-all group"
+              style={{ background: 'linear-gradient(135deg, #451a03, #78350f, #451a03)' }}
+            >
+              <div className="absolute inset-0 opacity-20 bg-gradient-to-r from-transparent via-amber-400/30 to-transparent" style={{ animation: 'shimmer 3s infinite', transform: 'skewX(-12deg)' }} />
+              <div className="relative z-10 text-center">
+                <div className="text-amber-400 text-lg font-black uppercase tracking-wide">{p.name.split(' ').pop()}</div>
+                <div className="text-amber-200/50 text-[10px] font-bold uppercase tracking-widest mt-1">{p.position} · {p.club}</div>
+              </div>
+            </motion.button>
+          ))}
+        </div>
+
+        <p className="text-center text-amber-500/40 text-[10px] font-bold uppercase tracking-widest mt-8">
+          Tap a card to reveal · Flip for stats
+        </p>
       </div>
     );
   }
@@ -323,6 +380,17 @@ const WorldCup2026: React.FC<{ lang: string; onBack?: () => void }> = ({ lang, o
             >
               {lang === 'bs' ? 'PRVI TIM' : 'ROSTER'}
             </button>
+            <motion.button
+              onClick={() => setShowSpecialCollection(true)}
+              className="relative overflow-hidden px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-sm border-2 border-amber-400/60 text-amber-950"
+              style={{ background: 'linear-gradient(90deg, #d97706, #fbbf24, #d97706)' }}
+              animate={{ boxShadow: ['0 0 20px rgba(245,158,11,0.3)', '0 0 40px rgba(245,158,11,0.6)', '0 0 20px rgba(245,158,11,0.3)'] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              ✨ {lang === 'bs' ? 'SPECIJALNA KOLEKCIJA' : 'SPECIAL COLLECTION'}
+            </motion.button>
           </div>
         </motion.div>
       </header>

@@ -28,13 +28,12 @@
   <link rel="help" type="text/plain" title="LLM documentation" href="/llms.txt">
   <link rel="manifest" href="/manifest.json">
 
+  <!-- Resource Hints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=MedievalSharp&family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Della+Respira&display=swap"
     rel="stylesheet">
-
-  <!-- Pannellum for Virtual Tours -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
   <!-- ------------ MASTER AI-SDL BUNDLE ------------ -->
 
@@ -365,6 +364,53 @@
   }
   </script>
 
+  <!-- SHOPPING CENTERS -->
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "ShoppingCenter",
+      "name": "Bingo City Center Tuzla",
+      "description": "The largest shopping mall in the region with numerous stores, cinemas, and entertainment options.",
+      "address": { "@type": "PostalAddress", "streetAddress": "Mitra Trifunovica Uce 2", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
+      "geo": { "@type": "GeoCoordinates", "latitude": "44.532177", "longitude": "18.651743" },
+      "url": "https://bingocitycenter.ba"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "ShoppingCenter",
+      "name": "RK Tuzlanka",
+      "description": "One of the city's main shopping destinations with a variety of international and local brands.",
+      "address": { "@type": "PostalAddress", "streetAddress": "Univerzitetska 16", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
+      "geo": { "@type": "GeoCoordinates", "latitude": "44.5381", "longitude": "18.6650" }
+    }
+  ]
+  </script>
+
+  <!-- NOTABLE RESTAURANTS -->
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": "Čevabdžinica Limenka",
+      "description": "Iconic Ćevapi spot in Tuzla, a must-visit for traditional Bosnian grilled meat.",
+      "address": { "@type": "PostalAddress", "streetAddress": "Patriotske lige 24", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
+      "priceRange": "5-15 KM",
+      "servesCuisine": "Bosnian"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": "Mamma Mia Origins",
+      "description": "Upscale dining experience featuring steak and wine at Freedom Square.",
+      "address": { "@type": "PostalAddress", "streetAddress": "Trg slobode bb", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
+      "priceRange": "20-60 KM",
+      "url": "https://mamamiaorigins.com"
+    }
+  ]
+  </script>
+
   <!-- ------------ END MASTER AI-SDL BUNDLE ------------ -->
 
   <style id="_goober">
@@ -429,14 +475,6 @@
       outline: none;
     }
   </style>
-  <link rel="modulepreload" as="script" crossorigin=""
-    href="https://tuzla-tour-guide.vercel.app/assets/LanguageSelector-CuHgP8jI.js" />
-  <link rel="modulepreload" as="script" crossorigin=""
-    href="https://tuzla-tour-guide.vercel.app/assets/Sidebar-BVw8noAx.js" />
-  <link rel="modulepreload" as="script" crossorigin=""
-    href="https://tuzla-tour-guide.vercel.app/assets/LandingPage-CZ92QnOI.js" />
-  <link rel="modulepreload" as="script" crossorigin=""
-    href="https://tuzla-tour-guide.vercel.app/assets/AiAssistant-Dz2D7Mm0.js" />
   <script src="/_vercel/insights/script.js" data-sdkn="@vercel/analytics/react" data-sdkv="2.0.1" defer></script>
   <script src="/_vercel/speed-insights/script.js" defer data-sdkn="@vercel/speed-insights/react"
     data-sdkv="2.0.0"></script>
@@ -510,10 +548,5 @@
   <script src="/_vercel/speed-insights/script.js" defer data-sdkn="@vercel/speed-insights/react"
     data-sdkv="2.0.0"></script>
 </body>
-
-</html>oot></div>
-</body>
-
-</html>
 
 </html>

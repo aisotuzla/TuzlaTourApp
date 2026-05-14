@@ -123,6 +123,42 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     }
   };
 
+  // M-4 Road Golden Highlight
+  const setupHighlighters = (mapInstance: maplibregl.Map) => {
+    if (mapInstance.getLayer('m4-glow-outer')) return;
+    mapInstance.addLayer({
+      id: 'm4-glow-outer',
+      type: 'line',
+      source: 'jawg',
+      'source-layer': 'road',
+      filter: ['all',
+        ['any', ['==', 'road_type', 'primary'], ['==', 'road_type', 'motorway']],
+        ['==', 'name', 'Obala Zmaja od Bosne']
+      ],
+      paint: {
+        'line-color': '#facc15',
+        'line-width': 12,
+        'line-blur': 8,
+        'line-opacity': 0.3
+      }
+    });
+    mapInstance.addLayer({
+      id: 'm4-glow-inner',
+      type: 'line',
+      source: 'jawg',
+      'source-layer': 'road',
+      filter: ['all',
+        ['any', ['==', 'road_type', 'primary'], ['==', 'road_type', 'motorway']],
+        ['==', 'name', 'Obala Zmaja od Bosne']
+      ],
+      paint: {
+        'line-color': '#fef08a',
+        'line-width': 4,
+        'line-opacity': 0.6
+      }
+    });
+  };
+
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
@@ -200,7 +236,10 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         position: [1.15, 210, 30]
       });
 
-      if (isOnline) setupBuildings(map.current!);
+      if (isOnline) {
+        setupBuildings(map.current!);
+        setupHighlighters(map.current!);
+      }
 
       // Add hotel markers
       tuzlaHotelData.forEach((hotel: HotelData) => {
@@ -209,7 +248,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         el.className = 'hotel-marker-container';
         el.innerHTML = `
           <div style="position: relative; width: 44px; height: 56px; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));">
-            <svg viewBox="0 0 44 56" style="width: 100%; height: 100%; fill: #1e40af;">
+            <svg viewBox="0 0 44 56" style="width: 100%; height: 100%; fill: #d97706;">
               <path d="M22 0C9.8 0 0 9.8 0 22C0 38.5 22 56 22 56C22 56 44 38.5 44 22C44 9.8 34.2 0 22 0Z" />
               <circle cx="22" cy="22" r="18" fill="white" fill-opacity="0.2" />
             </svg>
@@ -248,6 +287,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
           const el = document.createElement('div');
           el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.6);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
           userMarker.current = new maplibregl.Marker(el).setLngLat([longitude, latitude]).addTo(map.current!);
+          // Fly to user on first GPS lock
+          map.current?.flyTo({ center: [longitude, latitude], zoom: 16, pitch: 60, duration: 2000 });
         } else {
           userMarker.current.setLngLat([longitude, latitude]);
         }
