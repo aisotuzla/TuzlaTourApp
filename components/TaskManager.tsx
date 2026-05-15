@@ -228,12 +228,12 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
     <div className="mx-auto max-w-6xl px-4 py-8 pb-32">
       <section className="overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-[0_24px_60px_rgba(37,99,235,0.12)]">
         <div className="bg-[linear-gradient(135deg,_#0f172a_0%,_#1d4ed8_55%,_#38bdf8_100%)] px-6 py-8 text-white sm:px-8">
-          <div className="flex items-center gap-3 text-xs font-black uppercase tracking-[0.28em] text-cyan-100">
-            <CreditCard className="h-4 w-4" />
+          <div className="flex items-center gap-3 text-sm font-black uppercase tracking-[0.28em] text-cyan-100">
+            <CreditCard className="h-5 w-5" />
             {lang === 'bs' ? 'Lični organizer' : lang === 'tr' ? 'Kişisel Organizatör' : lang === 'de' ? 'Persönlicher Organizer' : 'Personal Organizer'}
           </div>
-          <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">{t.title}</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-white/80">
+          <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">{t.title}</h1>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/80">
             {lang === 'en'
               ? 'Track travel spending and simple task lists inside the sidebar flow.'
               : lang === 'de'
@@ -243,22 +243,22 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                   : 'Prati troskove putovanja i jednostavne zadatke unutar sidebar toka.'}
           </p>
 
-          <div className="mt-6 flex gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <button
               onClick={() => setView('expenses')}
-              className={`rounded-2xl px-4 py-3 text-sm font-black transition-all ${view === 'expenses' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
+              className={`rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'expenses' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
             >
               {t.expenses}
             </button>
             <button
               onClick={() => setView('tasks')}
-              className={`rounded-2xl px-4 py-3 text-sm font-black transition-all ${view === 'tasks' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
+              className={`rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'tasks' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
             >
               {t.tasks}
             </button>
             <button
               onClick={() => setView('itinerary')}
-              className={`rounded-2xl px-4 py-3 text-sm font-black transition-all ${view === 'itinerary' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
+              className={`rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'itinerary' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
             >
               {t.itinerary}
             </button>
@@ -279,7 +279,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                       value={expName}
                       onChange={(e) => setExpName(e.target.value)}
                       placeholder={t.expensePlaceholder}
-                      className="rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:border-blue-400"
+                      className="rounded-2xl border border-blue-100 bg-white px-5 py-4 text-base font-medium text-slate-900 outline-none focus:border-blue-400"
                     />
                     <input
                       value={expAmount}
@@ -287,17 +287,17 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                       placeholder={t.amountPlaceholder}
                       type="number"
                       inputMode="decimal"
-                      className="rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:border-blue-400"
+                      className="rounded-2xl border border-blue-100 bg-white px-5 py-4 text-base font-medium text-slate-900 outline-none focus:border-blue-400"
                     />
                     <button
                       onClick={addExpense}
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-blue-500/25 transition-transform hover:-translate-y-0.5"
+                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-4 text-base font-black text-white shadow-lg shadow-blue-500/25 transition-transform hover:-translate-y-0.5"
                     >
-                      <Plus className="h-4 w-4" />
+                      <Plus className="h-5 w-5" />
                       {t.addExpense}
                     </button>
                   </div>
-                  <p className="mt-3 text-xs font-medium text-slate-500">{t.addHint}</p>
+                  <p className="mt-3 text-sm font-medium text-slate-500">{t.addHint}</p>
                 </div>
 
                 <div className="space-y-3">
@@ -307,13 +307,13 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                     </div>
                   ) : (
                     expenses.map((expense) => (
-                      <div key={expense.id} className="flex items-center justify-between rounded-[1.5rem] border border-blue-100 bg-white p-4 shadow-sm">
+                      <div key={expense.id} className="flex items-center justify-between rounded-[1.5rem] border border-blue-100 bg-white p-5 shadow-sm">
                         <div>
-                          <div className="font-black text-slate-900">{expense.name}</div>
-                          <div className="text-xs text-slate-500">{expense.date}</div>
+                          <div className="text-lg font-black text-slate-900">{expense.name}</div>
+                          <div className="text-sm text-slate-500">{expense.date}</div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <div className="rounded-full bg-blue-50 px-3 py-1 text-sm font-black text-blue-700">
+                          <div className="rounded-full bg-blue-50 px-4 py-1.5 text-base font-black text-blue-700">
                             {expense.amount.toFixed(2)} KM
                           </div>
                           <button
@@ -342,24 +342,24 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                       value={taskText}
                       onChange={(e) => setTaskText(e.target.value)}
                       placeholder={t.taskPlaceholder}
-                      className="rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:border-blue-400"
+                      className="rounded-2xl border border-blue-100 bg-white px-5 py-4 text-base font-medium text-slate-900 outline-none focus:border-blue-400"
                     />
                     <button
                       onClick={() => setIsShopping((prev) => !prev)}
-                      className={`inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-black transition-all ${isShopping ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'bg-white text-slate-700 border border-blue-100'}`}
+                      className={`inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${isShopping ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'bg-white text-slate-700 border border-blue-100'}`}
                     >
-                      <ShoppingBag className="h-4 w-4" />
+                      <ShoppingBag className="h-5 w-5" />
                       {t.shopping}
                     </button>
                     <button
                       onClick={addTask}
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-blue-500/25 transition-transform hover:-translate-y-0.5"
+                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-4 text-base font-black text-white shadow-lg shadow-blue-500/25 transition-transform hover:-translate-y-0.5"
                     >
-                      <Plus className="h-4 w-4" />
+                      <Plus className="h-5 w-5" />
                       {t.addTask}
                     </button>
                   </div>
-                  <p className="mt-3 text-xs font-medium text-slate-500">{t.addHint}</p>
+                  <p className="mt-3 text-sm font-medium text-slate-500">{t.addHint}</p>
                 </div>
 
                 <div className="space-y-3">
@@ -380,10 +380,10 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                             <Circle className="h-5 w-5 text-blue-300" />
                           )}
                           <div>
-                            <div className={`font-black ${task.completed ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+                            <div className={`text-lg font-black ${task.completed ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
                               {task.text}
                             </div>
-                            <div className="text-xs text-slate-500">{task.type}</div>
+                            <div className="text-sm text-slate-500">{task.type}</div>
                           </div>
                         </button>
                         <button
@@ -418,10 +418,10 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                             <Circle className="h-5 w-5 text-blue-300" />
                           )}
                           <div>
-                            <div className={`font-black ${item.checked ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+                            <div className={`text-lg font-black ${item.checked ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
                               {item.name}
                             </div>
-                            <div className="text-xs text-slate-500">{item.address}</div>
+                            <div className="text-sm text-slate-500">{item.address}</div>
                           </div>
                         </button>
                         <div className="flex items-center gap-2">
@@ -487,10 +487,12 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
       </section>
 
       {/* Advertisement Section */}
-      <div className="mt-8 rounded-[2rem] overflow-hidden border border-blue-100 shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
-        <a href="https://tuzla.bingocitycenter.ba/" target="_blank" rel="noopener noreferrer">
-          <img src="/assets/BCC.webp" alt="Bingo City Center" className="w-full h-auto object-cover" />
-        </a>
+      <div className="mt-8 flex justify-center">
+        <div className="w-full max-w-[70%] rounded-[2rem] overflow-hidden border border-blue-100 shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+          <a href="https://tuzla.bingocitycenter.ba/" target="_blank" rel="noopener noreferrer">
+            <img src="/assets/BCC.webp" alt="Bingo City Center" className="w-full h-auto object-cover" />
+          </a>
+        </div>
       </div>
     </div>
   );

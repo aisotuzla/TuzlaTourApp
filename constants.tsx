@@ -972,9 +972,15 @@ export const TUZLA_PARKING_DATA: ParkingLot[] = [
     longitude: 18.710627
   },
   {
-    name: "Parking Bosne Srebrene",
-    address: "Bosne Srebrene 8, Tuzla",
+    name: "Parking Sjenak",
+    address: "Ismeta Mujezinovica, Tuzla",
     latitude: 44.532204,
     longitude: 18.69975
+  },
+  {
+    name: "Parking Stupine",
+    address: "Mehmedalije Maka Dizdara, Avenija B6, Stupine, Tuzla",
+    latitude: 44.530253,
+    longitude: 18.6916856
   }
 ];

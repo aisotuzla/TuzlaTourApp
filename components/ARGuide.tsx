@@ -76,7 +76,12 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<{ loc: Location, dist: number } | null>(null);
   const userLocationRef = useRef<{ lat: number, lng: number } | null>(null);
-  const orientationRef = useRef<{ alpha: number | null, beta: number | null, gamma: number | null }>({
+  const orientationRef = useRef<{ 
+    alpha: number | null, 
+    beta: number | null, 
+    gamma: number | null,
+    headingAccuracy: number | null 
+  }>({
     alpha: null, beta: null, gamma: null, headingAccuracy: null,
   });
   const [headingAccuracy, setHeadingAccuracy] = useState<number | null>(null);
@@ -363,10 +368,14 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
         smoothedAlphaRef.current = smoothedAlpha;
       }
 
+      const accuracy = (e as any).webkitCompassAccuracy ?? null;
+      if (accuracy !== null) setHeadingAccuracy(accuracy);
+
       orientationRef.current = { 
         alpha: smoothedAlpha, 
         beta: betaAdj ?? null, 
-        gamma: e.gamma ?? null 
+        gamma: e.gamma ?? null,
+        headingAccuracy: accuracy
       };
     };
 

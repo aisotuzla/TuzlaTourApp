@@ -246,8 +246,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 rel="noopener noreferrer"
                 className="flex flex-col items-center group"
               >
-                <div className="relative h-20 w-36 mb-3 rounded-2xl border-2 border-blue-400/60 shadow-[0_0_15px_rgba(59,130,246,0.4)] flex items-center justify-center transition-all duration-300 group-hover:border-blue-400 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] group-hover:scale-105 overflow-hidden bg-white">
-                  <img src={link.logo} alt={link.name} className="absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-110" />
+                <div className="relative h-20 w-36 mb-3 rounded-2xl border-2 border-blue-400/60 shadow-[0_0_15px_rgba(59,130,246,0.4)] flex items-center justify-center transition-all duration-300 group-hover:border-blue-400 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] group-hover:scale-105 overflow-hidden bg-white p-3">
+                  <img src={link.logo} alt={link.name} className="w-full h-full object-contain transition-all duration-500 group-hover:scale-110" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-blue-600 transition-colors">
                   {link.name}
