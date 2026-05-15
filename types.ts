@@ -128,5 +128,7 @@ export enum AppTab {
   TASK_MANAGER = 'taskManager',
   AR = 'ar',
   PARKING = 'parking',
-
+  TRAVEL_AGENCIES = 'travelAgencies',
+  WORLD_CUP_2026 = 'worldCup2026',
+  SPECIAL_COLLECTION = 'specialCollection',
 }

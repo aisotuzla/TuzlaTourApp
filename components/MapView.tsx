@@ -7,7 +7,7 @@ import { AppFeatures } from '../utils/platform';
 import { tuzlaHotelData, HotelData } from '../tuzlaHotelData';
 import { WeatherWidget } from './WeatherWidget';
 import { useNetwork } from '../hooks/useNetwork';
-import { Search, X, Loader2 } from 'lucide-react';
+import { Search, X, Loader2, Navigation } from 'lucide-react';
 
 interface MapViewProps {
   lang: Language;

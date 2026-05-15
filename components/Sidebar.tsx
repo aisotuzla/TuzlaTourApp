@@ -94,7 +94,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
       label: { en: 'SMS Parking', bs: 'Parking', de: 'Parken', tr: 'Otopark' },
       color: 'bg-blue-300 text-blue-900'
     },
-
     {
       id: AppTab.WALLET,
       icon: Wallet,

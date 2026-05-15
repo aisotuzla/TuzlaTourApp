@@ -77,14 +77,16 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
   const [selectedLocation, setSelectedLocation] = useState<{ loc: Location, dist: number } | null>(null);
   const userLocationRef = useRef<{ lat: number, lng: number } | null>(null);
   const orientationRef = useRef<{ alpha: number | null, beta: number | null, gamma: number | null }>({
-    alpha: null, beta: null, gamma: null
+    alpha: null, beta: null, gamma: null, headingAccuracy: null,
   });
+  const [headingAccuracy, setHeadingAccuracy] = useState<number | null>(null);
 
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [viewMode, setViewMode] = useState<'AR' | 'HORIZON'>(features.isAndroidLight ? 'HORIZON' : 'AR');
   const [showHelp, setShowHelp] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
   const [isForeground, setIsForeground] = useState(true);
+  const [compassOffset, setCompassOffset] = useState(0); // 0 or 180
 
   // Master Loop Refs
   const lastFrameTimeRef = useRef<number>(0);
@@ -317,22 +319,63 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
     if (!permissionGranted || !isForeground) return;
 
     const handleOrientation = (e: DeviceOrientationEvent) => {
-      const alpha = (e as any).webkitCompassHeading !== undefined ? (e as any).webkitCompassHeading : (e.alpha !== null ? 360 - e.alpha : null);
+      // 1. Get Alpha (Heading)
+      let alpha: number | null = null;
+      
+      // Use webkitCompassHeading for iOS if available
+      if ((e as any).webkitCompassHeading !== undefined) {
+        alpha = (e as any).webkitCompassHeading;
+        if ((e as any).webkitCompassAccuracy !== undefined) {
+          setHeadingAccuracy((e as any).webkitCompassAccuracy);
+        }
+      } else if (e.alpha !== null) {
+        // Standard W3C alpha is CCW, convert to CW (360 - alpha)
+        alpha = (360 - e.alpha) % 360;
+      }
+
+      // 1.5 Apply Manual Calibration Offset
+      if (alpha !== null) {
+        alpha = (alpha + compassOffset) % 360;
+      }
+
+      // 2. Compensate for Screen Orientation (Portrait/Landscape)
+      const screenAngle = (window.screen.orientation?.angle) || (window.orientation as number) || 0;
+      if (alpha !== null) {
+        alpha = (alpha + screenAngle) % 360;
+      }
+
       const beta = e.beta;
-      if (viewMode === 'AR' && betaZeroRef.current === null && beta !== null) betaZeroRef.current = beta;
+      if (viewMode === 'AR' && betaZeroRef.current === null && beta !== null) {
+        // Calibrate vertical horizon based on current tilt if it's within a reasonable range (pointing forward)
+        if (Math.abs(beta) > 45 && Math.abs(beta) < 135) {
+          betaZeroRef.current = beta;
+        } else {
+          betaZeroRef.current = 90; // Default vertical
+        }
+      }
+      
       const betaAdj = beta !== null && betaZeroRef.current !== null ? beta - betaZeroRef.current : beta;
-      let smoothedAlpha = alpha ?? null;
+      
+      let smoothedAlpha = alpha;
       if (smoothedAlpha !== null) {
         const prev = smoothedAlphaRef.current;
         smoothedAlpha = prev === null ? smoothedAlpha : (prev + 0.18 * ((((smoothedAlpha - prev) + 540) % 360) - 180) + 360) % 360;
         smoothedAlphaRef.current = smoothedAlpha;
       }
 
-      orientationRef.current = { alpha: smoothedAlpha, beta: betaAdj ?? null, gamma: e.gamma ?? null };
+      orientationRef.current = { 
+        alpha: smoothedAlpha, 
+        beta: betaAdj ?? null, 
+        gamma: e.gamma ?? null 
+      };
     };
 
-    window.addEventListener('deviceorientation', handleOrientation);
-    return () => window.removeEventListener('deviceorientation', handleOrientation);
+    // Use absolute orientation on Android if available for true North
+    const supportsAbsolute = 'ondeviceorientationabsolute' in window;
+    const eventName = supportsAbsolute ? 'deviceorientationabsolute' : 'deviceorientation';
+
+    window.addEventListener(eventName, handleOrientation as any);
+    return () => window.removeEventListener(eventName, handleOrientation as any);
   }, [permissionGranted, viewMode, isForeground]);
 
   const requestPermission = async () => {
@@ -485,7 +528,23 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
             {option.label}
           </button>
         ))}
+        <div className="w-[1px] h-4 bg-white/20 mx-1" />
+        <button
+          onClick={() => setCompassOffset(prev => prev === 0 ? 180 : 0)}
+          className={`pointer-events-auto px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors ${
+            compassOffset === 180 ? 'bg-red-500 text-white' : 'text-slate-200 hover:bg-white/10'
+          }`}
+          title="Flip Compass 180°"
+        >
+          {compassOffset === 180 ? 'Offset: 180°' : 'Flip'}
+        </button>
       </div>
+      
+      {headingAccuracy !== null && headingAccuracy > 20 && (
+        <div className="absolute top-28 left-1/2 -translate-x-1/2 bg-amber-500/90 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase z-50 animate-pulse">
+          ⚠️ Compass Calibration Needed
+        </div>
+      )}
     </div>
   );
 };

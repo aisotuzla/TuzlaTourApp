@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Analytics } from "@vercel/analytics/react";
+
 const Sidebar = lazy(() => import('./components/Sidebar'));
 const LandingPage = lazy(() => import('./components/LandingPage'));
 const MapView = lazy(() => import('./components/MapView'));
@@ -16,9 +16,10 @@ const Accommodation = lazy(() => import('./components/Accommodation'));
 const ARGuide = lazy(() => import('./components/ARGuide'));
 const Parking = lazy(() => import('./components/Parking'));
 const WorldCup2026 = lazy(() => import('./components/WorldCup2026'));
+const SpecialCollection = lazy(() => import('./components/SpecialCollection'));
 const LanguageSelector = lazy(() => import('./components/LanguageSelector'));
 
-import { Menu, QrCode } from 'lucide-react';
+import { Menu, QrCode, Globe } from 'lucide-react';
 import { App as CapApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { AppTab, Language } from './types';
@@ -198,6 +199,32 @@ const AppContent: React.FC = () => {
               />
             );
             case AppTab.PARKING: return <Parking lang={lang} />;
+            case AppTab.WORLD_CUP_2026: return <WorldCup2026 lang={lang} onBack={() => setActiveTab(AppTab.LANDING)} />;
+            case AppTab.SPECIAL_COLLECTION: return <SpecialCollection lang={lang} onBack={() => setActiveTab(AppTab.LANDING)} />;
+            case AppTab.TRAVEL_AGENCIES:
+              return (
+                <div className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center">
+                  <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl border border-emerald-100 max-w-md w-full">
+                    <div className="w-20 h-20 bg-emerald-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                      <Globe className="w-10 h-10 text-emerald-600" />
+                    </div>
+                    <h1 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tighter">
+                      {lang === 'bs' ? 'PUTNIČKE AGENCIJE' : 'TRAVEL AGENCIES'}
+                    </h1>
+                    <p className="text-slate-500 mb-8 font-medium">
+                      {lang === 'bs' 
+                        ? 'Istražite najbolje ponude i destinacije naših partnerskih agencija.' 
+                        : 'Explore the best offers and destinations from our partner agencies.'}
+                    </p>
+                    <button 
+                      onClick={() => window.open('https://travelagency-icptuzla.wasmer.app/', '_blank')}
+                      className="w-full py-4 bg-emerald-600 text-white font-black rounded-2xl shadow-xl shadow-emerald-200 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest"
+                    >
+                      {lang === 'bs' ? 'OTVORI STRANICU' : 'OPEN WEBSITE'}
+                    </button>
+                  </div>
+                </div>
+              );
 
             default: return <LandingPage lang={lang} onNavigate={navigateToTab} />;
           }
@@ -208,7 +235,7 @@ const AppContent: React.FC = () => {
 
   return (
     <ImageProvider>
-      <Analytics />
+
       <ReloadPrompt />
       <OfflineIndicator lang={lang} />
 

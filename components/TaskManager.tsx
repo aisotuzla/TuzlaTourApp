@@ -486,9 +486,11 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         )}
       </section>
 
-      {/* Advertisement Placeholder */}
-      <div className="mt-8 rounded-[2rem] overflow-hidden border border-blue-100 shadow-lg">
-        <img src="/assets/BCC.webp" alt="Advertisement" className="w-full h-auto object-cover" />
+      {/* Advertisement Section */}
+      <div className="mt-8 rounded-[2rem] overflow-hidden border border-blue-100 shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+        <a href="https://tuzla.bingocitycenter.ba/" target="_blank" rel="noopener noreferrer">
+          <img src="/assets/BCC.webp" alt="Bingo City Center" className="w-full h-auto object-cover" />
+        </a>
       </div>
     </div>
   );

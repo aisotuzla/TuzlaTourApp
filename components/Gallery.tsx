@@ -34,6 +34,7 @@ const Gallery: React.FC<GalleryProps> = ({ lang }) => {
               <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
             </div>
           ))}
+        </div>
         <div className="mt-16 text-center">
           <p className="text-xl md:text-2xl font-quicksand font-bold text-slate-800 italic max-w-2xl mx-auto leading-relaxed">
             "{t.galleryCharmText}"

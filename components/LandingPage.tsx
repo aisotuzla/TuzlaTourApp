@@ -64,6 +64,7 @@ const navCards = [
 const externalLinks = [
   { name: 'TZTZ', url: 'https://tztz.ba', logo: '/assets/Gallery/QuestQRLocations/tztzlogo.webp' },
   { name: 'Grad Tuzla', url: 'https://grad.tuzla.ba', logo: '/assets/Gallery/QuestQRLocations/Zastava_tuzle.webp' },
+  { name: 'BCC Tuzla', url: 'https://tuzla.bingocitycenter.ba/', logo: '/assets/BCC.webp' },
   { name: 'WizzAir', url: 'https://wizzair.com', logo: '/assets/Gallery/QuestQRLocations/wizzurl.webp' },
   { name: 'Ilincica', url: 'https://ilincica.ba', logo: '/assets/Gallery/QuestQRLocations/ilincicaba.webp' },
 ];
@@ -289,6 +290,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 <div className="absolute inset-0 bg-blue-600/0 hover:bg-blue-600/10 transition-colors" />
               </button>
             ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-xl font-black text-blue-900/80 italic font-quicksand leading-relaxed max-w-2xl mx-auto px-4">
+              {lang === 'bs' 
+                ? '"Nijedna fotografija vam ne može dočarati šarm i ljepotu ovog grada, zato dođite i posjetite nas."'
+                : '"No photo can show you the charm and beauty of this city, so come and visit us."'}
+            </p>
+            <div className="w-12 h-1 bg-amber-400 rounded-full mx-auto mt-4 opacity-50" />
           </div>
         </section>
 

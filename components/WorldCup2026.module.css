@@ -849,7 +849,9 @@
 .legendaryCardBack {
   position: absolute;
   inset: 0;
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  transform: translateZ(1px);
   border-radius: 2.5rem;
   border: 0.75mm solid #ffd700;
   box-shadow: 
@@ -860,7 +862,7 @@
 }
 
 .legendaryCardBack {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateZ(1px);
 }
 
 .legendaryActualImage {

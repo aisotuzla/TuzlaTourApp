@@ -27,10 +27,8 @@
     "@tailwindcss/postcss": "^4.2.0",
     "@tailwindcss/vite": "^4.2.0",
     "@tanstack/react-query": "^5.100.8",
-    "@titanshield/agent": "^0.1.0",
     "@tonconnect/ui-react": "^2.4.4",
     "@types/mapbox-gl": "^3.4.1",
-    "@vercel/analytics": "^2.0.1",
     "@wasmer/sdk": "^0.10.0",
     "framer-motion": "^12.38.0",
     "glob": "^13.0.4",
@@ -42,7 +40,6 @@
     "maplibregl-minimap": "^1.0.3",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "rollup": "^4.60.3",
     "vercel": "^50.44.0",
     "vite-plugin-node-polyfills": "^0.26.0"
   },
@@ -55,9 +52,8 @@
     "tailwindcss": "^4.2.0",
     "typescript": "~5.8.2",
     "vite": "^6.4.2",
-    "vite-plugin-pwa": "^1.2.0"
-  },
-  "optionalDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.59.0"
+    "vite-plugin-pwa": "^1.2.0",
+    "rimraf": "^6.0.1"
+
   }
 }
