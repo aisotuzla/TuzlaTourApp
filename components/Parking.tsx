@@ -3,7 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Language } from "../types";
 import { TRANSLATIONS, TUZLA_CENTER, TUZLA_PARKING_DATA } from "../constants";
-import { Info, MessageSquare, Clock, MapPin, Car, List, Layers, Search, Navigation } from 'lucide-react';
+import { Info, MessageSquare, Clock, MapPin, Car, List, Layers, Search, Navigation, Crosshair } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 
 type ZoneKey = "Z0" | "Z1" | "Z2";
@@ -20,6 +20,18 @@ interface Zone {
     polygons: [number, number][][];
 }
 
+const isPointInPolygon = (point: [number, number], polygon: [number, number][]) => {
+    let isInside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+        const [xi, yi] = polygon[i];
+        const [xj, yj] = polygon[j];
+        const intersect = ((yi > point[1]) !== (yj > point[1])) &&
+            (point[0] < (xj - xi) * (point[1] - yi) / (yj - yi) + xi);
+        if (intersect) isInside = !isInside;
+    }
+    return isInside;
+};
+
 const zones: Zone[] = [
     {
         key: "Z0",
@@ -30,7 +42,7 @@ const zones: Zone[] = [
         end: "22:00",
         color: "#ff6d6dff",
         polygons: [
-           [
+            [
                 [18.672885, 44.540179],
                 [18.673389, 44.540454],
                 [18.674526, 44.540668],
@@ -171,6 +183,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
     const [activeUntil, setActiveUntil] = useState<Date | null>(null);
     const [timeLeft, setTimeLeft] = useState("");
     const [isLoaded, setIsLoaded] = useState(false);
+    const [userCoords, setUserCoords] = useState<[number, number] | null>(null);
     const isOnline = useNetwork();
 
     useEffect(() => {
@@ -201,7 +214,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
         map.current = new maplibregl.Map({
             container: mapContainer.current,
             style: isOnline
-                ? 'https://api.jawg.io/styles/jawg-streets.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX'
+                ? 'https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX'
                 : {
                     version: 8,
                     sources: { 'tuzla': { type: 'geojson', data: '/assets/tuzla-map.geojson' } },
@@ -210,7 +223,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                         { id: 'water', type: 'fill', source: 'tuzla', filter: ['any', ['==', 'natural', 'water'], ['==', 'waterway', 'river']], paint: { 'fill-color': '#1d4ed8', 'fill-opacity': 0.7 } },
                         { id: 'parks', type: 'fill', source: 'tuzla', filter: ['any', ['==', 'leisure', 'park'], ['==', 'landuse', 'grass']], paint: { 'fill-color': '#064e3b', 'fill-opacity': 0.5 } },
                         { id: 'roads', type: 'line', source: 'tuzla', filter: ['has', 'highway'], paint: { 'line-color': '#3b82f6', 'line-width': 1.5, 'line-opacity': 0.3 } },
-                        { id: 'primary-roads', type: 'line', source: 'tuzla', filter: ['any', ['==', 'highway', 'primary'], ['==', 'highway', 'secondary']], paint: { 'line-color': '#60a5fa', 'line-width': 2.5, 'line-opacity': 0.7 } },
+                        { id: 'primary-roads', type: 'line', source: 'tuzla', filter: ['any', ['==', 'highway', 'primary'], ['==', 'highway', 'secondary']], paint: { 'line-color': '#ebdc0bff', 'line-width': 3.5, 'line-opacity': 0.9 } },
                         { id: 'buildings', type: 'fill', source: 'tuzla', filter: ['has', 'building'], paint: { 'fill-color': '#94a3b8', 'fill-opacity': 0.1 } }
                     ]
                 },
@@ -274,6 +287,14 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
             });
         });
 
+        map.current.on('error', (e) => {
+            console.warn("Parking Map: Style error detected, attempting to signal loaded anyway...", e);
+            // Even if style fails, we want to allow geolocation and markers to work on a blank map
+            if (!isLoaded) {
+                setTimeout(() => setIsLoaded(true), 1000);
+            }
+        });
+
         return () => {
             map.current?.remove();
             map.current = null;
@@ -308,7 +329,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                         <span style="color:white;font-weight:900;font-size:16px;">P</span>
                     </div>
                 `;
-                
+
                 const marker = new maplibregl.Marker(el)
                     .setLngLat([lot.longitude, lot.latitude])
                     .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(`
@@ -318,7 +339,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                         </div>
                     `))
                     .addTo(map.current!);
-                
+
                 lotMarkers.current.push(marker);
             });
         }
@@ -339,15 +360,26 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                         el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.6);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
                         userMarker.current = new maplibregl.Marker(el)
                             .setLngLat([longitude, latitude])
-                            .addTo(map.current);
+                            .addTo(map.current!);
 
-                        map.current.flyTo({ center: [longitude, latitude], zoom: 15 });
+                        map.current?.flyTo({ center: [longitude, latitude], zoom: 15 });
                     } else {
                         userMarker.current.setLngLat([longitude, latitude]);
                     }
+                    setUserCoords([longitude, latitude]);
                 },
-                (err) => console.error(err),
-                { enableHighAccuracy: true }
+                (err) => {
+                    console.error("Geolocation error:", err);
+                    // If high accuracy fails, try falling back to low accuracy
+                    if (err.code === 3 || err.code === 1) {
+                        navigator.geolocation.getCurrentPosition(
+                            (p) => setUserCoords([p.coords.longitude, p.coords.latitude]),
+                            (e) => console.error("Fallback geolocation error:", e),
+                            { enableHighAccuracy: false, timeout: 10000, maximumAge: 30000 }
+                        );
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
             );
         };
 
@@ -405,10 +437,62 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
         setActiveUntil(expiry);
     };
 
+    const handleAutoDetect = () => {
+        if (!userCoords) {
+            // Try to request position manually if not available
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const coords: [number, number] = [pos.coords.longitude, pos.coords.latitude];
+                    setUserCoords(coords);
+                    checkZones(coords);
+                },
+                (err) => {
+                    console.error(err);
+                    alert(t.locationNotAvailable || "Location not available. Please ensure GPS is enabled.");
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+            return;
+        }
+        checkZones(userCoords);
+    };
+
+    const checkZones = (coords: [number, number]) => {
+        let found = false;
+        for (const zone of zones) {
+            for (const polygon of zone.polygons) {
+                if (isPointInPolygon(coords, polygon)) {
+                    setSelectedZone(zone);
+                    found = true;
+                    break;
+                }
+            }
+            if (found) break;
+        }
+
+        if (!found) {
+            alert(t.parkingDetectNoZone || "You are not in a parking zone.");
+        }
+    };
+
     return (
         <div className="h-[calc(100vh-88px)] w-full relative flex flex-col md:flex-row overflow-hidden bg-slate-50 font-quicksand">
             {/* Map Container */}
-            <div ref={mapContainer} className="flex-grow z-0 relative h-1/2 md:h-full" />
+            <div ref={mapContainer} className="flex-grow z-0 relative h-1/2 md:h-full">
+                {/* Floating Locate Button */}
+                <button
+                    onClick={() => {
+                        if (userCoords && map.current) {
+                            map.current.flyTo({ center: userCoords, zoom: 17 });
+                        } else {
+                            handleAutoDetect();
+                        }
+                    }}
+                    className="absolute bottom-6 right-6 z-20 w-12 h-12 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-slate-100 flex items-center justify-center text-blue-600 active:scale-95 transition-all"
+                >
+                    <Navigation size={20} />
+                </button>
+            </div>
 
             {/* Sidebar / Controls */}
             <div className="w-full md:w-[400px] h-1/2 md:h-full bg-white/95 backdrop-blur-md z-10 p-8 shadow-[-20px_0_50px_rgba(0,0,0,0.05)] overflow-y-auto flex flex-col gap-6">
@@ -421,7 +505,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                             onClick={() => setViewMode('zones')}
                             className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${viewMode === 'zones' ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-100 text-slate-400'}`}
                         >
-                            <Layers size={14} /> {lang === 'bs' ? 'Zone' : 'Zones'}
+                            <Layers size={14} /> {t.zonesLabel}
                         </button>
                         <button
                             onClick={() => setViewMode('lots')}
@@ -430,6 +514,13 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                             <List size={14} /> {lang === 'bs' ? 'Parkinzi' : 'Parking Lots'}
                         </button>
                     </div>
+
+                    <button
+                        onClick={handleAutoDetect}
+                        className="w-full mt-2 py-3 px-4 bg-blue-50 text-blue-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-100 transition-all flex items-center justify-center gap-2 border border-blue-100"
+                    >
+                        <Crosshair size={14} /> {t.parkingAutoDetect}
+                    </button>
                 </div>
 
                 {viewMode === 'zones' ? (
@@ -525,16 +616,16 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                             <input
                                 type="text"
-                                placeholder={lang === 'bs' ? 'Pretraži parkinge...' : 'Search parking lots...'}
+                                placeholder={t.parkingSearch}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full pl-12 pr-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 text-blue-900 font-bold outline-none focus:border-blue-500 transition-all"
                             />
                         </div>
-                        
+
                         <div className="flex-grow overflow-y-auto pr-2 space-y-3 custom-scrollbar">
-                            {TUZLA_PARKING_DATA.filter(lot => 
-                                lot.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            {TUZLA_PARKING_DATA.filter(lot =>
+                                lot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                 lot.address.toLowerCase().includes(searchQuery.toLowerCase())
                             ).map((lot, index) => (
                                 <button

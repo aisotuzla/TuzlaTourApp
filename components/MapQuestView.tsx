@@ -26,7 +26,7 @@ const QUEST_TARGETS = [
   { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, image: '/assets/Gallery/QuestQRLocations/44.540088, 18.681577 -slapovi.webp' },
   { id: 'ismet', name: { en: 'Ismet Mujezinovic', bs: 'Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/QRIsmet.webp' },
   { id: 'atelje_ismet', name: { en: 'Atelje Ismet Mujezinovic', bs: 'Atelje Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/Atelje Ismet Mujezinovic.png' },
-  { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, image: '/assets/Gallery/QuestQRLocations/Bingo City Centar.png' },
+  { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, image: '/assets/Gallery/QuestQRLocations/Bingo City Centar.png', website: 'https://tuzla.bingocitycenter.ba/' },
   { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4' },
   { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, image: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/tvrle.png', panorama: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/tvrle.png' },
 ];
@@ -128,14 +128,18 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const setupHighlighters = (mapInstance: maplibregl.Map) => {
     if (mapInstance.getLayer('m4-glow-outer')) return;
 
+    // Find the correct source ID used by the Jawg style
+    const sources = mapInstance.getStyle().sources || {};
+    const sourceId = Object.keys(sources).find(id => id.includes('jawg') || id.includes('streets') || id.includes('osm')) || 'jawg';
+
     mapInstance.addLayer({
       id: 'm4-glow-outer',
       type: 'line',
-      source: 'jawg',
+      source: sourceId,
       'source-layer': 'road',
       filter: ['all',
-        ['any', ['==', 'road_type', 'primary'], ['==', 'road_type', 'motorway']],
-        ['==', 'name', 'Obala Zmaja od Bosne']
+        ['any', ['==', 'class', 'primary'], ['==', 'class', 'motorway'], ['==', 'type', 'primary'], ['==', 'type', 'motorway'], ['==', 'highway', 'primary']],
+        ['any', ['==', 'name', 'Obala Zmaja od Bosne'], ['==', 'ref', 'M-4'], ['==', 'ref', 'M 4']]
       ],
       paint: {
         'line-color': '#facc15',
@@ -148,11 +152,11 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     mapInstance.addLayer({
       id: 'm4-glow-inner',
       type: 'line',
-      source: 'jawg',
+      source: sourceId,
       'source-layer': 'road',
       filter: ['all',
-        ['any', ['==', 'road_type', 'primary'], ['==', 'road_type', 'motorway']],
-        ['==', 'name', 'Obala Zmaja od Bosne']
+        ['any', ['==', 'class', 'primary'], ['==', 'class', 'motorway'], ['==', 'type', 'primary'], ['==', 'type', 'motorway'], ['==', 'highway', 'primary']],
+        ['any', ['==', 'name', 'Obala Zmaja od Bosne'], ['==', 'ref', 'M-4'], ['==', 'ref', 'M 4']]
       ],
       paint: {
         'line-color': '#fef08a',
@@ -176,7 +180,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://api.jawg.io/styles/jawg-streets.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX',
+      style: 'https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX',
       center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
       zoom: 15,
       pitch: 75,
@@ -352,7 +356,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
     if (isOnline) {
       setIsOfflineMode(false);
-      map.current.setStyle('https://api.jawg.io/styles/jawg-streets.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX');
+      map.current.setStyle('https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX');
 
       map.current.once('style.load', () => {
         if (!map.current) return;
@@ -531,11 +535,15 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             </div>
             <div style="display: flex; gap: 8px; margin-top: 18px;">
               <button onclick="window.setGlobalMapNavTarget('${loc.id}')" style="flex: 1; padding: 12px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; transition: all 0.3s ease;">GPS</button>
-              ${hasPanorama ? `
+              ${loc.website ? `
+                <button onclick="window.open('${loc.website}', '_blank')" style="flex: 1.5; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(37,99,235,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  WEBSITE
+                </button>
+              ` : (hasPanorama ? `
                 <button onclick="window.viewLocationPanorama('${loc.id}')" style="flex: 1.5; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(59,130,246,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
                   360° VIEW
                 </button>
-              ` : ''}
+              ` : '')}
             </div>
           </div>
         `);
@@ -675,8 +683,18 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             }
           }
         },
-        (err) => console.error(err),
-        { enableHighAccuracy: true }
+        (err) => {
+          console.error("MapQuest Geolocation Error:", err);
+          // Fallback to lower accuracy if high accuracy fails or times out
+          if (err.code === 3 || err.code === 1) {
+             navigator.geolocation.getCurrentPosition(
+               (p) => setUserLocation([p.coords.latitude, p.coords.longitude]),
+               (e) => console.error("MapQuest Fallback Geolocation Error:", e),
+               { enableHighAccuracy: false, timeout: 10000 }
+             );
+          }
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
       );
     };
 
@@ -754,47 +772,33 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
   return (
     <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-900 font-quicksand">
-      {/* Location Permission Overlay */}
-      <AnimatePresence>
-        {!userLocation && isLoaded && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-[100] flex flex-col items-center justify-center p-8 bg-slate-900/90 backdrop-blur-xl text-center"
-          >
-            <div className="w-24 h-24 bg-blue-500/20 rounded-full flex items-center justify-center mb-6 animate-pulse">
-              <Navigation className="w-12 h-12 text-blue-400" />
-            </div>
-            <h2 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter">
-              {lang === 'bs' ? 'Pristup Lokaciji' : 'Location Access'}
-            </h2>
-            <p className="text-slate-400 mb-8 max-w-xs leading-relaxed">
-              {lang === 'bs' 
-                ? 'Tuzla Tour treba vašu lokaciju kako bi vas vodio do znamenitosti i otključao nagrade.' 
-                : 'Tuzla Tour needs your location to guide you to landmarks and unlock rewards.'}
-            </p>
-            <button 
-              onClick={() => {
-                navigator.geolocation.getCurrentPosition(
-                  (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
-                  (err) => console.error(err),
-                  { enableHighAccuracy: true }
-                );
-              }}
-              className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-[0_0_40px_rgba(37,99,235,0.4)] uppercase text-sm tracking-widest active:scale-95"
-            >
-              {lang === 'bs' ? 'Dozvoli Lokaciju' : 'Enable Location'}
-            </button>
-            <p className="mt-6 text-xs text-slate-500 font-bold uppercase tracking-widest opacity-50">
-              {lang === 'bs' ? 'Privatnost Zagarantovana' : 'Privacy Guaranteed'}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
 
       {/* MAP VIEW */}
-      <div ref={mapContainer} className="flex-grow z-0 relative h-full grayscale-[20%] brightness-[0.8]" />
+      <div ref={mapContainer} className="flex-grow z-0 relative h-full grayscale-[20%] brightness-[0.8]">
+        {/* RECENTER BUTTON */}
+        <button 
+          onClick={() => {
+            if (userLocation && map.current) {
+              map.current.flyTo({ center: [userLocation[1], userLocation[0]], zoom: 17, pitch: 60 });
+            } else {
+              // Try to force a fresh GPS lock
+              navigator.geolocation.getCurrentPosition(
+                (p) => {
+                  const coords: [number, number] = [p.coords.latitude, p.coords.longitude];
+                  setUserLocation(coords);
+                  map.current?.flyTo({ center: [coords[1], coords[0]], zoom: 17, pitch: 60 });
+                },
+                (e) => alert(lang === 'bs' ? 'GPS lokacija nije dostupna.' : 'GPS location not available.'),
+                { enableHighAccuracy: true, timeout: 10000 }
+              );
+            }
+          }}
+          className="absolute bottom-24 right-6 z-20 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center text-blue-400 active:scale-95 transition-all"
+        >
+          <Navigation size={20} />
+        </button>
+      </div>
 
       {/* OFFLINE INDICATOR BAR */}
       <AnimatePresence>
@@ -937,7 +941,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                         className="group relative h-32 rounded-3xl overflow-hidden border border-amber-400/40 bg-white/5 shadow-xl transition-all active:scale-95"
                         onClick={() => {
                           if (item.video) setPlayingVideo(item.video);
-                          if (item.panorama) setViewingPanorama({ url: item.panorama, title: item.name[lang] });
+                          else if (item.panorama) setViewingPanorama({ url: item.panorama, title: item.name[lang] });
+                          else if ((item as any).website) window.open((item as any).website, '_blank');
                         }}
                       >
                         <img src={item.image} alt={item.name[lang]} className={`w-full h-full object-cover brightness-[0.7] ${isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'}`} />

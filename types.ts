@@ -33,6 +33,7 @@ export interface Location {
   image?: string;
   qrCode?: string;
   discount?: string | number;
+  website?: string;
 }
 
 export interface TranslationSet {
@@ -108,6 +109,10 @@ export interface TranslationSet {
   confirmPin: string;
   enterPin: string;
   dentalTourism: string;
+  parkingSearch: string;
+  locationNotAvailable: string;
+  zonesLabel: string;
+  galleryCharmText: string;
 }
 
 export enum AppTab {

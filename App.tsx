@@ -133,7 +133,7 @@ const AppContent: React.FC = () => {
     const registration = CapApp.addListener('backButton', handleBackButton);
 
     return () => {
-      registration.then(r => r.remove()).catch(() => {});
+      registration.then(r => r.remove()).catch(() => { });
     };
   }, [history, isDrawerOpen, lang]);
 

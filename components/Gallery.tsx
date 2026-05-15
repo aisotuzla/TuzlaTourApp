@@ -1,5 +1,6 @@
 import React from 'react';
-import { Language } from '../types';
+import { Language, TranslationSet } from '../types';
+import { TRANSLATIONS } from '../constants';
 import { AppFeatures } from '../utils/platform';
 import { useImage } from '../hooks/ImageContext';
 
@@ -8,8 +9,9 @@ interface GalleryProps {
   features: AppFeatures;
 }
 
-const Gallery: React.FC<GalleryProps> = () => {
+const Gallery: React.FC<GalleryProps> = ({ lang }) => {
   const { openGallery } = useImage();
+  const t = TRANSLATIONS[lang];
   const cityPhotos = Array.from({ length: 28 }, (_, i) => `/assets/Gallery/Photos/tuzla${i + 1}.webp`)
     .filter(p => p !== '/assets/Gallery/Photos/tuzla2.webp'); // Remove graphic no.2
 
@@ -32,6 +34,11 @@ const Gallery: React.FC<GalleryProps> = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
             </div>
           ))}
+        <div className="mt-16 text-center">
+          <p className="text-xl md:text-2xl font-quicksand font-bold text-slate-800 italic max-w-2xl mx-auto leading-relaxed">
+            "{t.galleryCharmText}"
+          </p>
+          <div className="mt-6 w-24 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full" />
         </div>
       </div>
     </div>

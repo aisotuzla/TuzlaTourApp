@@ -162,6 +162,7 @@ const LOCATIONS_RAW: Location[] = [
     category: 'culture',
     qrCode: 'Bingo City Centar',
     discount: 'Special Rewards',
+    website: 'https://tuzla.bingocitycenter.ba/',
   },
   {
     id: 'atelje_ismet',
@@ -299,6 +300,10 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     confirmPin: 'Confirm PIN',
     enterPin: 'Enter PIN to Unlock',
     dentalTourism: 'Dental Tourism',
+    parkingSearch: 'Search parking lots...',
+    locationNotAvailable: 'Location not available.',
+    zonesLabel: 'Zones',
+    galleryCharmText: 'No photo can show you charm and beauty of this city, so come and visit us.',
   },
   bs: {
     welcome: 'Dobrodošli u Tuzlu',
@@ -373,6 +378,10 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     confirmPin: 'Potvrdi PIN',
     enterPin: 'Unesi PIN za otključavanje',
     dentalTourism: 'Stomatološki turizam',
+    parkingSearch: 'Pretraži parkinge...',
+    locationNotAvailable: 'Lokacija nije dostupna.',
+    zonesLabel: 'Zone',
+    galleryCharmText: 'Nijedna fotografija ne može vam dočarati šarm i ljepotu ovog grada, zato dođite i posjetite nas.',
   },
   de: {
     welcome: 'Willkommen in Tuzla!',
@@ -447,6 +456,10 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     confirmPin: 'PIN bestätigen',
     enterPin: 'PIN zum Entsperren eingeben',
     dentalTourism: 'Zahntourismus',
+    parkingSearch: 'Parkplätze suchen...',
+    locationNotAvailable: 'Standort nicht verfügbar.',
+    zonesLabel: 'Zonen',
+    galleryCharmText: 'Kein Foto kann Ihnen den Charme und die Schönheit dieser Stadt zeigen, also kommen Sie und besuchen Sie uns.',
   },
   tr: {
     welcome: 'Tuzla\'ya Hoşgeldiniz',
@@ -521,6 +534,10 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     confirmPin: 'PIN\'i Onayla',
     enterPin: 'Kilidi Açmak İçin PIN Girin',
     dentalTourism: 'Diş Turizmi',
+    parkingSearch: 'Otopark ara...',
+    locationNotAvailable: 'Konum mevcut değil.',
+    zonesLabel: 'Bölgeler',
+    galleryCharmText: 'Hiçbir fotoğraf size bu şehrin cazibesini ve güzelliğini gösteremez, bu yüzden gelin ve bizi ziyaret edin.',
   },
 };
 
@@ -929,19 +946,6 @@ export const TUZLA_PARKING_DATA: ParkingLot[] = [
     longitude: 18.67496
   },
   {
-    name: "Parking Tuzla",
-    address: "Stari grad 29, Tuzla",
-    latitude: 44.538433,
-    longitude: 18.67355
-  },
-  {
-    name: "Parking Trg Slobode",
-    address: "Trg Slobode, Tuzla",
-    plus_code: "GMQG+XC9",
-    latitude: 44.5385,
-    longitude: 18.6738
-  },
-  {
     name: "Parking Pannonica Istok",
     address: "Tuzla",
     plus_code: "GMQM+97C",
@@ -949,23 +953,11 @@ export const TUZLA_PARKING_DATA: ParkingLot[] = [
     longitude: 18.683147
   },
   {
-    name: "GRADSKI Parking",
-    address: "Kulina bana 8, Tuzla",
-    latitude: 44.54078,
-    longitude: 18.676918
-  },
-  {
     name: "Mercator Centar Tuzla",
     address: "II korpusa, Tuzla",
     plus_code: "GMMM+4F6",
     latitude: 44.532795,
     longitude: 18.683634
-  },
-  {
-    name: "Mellain Parking",
-    address: "Aleja Alije Izetbegovića 3, Tuzla",
-    latitude: 44.533123,
-    longitude: 18.682468
   },
   {
     name: "Bingo City Center Parking",

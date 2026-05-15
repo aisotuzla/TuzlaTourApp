@@ -22,6 +22,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const isOnline = useNetwork();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -123,38 +124,42 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     }
   };
 
-  // M-4 Road Golden Highlight
   const setupHighlighters = (mapInstance: maplibregl.Map) => {
     if (mapInstance.getLayer('m4-glow-outer')) return;
+
+    // Find the correct source ID used by the Jawg style
+    const sources = mapInstance.getStyle().sources;
+    const sourceId = Object.keys(sources).find(id => id.includes('jawg') || id.includes('streets') || id.includes('osm')) || 'jawg';
+
     mapInstance.addLayer({
       id: 'm4-glow-outer',
       type: 'line',
-      source: 'jawg',
+      source: sourceId,
       'source-layer': 'road',
       filter: ['all',
-        ['any', ['==', 'road_type', 'primary'], ['==', 'road_type', 'motorway']],
-        ['==', 'name', 'Obala Zmaja od Bosne']
+        ['any', ['==', 'class', 'primary'], ['==', 'class', 'motorway'], ['==', 'type', 'primary'], ['==', 'type', 'motorway'], ['==', 'highway', 'primary']],
+        ['any', ['==', 'name', 'Obala Zmaja od Bosne'], ['==', 'ref', 'M-4'], ['==', 'ref', 'M 4']]
       ],
       paint: {
-        'line-color': '#facc15',
+        'line-color': '#0f0f0fff',
         'line-width': 12,
         'line-blur': 8,
-        'line-opacity': 0.3
+        'line-opacity': 0.5
       }
     });
     mapInstance.addLayer({
       id: 'm4-glow-inner',
       type: 'line',
-      source: 'jawg',
+      source: sourceId,
       'source-layer': 'road',
       filter: ['all',
-        ['any', ['==', 'road_type', 'primary'], ['==', 'road_type', 'motorway']],
-        ['==', 'name', 'Obala Zmaja od Bosne']
+        ['any', ['==', 'class', 'primary'], ['==', 'class', 'motorway'], ['==', 'type', 'primary'], ['==', 'type', 'motorway'], ['==', 'highway', 'primary']],
+        ['any', ['==', 'name', 'Obala Zmaja od Bosne'], ['==', 'ref', 'M-4'], ['==', 'ref', 'M 4']]
       ],
       paint: {
-        'line-color': '#fef08a',
+        'line-color': '#eee094ff',
         'line-width': 4,
-        'line-opacity': 0.6
+        'line-opacity': 0.8
       }
     });
   };
@@ -165,7 +170,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     map.current = new maplibregl.Map({
       container: mapContainer.current,
       style: isOnline
-        ? `https://api.jawg.io/styles/jawg-streets.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX`
+        ? `https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX`
         : {
           version: 8,
           sources: {
@@ -227,7 +232,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
 
     map.current.on('load', () => {
       setIsLoaded(true);
-      
+
       // Advanced 3D Lighting for metallic effect (applied to both modes)
       map.current?.setLight({
         anchor: 'viewport',
@@ -248,7 +253,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         el.className = 'hotel-marker-container';
         el.innerHTML = `
           <div style="position: relative; width: 44px; height: 56px; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));">
-            <svg viewBox="0 0 44 56" style="width: 100%; height: 100%; fill: #d97706;">
+            <svg viewBox="0 0 44 56" style="width: 100%; height: 100%; fill: #FFD700;">
               <path d="M22 0C9.8 0 0 9.8 0 22C0 38.5 22 56 22 56C22 56 44 38.5 44 22C44 9.8 34.2 0 22 0Z" />
               <circle cx="22" cy="22" r="18" fill="white" fill-opacity="0.2" />
             </svg>
@@ -269,6 +274,13 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
       });
     });
 
+    map.current.on('error', (e) => {
+      console.warn("MapView Map: Style error detected, attempting local fallback or signaling loaded...", e);
+      if (!isLoaded) {
+        setTimeout(() => setIsLoaded(true), 1000);
+      }
+    });
+
     map.current.on('zoom', () => setZoom(map.current?.getZoom() || 0));
 
     return () => {
@@ -283,6 +295,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
+        setUserLocation([latitude, longitude]);
         if (!userMarker.current) {
           const el = document.createElement('div');
           el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.6);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
@@ -293,8 +306,17 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
           userMarker.current.setLngLat([longitude, latitude]);
         }
       },
-      (err) => console.error(err),
-      { enableHighAccuracy: features.mapGpsHighAccuracy }
+      (err) => {
+        console.error("MapView Geolocation Error:", err);
+        if (err.code === 3 || err.code === 1) {
+          navigator.geolocation.getCurrentPosition(
+            (p) => setUserLocation([p.coords.latitude, p.coords.longitude]),
+            (e) => console.error("MapView Fallback Geolocation Error:", e),
+            { enableHighAccuracy: false, timeout: 10000 }
+          );
+        }
+      },
+      { enableHighAccuracy: features.mapGpsHighAccuracy, timeout: 15000, maximumAge: 10000 }
     );
     return () => navigator.geolocation.clearWatch(watchId);
   }, [isLoaded, features.mapGpsHighAccuracy]);
@@ -378,7 +400,29 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         />
       </div>
 
-      <div ref={mapContainer} className="flex-grow w-full h-full" />
+      <div ref={mapContainer} className="flex-grow w-full h-full">
+        {/* RECENTER BUTTON */}
+        <button 
+          onClick={() => {
+            if (userLocation && map.current) {
+              map.current.flyTo({ center: [userLocation[1], userLocation[0]], zoom: 17, pitch: 60 });
+            } else {
+              navigator.geolocation.getCurrentPosition(
+                (p) => {
+                  const coords: [number, number] = [p.coords.latitude, p.coords.longitude];
+                  setUserLocation(coords);
+                  map.current?.flyTo({ center: [coords[1], coords[0]], zoom: 17, pitch: 60 });
+                },
+                (e) => alert(lang === 'bs' ? 'GPS lokacija nije dostupna.' : 'GPS location not available.'),
+                { enableHighAccuracy: true, timeout: 10000 }
+              );
+            }
+          }}
+          className="absolute bottom-6 left-6 z-20 w-12 h-12 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-slate-100 flex items-center justify-center text-blue-600 active:scale-95 transition-all"
+        >
+          <Navigation size={20} />
+        </button>
+      </div>
     </div>
   );
 };

@@ -129,21 +129,28 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       {/* 1. HERO SECTION */}
       <section className="relative h-screen w-full overflow-hidden bg-white">
         {!isHeroReady && (
-          <div className="absolute inset-0 z-10 bg-white flex items-center justify-center">
-            <motion.img 
+          <div className="absolute inset-0 z-10 bg-slate-900 flex items-center justify-center">
+            <img
               src="/assets/Gallery/QuestQRLocations/IconTZ.webp"
-              alt="Loading..."
-              className="w-32 h-32 object-contain"
-              animate={{ 
-                scale: [1, 1.1, 1],
-                opacity: [0.5, 1, 0.5]
-              }}
-              transition={{ 
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
+              alt="Tuzla Tour"
+              className="absolute inset-0 w-full h-full object-cover brightness-[0.4] blur-[2px]"
             />
+            <div className="relative z-20 flex flex-col items-center">
+              <motion.img 
+                src="/assets/Gallery/QuestQRLocations/IconTZ.webp"
+                className="w-32 h-32 object-contain mb-8"
+                animate={{ scale: [1, 1.1, 1], opacity: [0.7, 1, 0.7] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <div className="w-48 h-1 bg-white/10 rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-blue-500"
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                />
+              </div>
+            </div>
           </div>
         )}
         <video
@@ -155,7 +162,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           preload="auto"
           poster="/assets/Gallery/Photos/tuzla1.webp"
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${isHeroReady ? 'opacity-100' : 'opacity-0'}`}
-          src={platform === 'web' ? "/assets/Gallery/Photos/HDweb_compressed.mp4" : "/assets/Gallery/Photos/tz_compressed.mp4"}
+          src={platform === 'web' ? "/assets/Gallery/Photos/HDweb_compressed.mp4" : platform === 'android' ? "/assets/Gallery/Photos/tz_compressed.mp4" : "/assets/Gallery/Photos/HDweb_compressed.mp4"}
           onLoadedData={() => setIsHeroReady(true)}
           onCanPlay={() => setIsHeroReady(true)}
           onError={() => {

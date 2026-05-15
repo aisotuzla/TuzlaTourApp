@@ -289,17 +289,31 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                 </span>
                             </button>
 
-                            {/* World Cup 2026 Button */}
-                            <button
-                                onClick={() => setShowWorldCup(true)}
-                                className="w-full h-[64px] flex items-center justify-center gap-2 bg-blue-50 text-blue-900 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
-                            >
-                                <div className="absolute inset-0 bg-blue-100 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
-                                <Trophy className="w-5 h-5 text-blue-900" />
-                                <span className="text-[10px] sm:text-xs tracking-widest uppercase">
-                                    {lang === 'bs' ? 'Svjetsko Prvenstvo 2026' : 'World Cup 2026'}
-                                </span>
-                            </button>
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* World Cup 2026 / Roster Button */}
+                                <button
+                                    onClick={() => setShowWorldCup(true)}
+                                    className="w-full h-[64px] flex items-center justify-center gap-2 bg-blue-50 text-blue-900 font-black py-3 rounded-2xl shadow-lg border-[3px] border-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
+                                >
+                                    <div className="absolute inset-0 bg-blue-100 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg] opacity-30" />
+                                    <Trophy className="w-5 h-5 text-blue-900" />
+                                    <span className="text-[10px] sm:text-xs tracking-widest uppercase text-center">
+                                        {lang === 'bs' ? 'PRVI TIM' : 'ROSTER'}
+                                    </span>
+                                </button>
+
+                                {/* Special Collection Button */}
+                                <button
+                                    onClick={() => setShowWorldCup(true)} // Currently goes to the same page which has everything
+                                    className="w-full h-[64px] flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-yellow-300 text-amber-950 font-black py-3 rounded-2xl shadow-lg border-[3px] border-white/50 hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden relative"
+                                >
+                                    <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-[-20deg]" />
+                                    <Trophy className="w-5 h-5 text-amber-950" />
+                                    <span className="text-[10px] sm:text-xs tracking-widest uppercase text-center">
+                                        {lang === 'bs' ? 'SPECIJALNA KOLEKCIJA' : 'SPECIAL COLLECTION'}
+                                    </span>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="mt-20 text-center text-blue-400/60 font-black text-[10px] uppercase tracking-[0.3em]">
@@ -321,9 +335,9 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                             </div>
                             <button
                                 onClick={(e) => { e.stopPropagation(); setIsScanning(false); }}
-                                className="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10"
+                                className="w-12 h-12 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all shadow-xl border-2 border-white/30"
                             >
-                                <span className="text-2xl font-light">×</span>
+                                <X size={24} />
                             </button>
                         </div>
 
