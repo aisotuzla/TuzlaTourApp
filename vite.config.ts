@@ -111,6 +111,20 @@ export default defineConfig(({ mode }) => {
               }
             },
             {
+              urlPattern: /^\/MAP\/tiles\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'map-tiles-cache',
+                expiration: {
+                  maxEntries: 1000,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                },
+                cacheableResponse: {
+                  statuses: [0, 200]
+                }
+              }
+            },
+            {
               urlPattern: /\.(?:webp|jpg|jpeg|png|svg)$/i,
               handler: 'CacheFirst',
               options: {

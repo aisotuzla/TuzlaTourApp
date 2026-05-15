@@ -775,7 +775,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
 
       {/* MAP VIEW */}
-      <div ref={mapContainer} className="flex-grow z-0 relative h-full grayscale-[20%] brightness-[0.8]">
+      <div ref={mapContainer} className="flex-grow z-0 relative h-full grayscale-[20%] brightness-[1.2]">
         {/* RECENTER BUTTON */}
         <button 
           onClick={() => {

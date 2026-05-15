@@ -64,7 +64,6 @@ const navCards = [
 const externalLinks = [
   { name: 'TZTZ', url: 'https://tztz.ba', logo: '/assets/Gallery/QuestQRLocations/tztzlogo.webp' },
   { name: 'Grad Tuzla', url: 'https://grad.tuzla.ba', logo: '/assets/Gallery/QuestQRLocations/Zastava_tuzle.webp' },
-  { name: 'BCC Tuzla', url: 'https://tuzla.bingocitycenter.ba/', logo: '/assets/BCC.webp' },
   { name: 'WizzAir', url: 'https://wizzair.com', logo: '/assets/Gallery/QuestQRLocations/wizzurl.webp' },
   { name: 'Ilincica', url: 'https://ilincica.ba', logo: '/assets/Gallery/QuestQRLocations/ilincicaba.webp' },
 ];
@@ -237,21 +236,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             <div className="w-20 h-2 bg-blue-600 rounded-full mt-2" />
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16 opacity-70">
             {externalLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center group"
+                className="h-12 md:h-16 transition-all duration-300 hover:scale-110 hover:opacity-100 grayscale hover:grayscale-0"
               >
-                <div className="relative h-20 w-36 mb-3 rounded-2xl border-2 border-blue-400/60 shadow-[0_0_15px_rgba(59,130,246,0.4)] flex items-center justify-center transition-all duration-300 group-hover:border-blue-400 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] group-hover:scale-105 overflow-hidden bg-white p-3">
-                  <img src={link.logo} alt={link.name} className="w-full h-full object-contain transition-all duration-500 group-hover:scale-110" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-blue-600 transition-colors">
-                  {link.name}
-                </span>
+                <img src={link.logo} alt={link.name} className="h-full w-auto object-contain" />
               </a>
             ))}
           </div>

@@ -1,0 +1,69 @@
+{
+  "version": 8,
+  "name": "Tuzla Offline Style",
+  "metadata": {
+    "maputnik:renderer": "mlgljs"
+  },
+  "projection": {
+    "type": "mercator"
+  },
+  "sources": {
+    "raster-tiles": {
+      "type": "raster",
+      "tiles": [
+        "/MAP/tiles/{z}/{x}/{y}.png"
+      ],
+      "tileSize": 256,
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "pois": {
+      "type": "geojson",
+      "data": "/poi.geojson"
+    },
+    "buildings": {
+      "type": "geojson",
+      "data": "/MAP/buildings.geojson"
+    }
+  },
+  "sprite": "https://demotiles.maplibre.org/styles/osm-bright-gl-style/sprite",
+  "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#0f172a"
+      }
+    },
+    {
+      "id": "base-tiles",
+      "type": "raster",
+      "source": "raster-tiles",
+      "minzoom": 0,
+      "maxzoom": 19
+    },
+    {
+      "id": "3d-buildings",
+      "type": "fill-extrusion",
+      "source": "buildings",
+      "minzoom": 13,
+      "paint": {
+        "fill-extrusion-color": "#334155",
+        "fill-extrusion-height": ["coalesce", ["get", "height"], 15],
+        "fill-extrusion-base": ["coalesce", ["get", "min_height"], 0],
+        "fill-extrusion-opacity": 0.8
+      }
+    },
+    {
+      "id": "poi-icons",
+      "type": "circle",
+      "source": "pois",
+      "paint": {
+        "circle-radius": 8,
+        "circle-color": "#3b82f6",
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#ffffff"
+      }
+    }
+  ]
+}
