@@ -35,383 +35,46 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=MedievalSharp&family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Della+Respira&display=swap"
     rel="stylesheet">
 
-  <!-- ------------ MASTER AI-SDL BUNDLE ------------ -->
-
-  <!-- GLOBAL SITE -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Tuzla Virtual Tour Guide",
-    "url": "https://tuzla-tour-guide.vercel.app",
-    "description": "Interactive virtual guide for tourists visiting Tuzla, Bosnia and Herzegovina. Features 3D maps, gamified quests, AI assistant, and offline support.",
-    "inLanguage": ["en", "bs", "de", "tr"],
-    "publisher": {
-      "@type": "Organization",
-      "name": "ICP Tuzla",
-      "email": "icptuzla@gmail.com",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://tuzla-tour-guide.vercel.app/assets/Gallery/QuestQRLocations/IconTZ.webp"
-      },
-      "sameAs": [
-        "https://x.com/Amcho1985",
-        "https://www.facebook.com/AmirICPTuzla",
-        "https://www.linkedin.com/in/icptuzla-amir-mulaosmanovic-ab356a34b/"
-      ]
+  <style>
+    #app-splash {
+      position: fixed;
+      inset: 0;
+      background: white;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
     }
-  }
-  </script>
 
-  <!-- SOFTWARE APPLICATION -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Tuzla Virtual Tour Guide",
-    "operatingSystem": "Web, Android, iOS",
-    "applicationCategory": "TravelApplication",
-    "description": "A free PWA tour guide for Tuzla with interactive maps, AR quests, AI assistant, and offline GPS tracking.",
-    "url": "https://tuzla-tour-guide.vercel.app",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "ratingCount": "1250",
-      "bestRating": "5",
-      "worstRating": "1"
-    },
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD",
-      "availability": "https://schema.org/InStock"
+    #app-splash.fade-out {
+      opacity: 0;
+      visibility: hidden;
     }
-  }
-  </script>
 
-  <!-- BREADCRUMBS -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://tuzla-tour-guide.vercel.app/" },
-      { "@type": "ListItem", "position": 2, "name": "City Guide", "item": "https://tuzla-tour-guide.vercel.app/#city-guide" },
-      { "@type": "ListItem", "position": 3, "name": "Map & Quests", "item": "https://tuzla-tour-guide.vercel.app/#quests" },
-      { "@type": "ListItem", "position": 4, "name": "Accommodation", "item": "https://tuzla-tour-guide.vercel.app/#accommodation" },
-      { "@type": "ListItem", "position": 5, "name": "Food & Drink", "item": "https://tuzla-tour-guide.vercel.app/#food" }
-    ]
-  }
-  </script>
-
-  <!-- FAQ -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Is the Tuzla Virtual Tour Guide free?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes, the app is 100% free. No booking or registration required. Simply open the website or install the PWA." }
-      },
-      {
-        "@type": "Question",
-        "name": "What are the Pannonian Lakes ticket prices?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Summer season (June-August): Adults 7.00 KM weekday / 9.00 KM weekend. Children (4-14) 4.50 KM weekday / 5.00 KM weekend. Children under 4 enter free. September sub-season: Adults 5.50 KM, Children 3.50 KM." }
-      },
-      {
-        "@type": "Question",
-        "name": "What are the Pannonian Lakes opening hours?",
-        "acceptedAnswer": { "@type": "Answer", "text": "June: 08:00-20:00. July and early August: 07:00-20:30. Late August: 08:00-20:00. September: 09:00-18:00. Off-season (Oct-May): park open as public space, lakes closed." }
-      },
-      {
-        "@type": "Question",
-        "name": "How do I find a licensed tour guide in Tuzla?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Contact the Tourist Information Center (TZTZ) at Turalibegova br. 5, Tuzla. Phone: +387 35 257 500. Email: info@tztz.ba. They maintain a registry of certified guides." }
-      },
-      {
-        "@type": "Question",
-        "name": "Is Tuzla walkable?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes, Tuzla is highly walkable. All major attractions are within walking distance in the city center. A local bus network is available for longer distances." }
-      },
-      {
-        "@type": "Question",
-        "name": "What currency is used in Tuzla?",
-        "acceptedAnswer": { "@type": "Answer", "text": "The Convertible Mark (KM / BAM). 1 EUR = 1.96 KM (fixed rate)." }
-      }
-    ]
-  }
-  </script>
-
-  <!-- LOCAL BUSINESS -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "Tuzla Virtual Tour Guide",
-    "image": "https://tuzla-tour-guide.vercel.app/assets/Gallery/QuestQRLocations/IconTZ.webp",
-    "description": "Interactive virtual tours and gamified quests across the city of Tuzla, Bosnia and Herzegovina.",
-    "email": "icptuzla@gmail.com",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Tuzla",
-      "postalCode": "75000",
-      "addressCountry": "BA"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": "44.5386",
-      "longitude": "18.6791"
+    .splash-logo {
+      width: 120px;
+      height: 120px;
+      object-contain: contain;
+      margin-bottom: 2rem;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
     }
-  }
-  </script>
 
-  <!-- TOURIST ATTRACTIONS -->
-  <script type="application/ld+json">
-  [
-    {
-      "@context": "https://schema.org",
-      "@type": "TouristAttraction",
-      "name": "Pannonian Salt Lakes (Panonska Jezera)",
-      "description": "Three artificial saltwater lakes in the city center of Tuzla with therapeutic high-salinity water, an Archaeological Park with Neolithic stilt houses, and a Geological Museum.",
-      "url": "https://panonika.ba",
-      "image": "https://tuzla-tour-guide.vercel.app/assets/Gallery/Photos/tuzla1.webp",
-      "address": { "@type": "PostalAddress", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "geo": { "@type": "GeoCoordinates", "latitude": "44.5386", "longitude": "18.6791" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.7", "ratingCount": "3200", "bestRating": "5" },
-      "openingHoursSpecification": [
-        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "08:00", "closes": "20:00", "validFrom": "2025-06-01", "validThrough": "2025-06-30" },
-        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "07:00", "closes": "20:30", "validFrom": "2025-07-01", "validThrough": "2025-08-15" },
-        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "09:00", "closes": "18:00", "validFrom": "2025-09-01", "validThrough": "2025-09-30" }
-      ],
-      "isAccessibleForFree": false,
-      "priceRange": "3.50 - 9.00 KM"
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "TouristAttraction",
-      "name": "Trg Slobode (Freedom Square)",
-      "description": "The largest square in Bosnia and Herzegovina. The social heart of Tuzla, surrounded by cafes, restaurants, and historical architecture.",
-      "address": { "@type": "PostalAddress", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "geo": { "@type": "GeoCoordinates", "latitude": "44.5391", "longitude": "18.6766" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.5", "ratingCount": "1800", "bestRating": "5" },
-      "isAccessibleForFree": true
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "TouristAttraction",
-      "name": "Soni Trg (Salt Square)",
-      "description": "Historic square commemorating Tuzla's millennia-long salt mining tradition. Features a replica ancient salt well and old exploitation tools.",
-      "address": { "@type": "PostalAddress", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "geo": { "@type": "GeoCoordinates", "latitude": "44.5381", "longitude": "18.6749" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.4", "ratingCount": "950", "bestRating": "5" },
-      "isAccessibleForFree": true
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "TouristAttraction",
-      "name": "Kapija Memorial",
-      "description": "Memorial site marking the location of the tragic May 25, 1995 massacre where 71 young people were killed. A symbol of Tuzla's resilience.",
-      "address": { "@type": "PostalAddress", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "geo": { "@type": "GeoCoordinates", "latitude": "44.5389", "longitude": "18.6755" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "1400", "bestRating": "5" },
-      "isAccessibleForFree": true
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "TouristAttraction",
-      "name": "Korzo Pedestrian Promenade",
-      "description": "Tuzla's main pedestrian thoroughfare along Turalibegova street. Features the bronze statues of Mesa Selimovic and Ismet Mujezinovic.",
-      "address": { "@type": "PostalAddress", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.5", "ratingCount": "1600", "bestRating": "5" },
-      "isAccessibleForFree": true
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "TouristAttraction",
-      "name": "Slana Banja Memorial Park",
-      "description": "Tranquil elevated green space overlooking Tuzla. A recreational park and memorial complex including the May 25, 1995 memorial cemetery.",
-      "address": { "@type": "PostalAddress", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "geo": { "@type": "GeoCoordinates", "latitude": "44.5365", "longitude": "18.6810" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.5", "ratingCount": "1100", "bestRating": "5" },
-      "isAccessibleForFree": true
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "TouristAttraction",
-      "name": "Ilincica Picnic Area & Adrenaline Park",
-      "description": "Protected natural landscape 2 km south of Tuzla. 16 picnic spots, 4 km cycling trail, zip-line, climbing wall. Adrenaline park free on Fri-Sun 11:00-15:00.",
-      "url": "https://ilincica.ba",
-      "address": { "@type": "PostalAddress", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "geo": { "@type": "GeoCoordinates", "latitude": "44.5269", "longitude": "18.6775" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.6", "ratingCount": "800", "bestRating": "5" },
-      "isAccessibleForFree": true
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "TouristAttraction",
-      "name": "Turalibeg (Poljska) Mosque",
-      "description": "Historic Ottoman-era mosque with a distinctive pyramid roof, one of the most significant architectural landmarks in Tuzla.",
-      "address": { "@type": "PostalAddress", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.5", "ratingCount": "700", "bestRating": "5" },
-      "isAccessibleForFree": true
+    .loader-ring {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(30, 58, 138, 0.1);
+      border-radius: 50%;
+      border-top-color: #1e3a8a;
+      animation: spin 1s ease-in-out infinite;
     }
-  ]
-  </script>
 
-  <!-- MUSEUMS -->
-  <script type="application/ld+json">
-  [
-    {
-      "@context": "https://schema.org",
-      "@type": "Museum",
-      "name": "Museum of Eastern Bosnia (Muzej Istocne Bosne)",
-      "description": "Comprehensive regional museum covering archaeology, ethnology, history, and art of the Tuzla region.",
-      "url": "http://muzejib.com",
-      "telephone": "+38735318321",
-      "address": { "@type": "PostalAddress", "streetAddress": "Dzindic mahala 21", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "openingHoursSpecification": { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "10:00", "closes": "15:00" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.4", "ratingCount": "420", "bestRating": "5" },
-      "priceRange": "2-5 KM"
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Museum",
-      "name": "Salt Museum (Muzej Soli - Solana Tuzla)",
-      "description": "Documents the history of industrial salt production in Tuzla from Neolithic times to present. Visit by appointment only.",
-      "telephone": "+38735287211",
-      "email": "info@solana.ba",
-      "address": { "@type": "PostalAddress", "streetAddress": "Ulica Soli br. 3", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.3", "ratingCount": "280", "bestRating": "5" }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Museum",
-      "name": "International Portrait Gallery (Medjunarodna Galerija Portreta)",
-      "description": "One of the best art venues in Bosnia and Herzegovina, featuring portrait collections from local and international artists.",
-      "telephone": "+38761289288",
-      "address": { "@type": "PostalAddress", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "openingHoursSpecification": [
-        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "16:00" },
-        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday"], "opens": "09:00", "closes": "13:00" }
-      ],
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.5", "ratingCount": "350", "bestRating": "5" }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
-  ]
-  </script>
-
-  <!-- TOUR AGENCIES -->
-  <script type="application/ld+json">
-  [
-    {
-      "@context": "https://schema.org",
-      "@type": "TravelAgency",
-      "name": "Golden Tours d.o.o.",
-      "url": "https://goldentours.ba",
-      "telephone": "+38735249220",
-      "email": "goldentuzla@gmail.com",
-      "address": { "@type": "PostalAddress", "streetAddress": "Marsala Tita 2a-2b", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "openingHoursSpecification": { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "16:00" }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "TravelAgency",
-      "name": "Transturist",
-      "url": "https://transturist.com",
-      "telephone": "+38735249301",
-      "email": "turizam@transturist.ba",
-      "address": { "@type": "PostalAddress", "streetAddress": "Bosne Srebrene br. 60", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "openingHoursSpecification": [
-        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "16:00" },
-        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday"], "opens": "09:00", "closes": "13:00" }
-      ]
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "TravelAgency",
-      "name": "Hit Tours",
-      "url": "https://hit-tours.ba",
-      "telephone": "+38735258311",
-      "email": "agencija@hit-tours.ba",
-      "address": { "@type": "PostalAddress", "streetAddress": "Hadzibakirbega Tuzlica bb", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "openingHoursSpecification": { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "16:00" }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "TravelAgency",
-      "name": "Elle Travel",
-      "url": "https://elletravel.ba",
-      "telephone": "+38761186200",
-      "email": "info@elletravel.ba",
-      "address": { "@type": "PostalAddress", "streetAddress": "Turalibegova 22", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "openingHoursSpecification": { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "09:00", "closes": "17:00" }
-    }
-  ]
-  </script>
-
-  <!-- TOURIST BOARD -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "TouristInformationCenter",
-    "name": "Turisticka Zajednica Grada Tuzla (TZTZ)",
-    "url": "https://tztz.ba",
-    "telephone": "+38735257500",
-    "email": "info@tztz.ba",
-    "address": { "@type": "PostalAddress", "streetAddress": "Turalibegova br. 5", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-    "openingHoursSpecification": { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "16:00" }
-  }
-  </script>
-
-  <!-- SHOPPING CENTERS -->
-  <script type="application/ld+json">
-  [
-    {
-      "@context": "https://schema.org",
-      "@type": "ShoppingCenter",
-      "name": "Bingo City Center Tuzla",
-      "description": "The largest shopping mall in the region with numerous stores, cinemas, and entertainment options.",
-      "address": { "@type": "PostalAddress", "streetAddress": "Mitra Trifunovica Uce 2", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "geo": { "@type": "GeoCoordinates", "latitude": "44.532177", "longitude": "18.651743" },
-      "url": "https://bingocitycenter.ba"
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "ShoppingCenter",
-      "name": "RK Tuzlanka",
-      "description": "One of the city's main shopping destinations with a variety of international and local brands.",
-      "address": { "@type": "PostalAddress", "streetAddress": "Univerzitetska 16", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "geo": { "@type": "GeoCoordinates", "latitude": "44.5381", "longitude": "18.6650" }
-    }
-  ]
-  </script>
-
-  <!-- NOTABLE RESTAURANTS -->
-  <script type="application/ld+json">
-  [
-    {
-      "@context": "https://schema.org",
-      "@type": "Restaurant",
-      "name": "Čevabdžinica Limenka",
-      "description": "Iconic Ćevapi spot in Tuzla, a must-visit for traditional Bosnian grilled meat.",
-      "address": { "@type": "PostalAddress", "streetAddress": "Patriotske lige 24", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "priceRange": "5-15 KM",
-      "servesCuisine": "Bosnian"
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Restaurant",
-      "name": "Mamma Mia Origins",
-      "description": "Upscale dining experience featuring steak and wine at Freedom Square.",
-      "address": { "@type": "PostalAddress", "streetAddress": "Trg slobode bb", "addressLocality": "Tuzla", "postalCode": "75000", "addressCountry": "BA" },
-      "priceRange": "20-60 KM",
-      "url": "https://mamamiaorigins.com"
-    }
-  ]
-  </script>
-
-  <!-- ------------ END MASTER AI-SDL BUNDLE ------------ -->
+  </style>
 
   <style id="_goober">
     .go2281452115 {
@@ -478,70 +141,97 @@
 
 </head>
 
-<body class="bg-white text-gray-800" spellcheck="false" ontouchstart="">
-  <div id="root">
-    <!-- Static content for SEO / Initial Load -->
-    <header
-      class="fixed top-0 left-0 right-0 h-[88px] bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm">
-      <div class="flex items-center z-10 w-20">
-        <button
-          class="flex flex-col items-center justify-center p-1 bg-transparent border-none transition-all active:scale-95 group focus:outline-none">
-          <img alt="Menu Logo" class="w-[60px] sm:h-[60px] object-contain transition-transform group-hover:scale-110"
-            src="/assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png" />
-        </button>
-      </div>
-      <div
-        class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center z-0 w-[55%] sm:w-auto pointer-events-none">
-        <h1
-          class="text-[4.5vw] sm:text-xl lg:text-2xl font-black tracking-tight leading-none uppercase flex flex-row flex-wrap sm:flex-nowrap justify-center items-center gap-1 sm:gap-1.5 text-center">
-          <span class="text-blue-900">Tuzla</span><span class="text-blue-500">Tour</span><span
-            class="text-amber-500">Guide</span>
-        </h1>
-      </div>
-      <div class="flex items-center justify-end z-10 w-20">
-        <div class="grid grid-cols-2 gap-1.5 sm:gap-2">
-          <button class="text-2xl sm:text-3xl opacity-60 hover:opacity-100 transition-all">🇬🇧</button>
-          <button class="text-2xl sm:text-3xl opacity-100 scale-110 transition-all">🇧🇦</button>
-          <button class="text-2xl sm:text-3xl opacity-60 hover:opacity-100 transition-all">🇩🇪</button>
-          <button class="text-2xl sm:text-3xl opacity-60 hover:opacity-100 transition-all">🇹🇷</button>
-        </div>
-      </div>
-    </header>
-
-    <main class="pt-[88px]">
-      <section class="relative h-[70vh] w-full overflow-hidden">
-        <img src="/assets/Gallery/Photos/tuzla1.webp" class="absolute inset-0 h-full w-full object-cover"
-          alt="Tuzla Panorama" />
-        <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
-          <div class="text-center text-white p-4">
-            <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4">Istražite Tuzlu</h2>
-            <p class="text-lg md:text-xl font-medium max-w-2xl mx-auto">Otkrijte Panonska jezera, bogatu istoriju i
-              uzbudljive kvizove kroz naš interaktivni vodič.</p>
-          </div>
-        </div>
-      </section>
-
-      <div class="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="p-8 rounded-[2.5rem] bg-blue-50 border-2 border-blue-100">
-          <h3 class="text-2xl font-black text-blue-900 uppercase mb-4">Gradski Vodič</h3>
-          <p class="text-slate-600">Sve što trebate znati o znamenitostima Tuzle na jednom mjestu.</p>
-        </div>
-        <div class="p-8 rounded-[2.5rem] bg-amber-50 border-2 border-amber-100">
-          <h3 class="text-2xl font-black text-amber-900 uppercase mb-4">Kvizovi & Mape</h3>
-          <p class="text-slate-600">Zabavite se istražujući grad kroz naše gamifikovane rute.</p>
-        </div>
-        <div class="p-8 rounded-[2.5rem] bg-emerald-50 border-2 border-emerald-100">
-          <h3 class="text-2xl font-black text-emerald-900 uppercase mb-4">Hrana & Smještaj</h3>
-          <p class="text-slate-600">Najbolji restorani i hoteli preporučeni od strane lokalaca.</p>
-        </div>
-      </div>
-    </main>
+  <div id="app-splash">
+    <img src="/assets/Gallery/QuestQRLocations/IconTZ.webp" class="splash-logo" alt="Tuzla Tour Logo" />
+    <div class="loader-ring"></div>
   </div>
+
+  <div id="root"></div>
 
   <!-- React Entry Point -->
   <script type="module" src="/index.tsx"></script>
 
-
+  <!-- ------------ MASTER AI-SDL BUNDLE (SEO) ------------ -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Tuzla Virtual Tour Guide",
+      "url": "https://tuzla-tour-guide.vercel.app",
+      "description": "Interactive virtual guide for tourists visiting Tuzla, Bosnia and Herzegovina. Features 3D maps, gamified quests, AI assistant, and offline support.",
+      "inLanguage": ["en", "bs", "de", "tr"],
+      "publisher": {
+        "@type": "Organization",
+        "name": "ICP Tuzla",
+        "email": "icptuzla@gmail.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://tuzla-tour-guide.vercel.app/assets/Gallery/QuestQRLocations/IconTZ.webp"
+        },
+        "sameAs": [
+          "https://x.com/Amcho1985",
+          "https://www.facebook.com/AmirICPTuzla",
+          "https://www.linkedin.com/in/icptuzla-amir-mulaosmanovic-ab356a34b/"
+        ]
+      }
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Tuzla Virtual Tour Guide",
+      "operatingSystem": "Web, Android, iOS",
+      "applicationCategory": "TravelApplication",
+      "description": "A free PWA tour guide for Tuzla with interactive maps, AR quests, AI assistant, and offline GPS tracking.",
+      "url": "https://tuzla-tour-guide.vercel.app",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "1250",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+  </script>
+  <script type="application/ld+json">
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "TouristAttraction",
+        "name": "Pannonian Salt Lakes (Panonska Jezera)",
+        "description": "Three artificial saltwater lakes in the city center of Tuzla.",
+        "url": "https://panonika.ba",
+        "geo": { "@type": "GeoCoordinates", "latitude": "44.5386", "longitude": "18.6791" }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "TouristAttraction",
+        "name": "Trg Slobode (Freedom Square)",
+        "description": "The largest square in Bosnia and Herzegovina.",
+        "geo": { "@type": "GeoCoordinates", "latitude": "44.5391", "longitude": "18.6766" }
+      }
+    ]
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is the Tuzla Virtual Tour Guide free?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, the app is 100% free." }
+        }
+      ]
+    }
+  </script>
 </body>
 
 </html>

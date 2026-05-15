@@ -59,6 +59,20 @@ const AppContent: React.FC = () => {
   const [isWalletUnlocked, setIsWalletUnlocked] = useState(false);
   const features = getAppFeatures();
 
+  // Performance: Hide splash screen once React is ready
+  useEffect(() => {
+    const splash = document.getElementById('app-splash');
+    if (splash) {
+      // Small timeout to ensure the first React frame is rendered
+      const timeout = setTimeout(() => {
+        splash.classList.add('fade-out');
+        // Remove from DOM after transition completes (matching 0.5s CSS)
+        setTimeout(() => splash.remove(), 500);
+      }, 400);
+      return () => clearTimeout(timeout);
+    }
+  }, []);
+
   // Automatically open sidebar after 40 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
