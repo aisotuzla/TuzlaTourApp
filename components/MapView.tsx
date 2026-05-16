@@ -249,7 +249,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
       </div>
 
       {/* Recenter & Layer Toggles */}
-      <div className="absolute bottom-6 right-6 z-20 flex flex-col gap-3">
+      <div className="absolute bottom-6 left-6 z-20 flex flex-col gap-3">
         <button 
           onClick={() => {
             if (userLocation && map.current) {
@@ -272,7 +272,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         </button>
       </div>
 
-      <div ref={mapContainer} className="h-full w-full grayscale-[0.1] contrast-[1.1] brightness-125" />
+      <div ref={mapContainer} className="h-full w-full grayscale-[0.1] contrast-[1.1] brightness-110" />
     </div>
   );
 };

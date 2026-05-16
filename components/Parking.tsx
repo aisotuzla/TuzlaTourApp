@@ -618,22 +618,8 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                     </>
                 ) : (
                     <div className="flex-grow flex flex-col gap-4 overflow-hidden">
-                        <div className="relative">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                            <input
-                                type="text"
-                                placeholder={t.parkingSearch}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-12 pr-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 text-blue-900 font-bold outline-none focus:border-blue-500 transition-all"
-                            />
-                        </div>
-
                         <div className="flex-grow overflow-y-auto pr-2 space-y-3 custom-scrollbar">
-                            {TUZLA_PARKING_DATA.filter(lot =>
-                                lot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                lot.address.toLowerCase().includes(searchQuery.toLowerCase())
-                            ).map((lot, index) => (
+                            {TUZLA_PARKING_DATA.map((lot, index) => (
                                 <button
                                     key={lot.id || index}
                                     onClick={() => map.current?.flyTo({ center: lot.coordinates, zoom: 16 })}

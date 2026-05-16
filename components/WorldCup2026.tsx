@@ -68,7 +68,7 @@ const PlayerCard: React.FC<{ player: Player }> = ({ player }) => {
           </div>
         </div>
 
-        <div className="card-back-optimized flex flex-col h-full w-full p-5 bg-[#0a0a0a]">
+        <div className={`${styles.cardBack} card-back-optimized flex flex-col h-full w-full p-5 bg-[#0a0a0a]`}>
           <div className="grid grid-cols-2 gap-x-6 gap-y-5 w-full mt-2">
             {[
               { label: 'PAC', val: player.stats.pac },
