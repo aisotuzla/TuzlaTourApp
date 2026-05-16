@@ -19,7 +19,7 @@ interface WalletProps {
 
 const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const [isScanning, setIsScanning] = useState(false);
-    const [activeSubTab, setActiveSubTab] = useState<'PAYMENT' | 'WC' | 'COLLECTION'>('PAYMENT');
+    const [activeSubTab, setActiveSubTab] = useState<'PAYMENT' | 'WC'>('PAYMENT');
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [bamValue, setBamValue] = useState<string>('');
@@ -126,7 +126,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                         >
                             <div className="text-center mb-12">
                                 <h1 className="text-4xl font-black text-blue-950 uppercase tracking-tight">
-                                    {lang === 'bs' ? 'Digitalni' : 'Digital'} <span className="text-blue-600">Wallet</span>
+                                    {lang === 'bs' ? 'Digitalni' : 'Digital'} <span className="text-blue-600">{lang === 'bs' ? 'Novčanik' : 'Wallet'}</span>
                                 </h1>
                                 <div className="h-1 w-24 bg-blue-600 mx-auto rounded-full mt-2" />
                             </div>
@@ -203,6 +203,13 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                         >
                                             AISO TUZLA
                                         </button>
+                                        <button 
+                                            onClick={() => setActiveSubTab('WC')}
+                                            className="w-full h-16 bg-[#001489] text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all border border-[#001489]/20 hover:border-yellow-400"
+                                        >
+                                            <Trophy size={18} className="text-yellow-400" />
+                                            WORLD CUP 2026
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -222,44 +229,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                         </motion.div>
                     )}
 
-                    {activeSubTab === 'COLLECTION' && (
-                        <motion.div 
-                            key="collection"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                        >
-                            <Suspense fallback={<div className="p-20 text-center font-black text-amber-600">LOADING COLLECTION...</div>}>
-                                <SpecialCollection lang={lang} onBack={() => setActiveSubTab('PAYMENT')} />
-                            </Suspense>
-                        </motion.div>
-                    )}
                 </AnimatePresence>
-            </div>
-
-            {/* Bottom Navigation */}
-            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] h-20 bg-white/80 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl border border-white/20 z-[500] flex items-center justify-around px-6">
-                <button 
-                    onClick={() => setActiveSubTab('PAYMENT')}
-                    className={`flex flex-col items-center gap-1 transition-all ${activeSubTab === 'PAYMENT' ? 'text-blue-600 scale-110' : 'text-slate-400'}`}
-                >
-                    <WalletIcon size={24} />
-                    <span className="text-[8px] font-black uppercase">Wallet</span>
-                </button>
-                <button 
-                    onClick={() => setActiveSubTab('WC')}
-                    className={`flex flex-col items-center gap-1 transition-all ${activeSubTab === 'WC' ? 'text-blue-600 scale-110' : 'text-slate-400'}`}
-                >
-                    <Trophy size={24} />
-                    <span className="text-[8px] font-black uppercase">World Cup</span>
-                </button>
-                <button 
-                    onClick={() => setActiveSubTab('COLLECTION')}
-                    className={`flex flex-col items-center gap-1 transition-all ${activeSubTab === 'COLLECTION' ? 'text-amber-500 scale-110' : 'text-slate-400'}`}
-                >
-                    <Trophy size={24} className={activeSubTab === 'COLLECTION' ? 'fill-amber-500' : ''} />
-                    <span className="text-[8px] font-black uppercase">Collection</span>
-                </button>
             </div>
 
             {/* Popups */}

@@ -15,12 +15,12 @@ export interface LocationData {
 }
 
 export interface ParkingLot {
+  id: string;
   name: string;
+  area: string;
   address: string;
-  latitude: number;
-  longitude: number;
-  plus_code?: string;
-  hours?: string;
+  coordinates: [number, number];
+  features: string[];
 }
 
 export interface Location {

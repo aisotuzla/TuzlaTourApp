@@ -17,6 +17,7 @@ import {
 import { useImage } from '../hooks/ImageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAppFeatures } from '../utils/platform';
+import { useNetwork } from '../hooks/useNetwork';
 
 interface LandingPageProps {
   lang: Language;
@@ -81,15 +82,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
 
+  const isOnline = useNetwork();
+
   // 40-second automatic scroll
   useEffect(() => {
-    if (isHeroReady && isHeroPlaying) {
+    if (isHeroReady && isHeroPlaying && isOnline) {
       const timer = setTimeout(() => {
         cardsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 40000);
       return () => clearTimeout(timer);
     }
-  }, [isHeroReady, isHeroPlaying]);
+  }, [isHeroReady, isHeroPlaying, isOnline]);
 
   const toggleHeroVideo = () => {
     if (heroVideoRef.current) {
@@ -140,29 +143,40 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             </div>
           </div>
         )}
-        <video
-          ref={heroVideoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster="/assets/Gallery/Photos/tuzla1.webp"
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isHeroReady ? 'opacity-100' : 'opacity-0'}`}
-          src={platform === 'web' ? "/assets/Gallery/Photos/HDweb_compressed.mp4" : platform === 'android' ? "/assets/Gallery/Photos/tz_compressed.mp4" : "/assets/Gallery/Photos/HDweb_compressed.mp4"}
-          onLoadedData={() => setIsHeroReady(true)}
-          onCanPlay={() => setIsHeroReady(true)}
-          onError={() => {
-            console.error('Hero video failed to load');
-            setIsHeroReady(true);
-          }}
-          onEnded={handleHeroVideoEnd}
-        />
+        
+        {isOnline ? (
+          <video
+            ref={heroVideoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster="/assets/Gallery/Photos/tuzla1.webp"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isHeroReady ? 'opacity-100' : 'opacity-0'}`}
+            src={platform === 'web' ? "/assets/Gallery/Photos/HDweb_compressed.mp4" : platform === 'android' ? "/assets/Gallery/Photos/tz_compressed.mp4" : "/assets/Gallery/Photos/HDweb_compressed.mp4"}
+            onLoadedData={() => setIsHeroReady(true)}
+            onCanPlay={() => setIsHeroReady(true)}
+            onError={() => {
+              console.error('Hero video failed to load');
+              setIsHeroReady(true);
+            }}
+            onEnded={handleHeroVideoEnd}
+          />
+        ) : (
+          <img
+            src="/assets/Gallery/Photos/tuzla1.webp"
+            alt="Tuzla Offline"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500`}
+            onLoad={() => setIsHeroReady(true)}
+            onError={() => setIsHeroReady(true)}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/50" />
 
         {/* Play Button Overlay for Hero */}
         <AnimatePresence>
-          {!isHeroPlaying && (
+          {!isHeroPlaying && isOnline && (
             <motion.div
               initial={{ x: 100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}

@@ -223,13 +223,13 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                         { id: 'water', type: 'fill', source: 'tuzla', filter: ['any', ['==', 'natural', 'water'], ['==', 'waterway', 'river']], paint: { 'fill-color': '#1d4ed8', 'fill-opacity': 0.7 } },
                         { id: 'parks', type: 'fill', source: 'tuzla', filter: ['any', ['==', 'leisure', 'park'], ['==', 'landuse', 'grass']], paint: { 'fill-color': '#064e3b', 'fill-opacity': 0.5 } },
                         { id: 'roads', type: 'line', source: 'tuzla', filter: ['has', 'highway'], paint: { 'line-color': '#3b82f6', 'line-width': 1.5, 'line-opacity': 0.3 } },
-                        { id: 'primary-roads', type: 'line', source: 'tuzla', filter: ['any', ['==', 'highway', 'primary'], ['==', 'highway', 'secondary']], paint: { 'line-color': '#ebdc0bff', 'line-width': 3.5, 'line-opacity': 0.9 } },
+                        { id: 'primary-roads', type: 'line', source: 'tuzla', filter: ['any', ['==', 'highway', 'primary'], ['==', 'highway', 'secondary']], paint: { 'line-color': '#cabe10ff', 'line-width': 3.5, 'line-opacity': 0.9 } },
                         { id: 'buildings', type: 'fill', source: 'tuzla', filter: ['has', 'building'], paint: { 'fill-color': '#94a3b8', 'fill-opacity': 0.1 } }
                     ]
                 },
             center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
             zoom: 14.5,
-            pitch: 45
+            pitch: 0
         });
 
         map.current.on('load', () => {
@@ -331,11 +331,17 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                 `;
 
                 const marker = new maplibregl.Marker(el)
-                    .setLngLat([lot.longitude, lot.latitude])
+                    .setLngLat(lot.coordinates)
                     .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(`
                         <div style="padding:10px;font-family:Quicksand,sans-serif;">
-                            <h3 style="margin:0;font-weight:900;color:#1e3a8a;">${lot.name}</h3>
-                            <p style="margin:5px 0 0;font-size:12px;color:#64748b;">${lot.address}</p>
+                            <h3 style="margin:0;font-weight:900;color:#1e3a8a;font-size:16px;">${lot.name}</h3>
+                            <div style="margin-top:4px;display:inline-block;background:#e2e8f0;padding:2px 6px;border-radius:4px;font-size:11px;color:#475569;">${lot.area}</div>
+                            <p style="margin:6px 0;font-size:13px;color:#334155;">${lot.address}</p>
+                            ${lot.features && lot.features.length > 0 ? `
+                            <div style="margin-top:8px;">
+                                ${lot.features.map(f => `<span style="display:inline-block;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;padding:2px 6px;border-radius:12px;font-size:10px;margin:0 4px 4px 0;">${f}</span>`).join('')}
+                            </div>
+                            ` : ''}
                         </div>
                     `))
                     .addTo(map.current!);
@@ -629,23 +635,28 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                                 lot.address.toLowerCase().includes(searchQuery.toLowerCase())
                             ).map((lot, index) => (
                                 <button
-                                    key={index}
-                                    onClick={() => map.current?.flyTo({ center: [lot.longitude, lot.latitude], zoom: 16 })}
+                                    key={lot.id || index}
+                                    onClick={() => map.current?.flyTo({ center: lot.coordinates, zoom: 16 })}
                                     className="w-full p-4 bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 rounded-2xl transition-all flex items-start gap-4 text-left group"
                                 >
                                     <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors">
                                         <Car className="text-amber-500 group-hover:text-white transition-colors" size={20} />
                                     </div>
-                                    <div className="min-w-0">
+                                    <div className="min-w-0 flex-1">
                                         <h3 className="font-black text-blue-900 truncate">{lot.name}</h3>
                                         <p className="text-xs text-slate-400 font-medium truncate">{lot.address}</p>
-                                        <div className="flex items-center gap-2 mt-2">
+                                        <div className="flex items-center gap-2 mt-2 flex-wrap">
                                             <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded-md text-[10px] font-black uppercase">
-                                                {lang === 'bs' ? 'Dostupno' : 'Available'}
+                                                {lot.area}
                                             </span>
-                                            <Navigation size={12} className="text-blue-400" />
+                                            {lot.features && lot.features[0] && (
+                                                <span className="px-2 py-0.5 bg-green-50 text-green-600 border border-green-100 rounded-md text-[10px] font-medium truncate">
+                                                    {lot.features[0]}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
+                                    <Navigation size={16} className="text-blue-400 shrink-0 self-center ml-2" />
                                 </button>
                             ))}
                         </div>

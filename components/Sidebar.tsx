@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import OfflineManagerUI from './OfflineManagerUI';
 import { AppTab, Language } from '../types';
 import {
   Wallet,
@@ -187,7 +188,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
             </div>
 
             {/* Footer - Spacer */}
-            <div className="p-8 border-t border-slate-100 text-center">
+            <div className="p-4 border-t border-slate-100 text-center">
+              <OfflineManagerUI lang={lang} />
             </div>
           </motion.aside>
         </>

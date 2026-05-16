@@ -121,7 +121,7 @@ const LOCATIONS_RAW: Location[] = [
     coordinates: [44.5370993, 18.6781216],
     category: 'culture',
     qrCode: 'Mesa Selimovic',
-    discount: 'Audio Reward',
+    discount: 'Video Reward',
   },
   {
     id: 'tvrtko_park',
@@ -939,48 +939,155 @@ export const RESTAURANTS = RESTAURANTS_RAW;
 
 export const TUZLA_PARKING_DATA: ParkingLot[] = [
   {
+    id: "bcc-main",
+    name: "Bingo City Center",
+    area: "Parking Centar",
+    address: "Mitra Trifunovića Uče 2",
+    coordinates: [18.653272, 44.532753],
+    features: ["Shopping mall access", "Surface parking"]
+  },
+  {
+    id: "bcc-garage",
+    name: "Bingo City Center - Parking Garaža",
+    area: "Zapad / Miladije",
+    address: "Mitra Trifunovića Uče 2",
+    coordinates: [18.650794, 44.532072],
+    features: ["Underground garage", "EV Charging (15 kW)", "First 2 hours free"]
+  },
+  {
+    id: "skver",
+    name: "Skver parking - Kojšino",
+    area: "Skver/Kojšino",
+    address: "Mije Keroševića Guje 24",
+    coordinates: [18.673362, 44.540963],
+    features: ["Open surface lot", "24/7 access"]
+  },
+  {
+    id: "omega-tuzlanka",
+    name: "Parking Omega (TC Tuzlanka)",
+    area: "Parking Omega",
+    address: "Univerzitetska",
+    coordinates: [18.663186, 44.538282],
+    features: ["Commercial surface lot", "Short-term validation"]
+  },
+  {
+    id: "slatina-main",
+    name: "Gradski Parking Slatina",
+    area: "Slatina",
+    address: "Alana Forda (Behind Health Center)",
+    coordinates: [18.667944, 44.540657],
+    features: ["Zone 1", "Public lot", "Close to Dom Zdravlja clinic"]
+  },
+  {
+    id: "slatina",
+    name: "SodaSo Parking Slatina",
+    area: "Slatina",
+    address: "Slatina, Tuzla",
+    coordinates: [18.665482, 44.540615],
+    features: ["Zone 1", "Public lot", "Parking Slatina"]
+  },
+  {
+    id: "gradski-kulina-bana",
+    name: "Gradski Parking Centar",
+    area: "Centar",
+    address: "Kulina bana 8",
+    coordinates: [18.675910, 44.539877],
+    features: ["Municipal managed", "Zone 0", "Near pedestrian walk"]
+  },
+  {
+    id: "turalibegova",
+    name: "Parking Turalibegova",
+    area: "Centar",
+    address: "Turalibegova 59",
+    coordinates: [18.6792208, 44.536256],
+    features: ["Automated ticketing", "High-turnover commercial area"]
+  },
+  {
+    id: "cipelici",
+    name: "Parking Čipelići",
+    area: "Centar / Čipelići",
+    address: "Junction of Turalibegova & Klosterska",
+    coordinates: [18.680749, 44.535120],
+    features: ["Zone 1 dynamic pricing", "Automated entry ramp"]
+  },
+  {
+    id: "pannonica-west",
     name: "Parkiralište Jezero Zapad",
-    address: "Džindić mahala, Tuzla",
-    plus_code: "GMRG+GR5",
-    latitude: 44.540127,
-    longitude: 18.67496
+    area: "Pannonica",
+    address: "Džindić mahala",
+    coordinates: [18.67687, 44.540775],
+    features: ["JKP Saobraćaj i komunikacije", "Direct lake gate entry"]
   },
   {
+    id: "kajmak-stanica",
+    name: "Parking Kajmak Stanica",
+    area: "Centar / Sjever",
+    address: "Kulina bana (Old bus station layout)",
+    coordinates: [18.681108, 44.538007],
+    features: ["Automated ramp gates", "High capacity (~200 spaces)"]
+  },
+  {
+    id: "pannonica-east",
     name: "Parking Pannonica Istok",
-    address: "Tuzla",
-    plus_code: "GMQM+97C",
-    latitude: 44.538433,
-    longitude: 18.683147
+    area: "Pannonica",
+    address: "Ulica Džamala Bijedića area",
+    coordinates: [18.683013, 44.538279],
+    features: ["Large surface capacity", "Automated pay terminals"]
   },
   {
-    name: "Mercator Centar Tuzla",
-    address: "II korpusa, Tuzla",
-    plus_code: "GMMM+4F6",
-    latitude: 44.532795,
-    longitude: 18.683634
+    id: "gradina-hospital",
+    name: "Parking Gradina (UKC Tuzla)",
+    area: "Gradina",
+    address: "Put Gradina",
+    coordinates: [18.691902, 44.537556],
+    features: ["Independent medical campus tariff", "Incline surface terrain"]
   },
   {
-    name: "Bingo City Center Parking",
-    address: "Mitra Trifunovića Uče 2, Tuzla",
-    latitude: 44.532177,
-    longitude: 18.651743
+    id: "mellain-complex",
+    name: "Mellain Garaža",
+    area: "Centar / Istok",
+    address: "Aleja Alije Izetbegovića 3",
+    coordinates: [18.687208, 44.533881],
+    features: ["Multi-level underground", "24/7 security & video"]
   },
   {
-    name: "Parking Aerodrom Tuzla",
-    address: "Dubrave Gornje, Tuzla",
-    latitude: 44.46577,
-    longitude: 18.710627
-  },
-  {
-    name: "Parking Sjenak",
-    address: "Ismeta Mujezinovica, Tuzla",
-    latitude: 44.532204,
-    longitude: 18.69975
-  },
-  {
+    id: "stupine-main",
     name: "Parking Stupine",
-    address: "Mehmedalije Maka Dizdara, Avenija B6, Stupine, Tuzla",
-    latitude: 44.530253,
-    longitude: 18.6916856
+    area: "Stupine",
+    address: "Mehmedalije Maka Dizdara",
+    coordinates: [18.691612, 44.529851],
+    features: ["Zone 1 public parking", "Open-air surface spaces"]
+  },
+  {
+    id: "15-maja",
+    name: "Parking 15. maja",
+    area: "Brčanska Malta",
+    address: "15. maja 2",
+    coordinates: [18.697177, 44.530279],
+    features: ["Broad parking bays", "Low congestion area"]
+  },
+  {
+    id: "bulevar-BHTelecom",
+    name: "Parking BHTelecom",
+    area: "bhtelecom",
+    address: "Bulevar 2. korpusa",
+    coordinates: [18.691429, 44.533269],
+    features: ["zone 1 payment 1.00KM/h, 5.00KM/day"]
+  },
+  {
+    id: "sjenjak-fringes",
+    name: "Parking Sjenjak Zapad",
+    area: "Sjenjak",
+    address: "Ismeta Mujezinovica B-blok",
+    coordinates: [18.699787, 44.533239],
+    features: ["Open public bay", "Feeder lanes to high-rise zones"]
+  },
+  {
+    id: "sjenjak-main",
+    name: "Gradski Parking Sjenjak",
+    area: "Sjenjak",
+    address: "GMMX+3CH block",
+    coordinates: [18.699862, 44.532244],
+    features: ["Large neighborhood lot", "Easy connection to eastern bypass"]
   }
 ];

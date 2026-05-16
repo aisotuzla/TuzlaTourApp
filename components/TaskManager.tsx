@@ -486,6 +486,19 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         )}
       </section>
 
+      <a
+        href="https://tuzla.bingocitycenter.ba"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block mt-6 overflow-hidden rounded-[1.5rem] border border-blue-100 shadow-sm transition-transform hover:scale-[1.02]"
+      >
+        <img
+          src="/assets/BCC.webp"
+          alt="Bingo City Center"
+          className="w-full h-auto object-cover"
+        />
+      </a>
+
       {/* Spacer for bottom navigation safety */}
       <div className="h-20" />
     </div>
