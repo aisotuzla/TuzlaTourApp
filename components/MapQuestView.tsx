@@ -59,6 +59,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [viewingPanorama, setViewingPanorama] = useState<{ url: string; title: string } | null>(null);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const isOnline = useNetwork();
+  const OFFLINE_STYLE = '/style/offline-style.json';
+  const ONLINE_STYLE = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
 
   const scannerContainerId = "map-quest-reader";
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
@@ -76,57 +78,63 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   ];
 
   const setupBuildings = (mapInstance: maplibregl.Map) => {
-    const layers = mapInstance.getStyle().layers ?? [];
-    const buildingLayer = layers.find((l: any) => l['source-layer'] === 'building' || l['source-layer'] === 'buildings');
-    if (!buildingLayer) return;
+    try {
+      if (!mapInstance.isStyleLoaded()) return;
 
-    const source = (buildingLayer as any).source;
-    const sourceLayer = (buildingLayer as any)['source-layer'];
+      const layers = mapInstance.getStyle().layers ?? [];
+      const buildingLayer = layers.find((l: any) => l['source-layer'] === 'building' || l['source-layer'] === 'buildings');
+      if (!buildingLayer) return;
 
-    if (mapInstance.getLayer('building-outline')) mapInstance.removeLayer('building-outline');
-    if (mapInstance.getLayer('building')) mapInstance.removeLayer('building');
+      const source = (buildingLayer as any).source;
+      const sourceLayer = (buildingLayer as any)['source-layer'];
 
-    let labelLayerId: string | undefined;
-    for (const layer of layers) {
-      if (layer.type === 'symbol' && (layer as any).layout?.['text-field']) {
-        labelLayerId = layer.id;
-        break;
+      if (mapInstance.getLayer('building-outline')) mapInstance.removeLayer('building-outline');
+      if (mapInstance.getLayer('building')) mapInstance.removeLayer('building');
+
+      let labelLayerId: string | undefined;
+      for (const layer of layers) {
+        if (layer.type === 'symbol' && (layer as any).layout?.['text-field']) {
+          labelLayerId = layer.id;
+          break;
+        }
       }
-    }
 
-    if (!mapInstance.getLayer('3d-buildings')) {
-      mapInstance.addLayer({
-        id: '3d-buildings',
-        source: source,
-        'source-layer': sourceLayer,
-        type: 'fill-extrusion',
-        minzoom: 14,
-        paint: {
-          'fill-extrusion-color': [
-            'interpolate', ['linear'], ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
-            0, '#94a3b8',
-            20, '#64748b',
-            50, '#475569',
-            100, '#334155'
-          ],
-          'fill-extrusion-height': [
-            'interpolate', ['linear'], ['zoom'],
-            14, 0,
-            15, ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
-          ],
-          'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
-          'fill-extrusion-opacity': 0.9,
-        },
-      }, labelLayerId);
+      if (!mapInstance.getLayer('3d-buildings')) {
+        mapInstance.addLayer({
+          id: '3d-buildings',
+          source: source,
+          'source-layer': sourceLayer,
+          type: 'fill-extrusion',
+          minzoom: 14,
+          paint: {
+            'fill-extrusion-color': [
+              'interpolate', ['linear'], ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
+              0, '#94a3b8',
+              20, '#64748b',
+              50, '#475569',
+              100, '#334155'
+            ],
+            'fill-extrusion-height': [
+              'interpolate', ['linear'], ['zoom'],
+              14, 0,
+              15, ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
+            ],
+            'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
+            'fill-extrusion-opacity': 0.9,
+          },
+        }, labelLayerId);
+      }
+    } catch (e) {
+      console.warn("MapQuest: Error setting up buildings", e);
     }
   };
 
   const setupHighlighters = (mapInstance: maplibregl.Map) => {
     if (mapInstance.getLayer('m4-glow-outer')) return;
 
-    // Find the correct source ID used by the Jawg style
+    // Find the correct source ID used by the map style
     const sources = mapInstance.getStyle().sources || {};
-    const sourceId = Object.keys(sources).find(id => id.includes('jawg') || id.includes('streets') || id.includes('osm')) || 'jawg';
+    const sourceId = Object.keys(sources).find(id => id.includes('geoapify') || id.includes('osm') || id.includes('streets')) || 'geoapify';
 
     mapInstance.addLayer({
       id: 'm4-glow-outer',
@@ -174,43 +182,26 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       ? '<strong>Tuzla Quest Pravila:</strong> Posjetite lokacije na mapi. Skupite sve nagrade! Kada dođete na cilj, skenirajte QR kod na lokaciji kako biste otključali AR sadržaj.'
       : '<strong>Tuzla Quest Rules:</strong> Visit map locations and collect rewards! Once there, scan the QR code to unlock the AR content.';
 
+    const styleToUse = isOnline ? ONLINE_STYLE : OFFLINE_STYLE;
+
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX',
+      style: styleToUse,
       center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
       zoom: 15,
+      minZoom: isOnline ? 0 : 14,
+      maxZoom: isOnline ? 20 : 16,
       pitch: 75,
       bearing: -15,
       attributionControl: false,
     });
 
-    // FAIL-SAFE: If Jawg style fails to load, fallback to local GeoJSON
+    // FAIL-SAFE: If map style fails to load, fallback to local GeoJSON
     map.current.on('error', (e) => {
       console.warn("🗺️ MapQuest: Style error detected, attempting local fallback...", e.error?.message);
-      if (e.error?.message?.includes('401') || e.error?.message?.includes('403') || e.error?.message?.includes('Failed to fetch') || e.error?.message?.includes('NetworkError')) {
+      if (isOnline && (e.error?.message?.includes('401') || e.error?.message?.includes('403') || e.error?.message?.includes('Failed to fetch') || e.error?.message?.includes('NetworkError'))) {
         setIsOfflineMode(true);
-        map.current?.setStyle({
-          version: 8,
-          sources: {
-            'tuzla': {
-              type: 'geojson',
-              data: 'assets/tuzla-map.geojson'
-            }
-          },
-          layers: [
-            { id: 'background', type: 'background', paint: { 'background-color': '#48392cff' } },
-            { id: 'water', type: 'fill', source: 'tuzla', filter: ['any', ['==', 'natural', 'water'], ['==', 'waterway', 'river']], paint: { 'fill-color': '#1d4ed8', 'fill-opacity': 0.7 } },
-            { id: 'parks', type: 'fill', source: 'tuzla', filter: ['any', ['==', 'leisure', 'park'], ['==', 'landuse', 'grass']], paint: { 'fill-color': '#064e3b', 'fill-opacity': 0.5 } },
-            { id: 'roads', type: 'fill', source: 'tuzla', filter: ['has', 'highway'], paint: { 'fill-color': '#95beffff', 'fill-opacity': 0.6 } },
-            { id: 'primary-roads', type: 'line', source: 'tuzla', filter: ['any', ['==', 'highway', 'primary'], ['==', 'highway', 'secondary']], paint: { 'line-color': '#010c1aff', 'line-width': 2.5, 'line-opacity': 0.9 } },
-            {
-              id: 'buildings-3d', type: 'fill-extrusion', source: 'tuzla', filter: ['has', 'building'], paint: {
-                'fill-extrusion-color': '#3d3636ff', 'fill-extrusion-height': ['coalesce', ['get', 'height'], 15],
-                'fill-extrusion-base': ['coalesce', ['get', 'min_height'], 0], 'fill-extrusion-opacity': 0.85
-              }
-            }
-          ]
-        });
+        map.current?.setStyle(OFFLINE_STYLE);
         // Ensure we signal loaded so markers can appear
         setTimeout(() => setIsLoaded(true), 1000);
       }
@@ -273,7 +264,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     };
 
     // 2. Attach global functions IMMEDIATELY so buttons work even if style is loading
-    (window as any).setGlobalMapNavTarget = (locId: string) => {
+    (window as any).setGlobalMapNavTarget = async (locId: string) => {
       console.log("🚀 Navigating to:", locId);
       let coords: [number, number] | null = null;
       const tgt = LOCATIONS.find(l => l.id === locId);
@@ -295,6 +286,25 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         const navLineSource = map.current.getSource('nav-line') as maplibregl.GeoJSONSource;
         if (navLineSource && (window as any).currentUserLngLat) {
           const [lng, lat] = (window as any).currentUserLngLat;
+          
+          if (isOnline) {
+            try {
+              const routingApiKey = '63e8b34f44974d71bc70aad63e5b56ba';
+              // Geoapify waypoints are lat,lon
+              const routingUrl = `https://api.geoapify.com/v1/routing?waypoints=${lat},${lng}|${coords[1]},${coords[0]}&mode=walk&apiKey=${routingApiKey}`;
+              const res = await fetch(routingUrl);
+              const data = await res.json();
+
+              if (data.features && data.features.length > 0) {
+                navLineSource.setData(data.features[0]);
+                return; // Success!
+              }
+            } catch (err) {
+              console.warn("🧭 MapQuest: Routing API failed, falling back to direct line.", err);
+            }
+          }
+
+          // Fallback: Straight Line (or for offline mode)
           navLineSource.setData({
             type: 'Feature',
             properties: {},
@@ -317,13 +327,66 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       setIsLoaded(true);
       setupResources();
 
-      // Advanced 3D Lighting for metallic effect
-      map.current?.setLight({
-        anchor: 'viewport',
-        color: '#ffffff',
-        intensity: 0.4,
-        position: [1.15, 210, 30]
-      });
+      try {
+        if (!map.current?.isStyleLoaded()) return;
+
+        // Advanced 3D Lighting for metallic effect
+        map.current?.setLight({
+          anchor: 'viewport',
+          color: '#ffffff',
+          intensity: 0.4,
+          position: [1.15, 210, 30]
+        });
+
+        // Apply custom style refinements (from Mapa-Tuzle.js)
+        if (isOnline) {
+          map.current?.setPaintProperty('background', 'background-color', '#f2ebc9');
+          map.current?.setPaintProperty('park', 'fill-color', '#d1e8b9');
+          map.current?.setPaintProperty('park_outline', 'line-color', '#b4f275');
+          map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(215,190,154,0.49)');
+          map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(148,203,117,0.7)');
+          map.current?.setPaintProperty('landcover_grass', 'fill-color', '#a0d381');
+          map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#f0f4e4');
+          map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#ffd7eb');
+          map.current?.setPaintProperty('landuse_school', 'fill-color', '#f1f4b7');
+          map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
+          map.current?.setPaintProperty('water', 'fill-color', '#8caff8');
+          map.current?.setPaintProperty('aeroway_runway', 'line-color', '#d9d6d3');
+          map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#f2f5f6');
+          map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');
+          map.current?.setPaintProperty('road_minor_casing', 'line-color', '#3e3b38');
+          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#d58a48');
+          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', {"base":1.2,"stops":[[8,1.5882352941176472],[20,18]]});
+          map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#f0a461');
+          map.current?.setPaintProperty('road_motorway_casing', 'line-color', '#f49e53');
+          map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#a06346');
+          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', {"base":1.2,"stops":[[14,0.30000000000000004],[20,3]]});
+          map.current?.setPaintProperty('road_motorway_link', 'line-color', '#e5972f');
+          map.current?.setPaintProperty('road_service_track', 'line-color', '#ecdcdc');
+          map.current?.setPaintProperty('road_minor', 'line-width', {"base":1.2,"stops":[[13.5,0],[14,2.638888888888889],[20,19]]});
+          map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fce174');
+          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', {"base":1.2,"stops":[[6.5,0],[8,0.5769230769230769],[20,15]]});
+          map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#ffb16e');
+          map.current?.setPaintProperty('road_motorway', 'line-color', '#db9b45');
+          map.current?.setPaintProperty('road_one_way_arrow', 'text-color', '#b3acac');
+          map.current?.setLayoutProperty('road_one_way_arrow', 'text-size', 1);
+          map.current?.setPaintProperty('road_one_way_arrow_opposite', 'text-color', '#b0abab');
+          map.current?.setLayoutProperty('road_one_way_arrow_opposite', 'text-size', 1);
+          map.current?.setPaintProperty('building-3d', 'fill-extrusion-color', '#c9c2c2');
+          map.current?.setLayoutProperty('water_name_line', 'visibility', 'none');
+          map.current?.setLayoutProperty('water_name_point', 'visibility', 'none');
+          map.current?.setLayoutProperty('poi_transit', 'text-size', 13);
+          map.current?.setLayoutProperty('poi_transit', 'text-offset', [0,0]);
+          map.current?.setPaintProperty('poi_transit', 'text-color', '#e4e2e2');
+          map.current?.setPaintProperty('poi_transit', 'text-halo-color', '#776c6c');
+          map.current?.setPaintProperty('poi_transit', 'text-halo-width', 1.5);
+          map.current?.setPaintProperty('poi', 'text-color', '#333131');
+          map.current?.setPaintProperty('road_label', 'text-color', '#5d5858');
+          map.current?.setLayoutProperty('road_label', 'text-size', {"base":1,"stops":[[13,9.23076923076923],[14,10]]});
+        }
+      } catch (e) {
+        console.warn("MapQuest: Error applying style refinements", e);
+      }
 
       if (isOnline && policy.mapFx.enable3dBuildings) {
         setupBuildings(map.current!);
@@ -352,7 +415,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
     if (isOnline) {
       setIsOfflineMode(false);
-      map.current.setStyle('https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX');
+      map.current.setStyle(ONLINE_STYLE);
+      map.current.setMinZoom(0);
+      map.current.setMaxZoom(20);
 
       map.current.once('style.load', () => {
         if (!map.current) return;
@@ -365,6 +430,51 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           position: [1.15, 210, 30]
         });
 
+        // Apply custom style refinements (from Mapa-Tuzle.js)
+        try {
+          map.current?.setPaintProperty('background', 'background-color', '#f2ebc9');
+          map.current?.setPaintProperty('park', 'fill-color', '#d1e8b9');
+          map.current?.setPaintProperty('park_outline', 'line-color', '#b4f275');
+          map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(215,190,154,0.49)');
+          map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(148,203,117,0.7)');
+          map.current?.setPaintProperty('landcover_grass', 'fill-color', '#a0d381');
+          map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#f0f4e4');
+          map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#ffd7eb');
+          map.current?.setPaintProperty('landuse_school', 'fill-color', '#f1f4b7');
+          map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
+          map.current?.setPaintProperty('water', 'fill-color', '#8caff8');
+          map.current?.setPaintProperty('aeroway_runway', 'line-color', '#d9d6d3');
+          map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#f2f5f6');
+          map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');
+          map.current?.setPaintProperty('road_minor_casing', 'line-color', '#3e3b38');
+          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#d58a48');
+          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', {"base":1.2,"stops":[[8,1.5882352941176472],[20,18]]});
+          map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#f0a461');
+          map.current?.setPaintProperty('road_motorway_casing', 'line-color', '#f49e53');
+          map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#a06346');
+          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', {"base":1.2,"stops":[[14,0.30000000000000004],[20,3]]});
+          map.current?.setPaintProperty('road_motorway_link', 'line-color', '#e5972f');
+          map.current?.setPaintProperty('road_service_track', 'line-color', '#ecdcdc');
+          map.current?.setPaintProperty('road_minor', 'line-width', {"base":1.2,"stops":[[13.5,0],[14,2.638888888888889],[20,19]]});
+          map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fce174');
+          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', {"base":1.2,"stops":[[6.5,0],[8,0.5769230769230769],[20,15]]});
+          map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#ffb16e');
+          map.current?.setPaintProperty('road_motorway', 'line-color', '#db9b45');
+          map.current?.setPaintProperty('road_one_way_arrow', 'text-color', '#b3acac');
+          map.current?.setLayoutProperty('road_one_way_arrow', 'text-size', 1);
+          map.current?.setPaintProperty('road_one_way_arrow_opposite', 'text-color', '#b0abab');
+          map.current?.setLayoutProperty('road_one_way_arrow_opposite', 'text-size', 1);
+          map.current?.setPaintProperty('building-3d', 'fill-extrusion-color', '#c9c2c2');
+          map.current?.setLayoutProperty('water_name_line', 'visibility', 'none');
+          map.current?.setLayoutProperty('water_name_point', 'visibility', 'none');
+          map.current?.setLayoutProperty('poi_transit', 'text-size', 13);
+          map.current?.setPaintProperty('road_label', 'text-color', '#5d5858');
+          map.current?.setLayoutProperty('road_label', 'text-size', {"base":1,"stops":[[13,9.23076923076923],[14,10]]});
+          map.current?.setPaintProperty('road_shield', 'text-color', '#2e2a2a');
+        } catch (err) {
+          console.warn("⚠️ MapQuest: Some style refinements could not be applied.", err);
+        }
+
         if (policy.mapFx.enable3dBuildings) {
           setupBuildings(map.current);
         }
@@ -372,88 +482,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       });
     } else {
       setIsOfflineMode(true);
-      map.current.setStyle({
-        version: 8,
-        sources: {
-          'tuzla': {
-            type: 'geojson',
-            data: 'assets/tuzla-map.geojson'
-          }
-        },
-        layers: [
-          {
-            id: 'background',
-            type: 'background',
-            paint: { 'background-color': '#f0f3f9ff' }
-          },
-          {
-            id: 'water',
-            type: 'fill',
-            source: 'tuzla',
-            filter: ['any', ['==', 'natural', 'water'], ['==', 'waterway', 'river']],
-            paint: { 'fill-color': '#1d4ed8', 'fill-opacity': 0.7 }
-          },
-          {
-            id: 'parks',
-            type: 'fill',
-            source: 'tuzla',
-            filter: ['any', ['==', 'leisure', 'park'], ['==', 'landuse', 'grass']],
-            paint: { 'fill-color': '#064e3b', 'fill-opacity': 0.5 }
-          },
-          {
-            id: 'roads',
-            type: 'line',
-            source: 'tuzla',
-            filter: ['has', 'highway'],
-            paint: {
-              'line-color': '#3b82f6',
-              'line-width': 1.5,
-              'line-opacity': 0.3
-            }
-          },
-          // M-4 highlight in offline mode
-          {
-            id: 'm4-glow-offline',
-            type: 'line',
-            source: 'tuzla',
-            filter: ['all', ['has', 'highway'], ['==', 'name', 'Obala Zmaja od Bosne']],
-            paint: {
-              'line-color': '#facc15',
-              'line-width': 6,
-              'line-opacity': 0.6
-            }
-          },
-          {
-            id: 'primary-roads',
-            type: 'line',
-            source: 'tuzla',
-            filter: ['any', ['==', 'highway', 'primary'], ['==', 'highway', 'secondary']],
-            paint: {
-              'line-color': '#60a5fa',
-              'line-width': 2.5,
-              'line-opacity': 0.7
-            }
-          },
-          {
-            id: '3d-buildings',
-            type: 'fill-extrusion',
-            source: 'tuzla',
-            filter: ['has', 'building'],
-            paint: {
-              'fill-extrusion-color': [
-                'interpolate', ['linear'], ['coalesce', ['get', 'height'], 15],
-                0, '#94a3b8',
-                20, '#64748b',
-                50, '#475569',
-                100, '#334155'
-              ],
-              'fill-extrusion-height': ['coalesce', ['get', 'height'], 15],
-              'fill-extrusion-base': ['coalesce', ['get', 'min_height'], 0],
-              'fill-extrusion-opacity': 0.9
-            }
-          }
-        ]
-      });
+      map.current.setStyle(OFFLINE_STYLE);
+      map.current.setMinZoom(14);
+      map.current.setMaxZoom(16);
     }
   }, [isOnline, isLoaded, policy.mapFx.enable3dBuildings, policy.mapFx.maxPitch]);
 
@@ -771,7 +802,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
 
       {/* MAP VIEW */}
-      <div ref={mapContainer} className="flex-grow z-0 relative h-full grayscale-[10%] brightness-125">
+      <div ref={mapContainer} className="h-full w-full grayscale-[0.05] contrast-[1.05] brightness-[0.9]">
         {/* RECENTER BUTTON */}
         <button
           onClick={() => {
@@ -790,7 +821,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
               );
             }
           }}
-          className="absolute bottom-24 right-6 z-20 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center text-blue-400 active:scale-95 transition-all"
+          className="absolute bottom-24 left-6 z-20 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center text-blue-400 active:scale-95 transition-all"
         >
           <Navigation size={20} />
         </button>

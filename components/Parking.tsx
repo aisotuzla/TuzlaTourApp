@@ -185,6 +185,8 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [userCoords, setUserCoords] = useState<[number, number] | null>(null);
     const isOnline = useNetwork();
+    const OFFLINE_STYLE = '/style/offline-style.json';
+    const ONLINE_STYLE = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
 
     useEffect(() => {
         const stored = localStorage.getItem("parkingExpiry");
@@ -213,78 +215,79 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
 
         map.current = new maplibregl.Map({
             container: mapContainer.current,
-            style: isOnline
-                ? 'https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX'
-                : {
-                    version: 8,
-                    sources: { 'tuzla': { type: 'geojson', data: '/assets/tuzla-map.geojson' } },
-                    layers: [
-                        { id: 'background', type: 'background', paint: { 'background-color': '#0f172a' } },
-                        { id: 'water', type: 'fill', source: 'tuzla', filter: ['any', ['==', 'natural', 'water'], ['==', 'waterway', 'river']], paint: { 'fill-color': '#1d4ed8', 'fill-opacity': 0.7 } },
-                        { id: 'parks', type: 'fill', source: 'tuzla', filter: ['any', ['==', 'leisure', 'park'], ['==', 'landuse', 'grass']], paint: { 'fill-color': '#064e3b', 'fill-opacity': 0.5 } },
-                        { id: 'roads', type: 'line', source: 'tuzla', filter: ['has', 'highway'], paint: { 'line-color': '#3b82f6', 'line-width': 1.5, 'line-opacity': 0.3 } },
-                        { id: 'primary-roads', type: 'line', source: 'tuzla', filter: ['any', ['==', 'highway', 'primary'], ['==', 'highway', 'secondary']], paint: { 'line-color': '#cabe10ff', 'line-width': 3.5, 'line-opacity': 0.9 } },
-                        { id: 'buildings', type: 'fill', source: 'tuzla', filter: ['has', 'building'], paint: { 'fill-color': '#94a3b8', 'fill-opacity': 0.1 } }
-                    ]
-                },
+            style: isOnline ? ONLINE_STYLE : OFFLINE_STYLE,
             center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
             zoom: 14.5,
+            minZoom: isOnline ? 0 : 14,
+            maxZoom: isOnline ? 20 : 16,
             pitch: 0
         });
 
         map.current.on('load', () => {
             setIsLoaded(true);
 
-            zones.forEach(zone => {
-                const id = `zone-${zone.key}`;
-                map.current?.addSource(id, {
-                    type: 'geojson',
-                    data: {
-                        type: 'FeatureCollection',
-                        features: zone.polygons.map(p => ({
-                            type: 'Feature',
-                            properties: { zone: zone.key },
-                            geometry: { type: 'Polygon', coordinates: [p] }
-                        })) as any
-                    }
-                });
+            try {
+                if (!map.current?.isStyleLoaded()) return;
+                
+                zones.forEach(zone => {
+                    const id = `zone-${zone.key}`;
+                    if (map.current?.getSource(id)) return; // Prevent duplicate source errors
 
-                map.current?.addLayer({
-                    id: `${id}-fill`,
-                    type: 'fill',
-                    source: id,
-                    paint: {
-                        'fill-color': zone.color,
-                        'fill-opacity': 0.3
-                    }
-                });
+                    map.current?.addSource(id, {
+                        type: 'geojson',
+                        data: {
+                            type: 'FeatureCollection',
+                            features: zone.polygons.map(p => ({
+                                type: 'Feature',
+                                properties: { zone: zone.key },
+                                geometry: { type: 'Polygon', coordinates: [p] }
+                            })) as any
+                        }
+                    });
 
-                map.current?.addLayer({
-                    id: `${id}-outline`,
-                    type: 'line',
-                    source: id,
-                    paint: {
-                        'line-color': zone.color,
-                        'line-width': 3,
-                        'line-dasharray': [2, 1]
-                    }
-                });
+                    map.current?.addLayer({
+                        id: `${id}-fill`,
+                        type: 'fill',
+                        source: id,
+                        paint: {
+                            'fill-color': zone.color,
+                            'fill-opacity': 0.3
+                        }
+                    });
 
-                // Click listener
-                map.current?.on('click', `${id}-fill`, () => {
-                    setSelectedZone(zone);
-                });
+                    map.current?.addLayer({
+                        id: `${id}-outline`,
+                        type: 'line',
+                        source: id,
+                        paint: {
+                            'line-color': zone.color,
+                            'line-width': 3,
+                            'line-dasharray': [2, 1]
+                        }
+                    });
 
-                // Hover style
-                map.current?.on('mouseenter', `${id}-fill`, () => {
-                    map.current!.getCanvas().style.cursor = 'pointer';
-                    map.current?.setPaintProperty(`${id}-fill`, 'fill-opacity', 0.6);
+                    // Click listener
+                    map.current?.on('click', `${id}-fill`, () => {
+                        setSelectedZone(zone);
+                    });
+
+                    // Hover style
+                    map.current?.on('mouseenter', `${id}-fill`, () => {
+                        map.current!.getCanvas().style.cursor = 'pointer';
+                        if (map.current?.isStyleLoaded()) {
+                            try { map.current?.setPaintProperty(`${id}-fill`, 'fill-opacity', 0.6); } catch (e) {}
+                        }
+                    });
+                    map.current?.on('mouseleave', `${id}-fill`, () => {
+                        map.current!.getCanvas().style.cursor = '';
+                        if (map.current?.isStyleLoaded()) {
+                            try { map.current?.setPaintProperty(`${id}-fill`, 'fill-opacity', 0.3); } catch (e) {}
+                        }
+                    });
                 });
-                map.current?.on('mouseleave', `${id}-fill`, () => {
-                    map.current!.getCanvas().style.cursor = '';
-                    map.current?.setPaintProperty(`${id}-fill`, 'fill-opacity', 0.3);
-                });
-            });
+            } catch (e) {
+                console.warn("Parking Map: Could not initialize zone layers, style not fully loaded.", e);
+            }
         });
 
         map.current.on('error', (e) => {
@@ -312,13 +315,19 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
         lotMarkers.current = [];
 
         // Update zone visibility
-        zones.forEach(z => {
-            const visibility = viewMode === 'zones' ? 'visible' : 'none';
-            if (map.current?.getLayer(`zone-${z.key}-fill`)) {
-                map.current?.setLayoutProperty(`zone-${z.key}-fill`, 'visibility', visibility);
-                map.current?.setLayoutProperty(`zone-${z.key}-outline`, 'visibility', visibility);
+        try {
+            if (map.current.isStyleLoaded()) {
+                zones.forEach(z => {
+                    const visibility = viewMode === 'zones' ? 'visible' : 'none';
+                    if (map.current?.getLayer(`zone-${z.key}-fill`)) {
+                        map.current?.setLayoutProperty(`zone-${z.key}-fill`, 'visibility', visibility);
+                        map.current?.setLayoutProperty(`zone-${z.key}-outline`, 'visibility', visibility);
+                    }
+                });
             }
-        });
+        } catch (e) {
+            console.warn("Could not update zone visibility, style not ready", e);
+        }
 
         if (viewMode === 'lots') {
             TUZLA_PARKING_DATA.forEach(lot => {
@@ -411,9 +420,17 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
     // Update highlight
     useEffect(() => {
         if (!isLoaded || !map.current) return;
-        zones.forEach(z => {
-            map.current?.setPaintProperty(`zone-${z.key}-fill`, 'fill-opacity', selectedZone?.key === z.key ? 0.7 : 0.3);
-        });
+        try {
+            if (map.current.isStyleLoaded()) {
+                zones.forEach(z => {
+                    if (map.current?.getLayer(`zone-${z.key}-fill`)) {
+                        map.current?.setPaintProperty(`zone-${z.key}-fill`, 'fill-opacity', selectedZone?.key === z.key ? 0.7 : 0.3);
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn("Could not update highlight, style not ready", e);
+        }
     }, [selectedZone, isLoaded]);
 
     const isWithinTime = (zone: Zone) => {
@@ -494,7 +511,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                             handleAutoDetect();
                         }
                     }}
-                    className="absolute bottom-6 right-6 z-20 w-12 h-12 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-slate-100 flex items-center justify-center text-blue-600 active:scale-95 transition-all"
+                    className="absolute bottom-6 left-6 z-20 w-12 h-12 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-slate-100 flex items-center justify-center text-blue-600 active:scale-95 transition-all"
                 >
                     <Navigation size={20} />
                 </button>

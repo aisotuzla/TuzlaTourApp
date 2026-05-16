@@ -1,4 +1,4 @@
-import { LOCATIONS } from '../constants';
+import { LOCATIONS, BINGO_STORE, RESTAURANTS } from '../constants';
 import { tuzlaHotelData } from '../tuzlaHotelData';
 
 export interface OfflineProgress {
@@ -27,27 +27,30 @@ export const getOfflineAssetUrls = (): string[] => {
   // Add core assets
   CORE_ASSETS.forEach(url => urls.add(url));
 
-  // Add all Location images
-  LOCATIONS.forEach(loc => {
-    if (loc.image && loc.image.startsWith('/')) urls.add(loc.image);
-    // Add menu items for food locations
-    if (loc.menuItems) {
-      loc.menuItems.forEach(item => {
-        if (item.image && item.image.startsWith('/')) urls.add(item.image);
-      });
-    }
+  // Add Gallery images (Accommodation)
+  for (const hotel of tuzlaHotelData) {
+    if (hotel.image) urls.add(hotel.image);
+    if (hotel.extraImage) urls.add(hotel.extraImage);
+  }
+
+  // Add Restaurant images
+  RESTAURANTS.forEach(res => {
+    if (res.image) urls.add(res.image);
   });
 
-  // Add Hotel images
-  tuzlaHotelData.forEach(hotel => {
-    if (hotel.images) {
-      hotel.images.forEach(img => {
-        if (img.startsWith('/')) urls.add(img);
-      });
-    }
+  // Add Bingo store items
+  BINGO_STORE.items.forEach(item => {
+    if (item.image) urls.add(item.image);
   });
 
-  // We are excluding external URLs (like unsplash) and large videos to save space
+  // Add Core Menu & Brand Assets
+  urls.add('/assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png');
+  urls.add('/assets/Gallery/QuestQRLocations/Taxi1525.webp');
+  urls.add('/assets/Tuzlalogo.webp');
+  urls.add('/assets/logotuzlaICP.webp');
+  urls.add('/assets/panonikalogo.webp');
+  urls.add('/assets/Gallery/QuestQRLocations/IconTZ.webp');
+
   return Array.from(urls);
 };
 
@@ -57,14 +60,29 @@ export const getOfflineAssetUrls = (): string[] => {
 export const downloadOfflinePack = async (
   onProgress: (progress: OfflineProgress) => void
 ): Promise<void> => {
-  const urls = getOfflineAssetUrls();
+  let urls = getOfflineAssetUrls();
+
+  onProgress({ total: urls.length, downloaded: 0, status: 'downloading', message: 'Gathering map tiles...' });
+
+  try {
+    // Try to fetch the tile list manifest
+    const tileResp = await fetch('/assets/tile-list.json');
+    if (tileResp.ok) {
+      const tiles: string[] = await tileResp.json();
+      urls = [...urls, ...tiles];
+    }
+  } catch (err) {
+    console.warn('Could not load tile-list.json, proceeding with core assets only', err);
+  }
+
   let downloadedCount = 0;
 
   onProgress({ total: urls.length, downloaded: 0, status: 'downloading', message: 'Starting download...' });
 
   try {
-    const mapCache = await caches.open('map-tiles-cache');
-    const imgCache = await caches.open('images-cache');
+    const mapCache = await caches.open('local-map-tiles');
+    const dataCache = await caches.open('local-data');
+    const imgCache = await caches.open('images');
 
     // Download in chunks of 5 to avoid overwhelming the network
     const CHUNK_SIZE = 5;
@@ -75,8 +93,13 @@ export const downloadOfflinePack = async (
         chunk.map(async (url) => {
           try {
             // Determine which cache to use
-            const targetCache = url.endsWith('.geojson') ? mapCache : imgCache;
-            
+            let targetCache = imgCache;
+            if (url.includes('/MAP/tiles/')) {
+              targetCache = mapCache;
+            } else if (url.endsWith('.geojson') || url.endsWith('.json')) {
+              targetCache = dataCache;
+            }
+
             // Check if already cached
             const exists = await targetCache.match(url);
             if (!exists) {
@@ -93,11 +116,11 @@ export const downloadOfflinePack = async (
         })
       );
 
-      onProgress({ 
-        total: urls.length, 
-        downloaded: downloadedCount, 
+      onProgress({
+        total: urls.length,
+        downloaded: downloadedCount,
         status: 'downloading',
-        message: `Caching assets... (${downloadedCount}/${urls.length})` 
+        message: `Caching assets... (${downloadedCount}/${urls.length})`
       });
     }
 
@@ -113,8 +136,9 @@ export const downloadOfflinePack = async (
  */
 export const clearOfflinePack = async (): Promise<void> => {
   try {
-    await caches.delete('map-tiles-cache');
-    await caches.delete('images-cache');
+    await caches.delete('local-map-tiles');
+    await caches.delete('local-data');
+    await caches.delete('images');
   } catch (error) {
     console.error('Failed to clear offline caches', error);
   }

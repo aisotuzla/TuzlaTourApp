@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
@@ -7,8 +7,8 @@ import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Lazy load components to keep Wallet bundle small
-const WorldCup2026 = lazy(() => import('./WorldCup2026'));
-const SpecialCollection = lazy(() => import('./SpecialCollection'));
+import WorldCup2026 from './WorldCup2026';
+import SpecialCollection from './SpecialCollection';
 
 // TON Connect Imports
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';

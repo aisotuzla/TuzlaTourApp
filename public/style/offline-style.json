@@ -14,6 +14,8 @@
         "/MAP/tiles/{z}/{x}/{y}.png"
       ],
       "tileSize": 256,
+      "minzoom": 14,
+      "maxzoom": 16,
       "attribution": "© OpenStreetMap contributors"
     },
     "pois": {
@@ -25,8 +27,6 @@
       "data": "/MAP/buildings.geojson"
     }
   },
-  "sprite": "https://demotiles.maplibre.org/styles/osm-bright-gl-style/sprite",
-  "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "background",
@@ -39,8 +39,8 @@
       "id": "base-tiles",
       "type": "raster",
       "source": "raster-tiles",
-      "minzoom": 0,
-      "maxzoom": 19
+      "minzoom": 14,
+      "maxzoom": 16
     },
     {
       "id": "3d-buildings",

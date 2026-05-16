@@ -1,5 +1,8 @@
+https://maps.geoapify.com/v1/styles/osm-liberty/style.json
+https://maps.geoapify.com/v1/tile/osm-liberty/{z}/{x}/{y}.png
+
 const map = new maplibregl.Map({
-    container: 'tz-map',
+    container: 'my-map',
     style: 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b',
 });
 

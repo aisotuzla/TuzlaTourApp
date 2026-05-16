@@ -132,11 +132,11 @@ const CollectionCard: React.FC<{
       <div className={styles.legendaryCardInner}>
         <div className={styles.legendaryCardFront} style={{ transform: 'translateZ(1px)', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }}>
           <div className={styles.holoSweep} />
-          <img src={frontImg} alt={player.name} className="w-full h-full object-cover rounded-xl" />
+          <img src={frontImg} alt={player.name} className="w-full h-full object-contain rounded-xl" />
         </div>
         <div className={styles.legendaryCardBack} style={{ transform: 'rotateY(180deg) translateZ(1px)', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }}>
           <div className={styles.holoSweep} />
-          <img src={backImg} alt={player.name} className="w-full h-full object-cover rounded-xl" />
+          <img src={backImg} alt={player.name} className="w-full h-full object-contain rounded-xl" />
         </div>
       </div>
     </motion.div>
@@ -160,7 +160,7 @@ const FullScreenCard: React.FC<{ player: Player; onClose: () => void }> = ({ pla
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-6"
+      className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-xl flex flex-col items-center p-6 overflow-y-auto"
     >
       <button 
         onClick={onClose}
@@ -169,7 +169,11 @@ const FullScreenCard: React.FC<{ player: Player; onClose: () => void }> = ({ pla
         <X size={32} />
       </button>
 
-      <div className="w-full max-w-sm aspect-[2.5/3.5] relative group" onClick={() => setIsFlipped(!isFlipped)}>
+      <div 
+        className="relative mt-12 mb-8 mx-auto flex-shrink-0" 
+        style={{ height: 'auto', maxHeight: '55vh', width: '100%', maxWidth: 'min(350px, 85vw)', aspectRatio: '2.5/3.5' }}
+        onClick={() => setIsFlipped(!isFlipped)}
+      >
         <motion.div 
           className={`w-full h-full relative transition-all duration-700 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}
           style={{ transformStyle: 'preserve-3d' }}
@@ -177,13 +181,13 @@ const FullScreenCard: React.FC<{ player: Player; onClose: () => void }> = ({ pla
         >
           {/* Front */}
           <div className="absolute inset-0 backface-hidden shadow-2xl rounded-3xl overflow-hidden border-4 border-amber-500/30" style={{ transform: 'translateZ(1px)', backfaceVisibility: 'hidden' }}>
-            <img src={frontImg} className="w-full h-full object-cover" />
+            <img src={frontImg} className="w-full h-full object-contain bg-black/20" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
           </div>
 
           {/* Back */}
           <div className="absolute inset-0 backface-hidden shadow-2xl rounded-3xl overflow-hidden border-4 border-amber-500/30" style={{ transform: 'rotateY(180deg) translateZ(1px)', backfaceVisibility: 'hidden' }}>
-            <img src={backImg} className="w-full h-full object-cover" />
+            <img src={backImg} className="w-full h-full object-contain bg-black/20" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
           </div>
         </motion.div>

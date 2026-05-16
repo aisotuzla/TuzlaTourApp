@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog, ChevronDown } from 'lucide-react';
 
 interface HourlyForecast {
@@ -29,9 +29,10 @@ const getWeatherIcon = (code: number, className: string) => {
 
 interface WeatherWidgetProps {
   className?: string;
+  lang?: string;
 }
 
-export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ className = 'top-4 right-4' }) => {
+export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ className = 'top-4 right-4', lang = 'en' }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 

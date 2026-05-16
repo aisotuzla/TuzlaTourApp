@@ -56,7 +56,7 @@
     .splash-logo {
       width: 120px;
       height: 120px;
-      object-contain: contain;
+      object-fit: contain;
       margin-bottom: 2rem;
       filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
     }
@@ -112,6 +112,7 @@
 
     tc-root img {
       -webkit-user-select: none;
+      user-select: none;
       -webkit-touch-callout: none;
     }
 
@@ -140,7 +141,7 @@
   </style>
 
 </head>
-
+<body>
   <div id="app-splash">
     <img src="/assets/Gallery/QuestQRLocations/IconTZ.webp" class="splash-logo" alt="Tuzla Tour Logo" />
     <div class="loader-ring"></div>
