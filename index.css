@@ -306,3 +306,18 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #cbd5e1;
 }
+
+/* Map Markers */
+.hotel-marker, .hotel-marker-container {
+    z-index: 100 !important;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.hotel-marker div, .hotel-marker-container div {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hotel-marker:active div, .hotel-marker-container:active div {
+    transform: scale(0.9);
+}

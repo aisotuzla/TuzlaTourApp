@@ -112,7 +112,7 @@ const SecurityGuard: React.FC<SecurityGuardProps> = ({ children, lang, isUnlocke
                 </svg>
             </div>
 
-            <div className="relative z-10 w-full max-w-md px-8 text-center space-y-12">
+            <div className="relative z-10 w-full max-w-sm px-6 text-center flex flex-col items-center justify-center space-y-10">
                 <motion.div 
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -151,19 +151,19 @@ const SecurityGuard: React.FC<SecurityGuardProps> = ({ children, lang, isUnlocke
                 </div>
 
                 {/* Number Pad */}
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-3 gap-6 justify-items-center mx-auto w-fit">
                     {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(num => (
                         <button
                             key={num}
                             onClick={() => handleNumberClick(num)}
-                            className="w-16 h-16 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-2xl font-black text-white transition-all backdrop-blur-md flex items-center justify-center glassy-number shadow-xl"
+                            className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-2xl font-black text-white transition-all backdrop-blur-md flex items-center justify-center glassy-number shadow-xl"
                         >
                             {num}
                         </button>
                     ))}
                     <button
                         onClick={handleOK}
-                        className={`w-16 h-16 rounded-2xl border transition-all backdrop-blur-md flex items-center justify-center uppercase tracking-widest text-[10px] font-black ${
+                        className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border transition-all backdrop-blur-md flex items-center justify-center uppercase tracking-widest text-[10px] font-black ${
                             pin.length === PIN_LENGTH 
                                 ? 'bg-blue-500 border-blue-400 text-white shadow-[0_0_20px_rgba(59,130,246,0.5)] scale-105 active:scale-95' 
                                 : 'bg-white/5 border-white/10 text-white/30 cursor-not-allowed'
@@ -173,13 +173,13 @@ const SecurityGuard: React.FC<SecurityGuardProps> = ({ children, lang, isUnlocke
                     </button>
                     <button
                         onClick={() => handleNumberClick('0')}
-                        className="w-16 h-16 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-2xl font-black text-white transition-all backdrop-blur-md flex items-center justify-center glassy-number shadow-xl"
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-2xl font-black text-white transition-all backdrop-blur-md flex items-center justify-center glassy-number shadow-xl"
                     >
                         0
                     </button>
                     <button
                         onClick={handleDelete}
-                        className="w-16 h-16 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-white transition-all backdrop-blur-md flex items-center justify-center shadow-xl"
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-white transition-all backdrop-blur-md flex items-center justify-center shadow-xl"
                     >
                         <Delete className="w-6 h-6" />
                     </button>

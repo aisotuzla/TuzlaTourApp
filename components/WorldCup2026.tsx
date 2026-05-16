@@ -68,40 +68,24 @@ const PlayerCard: React.FC<{ player: Player }> = ({ player }) => {
           </div>
         </div>
 
-        <div className={styles.cardBack}>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-4 p-4 w-full mt-2">
-            <div className="flex justify-between items-center border-b border-white/10 pb-1">
-              <span className="text-xs font-bold text-white/50 uppercase">PAC</span>
-              <span className="text-xl font-black text-white">{player.stats.pac}</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-white/10 pb-1">
-              <span className="text-xs font-bold text-white/50 uppercase">DRI</span>
-              <span className="text-xl font-black text-white">{player.stats.dri}</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-white/10 pb-1">
-              <span className="text-xs font-bold text-white/50 uppercase">SHO</span>
-              <span className="text-xl font-black text-white">{player.stats.sho}</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-white/10 pb-1">
-              <span className="text-xs font-bold text-white/50 uppercase">DEF</span>
-              <span className="text-xl font-black text-white">{player.stats.def}</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-white/10 pb-1">
-              <span className="text-xs font-bold text-white/50 uppercase">PAS</span>
-              <span className="text-xl font-black text-white">{player.stats.pas}</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-white/10 pb-1">
-              <span className="text-xs font-bold text-white/50 uppercase">PSY</span>
-              <span className="text-xl font-black text-white">{player.stats.psy}</span>
-            </div>
+        <div className="card-back-optimized flex flex-col h-full w-full p-5 bg-[#0a0a0a]">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-5 w-full mt-2">
+            {[
+              { label: 'PAC', val: player.stats.pac },
+              { label: 'DRI', val: player.stats.dri },
+              { label: 'SHO', val: player.stats.sho },
+              { label: 'DEF', val: player.stats.def },
+              { label: 'PAS', val: player.stats.pas },
+              { label: 'PSY', val: player.stats.psy }
+            ].map((s) => (
+              <div key={s.label} className="flex justify-between items-center border-b border-white/20 pb-2">
+                <span className="text-[10px] font-black text-amber-500 uppercase tracking-tighter">{s.label}</span>
+                <span className="text-2xl font-black text-white italic">{s.val}</span>
+              </div>
+            ))}
           </div>
-          <div className="flex justify-center w-full my-2">
-            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(JSON.stringify({id:player.id, name:player.name, number:player.number, pos:player.position, ovr:player.ovr, club:player.club, stats:player.stats}))}`} alt="QR" className="w-16 h-16 bg-white p-1 rounded-lg shadow-lg" />
-          </div>
-          <div className="mt-auto pb-4 text-center">
-            <div className="text-[8px] font-black text-amber-400 uppercase tracking-widest">Official Roster</div>
-            <div className="text-[10px] font-bold text-white/30 uppercase">{player.club || 'National Team'}</div>
-          </div>
+          {/* Spacer for bottom navigation safety */}
+          <div className="h-20" />
         </div>
       </div>
     </div>

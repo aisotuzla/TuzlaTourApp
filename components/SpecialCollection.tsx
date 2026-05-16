@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Share2, QrCode as QrIcon } from 'lucide-react';
+import { Preferences } from '@capacitor/preferences';
 import { legendaryPlayers, Player } from './WorldCup2026';
 import styles from './WorldCup2026.module.css';
 
@@ -43,7 +44,7 @@ const SpecialCollection: React.FC<SpecialCollectionProps> = ({ lang, onBack }) =
         <div className="h-1 w-24 bg-gradient-to-r from-amber-500 to-yellow-300 mx-auto rounded-full" />
       </header>
 
-      <div className="grid grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 gap-8 max-w-lg mx-auto">
         {legendaryPlayers.map((player) => (
           <CollectionCard 
             key={player.id} 
@@ -204,11 +205,49 @@ const FullScreenCard: React.FC<{ player: Player; onClose: () => void }> = ({ pla
         </div>
 
         <div className="flex gap-4">
-          <button className="flex items-center gap-2 px-6 py-3 bg-amber-500 text-amber-950 font-black rounded-2xl shadow-xl active:scale-95 transition-all">
+          <button 
+            onClick={async () => {
+              try {
+                const { value } = await Preferences.get({ key: 'tuzla_wallet_cards' });
+                const cards = value ? JSON.parse(value) : [];
+                if (!cards.find((c: any) => c.id === player.id)) {
+                  cards.push({ ...player, collectedAt: new Date().toISOString() });
+                  await Preferences.set({ key: 'tuzla_wallet_cards', value: JSON.stringify(cards) });
+                  alert(`${player.name} added to your digital wallet!`);
+                } else {
+                  alert(`You already have ${player.name} in your wallet.`);
+                }
+              } catch (e) {
+                console.error(e);
+                alert('Saved to offline storage!');
+              }
+              onClose();
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-amber-500 text-amber-950 font-black rounded-2xl shadow-xl active:scale-95 transition-all"
+          >
             <QrIcon size={20} />
-            SEND CARD
+            SEND TO WALLET
           </button>
-          <button className="flex items-center gap-2 px-6 py-3 bg-white/10 text-white font-black rounded-2xl border border-white/20 active:scale-95 transition-all">
+          <button 
+            onClick={async () => {
+              if (navigator.share) {
+                try {
+                  await navigator.share({
+                    title: `Tuzla Tour - ${player.name}`,
+                    text: `Check out this legendary ${player.name} card from Tuzla!`,
+                    url: window.location.href,
+                  });
+                } catch (err) {
+                  console.error('Share failed:', err);
+                }
+              } else {
+                const dummyUrl = window.location.href;
+                navigator.clipboard.writeText(dummyUrl);
+                alert('Link copied to clipboard!');
+              }
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-white/10 text-white font-black rounded-2xl border border-white/20 active:scale-95 transition-all"
+          >
             <Share2 size={20} />
             SHARE
           </button>

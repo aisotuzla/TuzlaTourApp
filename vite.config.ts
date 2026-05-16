@@ -29,12 +29,15 @@ export default defineConfig(({ mode }) => {
         },
       }),
       VitePWA({
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'service-worker.ts',
         registerType: 'autoUpdate',
-        injectRegister: 'auto',
         devOptions: {
-          enabled: true
+          enabled: true,
+          type: 'module'
         },
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'assets/**/*'],
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'assets/**/*', 'MAP/**/*', 'poi.geojson', 'style/*.json'],
         manifest: {
           name: 'Tuzla Virtual Tour Guide',
           short_name: 'Tuzla Guide',

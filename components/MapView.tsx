@@ -7,6 +7,8 @@ import { AppFeatures } from '../utils/platform';
 import { Search, X, Loader2, Navigation, Layers } from 'lucide-react';
 import { WeatherWidget } from './WeatherWidget';
 import { useNetwork } from '../hooks/useNetwork';
+import { tuzlaHotelData } from '../tuzlaHotelData';
+import { Hotel as HotelIcon } from 'lucide-react';
 
 interface MapViewProps {
   lang: Language;
@@ -109,6 +111,32 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         color: '#ffffff',
         intensity: 0.4,
         position: [1.15, 210, 30]
+      });
+
+      // Add Hotel Markers
+      tuzlaHotelData.forEach(hotel => {
+        const el = document.createElement('div');
+        el.className = 'hotel-marker';
+        el.innerHTML = `
+          <div style="background: #1e293b; color: #fbbf24; border: 2px solid #fbbf24; padding: 6px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; transform: scale(1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+          </div>
+        `;
+
+        new maplibregl.Marker(el)
+          .setLngLat([hotel.longitude, hotel.latitude])
+          .setPopup(new maplibregl.Popup({ offset: 25, maxWidth: '280px' }).setHTML(`
+            <div style="font-family: 'Quicksand', sans-serif; padding: 12px; background: #0f172a; border-radius: 16px; color: white;">
+              <img src="${hotel.image}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 12px; margin-bottom: 8px;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/>
+              <h3 style="font-weight: 800; font-size: 16px; margin: 0 0 4px 0; color: #fbbf24;">${hotel.name}</h3>
+              <p style="font-size: 11px; margin: 0 0 8px 0; color: #94a3b8; line-height: 1.4;">${hotel.description[lang]}</p>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 12px; font-weight: 900; color: #fbbf24;">${hotel.rating} ⭐</span>
+                <span style="font-size: 10px; font-weight: 700; color: #475569; background: white/10; padding: 2px 8px; border-radius: 6px;">${hotel.priceRange}</span>
+              </div>
+            </div>
+          `))
+          .addTo(map.current!);
       });
     });
 
@@ -244,7 +272,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         </button>
       </div>
 
-      <div ref={mapContainer} className="flex-grow w-full h-full grayscale-[0.2] contrast-[1.1]" />
+      <div ref={mapContainer} className="h-full w-full grayscale-[0.1] contrast-[1.1] brightness-125" />
     </div>
   );
 };

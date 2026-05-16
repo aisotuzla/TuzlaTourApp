@@ -228,24 +228,27 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         </section>
 
         {/* 3. EXTERNAL PARTNER LINKS */}
-        <section>
-          <div className="mb-10">
+        <section className="py-16">
+          <div className="mb-12 text-center md:text-left">
             <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
               {t.linksTitle}
             </h2>
-            <div className="w-20 h-2 bg-blue-600 rounded-full mt-2" />
+            <div className="w-24 h-2 bg-blue-600 rounded-full mt-2 mx-auto md:mx-0" />
           </div>
 
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16 opacity-70">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
             {externalLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-12 md:h-16 transition-all duration-300 hover:scale-110 hover:opacity-100 grayscale hover:grayscale-0"
+                className="group flex flex-col items-center justify-center p-8 bg-white rounded-[2rem] border border-blue-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 active:scale-95"
               >
-                <img src={link.logo} alt={link.name} className="h-full w-auto object-contain" />
+                <div className="h-16 w-full flex items-center justify-center mb-4">
+                  <img src={link.logo} alt={link.name} className="h-full w-auto object-contain transition-transform group-hover:scale-110" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-blue-900/60 group-hover:text-blue-600 transition-colors">{link.name}</span>
               </a>
             ))}
           </div>

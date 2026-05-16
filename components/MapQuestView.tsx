@@ -15,15 +15,11 @@ import { getDistance } from '../utils/geoUtils';
 import StreetViewer from './StreetViewer';
 
 const QUEST_TARGETS = [
-  { id: '1', name: { en: 'Pannonian Lakes', bs: 'Panonska jezera' }, image: '/assets/Gallery/QuestQRLocations/Panonsko jezero.png' },
-  { id: '2', name: { en: 'Old Town (Carsija)', bs: 'Stari grad (Čaršija)' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png' },
-  { id: '3', name: { en: 'Salt Square', bs: 'Trg soli' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png' },
-  { id: '4', name: { en: 'Ilincica Hill', bs: 'Brdo Ilinčica' }, image: '/assets/Gallery/QuestQRLocations/ilincicaba.webp' },
-  { id: 'irish', name: { en: 'Irish Pub', bs: 'Irish Pub' }, image: '/assets/Gallery/QuestQRLocations/44.53521, 18.68835 -Irish.webp' },
-  { id: 'galerija', name: { en: 'Gallery', bs: 'Galerija' }, image: '/assets/Gallery/QuestQRLocations/44.535552, 18.688320 -Galerija.webp' },
+  { id: 'irish', name: { en: 'Irish Pub', bs: 'Irish Pub' }, image: '/assets/Gallery/QuestQRLocations/Irish.webp' },
+  { id: 'Papi Gelato', name: { en: 'Papi Gelato', bs: 'Papi Gelato' }, image: '/assets/Gallery/QuestQRLocations/PapiGelato.png' },
   { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, image: '/assets/Gallery/QuestQRLocations/QR Banja.png' },
-  { id: 'panonika', name: { en: 'Pannonica Office', bs: 'Panonika Ured' }, image: '/assets/Gallery/QuestQRLocations/44.539775, 18.682692 -panonikaoffice.webp' },
-  { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, image: '/assets/Gallery/QuestQRLocations/44.540088, 18.681577 -slapovi.webp' },
+  { id: 'panonika', name: { en: 'Pannonica Office', bs: 'Panonika Ured' }, image: '/assets/Gallery/QuestQRLocations/Panonika.webp' },
+  { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, image: '/assets/Gallery/QuestQRLocations/slapovi.webp' },
   { id: 'ismet', name: { en: 'Ismet Mujezinovic', bs: 'Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/QRIsmet.webp' },
   { id: 'atelje_ismet', name: { en: 'Atelje Ismet Mujezinovic', bs: 'Atelje Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/Atelje Ismet Mujezinovic.png' },
   { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, image: '/assets/Gallery/QuestQRLocations/Bingo City Centar.png', website: 'https://tuzla.bingocitycenter.ba/' },
@@ -687,11 +683,11 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           console.error("MapQuest Geolocation Error:", err);
           // Fallback to lower accuracy if high accuracy fails or times out
           if (err.code === 3 || err.code === 1) {
-             navigator.geolocation.getCurrentPosition(
-               (p) => setUserLocation([p.coords.latitude, p.coords.longitude]),
-               (e) => console.error("MapQuest Fallback Geolocation Error:", e),
-               { enableHighAccuracy: false, timeout: 10000 }
-             );
+            navigator.geolocation.getCurrentPosition(
+              (p) => setUserLocation([p.coords.latitude, p.coords.longitude]),
+              (e) => console.error("MapQuest Fallback Geolocation Error:", e),
+              { enableHighAccuracy: false, timeout: 10000 }
+            );
           }
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
@@ -775,9 +771,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
 
       {/* MAP VIEW */}
-      <div ref={mapContainer} className="flex-grow z-0 relative h-full grayscale-[20%] brightness-[1.2]">
+      <div ref={mapContainer} className="flex-grow z-0 relative h-full grayscale-[10%] brightness-125">
         {/* RECENTER BUTTON */}
-        <button 
+        <button
           onClick={() => {
             if (userLocation && map.current) {
               map.current.flyTo({ center: [userLocation[1], userLocation[0]], zoom: 17, pitch: 60 });
