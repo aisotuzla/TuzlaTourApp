@@ -825,7 +825,7 @@
   padding: 80px 1rem 1rem 1rem;
 }
 
-.legendaryCardContainer {
+.legendaryCardContainerUnused {
   position: relative;
   width: auto;
   max-width: min(700px, 90vw);

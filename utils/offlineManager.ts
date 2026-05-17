@@ -63,6 +63,16 @@ export const getOfflineAssetUrls = (): string[] => {
 export const downloadOfflinePack = async (
   onProgress: (progress: OfflineProgress) => void
 ): Promise<void> => {
+  if (typeof window === 'undefined' || !window.caches) {
+    onProgress({
+      total: 0,
+      downloaded: 0,
+      status: 'error',
+      message: 'Offline mode requires a secure context (HTTPS or localhost). If testing on a mobile device, please access via localhost or ensure HTTPS is active.'
+    });
+    return;
+  }
+
   let urls = getOfflineAssetUrls();
 
   onProgress({ total: urls.length, downloaded: 0, status: 'downloading', message: 'Gathering map tiles...' });
@@ -138,6 +148,7 @@ export const downloadOfflinePack = async (
  * Clears the downloaded offline pack from caches
  */
 export const clearOfflinePack = async (): Promise<void> => {
+  if (typeof window === 'undefined' || !window.caches) return;
   try {
     await caches.delete('local-map-tiles');
     await caches.delete('local-data');

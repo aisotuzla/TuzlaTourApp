@@ -48,7 +48,7 @@
       "source": "buildings",
       "minzoom": 13,
       "paint": {
-        "fill-extrusion-color": "#334155",
+        "fill-extrusion-color": "#cbd5e1",
         "fill-extrusion-height": [
           "coalesce",
           [
@@ -65,7 +65,7 @@
           ],
           0
         ],
-        "fill-extrusion-opacity": 0.8
+        "fill-extrusion-opacity": 0.5
       }
     },
     {
