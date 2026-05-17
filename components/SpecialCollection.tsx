@@ -2,8 +2,35 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Share2, QrCode as QrIcon } from 'lucide-react';
 import { Preferences } from '@capacitor/preferences';
-import { legendaryPlayers, Player } from './WorldCup2026';
+import { Player } from './WorldCup2026';
 import styles from './WorldCup2026.module.css';
+
+export const legendaryPlayers: Player[] = [
+  {
+    id: 'l1', name: 'Sead Kolašinac', number: 5, position: 'LB', club: 'Atalanta', rarity: 'Legendary', image: '', folder: 'Kolasinac',
+    ovr: 80, stats: { pac: 76, sho: 62, pas: 74, dri: 75, def: 81, psy: 85 }
+  },
+  {
+    id: 'l2', name: 'Amar Dedić', number: 2, position: 'RB', club: 'Benfica', rarity: 'Legendary', image: '', folder: 'Dedic',
+    ovr: 81, stats: { pac: 88, sho: 65, pas: 76, dri: 82, def: 78, psy: 77 }
+  },
+  {
+    id: 'l4', name: 'Esmir Bajraktarević', number: 24, position: 'RW', club: 'PSV', rarity: 'Legendary', image: '', folder: 'Bajraktarevic',
+    ovr: 75, stats: { pac: 85, sho: 72, pas: 76, dri: 80, def: 35, psy: 62 }
+  },
+  {
+    id: 'l5', name: 'Ermedin Demirović', number: 9, position: 'ST', club: 'Stuttgart', rarity: 'Legendary', image: '', folder: 'Demirovic',
+    ovr: 80, stats: { pac: 78, sho: 81, pas: 72, dri: 78, def: 45, psy: 82 }
+  },
+  {
+    id: 'l6', name: 'Edin Džeko', number: 11, position: 'ST', club: 'Schalke 04', rarity: 'Legendary', image: '', folder: 'Dzeko',
+    ovr: 82, stats: { pac: 65, sho: 85, pas: 74, dri: 76, def: 40, psy: 77 }
+  },
+  {
+    id: 'l7', name: 'Kerim Alajbegović', number: 19, position: 'LW', club: 'Bayer Leverkusen', rarity: 'Legendary', image: '', folder: 'Alajbegovic',
+    ovr: 72, stats: { pac: 82, sho: 74, pas: 68, dri: 76, def: 30, psy: 55 }
+  },
+];
 
 interface SpecialCollectionProps {
   lang: string;
@@ -129,14 +156,14 @@ const CollectionCard: React.FC<{
       }}
       layoutId={player.id}
     >
-      <div className={styles.legendaryCardInner}>
-        <div className={styles.legendaryCardFront} style={{ transform: 'translateZ(1px)', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }}>
-          <div className={styles.holoSweep} />
-          <img src={frontImg} alt={player.name} className="w-full h-full object-contain rounded-xl" />
+      <div className={`w-full h-full relative transition-transform duration-700 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`} style={{ transformStyle: 'preserve-3d' }}>
+        <div className="absolute inset-0 backface-hidden shadow-2xl rounded-2xl overflow-hidden border-2 border-amber-500/30" style={{ transform: 'translateZ(1px)', backfaceVisibility: 'hidden' }}>
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-50 mix-blend-overlay pointer-events-none z-10" />
+          <img src={frontImg} alt={player.name} className="w-full h-full object-contain bg-slate-900" />
         </div>
-        <div className={styles.legendaryCardBack} style={{ transform: 'rotateY(180deg) translateZ(1px)', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }}>
-          <div className={styles.holoSweep} />
-          <img src={backImg} alt={player.name} className="w-full h-full object-contain rounded-xl" />
+        <div className="absolute inset-0 backface-hidden shadow-2xl rounded-2xl overflow-hidden border-2 border-amber-500/30" style={{ transform: 'rotateY(180deg) translateZ(1px)', backfaceVisibility: 'hidden' }}>
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-50 mix-blend-overlay pointer-events-none z-10" />
+          <img src={backImg} alt={player.name} className="w-full h-full object-contain bg-slate-900" />
         </div>
       </div>
     </motion.div>

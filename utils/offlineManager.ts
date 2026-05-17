@@ -11,6 +11,9 @@ export interface OfflineProgress {
 // Fixed core assets needed for the offline map and app shell
 const CORE_ASSETS = [
   '/assets/tuzla-map.geojson',
+  '/style/offline-style.json',
+  '/poi.geojson',
+  '/MAP/buildings.geojson',
   '/assets/Gallery/QuestQRLocations/hotel.svg',
   '/assets/BCC.webp',
   '/assets/AISO Tuzla.webp',
@@ -66,13 +69,13 @@ export const downloadOfflinePack = async (
 
   try {
     // Try to fetch the tile list manifest
-    const tileResp = await fetch('/assets/tile-list.json');
+    const tileResp = await fetch('/MAP/tiles-list.geojson');
     if (tileResp.ok) {
       const tiles: string[] = await tileResp.json();
       urls = [...urls, ...tiles];
     }
   } catch (err) {
-    console.warn('Could not load tile-list.json, proceeding with core assets only', err);
+    console.warn('Could not load tiles-list.geojson, proceeding with core assets only', err);
   }
 
   let downloadedCount = 0;

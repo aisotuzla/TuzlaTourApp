@@ -129,33 +129,6 @@ export const players: Player[] = [
   { id: '11', name: 'Edin Džeko', number: 11, position: 'ST', ovr: 82, stats: { pac: 65, sho: 85, pas: 74, dri: 76, def: 40, psy: 77 }, image: '/assets/players/EdinDzeko.webp', club: 'Schalke 04' },
 ];
 
-export const legendaryPlayers: Player[] = [
-  {
-    id: 'l1', name: 'Sead Kolašinac', number: 5, position: 'LB', club: 'Atalanta', rarity: 'Legendary', image: '', folder: 'Kolasinac',
-    ovr: 80, stats: { pac: 76, sho: 62, pas: 74, dri: 75, def: 81, psy: 85 }
-  },
-  {
-    id: 'l2', name: 'Amar Dedić', number: 2, position: 'RB', club: 'Benfica', rarity: 'Legendary', image: '', folder: 'Dedic',
-    ovr: 81, stats: { pac: 88, sho: 65, pas: 76, dri: 82, def: 78, psy: 77 }
-  },
-  {
-    id: 'l4', name: 'Esmir Bajraktarević', number: 24, position: 'RW', club: 'PSV', rarity: 'Legendary', image: '', folder: 'Bajraktarevic',
-    ovr: 75, stats: { pac: 85, sho: 72, pas: 76, dri: 80, def: 35, psy: 62 }
-  },
-  {
-    id: 'l5', name: 'Ermedin Demirović', number: 9, position: 'ST', club: 'Stuttgart', rarity: 'Legendary', image: '', folder: 'Demirovic',
-    ovr: 80, stats: { pac: 78, sho: 81, pas: 72, dri: 78, def: 45, psy: 82 }
-  },
-  {
-    id: 'l6', name: 'Edin Džeko', number: 11, position: 'ST', club: 'Schalke 04', rarity: 'Legendary', image: '', folder: 'Dzeko',
-    ovr: 82, stats: { pac: 65, sho: 85, pas: 74, dri: 76, def: 40, psy: 77 }
-  },
-  {
-    id: 'l7', name: 'Kerim Alajbegović', number: 19, position: 'LW', club: 'Bayer Leverkusen', rarity: 'Legendary', image: '', folder: 'Alajbegovic',
-    ovr: 72, stats: { pac: 82, sho: 74, pas: 68, dri: 76, def: 30, psy: 55 }
-  },
-];
-
 const matches: Match[] = [
   { id: 'm1', opponent: 'Canada', date: 'June 12, 2026', venue: 'BMO Field, Toronto', time: '21:00', home: 'BiH', away: 'Canada' },
   { id: 'm2', opponent: 'Switzerland', date: 'June 18, 2026', venue: 'SoFi Stadium, Inglewood', time: '21:00', home: 'BiH', away: 'Switzerland' },

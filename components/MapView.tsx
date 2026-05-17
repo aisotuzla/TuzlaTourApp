@@ -10,6 +10,24 @@ import { useNetwork } from '../hooks/useNetwork';
 import { tuzlaHotelData } from '../tuzlaHotelData';
 import { Hotel as HotelIcon } from 'lucide-react';
 
+// Module-level cache — tuzla-map.geojson is 8MB+, load once per session
+let _tuzlaMapCache: any[] | null = null;
+let _tuzlaMapLoading: Promise<any[] | null> | null = null;
+
+async function getTuzlaMapFeatures(): Promise<any[] | null> {
+  if (_tuzlaMapCache) return _tuzlaMapCache;
+  if (_tuzlaMapLoading) return _tuzlaMapLoading;
+  _tuzlaMapLoading = fetch('/assets/tuzla-map.geojson')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      _tuzlaMapCache = data?.features ?? null;
+      _tuzlaMapLoading = null;
+      return _tuzlaMapCache;
+    })
+    .catch(() => { _tuzlaMapLoading = null; return null; });
+  return _tuzlaMapLoading;
+}
+
 interface MapViewProps {
   lang: Language;
   features: AppFeatures;
@@ -41,31 +59,104 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     try {
       let combinedResults: any[] = [];
 
-      // 1. Always check local poi.geojson first
-      const localRes = await fetch('/poi.geojson');
-      const localData = await localRes.json();
-      const query = searchQuery.toLowerCase();
-      
-      const localMatches = localData.features.filter((f: any) =>
-        f.properties.name.toLowerCase().includes(query) ||
-        (f.properties.name_bs && f.properties.name_bs.toLowerCase().includes(query))
-      ).map((f: any) => ({
-        display_name: f.properties.name,
-        lat: f.geometry.coordinates[1],
-        lon: f.geometry.coordinates[0],
-        category: f.properties.category || 'POI'
-      }));
-      
-      combinedResults = [...localMatches];
+      // 1. Search tuzla-map.geojson (full OSM dataset + merged POIs) — cached in memory
+      try {
+        const features = await getTuzlaMapFeatures();
+        if (features) {
+          const query = searchQuery.toLowerCase();
+          const localData = { features };
+
+          const localMatches = localData.features
+            .filter((f: any) => {
+              const props = f.properties || {};
+              return (
+                props.name?.toLowerCase().includes(query) ||
+                props.name_bs?.toLowerCase().includes(query) ||
+                props['name:bs']?.toLowerCase().includes(query) ||
+                props['name:en']?.toLowerCase().includes(query) ||
+                props['addr:street']?.toLowerCase().includes(query) ||
+                props.amenity?.toLowerCase().includes(query) ||
+                props.shop?.toLowerCase().includes(query) ||
+                props.tourism?.toLowerCase().includes(query)
+              );
+            })
+            .filter((f: any) => f.geometry?.type === 'Point') // only mappable points
+            .slice(0, 20) // cap before mapping
+            .map((f: any) => {
+              const props = f.properties || {};
+              const displayName = props.name || props['name:bs'] || props.amenity || props.shop || 'Unnamed';
+              const category = props.category || props.amenity || props.shop || props.tourism || props.office || 'POI';
+              return {
+                display_name: displayName,
+                lat: f.geometry.coordinates[1],
+                lon: f.geometry.coordinates[0],
+                category,
+              };
+            });
+
+          combinedResults = localMatches;
+        }
+      } catch (err) {
+        // Fallback to poi.geojson if tuzla-map.geojson is unavailable
+        console.warn('tuzla-map.geojson unavailable, falling back to poi.geojson:', err);
+        try {
+          const fallbackRes = await fetch('/poi.geojson');
+          if (fallbackRes.ok) {
+            const fallbackData = await fallbackRes.json();
+            const query = searchQuery.toLowerCase();
+            combinedResults = fallbackData.features
+              .filter((f: any) =>
+                f.properties.name?.toLowerCase().includes(query) ||
+                f.properties.name_bs?.toLowerCase().includes(query)
+              )
+              .map((f: any) => ({
+                display_name: f.properties.name,
+                lat: f.geometry.coordinates[1],
+                lon: f.geometry.coordinates[0],
+                category: f.properties.category || 'POI',
+              }));
+          }
+        } catch (fbErr) {
+          console.warn('Fallback poi.geojson also failed:', fbErr);
+        }
+      }
 
       // 2. If online, also query Geoapify for real addresses
       if (isOnline) {
         try {
-          const geoapifyKey = '5c27539c29954a908aeba457beeffbea';
-          const geoRes = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&bias=proximity:18.67,44.53&filter=rect:18.5,44.4,18.8,44.7&apiKey=${geoapifyKey}`);
-          const geoData = await geoRes.json();
+          let geoData;
+          try {
+            const geoapifyKey = import.meta.env.VITE_GEOAPIFY_GEOCODING_API ?? '5c27539c29954a908aeba457beeffbea';
+            const geoRes = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&bias=proximity:18.67,44.53&filter=rect:18.5,44.4,18.8,44.7&apiKey=${geoapifyKey}`);
+            if (!geoRes.ok) throw new Error("Primary API failed");
+            geoData = await geoRes.json();
+          } catch (primaryErr) {
+            console.warn('Primary geocoding API failed, trying backup...', primaryErr);
+            const backupKey = import.meta.env.VITE_GEOCODING_API_KEY;
+            if (backupKey) {
+              const backupRes = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&bias=proximity:18.67,44.53&filter=rect:18.5,44.4,18.8,44.7&apiKey=${backupKey}`);
+              if (!backupRes.ok) {
+                // Try as LocationIQ just in case
+                const liqRes = await fetch(`https://eu1.locationiq.com/v1/search.php?key=${backupKey}&q=${encodeURIComponent(searchQuery)}&format=json`);
+                if (liqRes.ok) {
+                  const liqData = await liqRes.json();
+                  geoData = {
+                    features: Array.isArray(liqData) ? liqData.map((item: any) => ({
+                      properties: { formatted: item.display_name, lat: parseFloat(item.lat), lon: parseFloat(item.lon) }
+                    })) : []
+                  };
+                } else {
+                  throw new Error("Backup API also failed");
+                }
+              } else {
+                geoData = await backupRes.json();
+              }
+            } else {
+              throw new Error("No backup API key provided");
+            }
+          }
           
-          if (geoData.features) {
+          if (geoData && geoData.features) {
             const geoMatches = geoData.features.map((f: any) => ({
               display_name: f.properties.formatted,
               lat: f.properties.lat,
@@ -75,7 +166,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
             combinedResults = [...combinedResults, ...geoMatches];
           }
         } catch (geoErr) {
-          console.warn('Geoapify search failed:', geoErr);
+          console.warn('All geocoding search attempts failed:', geoErr);
         }
       }
 
@@ -184,9 +275,9 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
           map.current?.setPaintProperty('road_label', 'text-color', '#5d5858');
           map.current?.setLayoutProperty('road_label', 'text-size', { "base": 1, "stops": [[13, 9.23076923076923], [14, 10]] });
           map.current?.setPaintProperty('road_shield', 'text-color', '#2e2a2a');
-        } catch (err) {
-          console.warn("⚠️ MapView: Some style refinements could not be applied.", err);
         }
+      } catch (err) {
+        console.warn("⚠️ MapView: Some style refinements could not be applied.", err);
       }
 
       // Add Hotel Markers
