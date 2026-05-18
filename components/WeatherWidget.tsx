@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog, ChevronDown } from 'lucide-react';
+import { Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog } from 'lucide-react';
 
 interface HourlyForecast {
   time: Date;
@@ -10,7 +10,6 @@ interface HourlyForecast {
 interface WeatherData {
   temperature: number;
   weathercode: number;
-
 }
 
 const getWeatherIcon = (code: number, className: string) => {
@@ -32,38 +31,17 @@ interface WeatherWidgetProps {
   lang?: string;
 }
 
-export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ className = 'top-4 right-4', lang = 'en' }) => {
+export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ className = 'top-6 right-6', lang = 'en' }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=44.5328&longitude=18.6705&current=temperature_2m,weather_code&timezone=Europe%2FSarajevo`)
       .then(res => res.json())
       .then(data => {
         if (data && data.current) {
-          let forecast: HourlyForecast[] = [];
-          if (data.hourly && data.hourly.time) {
-            const now = new Date();
-            // Find index of current or next hour
-            const currentIndex = data.hourly.time.findIndex((t: string) => new Date(t).getTime() > now.getTime());
-            const startIndex = currentIndex !== -1 ? currentIndex : 0;
-
-            // Get next 4 hours
-            for (let i = startIndex; i < Math.min(startIndex + 4, data.hourly.time.length); i++) {
-              if (data.hourly.time[i]) {
-                forecast.push({
-                  time: new Date(data.hourly.time[i]),
-                  temperature: data.hourly.temperature_2m[i],
-                  weathercode: data.hourly.weather_code[i]
-                });
-              }
-            }
-          }
-
           setWeather({
             temperature: data.current.temperature_2m,
             weathercode: data.current.weather_code,
-
           });
         }
       })
@@ -74,16 +52,13 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ className = 'top-4
 
   return (
     <div
-      className={`absolute ${className} z-[1000] pointer-events-auto bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 animate-in fade-in duration-500 overflow-hidden cursor-pointer transition-all`}
-      onClick={() => setIsExpanded(!isExpanded)}
+      className={`absolute ${className} z-[1000] pointer-events-auto bg-white/40 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 animate-in fade-in duration-500 overflow-hidden transition-all`}
     >
-      <div className="px-3 py-2 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          {getWeatherIcon(weather.weathercode, "w-5 h-5 text-blue-600")}
-          <span className="font-black text-blue-950">{Math.round(weather.temperature)}°C</span>
-        </div>
-        <ChevronDown className={`w-4 h-4 text-blue-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+      <div className="px-3 py-2 flex items-center gap-2">
+        {getWeatherIcon(weather.weathercode, "w-5 h-5 text-blue-600")}
+        <span className="font-black text-blue-950">{Math.round(weather.temperature)}°C</span>
       </div>
     </div>
   );
 };
+

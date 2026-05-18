@@ -155,7 +155,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
               throw new Error("No backup API key provided");
             }
           }
-          
+
           if (geoData && geoData.features) {
             const geoMatches = geoData.features.map((f: any) => ({
               display_name: f.properties.formatted,
@@ -237,16 +237,16 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         // Apply custom style refinements (from Mapa-Tuzle.js)
         if (isOnline) {
           map.current?.setPaintProperty('background', 'background-color', '#f2ebc9');
-          map.current?.setPaintProperty('park', 'fill-color', '#d1e8b9');
-          map.current?.setPaintProperty('park_outline', 'line-color', '#b4f275');
+          map.current?.setPaintProperty('park', 'fill-color', '#b0d38aff');
+          map.current?.setPaintProperty('park_outline', 'line-color', '#a3e660ff');
           map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(215,190,154,0.49)');
-          map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(148,203,117,0.7)');
-          map.current?.setPaintProperty('landcover_grass', 'fill-color', '#a0d381');
+          map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(91, 160, 51, 0.7)');
+          map.current?.setPaintProperty('landcover_grass', 'fill-color', '#81c756ff');
           map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#f0f4e4');
           map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#ffd7eb');
           map.current?.setPaintProperty('landuse_school', 'fill-color', '#f1f4b7');
           map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-          map.current?.setPaintProperty('water', 'fill-color', '#8caff8');
+          map.current?.setPaintProperty('water', 'fill-color', '#4f83f5ff');
           map.current?.setPaintProperty('aeroway_runway', 'line-color', '#d9d6d3');
           map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#f2f5f6');
           map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');
@@ -425,10 +425,11 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         </button>
       </div>
 
-      {/* Floating Weather & Location */}
-      <div className="absolute bottom-10 left-10 flex flex-col gap-4 z-10">
-        <WeatherWidget lang={lang} />
+      {/* Floating Weather */}
+      <WeatherWidget lang={lang} />
 
+      {/* Floating Location Action Button */}
+      <div className="absolute bottom-10 left-10 z-10">
         <button
           onClick={() => userLocation && map.current?.flyTo({ center: userLocation, zoom: 17, pitch: 60 })}
           className="w-16 h-16 bg-blue-600 text-white rounded-[2rem] shadow-[0_15px_40px_rgba(37,99,235,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all group"
