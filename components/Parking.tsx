@@ -40,7 +40,7 @@ const zones: Zone[] = [
         dailyPrice: 6.0,
         start: "07:00",
         end: "22:00",
-        color: "#ff6d6dff",
+        color: "#bd9393ff",
         polygons: [
             [
                 [18.672885, 44.540179],
@@ -76,7 +76,7 @@ const zones: Zone[] = [
         dailyPrice: 5.0,
         start: "07:00",
         end: "22:00",
-        color: "#52a3ffff",
+        color: "#bcdcffff",
         polygons: [
             // Parking Zona 1
             [
@@ -228,7 +228,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
 
             try {
                 if (!map.current?.isStyleLoaded()) return;
-                
+
                 zones.forEach(zone => {
                     const id = `zone-${zone.key}`;
                     if (map.current?.getSource(id)) return; // Prevent duplicate source errors
@@ -275,13 +275,13 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                     map.current?.on('mouseenter', `${id}-fill`, () => {
                         map.current!.getCanvas().style.cursor = 'pointer';
                         if (map.current?.isStyleLoaded()) {
-                            try { map.current?.setPaintProperty(`${id}-fill`, 'fill-opacity', 0.6); } catch (e) {}
+                            try { map.current?.setPaintProperty(`${id}-fill`, 'fill-opacity', 0.6); } catch (e) { }
                         }
                     });
                     map.current?.on('mouseleave', `${id}-fill`, () => {
                         map.current!.getCanvas().style.cursor = '';
                         if (map.current?.isStyleLoaded()) {
-                            try { map.current?.setPaintProperty(`${id}-fill`, 'fill-opacity', 0.3); } catch (e) {}
+                            try { map.current?.setPaintProperty(`${id}-fill`, 'fill-opacity', 0.3); } catch (e) { }
                         }
                     });
                 });

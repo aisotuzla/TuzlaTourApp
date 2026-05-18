@@ -68,12 +68,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const isBalancedMode = policy.qualityLevel === 'balanced';
   const scannerFps = isUtilityMode ? 10 : (isBalancedMode ? 12 : 15);
   const scannerQrSize = isUtilityMode ? 220 : 250;
-  const qualityOptions: Array<{ value: QuestQualityMode; label: string }> = [
-    { value: 'auto', label: 'Auto' },
-    { value: 'cinematic', label: 'Cine' },
-    { value: 'balanced', label: 'Bal' },
-    { value: 'saver', label: 'Save' },
-  ];
 
   const setupBuildings = (mapInstance: maplibregl.Map) => {
     try {
@@ -287,7 +281,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
           if (isOnline) {
             try {
-              const routingApiKey = '63e8b34f44974d71bc70aad63e5b56ba';
+              const routingApiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API;
               // Geoapify waypoints are lat,lon
               const routingUrl = `https://api.geoapify.com/v1/routing?waypoints=${lat},${lng}|${coords[1]},${coords[0]}&mode=walk&apiKey=${routingApiKey}`;
               const res = await fetch(routingUrl);
@@ -825,10 +819,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="absolute top-28 left-6 z-20 rounded-full border border-white/20 bg-slate-900/80 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-amber-300">
-        {policy.qualityLevel}
-        {mode === 'auto' && policy.reasonTag ? ` - ${policy.reasonTag}` : ''}
-      </div>
 
       {/* TOP FLOATING HUB */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 w-[95%] max-w-lg">
@@ -859,19 +849,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           </div>
         </div>
       </div>
-      <div className="absolute top-24 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 rounded-2xl border border-white/15 bg-slate-900/70 p-1">
-        {qualityOptions.map((option) => (
-          <button
-            key={option.value}
-            onClick={() => setMode(option.value)}
-            className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors ${mode === option.value ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-white/10'
-              }`}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
-
       {/* 3D PITCH CONTROL */}
       <div className={`absolute right-6 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-3 bg-white/5 ${isUtilityMode ? 'backdrop-blur-sm shadow-lg' : 'backdrop-blur-xl shadow-2xl'} p-3 rounded-full border border-white/10`}>
         <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-black text-white uppercase tracking-tighter">3D</div>
