@@ -19,6 +19,7 @@ const CORE_ASSETS = [
   '/assets/AISO Tuzla.webp',
   '/assets/AISO Tuzla_B.webp',
   '/assets/panonikasplash.webp',
+  '/assets/bckgrd.webp',
 ];
 
 /**

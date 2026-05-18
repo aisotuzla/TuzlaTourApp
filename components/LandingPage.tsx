@@ -8,7 +8,7 @@ import {
   ArrowUp,
   QrCode,
   Home,
-  Twitter,
+  X,
   Facebook,
   Linkedin,
   Share2,
@@ -79,6 +79,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const [heroLoopCount, setHeroLoopCount] = useState(0);
   const [isHeroPlaying, setIsHeroPlaying] = useState(true);
   const [isHeroReady, setIsHeroReady] = useState(false);
+  const [hasVideoError, setHasVideoError] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
 
@@ -86,13 +87,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
   // 40-second automatic scroll
   useEffect(() => {
-    if (isHeroReady && isHeroPlaying && isOnline) {
+    if (isHeroReady && isHeroPlaying && isOnline && !hasVideoError) {
       const timer = setTimeout(() => {
         cardsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 40000);
       return () => clearTimeout(timer);
     }
-  }, [isHeroReady, isHeroPlaying, isOnline]);
+  }, [isHeroReady, isHeroPlaying, isOnline, hasVideoError]);
 
   const toggleHeroVideo = () => {
     if (heroVideoRef.current) {
@@ -134,7 +135,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         {!isHeroReady && (
           <div className="absolute inset-0 z-10 bg-white flex items-center justify-center">
             <div className="relative z-20 flex flex-col items-center">
-              <motion.img 
+              <motion.img
                 src="/assets/Gallery/QuestQRLocations/IconTZ.webp"
                 className="w-24 h-24 object-contain mb-8 opacity-20"
                 animate={{ scale: [1, 1.05, 1], opacity: [0.1, 0.3, 0.1] }}
@@ -143,8 +144,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             </div>
           </div>
         )}
-        
-        {isOnline ? (
+
+        {isOnline && !hasVideoError ? (
           <video
             ref={heroVideoRef}
             autoPlay
@@ -152,20 +153,21 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             loop
             playsInline
             preload="auto"
-            poster="/assets/Gallery/Photos/tuzla1.webp"
+            poster="/assets/bckgrd.webp"
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isHeroReady ? 'opacity-100' : 'opacity-0'}`}
             src={platform === 'web' ? "/assets/Gallery/Photos/HDweb_compressed.mp4" : platform === 'android' ? "/assets/Gallery/Photos/tz_compressed.mp4" : "/assets/Gallery/Photos/HDweb_compressed.mp4"}
             onLoadedData={() => setIsHeroReady(true)}
             onCanPlay={() => setIsHeroReady(true)}
             onError={() => {
               console.error('Hero video failed to load');
+              setHasVideoError(true);
               setIsHeroReady(true);
             }}
             onEnded={handleHeroVideoEnd}
           />
         ) : (
           <img
-            src="/assets/Gallery/Photos/tuzla1.webp"
+            src="/assets/bckgrd.webp"
             alt="Tuzla Offline"
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500`}
             onLoad={() => setIsHeroReady(true)}
@@ -292,9 +294,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
           <div className="mt-12 text-center">
             <p className="text-xl font-black text-blue-900/80 italic font-quicksand leading-relaxed max-w-2xl mx-auto px-4">
-              {lang === 'bs' 
-                ? '"Nijedna fotografija vam ne može dočarati šarm i ljepotu ovog grada, zato dođite i posjetite nas."'
-                : '"No photo can show you the charm and beauty of this city, so come and visit us."'}
+              {lang === 'bs' || lang === 'en' || lang === 'de' || lang === 'tr'
+                ? 'Posjetite Tuzlu' : 'Visit Tuzla'}
             </p>
             <div className="w-12 h-1 bg-amber-400 rounded-full mx-auto mt-4 opacity-50" />
           </div>
@@ -311,8 +312,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
           <div className="flex flex-col items-center gap-8">
             <div className="flex justify-center flex-wrap gap-4 sm:gap-6">
-              <a href="https://x.com/Amcho1985" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#1DA1F2] hover:bg-[#1DA1F2]/10 transition-colors relative group">
-                <Twitter className="w-6 h-6" />
+              <a href="https://x.com/icptuzla" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#1DA1F2] hover:bg-[#1DA1F2]/10 transition-colors relative group">
+                <img src="/assets/x.svg" alt="X" className="w-6 h-6" />
                 <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Twitter (X)</span>
               </a>
               <a href="https://www.facebook.com/AmirICPTuzla" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#4267B2] hover:bg-[#4267B2]/10 transition-colors relative group">
