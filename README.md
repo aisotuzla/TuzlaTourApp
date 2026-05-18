@@ -11,7 +11,6 @@ This application is built using a state-of-the-art modern web stack, optimized f
 - **Core**: [React 19](https://react.dev/) + [Vite 6](https://vitejs.dev/) + [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) (latest v4 features)
 - **Mapping**: [MapLibre GL](https://maplibre.org/) (High-performance 3D mapping)
-- **Virtual Tours**: [Pannellum](https://pannellum.org/) (360° Equirectangular imagery)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/) (Premium UI transitions)
 - **Scanning**: [HTML5-QRCode](https://github.com/mebjas/html5-qrcode) (Camera-based QR recognition)
 - **Mobile Foundation**: [Capacitor 8](https://capacitorjs.com/) (Seamless Android/iOS deployment)
@@ -22,28 +21,26 @@ This application is built using a state-of-the-art modern web stack, optimized f
 
 ## ✨ Key Features
 
-### 1. Interactive 3D Mapping
-The app features a custom-styled map with:
-- **3D Buildings**: Realistic city depth and lighting.
-- **Metallic Lighting Effects**: Advanced MapLibre lighting for a premium feel.
-- **Custom Markers**: Themed markers for different categories (Culture, Nature, Food, Shopping).
-- **GPS Navigation**: Real-time routing from the user's location to any Point of Interest (POI).
+### 1. AR Guide & GPS Navigation
+The app features an advanced AR and GPS-based guide navigating tourists through the city:
+- **Real-Time GPS Tracking**: Seamless routing from the user's location to any Point of Interest (POI).
+- **Interactive 3D Mapping**: Realistic city depth, lighting, and metallic MapLibre effects.
+- **Camera-Assisted Exploration**: Navigate towards the town's most beautiful attractions, shops, and historical landmarks.
 
-### 2. Immersive 360° Virtual Tours
-Explore Tuzla's landmarks from anywhere:
-- **High-Definition Panoramas**: Stitched equirectangular images (e.g., King Tvrtko Park).
-- **Embedded Hotspots**: Interactive points within the virtual tour (via JSON configuration).
-- **StreetView Experience**: Accessible directly from map markers or unlocked rewards.
-
-### 3. The Quest System (Gamification)
-The heart of the app is the "Tuzla Quest":
-- **How it Works**: Users find hidden "Quest Targets" on the map.
-- **Unlocking**: To unlock a reward, the user must physically visit the location and scan a specific QR code.
+### 2. Gamified Quest System (Tuzla Quest)
+Turn sightseeing into a real-life treasure hunt!
+- **How it Works**: Users are guided to hidden "Quest Targets" across the city using GPS.
+- **QR Code Scanning**: Upon reaching the location, tourists use their camera to scan a physical QR code.
 - **Rewards**: Scanning unlocks exclusive content, such as:
-  - 360° Virtual Discovery tours.
-  - Cinematic Video stories.
-  - Audio guides.
-  - Special discounts for local shops and restaurants.
+  - Digital NFT Collectible Cards (BIH players).
+  - Cinematic Video stories about the location.
+  - Special discounts and rewards at local partner shops and restaurants.
+
+### 3. AISO Tuzla & Premium Partnerships
+The Tuzla Tour App is deeply integrated with local businesses to boost the local economy and tourism:
+- **AISO Tuzla**: Proudly partnered with AISO Tuzla, a premier AI Agent Optimizer Agency, ensuring the application stays at the forefront of digital innovation.
+- **Dental Tourism**: Collaborating with top-tier local dental clinics to promote Tuzla as a prime destination for high-quality, affordable dental tourism.
+- **Travel Agencies**: Integrated with leading travel agencies to offer complete tourist packages, accommodation options, and guided experiences.
 
 ### 4. World Cup 2026 Module
 A special dedicated tab for football fans:
@@ -72,7 +69,7 @@ To add a new location to the map:
 To add a new QR-locked reward:
 1. Define the target in `MapQuestView.tsx` under `QUEST_TARGETS`.
 2. Assign an `id` that matches the value encoded in the physical QR code.
-3. Attach an `image`, `video`, or `panorama` (360° tour).
+3. Attach an `image` or `video` to be revealed upon scanning.
 
 ### Adding Shops & Businesses
 Businesses can be added to the `LOCATIONS_RAW` in `constants.tsx` using the `shopping` or `food` categories. These will appear with unique icons and can be linked to the Quest system for "Unlockable Discounts."
@@ -83,8 +80,8 @@ Businesses can be added to the `LOCATIONS_RAW` in `constants.tsx` using the `sho
 
 ### Web & PWA (Vercel)
 The app is optimized for Vercel. 
-- Run `npm run build` to generate the production bundle.
-- The **Service Worker** (via `vite-plugin-pwa`) handles offline caching of large assets (videos/panoramas).
+- Run `npm run dev` to test locally or let Vercel handle the build (`npm run build`).
+- The **Service Worker** (via `vite-plugin-pwa`) handles offline caching of large assets (videos/images) so tourists don't need continuous cellular data.
 
 ### Mobile (Android/iOS)
 Using Capacitor, the app can be converted to a native binary:
@@ -109,7 +106,6 @@ Aplikacija je izgrađena koristeći najmodernije tehnologije, optimizovane za pe
 - **Osnova**: React 19 + Vite 6 + TypeScript
 - **Dizajn**: Tailwind CSS 4
 - **Mape**: MapLibre GL (3D mape visokih performansi)
-- **Virtualne Ture**: Pannellum (360° panoramski prikazi)
 - **Animacije**: Framer Motion
 - **Skeniranje**: HTML5-QRCode
 - **Mobilna Platforma**: Capacitor 8 (Android i iOS podrška)
@@ -118,27 +114,26 @@ Aplikacija je izgrađena koristeći najmodernije tehnologije, optimizovane za pe
 
 ## ✨ Ključne Karakteristike
 
-### 1. Interaktivne 3D Mape
-Mapa sadrži:
-- **3D Zgrade**: Realističan prikaz dubine grada.
-- **Napredno Osvjetljenje**: Metalni efekti na mapi za premium izgled.
-- **Prilagođeni Markeri**: Tematske ikonice za Kulturu, Prirodu, Hranu i Shopping.
-- **GPS Navigacija**: Rutiranje u stvarnom vremenu od korisnikove lokacije do bilo koje tačke interesa.
+### 1. AR Vodič i GPS Navigacija
+Aplikacija sadrži napredni vodič baziran na AR i GPS tehnologiji za navigaciju turista kroz grad:
+- **GPS Praćenje**: Rutiranje u stvarnom vremenu od korisnikove lokacije do bilo koje tačke interesa.
+- **Interaktivne 3D Mape**: Realističan prikaz dubine grada i metalni efekti.
+- **Kamera Navigacija**: Navodi turiste prema najljepšim atrakcijama, radnjama i historijskim spomenicima.
 
-### 2. 360° Virtualne Ture
-Istražite znamenitosti Tuzle:
-- **HD Panorame**: Visokokvalitetni snimci (npr. Park Kralja Tvrtka I).
-- **Hotspots**: Interaktivne tačke unutar ture.
-- **StreetView Iskustvo**: Pristupite direktno sa mape ili putem otključanih nagrada.
-
-### 3. Quest Sistem (Potraga)
-Srce aplikacije je "Tuzla Quest":
-- **Kako funkcioniše**: Korisnici pronalaze skrivene "Quest Mete" na mapi.
-- **Otključavanje**: Da bi otključali nagradu, korisnici moraju fizički posjetiti lokaciju i skenirati QR kod.
+### 2. Quest Sistem (Potraga)
+Pretvorite razgledanje u pravu potragu za blagom!
+- **Kako funkcioniše**: GPS vodi korisnike do skrivenih "Quest Meta" na mapi.
+- **Skeniranje QR Kodova**: Kada stignu na lokaciju, turisti koriste kameru da skeniraju fizički QR kod.
 - **Nagrade**: Skeniranje otključava ekskluzivni sadržaj:
-  - Virtualne 360° ture.
-  - NFT - Digitalne Kartice BIH igrača - kolekcionarske
-  - Specijalne popuste u lokalnim radnjama i restoranima.
+  - NFT Digitalne Kartice (BH reprezentativci).
+  - Filmske video priče o lokaciji.
+  - Specijalne popuste i nagrade u lokalnim partnerskim radnjama i restoranima.
+
+### 3. AISO Tuzla i Premium Partnerstva
+Tuzla Tour App je duboko povezana sa lokalnim biznisima kako bi se podstakla lokalna ekonomija i turizam:
+- **AISO Tuzla**: Ponosni partneri sa AISO Tuzla, vrhunskom agencijom za optimizaciju AI agenata (AI Agent Optimizer Agency), koja osigurava da aplikacija ostane na čelu digitalnih inovacija.
+- **Dentalni Turizam**: Saradnja sa vrhunskim lokalnim stomatološkim klinikama na promociji Tuzle kao glavne destinacije za visokokvalitetni i pristupačni dentalni turizam.
+- **Turističke Agencije**: Integracija sa vodećim turističkim agencijama radi ponude kompletnih turističkih paketa, opcija smještaja i vođenih tura.
 
 ### 4. Svjetsko Prvenstvo 2026 Modul
 Poseban dio za ljubitelje fudbala:
@@ -154,19 +149,15 @@ Kompletna lokalizacija na:
 - 🇹🇷 Turski
 
 ### 6. Parking SMS
-  Mapa sa parkiring zonama i lokalnim parkinzima
-  Zona 0 - Zona 1 - Zona 2 na 1h i 24h
-  Jednostavna u uplata unosom tablica vozila odabir zone i uplata
----
-### 7. Ponuda Restorana, hotela, apartmana i stan na dan.
+  Mapa sa parking zonama i lokalnim parkinzima.
+  Zona 0 - Zona 1 - Zona 2 na 1h i 24h.
+  Jednostavna uplata unosom tablica vozila, odabir zone i uplata.
 
-### 8. Gradski Vodić, 
-       Historija, 
-       Galerija,
-       Rokovnik
-       AISO Tuzla, AI Agentic optimization
-       House of Salt,
-       Dentalni turizam
+### 7. Ponuda
+  Restorani, hoteli, apartmani i stan na dan.
+
+---
+
 ## 🛠️ Proširivanje Aplikacije
 
 ### Dodavanje Novih Lokacija (POI)
@@ -177,14 +168,14 @@ Kompletna lokalizacija na:
 ### Dodavanje Quest Nagrada
 1. Definišite metu u `MapQuestView.tsx` unutar `QUEST_TARGETS`.
 2. ID mora odgovarati onome što je upisano u fizički QR kod.
-3. Povežite sliku, video ili 360° panoramu.
+3. Povežite sliku ili video.
 
 ---
 
 ## 📱 Deployment
 
 ### Web (Vercel)
-Aplikacija je optimizovana za Vercel. Service Worker automatski kešira velike fajlove za offline rad.
+Aplikacija je optimizovana za Vercel. Hero video se učitava kao primarni resurs, a Service Worker automatski kešira velike fajlove za offline rad.
 
 ### Mobilne Aplikacije (Android)
 ```bash

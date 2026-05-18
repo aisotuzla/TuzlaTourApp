@@ -246,7 +246,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
           map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#ffd7eb');
           map.current?.setPaintProperty('landuse_school', 'fill-color', '#f1f4b7');
           map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-          map.current?.setPaintProperty('water', 'fill-color', '#4f83f5ff');
+          map.current?.setPaintProperty('water', 'fill-color', '#569efcff');
           map.current?.setPaintProperty('aeroway_runway', 'line-color', '#d9d6d3');
           map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#f2f5f6');
           map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');

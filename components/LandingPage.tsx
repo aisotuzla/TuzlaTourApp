@@ -132,7 +132,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
     <div className="bg-white">
       {/* 1. HERO SECTION */}
       <section className="relative h-screen w-full overflow-hidden bg-white">
-        {!isHeroReady && (
+        {(!isHeroReady || hasVideoError) && (
           <div className="absolute inset-0 z-10 bg-white flex items-center justify-center">
             <div className="relative z-20 flex flex-col items-center">
               <motion.img
@@ -145,7 +145,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           </div>
         )}
 
-        {isOnline && !hasVideoError ? (
+        {isOnline && (
           <video
             ref={heroVideoRef}
             autoPlay
@@ -153,25 +153,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             loop
             playsInline
             preload="auto"
-            poster="/assets/bckgrd.webp"
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isHeroReady ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isHeroReady && !hasVideoError ? 'opacity-100' : 'opacity-0'}`}
             src={platform === 'web' ? "/assets/Gallery/Photos/HDweb_compressed.mp4" : platform === 'android' ? "/assets/Gallery/Photos/tz_compressed.mp4" : "/assets/Gallery/Photos/HDweb_compressed.mp4"}
             onLoadedData={() => setIsHeroReady(true)}
             onCanPlay={() => setIsHeroReady(true)}
             onError={() => {
               console.error('Hero video failed to load');
               setHasVideoError(true);
-              setIsHeroReady(true);
             }}
             onEnded={handleHeroVideoEnd}
-          />
-        ) : (
-          <img
-            src="/assets/bckgrd.webp"
-            alt="Tuzla Offline"
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500`}
-            onLoad={() => setIsHeroReady(true)}
-            onError={() => setIsHeroReady(true)}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/50" />

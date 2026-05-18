@@ -12,7 +12,6 @@ import { useNetwork } from '../hooks/useNetwork';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { QuestQualityMode } from '../utils/questRuntimePolicy';
 import { getDistance } from '../utils/geoUtils';
-import StreetViewer from './StreetViewer';
 
 const QUEST_TARGETS = [
   { id: 'irish', name: { en: 'Irish Pub', bs: 'Irish Pub' }, image: '/assets/Gallery/QuestQRLocations/Irish.webp' },
@@ -24,7 +23,7 @@ const QUEST_TARGETS = [
   { id: 'atelje_ismet', name: { en: 'Atelje Ismet Mujezinovic', bs: 'Atelje Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/Atelje Ismet Mujezinovic.png' },
   { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, image: '/assets/Gallery/QuestQRLocations/Bingo City Centar.png', website: 'https://tuzla.bingocitycenter.ba/' },
   { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4' },
-  { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, image: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/tvrle.png', panorama: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/KingTvrtkoPanorama.jpg' },
+  { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, image: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/tvrle.png' },
 ];
 
 interface MapQuestViewProps {
@@ -56,7 +55,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
-  const [viewingPanorama, setViewingPanorama] = useState<{ url: string; title: string } | null>(null);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const isOnline = useNetwork();
   const OFFLINE_STYLE = '/style/offline-style.json';
@@ -286,7 +284,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         const navLineSource = map.current.getSource('nav-line') as maplibregl.GeoJSONSource;
         if (navLineSource && (window as any).currentUserLngLat) {
           const [lng, lat] = (window as any).currentUserLngLat;
-          
+
           if (isOnline) {
             try {
               const routingApiKey = '63e8b34f44974d71bc70aad63e5b56ba';
@@ -313,13 +311,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         }
       } else {
         console.warn("❌ Could not navigate: Coords or Map missing", { coords, map: !!map.current });
-      }
-    };
-
-    (window as any).viewLocationPanorama = (locId: string) => {
-      const target = QUEST_TARGETS.find(t => t.id === locId);
-      if (target && target.panorama) {
-        setViewingPanorama({ url: target.panorama, title: target.name[lang] });
       }
     };
 
@@ -356,16 +347,16 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');
           map.current?.setPaintProperty('road_minor_casing', 'line-color', '#3e3b38');
           map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#d58a48');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', {"base":1.2,"stops":[[8,1.5882352941176472],[20,18]]});
+          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', { "base": 1.2, "stops": [[8, 1.5882352941176472], [20, 18]] });
           map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#f0a461');
           map.current?.setPaintProperty('road_motorway_casing', 'line-color', '#f49e53');
           map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#a06346');
-          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', {"base":1.2,"stops":[[14,0.30000000000000004],[20,3]]});
+          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.30000000000000004], [20, 3]] });
           map.current?.setPaintProperty('road_motorway_link', 'line-color', '#e5972f');
           map.current?.setPaintProperty('road_service_track', 'line-color', '#ecdcdc');
-          map.current?.setPaintProperty('road_minor', 'line-width', {"base":1.2,"stops":[[13.5,0],[14,2.638888888888889],[20,19]]});
+          map.current?.setPaintProperty('road_minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 2.638888888888889], [20, 19]] });
           map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fce174');
-          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', {"base":1.2,"stops":[[6.5,0],[8,0.5769230769230769],[20,15]]});
+          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', { "base": 1.2, "stops": [[6.5, 0], [8, 0.5769230769230769], [20, 15]] });
           map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#ffb16e');
           map.current?.setPaintProperty('road_motorway', 'line-color', '#db9b45');
           map.current?.setPaintProperty('road_one_way_arrow', 'text-color', '#b3acac');
@@ -376,13 +367,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           map.current?.setLayoutProperty('water_name_line', 'visibility', 'none');
           map.current?.setLayoutProperty('water_name_point', 'visibility', 'none');
           map.current?.setLayoutProperty('poi_transit', 'text-size', 13);
-          map.current?.setLayoutProperty('poi_transit', 'text-offset', [0,0]);
+          map.current?.setLayoutProperty('poi_transit', 'text-offset', [0, 0]);
           map.current?.setPaintProperty('poi_transit', 'text-color', '#e4e2e2');
           map.current?.setPaintProperty('poi_transit', 'text-halo-color', '#776c6c');
           map.current?.setPaintProperty('poi_transit', 'text-halo-width', 1.5);
           map.current?.setPaintProperty('poi', 'text-color', '#333131');
           map.current?.setPaintProperty('road_label', 'text-color', '#5d5858');
-          map.current?.setLayoutProperty('road_label', 'text-size', {"base":1,"stops":[[13,9.23076923076923],[14,10]]});
+          map.current?.setLayoutProperty('road_label', 'text-size', { "base": 1, "stops": [[13, 9.23076923076923], [14, 10]] });
         }
       } catch (e) {
         console.warn("MapQuest: Error applying style refinements", e);
@@ -425,7 +416,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         // Advanced 3D Lighting
         map.current.setLight({
           anchor: 'viewport',
-          color: '#ffffff',
+          color: '#cacacaff',
           intensity: 0.4,
           position: [1.15, 210, 30]
         });
@@ -448,16 +439,16 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');
           map.current?.setPaintProperty('road_minor_casing', 'line-color', '#3e3b38');
           map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#d58a48');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', {"base":1.2,"stops":[[8,1.5882352941176472],[20,18]]});
+          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', { "base": 1.2, "stops": [[8, 1.5882352941176472], [20, 18]] });
           map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#f0a461');
           map.current?.setPaintProperty('road_motorway_casing', 'line-color', '#f49e53');
           map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#a06346');
-          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', {"base":1.2,"stops":[[14,0.30000000000000004],[20,3]]});
+          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.30000000000000004], [20, 3]] });
           map.current?.setPaintProperty('road_motorway_link', 'line-color', '#e5972f');
           map.current?.setPaintProperty('road_service_track', 'line-color', '#ecdcdc');
-          map.current?.setPaintProperty('road_minor', 'line-width', {"base":1.2,"stops":[[13.5,0],[14,2.638888888888889],[20,19]]});
+          map.current?.setPaintProperty('road_minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 2.638888888888889], [20, 19]] });
           map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fce174');
-          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', {"base":1.2,"stops":[[6.5,0],[8,0.5769230769230769],[20,15]]});
+          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', { "base": 1.2, "stops": [[6.5, 0], [8, 0.5769230769230769], [20, 15]] });
           map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#ffb16e');
           map.current?.setPaintProperty('road_motorway', 'line-color', '#db9b45');
           map.current?.setPaintProperty('road_one_way_arrow', 'text-color', '#b3acac');
@@ -469,7 +460,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           map.current?.setLayoutProperty('water_name_point', 'visibility', 'none');
           map.current?.setLayoutProperty('poi_transit', 'text-size', 13);
           map.current?.setPaintProperty('road_label', 'text-color', '#5d5858');
-          map.current?.setLayoutProperty('road_label', 'text-size', {"base":1,"stops":[[13,9.23076923076923],[14,10]]});
+          map.current?.setLayoutProperty('road_label', 'text-size', { "base": 1, "stops": [[13, 9.23076923076923], [14, 10]] });
           map.current?.setPaintProperty('road_shield', 'text-color', '#2e2a2a');
         } catch (err) {
           console.warn("⚠️ MapQuest: Some style refinements could not be applied.", err);
@@ -549,9 +540,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             ${isQuest && !isUnlocked ? `<span style="font-size: 6px; font-weight: 900; color: white; text-transform: uppercase; margin-top: 2px; opacity: 0.8;">Active Quest</span>` : ''}
           </div>`;
 
-        const target = QUEST_TARGETS.find(t => t.id === loc.id);
-        const hasPanorama = !!target?.panorama;
-
         const popup = new maplibregl.Popup({ offset: 35 }).setHTML(`
           <div style="padding: 18px; font-family: 'Quicksand', sans-serif; background: #0f172a; color: white; border-radius: 24px; border: 2px solid ${markerColor}${isUnlocked ? '' : '33'}; box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px ${markerColor}${isUnlocked ? '40' : '05'};">
             <h3 style="margin: 0; font-size: 18px; font-weight: 900; color: ${isUnlocked ? markerColor : '#64748b'}; text-transform: uppercase; letter-spacing: 0.15em; text-shadow: 0 0 10px ${markerColor}44;">${isUnlocked ? loc.name[lang] : '??? Location ???'}</h3>
@@ -566,11 +554,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                 <button onclick="window.open('${loc.website}', '_blank')" style="flex: 1.5; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(37,99,235,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
                   WEBSITE
                 </button>
-              ` : (hasPanorama ? `
-                <button onclick="window.viewLocationPanorama('${loc.id}')" style="flex: 1.5; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(59,130,246,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
-                  360° VIEW
-                </button>
-              ` : '')}
+              ` : ''}
             </div>
           </div>
         `);
@@ -617,7 +601,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       const hotelId = `hotel-${idx}`;
       if (!markers.current[hotelId]) {
         const el = document.createElement('div');
-        el.className = `hotel-marker-container ${policy.uiFx.enableInfiniteAnimations ? 'quest-marker-pulse' : ''}`;
+        el.className = `hotel-marker-container ${policy.uiFx.enableInfiniteAnimations ? 'quest-marker-pulse' : ''}`.trim();
 
         el.innerHTML = `
           <div style="position: relative; width: 48px; height: 62px; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.4));">
@@ -968,7 +952,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                         className="group relative h-32 rounded-3xl overflow-hidden border border-amber-400/40 bg-white/5 shadow-xl transition-all active:scale-95"
                         onClick={() => {
                           if (item.video) setPlayingVideo(item.video);
-                          else if (item.panorama) setViewingPanorama({ url: item.panorama, title: item.name[lang] });
                           else if ((item as any).website) window.open((item as any).website, '_blank');
                         }}
                       >
@@ -980,11 +963,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                         {item.video && (
                           <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40">
                             <Play className="w-5 h-5 text-slate-950 fill-slate-950 ml-0.5" />
-                          </div>
-                        )}
-                        {item.panorama && (
-                          <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/40">
-                            <Gamepad2 className="w-5 h-5 text-white" />
                           </div>
                         )}
                         <div className="absolute bottom-0 left-0 h-1 bg-amber-500 transition-all duration-500 w-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
@@ -1091,15 +1069,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       </AnimatePresence>
 
       <AnimatePresence>
-        {viewingPanorama && (
-          <StreetViewer
-            panoramaUrl={viewingPanorama.url}
-            title={viewingPanorama.title}
-            subtitle={lang === 'bs' ? 'Istražite lokaciju u 360°' : 'Explore location in 360°'}
-            onClose={() => setViewingPanorama(null)}
-            lang={lang}
-          />
-        )}
       </AnimatePresence>
     </div>
   );
