@@ -35,6 +35,7 @@ android/**/*.jks
 *.njsproj
 *.sln
 *.sw?
+pannellum-2.5.7/
 
 # Local Gemini/Tooling files
 .gemini/
