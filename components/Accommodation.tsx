@@ -126,7 +126,7 @@ const HotelCardsSection: React.FC<{ lang: Language }> = ({ lang }) => {
                     rel="noopener noreferrer"
                     className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-50 text-blue-600 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm"
                   >
-                    {lang === 'en' ? 'Book Now' : lang === 'de' ? 'Buchen' : 'Rezerviši'}
+                    {lang === 'en' ? 'Visit Us' : lang === 'de' ? 'Besuchen' : 'Posjetite nas'}
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 )}
@@ -226,6 +226,22 @@ const Accommodation: React.FC<AccommodationProps> = ({ lang }) => {
             : lang === 'de'
               ? 'Nutze die Seitenleiste für Geschichte, Karte, Quest, Galerie und Parken.'
               : 'Koristi bočnu traku za historiju, mapu, quest, galeriju i parking.'}
+        </div>
+      </section>
+
+      <section className="flex items-start gap-4 rounded-[2rem] border border-amber-200 bg-amber-50/50 px-6 py-5 text-sm text-amber-900/90 shadow-sm">
+        <Info className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <p className="font-black uppercase tracking-widest text-[10px] text-amber-700">
+            {lang === 'en' ? 'Disclaimer' : lang === 'de' ? 'Haftungsausschluss' : 'Izjava o odricanju odgovornosti'}
+          </p>
+          <p className="leading-relaxed font-medium">
+            {lang === 'en'
+              ? 'TuzlaTour is an informational guide. We are not responsible for bookings, reservations, or the service quality of the listed hotels and apartments. All reservations are made directly with the respective providers.'
+              : lang === 'de'
+                ? 'TuzlaTour ist ein Informationsführer. Wir sind nicht verantwortlich für Buchungen, Reservierungen oder die Servicequalität der aufgeführten Hotels und Apartments. Alle Reservierungen werden direkt bei den jeweiligen Anbietern vorgenommen.'
+                : 'TuzlaTour je informativni vodič. Ne snosimo odgovornost za rezervacije, ugovaranje smještaja niti za kvalitet usluge navedenih hotela i apartmana. Sve rezervacije se vrše direktno kod odgovarajućih pružaoca usluga.'}
+          </p>
         </div>
       </section>
     </div>
