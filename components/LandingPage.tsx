@@ -82,6 +82,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const [hasVideoError, setHasVideoError] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
+  const [videoSrc, setVideoSrc] = useState<string>(() => {
+    return platform === 'web' ? "/assets/Gallery/Photos/HDweb_compressed.mp4" : platform === 'android' ? "/assets/Gallery/Photos/tz_compressed.mp4" : "/assets/Gallery/Photos/HDweb_compressed.mp4";
+  });
 
   const isOnline = useNetwork();
 
@@ -133,15 +136,66 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       {/* 1. HERO SECTION */}
       <section className="relative h-screen w-full overflow-hidden bg-white">
         {(!isHeroReady || hasVideoError) && (
-          <div className="absolute inset-0 z-10 bg-white flex items-center justify-center">
-            <div className="relative z-20 flex flex-col items-center">
-              <motion.img
-                src="/assets/Gallery/QuestQRLocations/IconTZ.webp"
-                className="w-24 h-24 object-contain mb-8 opacity-20"
-                animate={{ scale: [1, 1.05, 1], opacity: [0.1, 0.3, 0.1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              />
-            </div>
+          <div className="absolute inset-0 z-10 bg-slate-950 flex items-center justify-center overflow-hidden">
+            {/* Pulsating Backdrop Image starting at 10% opacity, going up to 60% */}
+            <motion.img
+              src="/assets/Gallery/City Guide/GradTuzla-1.webp"
+              alt="Backdrop"
+              className="absolute inset-0 w-full h-full object-cover scale-105 filter blur-lg brightness-50"
+              initial={{ opacity: 0.1 }}
+              animate={{ opacity: [0.1, 0.6, 0.1] }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+            
+            {/* Subtle Gradient Overlay */}
+            <div className="absolute inset-0 bg-blue-950/45 backdrop-blur-md" />
+
+            {/* Glowing Glassmorphic Container */}
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="relative z-20 flex flex-col items-center px-8 py-10 rounded-[2.5rem] bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl max-w-[22rem] w-full mx-4 text-center"
+            >
+              {/* Glowing Logo */}
+              <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-xl animate-pulse" />
+                <motion.img
+                  src="/assets/Gallery/QuestQRLocations/IconTZ.webp"
+                  className="w-20 h-20 object-contain relative z-10 drop-shadow-[0_4px_12px_rgba(255,255,255,0.2)]"
+                  animate={{ scale: [1, 1.06, 1] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </div>
+
+              {/* Title & Status */}
+              <h2 className="text-white text-xl font-black uppercase tracking-widest font-quicksand mb-2 drop-shadow-md">
+                Tuzla Virtual Tour
+              </h2>
+              <p className="text-blue-100/80 text-sm font-bold tracking-wide">
+                {hasVideoError ? (
+                  lang === 'bs' ? 'Dobrodošli u Tuzlu' : lang === 'de' ? 'Willkommen in Tuzla' : lang === 'tr' ? "Tuzla'ya Hoş Geldiniz" : 'Welcome to Tuzla'
+                ) : (
+                  lang === 'bs' ? 'Učitavanje doživljaja...' : lang === 'de' ? 'Erlebnis wird geladen...' : lang === 'tr' ? 'Deneyim yükleniyor...' : 'Loading experience...'
+                )}
+              </p>
+
+              {/* Progress Indicator */}
+              {!hasVideoError && (
+                <div className="relative w-28 h-1 bg-white/20 rounded-full overflow-hidden mt-6">
+                  <motion.div
+                    className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-amber-400 to-amber-300 rounded-full"
+                    animate={{ x: [-50, 110] }}
+                    transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+                    style={{ width: '40px' }}
+                  />
+                </div>
+              )}
+            </motion.div>
           </div>
         )}
 
@@ -154,12 +208,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             playsInline
             preload="auto"
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isHeroReady && !hasVideoError ? 'opacity-100' : 'opacity-0'}`}
-            src={platform === 'web' ? "/assets/Gallery/Photos/HDweb_compressed.mp4" : platform === 'android' ? "/assets/Gallery/Photos/tz_compressed.mp4" : "/assets/Gallery/Photos/HDweb_compressed.mp4"}
+            src={videoSrc}
             onLoadedData={() => setIsHeroReady(true)}
             onCanPlay={() => setIsHeroReady(true)}
             onError={() => {
-              console.error('Hero video failed to load');
-              setHasVideoError(true);
+              if (videoSrc === "/assets/Gallery/Photos/tz_compressed.mp4") {
+                console.warn('Android hero video failed to load, falling back to web video...');
+                setVideoSrc("/assets/Gallery/Photos/HDweb_compressed.mp4");
+              } else {
+                console.error('Hero video failed to load');
+                setHasVideoError(true);
+              }
             }}
             onEnded={handleHeroVideoEnd}
           />

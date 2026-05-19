@@ -256,6 +256,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     };
 
     // 2. Attach global functions IMMEDIATELY so buttons work even if style is loading
+    (window as any).playQuestRewardVideo = (videoUrl: string) => {
+      setPlayingVideo(videoUrl);
+    };
+
     (window as any).setGlobalMapNavTarget = async (locId: string) => {
       console.log("🚀 Navigating to:", locId);
       let coords: [number, number] | null = null;
@@ -497,12 +501,38 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     LOCATIONS.forEach(loc => {
       const isQuest = loc.category !== 'hotel' && loc.category !== 'food' && loc.category !== 'shopping';
       const isUnlocked = isQuest ? unlockedRewards.includes(loc.id) : true;
+      const questTarget = QUEST_TARGETS.find(q => q.id === loc.id);
+      const videoUrl = questTarget?.video;
+      const markerColor = POI_COLORS[loc.id] || '#cbd5e1';
+
+      const popupHtml = `
+        <div style="padding: 18px; font-family: 'Quicksand', sans-serif; background: #0f172a; color: white; border-radius: 24px; border: 2px solid ${markerColor}${isUnlocked ? '' : '33'}; box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px ${markerColor}${isUnlocked ? '40' : '05'};">
+          <h3 style="margin: 0; font-size: 18px; font-weight: 900; color: ${isUnlocked ? markerColor : '#64748b'}; text-transform: uppercase; letter-spacing: 0.15em; text-shadow: 0 0 10px ${markerColor}44;">${isUnlocked ? loc.name[lang] : '??? Location ???'}</h3>
+          <p style="font-size: 14px; margin: 10px 0; color: #94a3b8; line-height: 1.6;">${isUnlocked ? loc.description[lang] : 'Search this area to uncover its history and collect your reward.'}</p>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 15px;">
+            ${isQuest ? (!isUnlocked ? '<span style="font-size: 10px; color: #f59e0b; font-weight: 900; background: rgba(245,158,11,0.2); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);">🔒 Quest Active</span>' : '<span style="font-size: 10px; color: #10b981; font-weight: 900; background: rgba(16,185,129,0.2); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.3);">🔓 Reward Unlocked</span>') : ''}
+            <span style="font-size: 10px; color: #475569; font-weight: bold; text-transform: uppercase;">Quest Target</span>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 18px;">
+            <button onclick="window.setGlobalMapNavTarget('${loc.id}')" style="flex: 1; padding: 12px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; transition: all 0.3s ease;">GPS</button>
+            ${isUnlocked && videoUrl ? `
+              <button onclick="window.playQuestRewardVideo('${videoUrl}')" style="flex: 1.2; padding: 12px; background: #a855f7; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(168,85,247,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
+                ${lang === 'bs' ? '🎬 GLEDAJ' : '🎬 WATCH'}
+              </button>
+            ` : ''}
+            ${loc.website ? `
+              <button onclick="window.open('${loc.website}', '_blank')" style="flex: 1.5; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(37,99,235,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
+                WEBSITE
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `;
 
       if (!markers.current[loc.id]) {
         const el = document.createElement('div');
         el.className = `quest-marker-container`;
 
-        const markerColor = POI_COLORS[loc.id] || '#cbd5e1';
         // Applying refined 20% opacity for locked items
         const displayColor = (isQuest && !isUnlocked) ? `${markerColor}33` : markerColor;
 
@@ -534,31 +564,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             ${isQuest && !isUnlocked ? `<span style="font-size: 6px; font-weight: 900; color: white; text-transform: uppercase; margin-top: 2px; opacity: 0.8;">Active Quest</span>` : ''}
           </div>`;
 
-        const popup = new maplibregl.Popup({ offset: 35 }).setHTML(`
-          <div style="padding: 18px; font-family: 'Quicksand', sans-serif; background: #0f172a; color: white; border-radius: 24px; border: 2px solid ${markerColor}${isUnlocked ? '' : '33'}; box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px ${markerColor}${isUnlocked ? '40' : '05'};">
-            <h3 style="margin: 0; font-size: 18px; font-weight: 900; color: ${isUnlocked ? markerColor : '#64748b'}; text-transform: uppercase; letter-spacing: 0.15em; text-shadow: 0 0 10px ${markerColor}44;">${isUnlocked ? loc.name[lang] : '??? Location ???'}</h3>
-            <p style="font-size: 14px; margin: 10px 0; color: #94a3b8; line-height: 1.6;">${isUnlocked ? loc.description[lang] : 'Search this area to uncover its history and collect your reward.'}</p>
-            <div style="display: flex; align-items: center; gap: 8px; margin-top: 15px;">
-              ${isQuest ? (!isUnlocked ? '<span style="font-size: 10px; color: #f59e0b; font-weight: 900; background: rgba(245,158,11,0.2); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);">🔒 Quest Active</span>' : '<span style="font-size: 10px; color: #10b981; font-weight: 900; background: rgba(16,185,129,0.2); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.3);">🔓 Reward Unlocked</span>') : ''}
-              <span style="font-size: 10px; color: #475569; font-weight: bold; text-transform: uppercase;">Quest Target</span>
-            </div>
-            <div style="display: flex; gap: 8px; margin-top: 18px;">
-              <button onclick="window.setGlobalMapNavTarget('${loc.id}')" style="flex: 1; padding: 12px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; transition: all 0.3s ease;">GPS</button>
-              ${loc.website ? `
-                <button onclick="window.open('${loc.website}', '_blank')" style="flex: 1.5; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(37,99,235,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
-                  WEBSITE
-                </button>
-              ` : ''}
-            </div>
-          </div>
-        `);
+        const popup = new maplibregl.Popup({ offset: 35 }).setHTML(popupHtml);
 
         markers.current[loc.id] = new maplibregl.Marker(el)
           .setLngLat([loc.coordinates[1], loc.coordinates[0]])
           .setPopup(popup)
           .addTo(map.current!);
       } else {
-        const markerColor = POI_COLORS[loc.id] || '#cbd5e1';
         const displayColor = (isQuest && !isUnlocked) ? `${markerColor}33` : markerColor;
 
         const el = markers.current[loc.id].getElement();
@@ -588,6 +600,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             inner.innerHTML = `<div style="transform: scale(0.9); display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color:white; filter: drop-shadow(0 0 8px ${markerColor})"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`;
           }
         }
+
+        const popup = new maplibregl.Popup({ offset: 35 }).setHTML(popupHtml);
+        markers.current[loc.id].setPopup(popup);
       }
     });
 
