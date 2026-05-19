@@ -83,6 +83,9 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  // Keep a ref to the latest location so calculateRoute can read it
+  // without being a reactive dependency — prevents auto-rererouting on GPS tick
+  const userLocationRef = useRef<[number, number] | null>(null);
   const isOnline = useNetwork();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -173,7 +176,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
             'line-cap': 'round'
           },
           paint: {
-            'line-color': '#1d4ed8',
+            'line-color': '#16a34a',
             'line-width': 8,
             'line-opacity': 0.4
           }
@@ -188,7 +191,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
             'line-cap': 'round'
           },
           paint: {
-            'line-color': '#3b82f6',
+            'line-color': '#22c55e',
             'line-width': 4,
             'line-opacity': 0.9
           }
@@ -215,15 +218,18 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     }
   };
 
-  // Recalculate route whenever location or target changes
+  // Recalculate route ONLY when the user explicitly starts navigation or
+  // changes the destination — NOT on every GPS location tick.
+  // userLocationRef is read inside calculateRoute to get the current position.
   useEffect(() => {
     if (isNavigating && selectedTarget && isLoaded) {
-      const start = userLocation || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+      const start = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]] as [number, number];
       calculateRoute(start, selectedTarget);
     } else {
       clearRoute();
     }
-  }, [isNavigating, selectedTarget, userLocation, isLoaded]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNavigating, selectedTarget, isLoaded]); // intentionally excludes userLocation
 
   // Local GeoJSON Search (Offline-First)
   const handleSearch = async (e: React.FormEvent) => {
@@ -518,6 +524,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
+          // Always keep the ref up to date (used by calculateRoute)
+          userLocationRef.current = [longitude, latitude];
           if (!userMarker.current) {
             const el = document.createElement('div');
             el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.6);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
@@ -527,6 +535,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
           } else {
             userMarker.current.setLngLat([longitude, latitude]);
           }
+          // Only update state (triggering re-render) — does NOT re-trigger route calculation
           setUserLocation([longitude, latitude]);
         },
         (err) => console.error(err),
