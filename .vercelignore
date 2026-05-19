@@ -9,39 +9,15 @@ dist/
 node_modules/
 .npm/
 
-# Assets that are handled by the build
-public/assets/Gallery/QuestQRLocations/*.mp4
-public/assets/Gallery/Photos/HDweb.mp4
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\01_home_1775228193663.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\02_map_1775228217482.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\04_parking_1775228343525.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\06_ar_guide_1775228292351.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\bottom_check_1775227759094.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\bottom_nav_area_1775227630441.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\capture_home_screenshot_single_1775226347245.webp
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\capture_map_screenshot_final_v3_1775227472248.webp
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\capture_parking_screenshot_final_v1_1775227568059.webp
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\capture_quests_screenshot_final_v1_1775227715944.webp
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\current_view_1775227586614.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\feature_graphic_v1_1775226246116.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\full_page_map_1775227636911.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\home_1775225622381.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\home_1775225776565.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\home_1775226285435.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\home_1775226365393.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\home_mobile_1775226388168.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\home_page_check_1775226538513.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\home_screen_1775228379051.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\initial_load_1775227496020.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\map_1775225685925.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\map_mobile_1775227510097.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\map_mobile_1775227555102.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\map_mobile_final_1775227549082.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\map_png_1775225480672.png
-C:\Users\amir_\.gemini\antigravity\brain\c002cd10-75e9-45f3-9163-09572a79b85a\page1_view_1775227647957.png
-C:\Users\amir_/.gemini/antigravity/brain/c002cd10-75e9-45f3-9163-09572a79b85a/parking_mobile_1775227692921.png
-C:\Users\amir_/.gemini/antigravity/brain/c002cd10-75e9-45f3-9163-09572a79b85a/parking_zona0_red_1775228447637.png
-C:\Users\amir_/.gemini/antigravity/brain/c002cd10-75e9-45f3-9163-09572a79b85a/plan_view_1775227526629.png
-C:\Users\amir_/.gemini/antigravity/brain/c002cd10-75e9-45f3-9163-09572a79b85a/quests_mobile_1775227818949.png
-C:\Users\amir_/.gemini/antigravity/brain/c002cd10-75e9-45f3-9163-09572a79b85a/scrolled_home_1775227502043.png
-C:\Users\amir_/.gemini/antigravity/brain/c002cd10-75e9-45f3-9163-09572a79b85a/scrolled_vodi_1775227516304.png
+# NOTE: Hero background videos (~17MB each) are included in the deploy.
+# They are within Vercel's 100MB/file limit and are needed for the landing page.
+# If build time becomes an issue, move them to a CDN (Cloudinary, Bunny.net, etc.)
+# and update the src URLs in components/LandingPage.tsx
+
+
+
+# Dev/tooling
+.agent/
+.idea/
+scratch/
+dev-dist/
