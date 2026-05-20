@@ -261,22 +261,7 @@ const AppContent: React.FC = () => {
             onClick={() => setIsDrawerOpen(true)}
             className="flex flex-col items-center justify-center p-1 bg-transparent border-none transition-all active:scale-95 group focus:outline-none"
           >
-            <motion.img
-              animate={{
-                y: [0, -12, 0, -12, 0, 0, 0, 0],
-                rotate: [0, 0, 0, 0, 0, 360, 360, 360],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                repeatDelay: 4,
-                ease: "easeInOut",
-                times: [0, 0.1, 0.2, 0.3, 0.4, 0.7, 0.85, 1],
-              }}
-              src="/assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png"
-              alt="Menu Logo"
-              className="w-[60px] sm:h-[60px] object-contain transition-transform group-hover:scale-110"
-            />
+            <Menu className="w-8 h-8 text-blue-900 transition-transform group-hover:scale-110" />
           </button>
         </div>
 
@@ -333,18 +318,6 @@ const AppContent: React.FC = () => {
         </div>
       </div>
       <FullScreenImageViewer />
-      {/* Floating QR Scan Button (Formerly AI Assistant position) */}
-      <motion.button
-        className="fixed bottom-6 right-6 p-4 rounded-full shadow-2xl z-[90] bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-white/20 active:scale-95 transition-transform"
-        whileHover={{ scale: 1.1 }}
-        onClick={() => navigateToTab(AppTab.QUEST, { openScanner: true })}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", damping: 15 }}
-        title={lang === 'bs' ? 'Skeniraj QR' : 'Scan QR'}
-      >
-        <QrCode size={28} />
-      </motion.button>
     </ImageProvider>
   );
 };

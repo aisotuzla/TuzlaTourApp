@@ -1,10 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { Protocol } from 'pmtiles';
 import { Language } from "../types";
 import { TRANSLATIONS, TUZLA_CENTER, TUZLA_PARKING_DATA } from "../constants";
 import { Info, MessageSquare, Clock, MapPin, Car, List, Layers, Search, Navigation, Crosshair } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
+
+// Initialize PMTiles Protocol once globally
+const pmtilesProtocol = new Protocol();
+try {
+    maplibregl.addProtocol('pmtiles', pmtilesProtocol.tile);
+} catch (e) {
+    // Protocol might already be registered in another component
+}
 
 type ZoneKey = "Z0" | "Z1" | "Z2";
 type PaymentType = "hourly" | "daily";
@@ -175,7 +184,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<maplibregl.Map | null>(null);
     const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
-    const [viewMode, setViewMode] = useState<'zones' | 'lots'>('zones');
+    const [viewMode, setViewMode] = useState<'zones' | 'lots'>('lots');
     const [searchQuery, setSearchQuery] = useState("");
     const lotMarkers = useRef<maplibregl.Marker[]>([]);
     const [plate, setPlate] = useState("");
@@ -261,7 +270,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                         source: id,
                         paint: {
                             'line-color': zone.color,
-                            'line-width': 3,
+                            'line-width': 1.5,
                             'line-dasharray': [2, 1]
                         }
                     });

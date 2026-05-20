@@ -233,7 +233,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     } else {
       clearRoute();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNavigating, selectedTarget, isLoaded]); // intentionally excludes userLocation
 
   // Local GeoJSON Search (Offline-First)
@@ -442,7 +442,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
           map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#ffd7eb');
           map.current?.setPaintProperty('landuse_school', 'fill-color', '#f1f4b7');
           map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-          map.current?.setPaintProperty('water', 'fill-color', '#569efcff');
+          map.current?.setPaintProperty('water', 'fill-color', '#81b7ffff');
           map.current?.setPaintProperty('aeroway_runway', 'line-color', '#d9d6d3');
           map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#f2f5f6');
           map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');
@@ -498,7 +498,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                 <span style="font-size: 10px; font-weight: 700; color: #94a3b8; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 6px;">${hotel.priceRange}</span>
               </div>
               <button onclick="window.startNavigationFromPopup('${hotel.name.replace(/'/g, "\\'")}', ${hotel.latitude}, ${hotel.longitude})" style="width:100%; background:#2563eb; border:none; border-radius:8px; color:white; padding:8px 0; font-weight:800; font-size:12px; cursor:pointer; font-family:'Quicksand',sans-serif; box-shadow:0 4px 10px rgba(37,99,235,0.3); transition:all 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-                ${lang === 'bs' ? 'Pusti navigaciju' : 'Navigate'}
+                ${lang === 'bs' ? 'Start' : 'Start'}
               </button>
             </div>
           `))
@@ -641,11 +641,10 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
               setIsPresetModalOpen(true);
             }
           }}
-          className={`w-14 h-14 rounded-2xl shadow-2xl border flex items-center justify-center transition-all duration-300 ${
-            isNavigating
+          className={`w-14 h-14 rounded-2xl shadow-2xl border flex items-center justify-center transition-all duration-300 ${isNavigating
               ? 'bg-red-500 hover:bg-red-600 border-red-400 text-white hover:scale-110 active:scale-95 animate-pulse'
               : 'bg-white/90 border-white/20 text-blue-600 hover:scale-110 active:scale-95'
-          }`}
+            }`}
         >
           {isNavigating ? (
             <X size={24} className="animate-in spin-in-90 duration-300" />
@@ -692,22 +691,20 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
               <div className="px-6 py-2 border-b border-white/5 flex gap-2">
                 <button
                   onClick={() => setActiveModalTab('poi')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${
-                    activeModalTab === 'poi'
+                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'poi'
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                       : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <Landmark size={16} />
                   {lang === 'bs' ? 'Znamenitosti' : 'Landmarks'}
                 </button>
                 <button
                   onClick={() => setActiveModalTab('hotel')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${
-                    activeModalTab === 'hotel'
+                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'hotel'
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                       : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <HotelIcon size={16} />
                   {lang === 'bs' ? 'Hoteli' : 'Hotels'}
@@ -871,24 +868,14 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                 </div>
               </div>
 
-              {/* Direct Maps Integration Button */}
+              {/* Direct Maps Integration Button - Removed to keep navigation internal */}
               <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    const url = `https://www.google.com/maps/dir/?api=1&destination=${selectedTarget.lat},${selectedTarget.lon}&travelmode=walking`;
-                    window.open(url, '_blank');
-                  }}
-                  className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white rounded-2xl text-xs font-extrabold border border-white/10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
-                >
-                  <Eye size={16} />
-                  {lang === 'bs' ? 'Otvori u Google Maps' : 'Open in Google Maps'}
-                </button>
                 <button
                   onClick={() => {
                     setIsNavigating(false);
                     setSelectedTarget(null);
                   }}
-                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-red-600/20"
+                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-red-600/20"
                 >
                   {lang === 'bs' ? 'Završi' : 'End'}
                 </button>

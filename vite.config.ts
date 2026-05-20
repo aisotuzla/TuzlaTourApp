@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 import { VitePWA } from 'vite-plugin-pwa';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
@@ -16,8 +17,10 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      https: true,
     },
     plugins: [
+      basicSsl(),
       react(),
       tailwindcss(),
       nodePolyfills({
@@ -68,8 +71,8 @@ export default defineConfig(({ mode }) => {
           ]
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,json,geojson,webp,mp4,webm,pmtiles}'],
-          maximumFileSizeToCacheInBytes: 30 * 1024 * 1024, // 30MB max for precache (accommodates ~18MB videos)
+          globPatterns: ['**/*.{js,css,html,ico}'],
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

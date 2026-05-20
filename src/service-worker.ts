@@ -14,6 +14,28 @@ precacheAndRoute(self.__WB_MANIFEST);
 // Cleanup old caches
 cleanupOutdatedCaches();
 
+// Manually cache the full PMTiles file on install to ensure RangeRequestsPlugin has a 200 OK full file to slice
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    Promise.all([
+      caches.open('pmtiles-cache').then((cache) => {
+        // Fetch the full file and cache it, but catch errors so SW install doesn't fail
+        return cache.add('/maps/tuzla.pmtiles').catch((err) => {
+          console.warn('Failed to cache pmtiles on install:', err);
+        });
+      }),
+      caches.open('local-data').then((cache) => {
+        return cache.addAll([
+          '/maps/TuzlaTourGuide.geojson',
+          '/style/offline-style.json',
+          '/poi.geojson',
+          '/MAP/buildings.geojson'
+        ]).catch((err) => console.warn('Failed to cache core map data on install:', err));
+      })
+    ])
+  );
+});
+
 // 1. Google Fonts
 registerRoute(
   ({ url }) => url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com',
@@ -34,6 +56,19 @@ registerRoute(
     plugins: [
       new ExpirationPlugin({ maxEntries: 2000, maxAgeSeconds: 30 * 24 * 60 * 60 }),
       new CacheableResponsePlugin({ statuses: [0, 200] }),
+    ],
+  })
+);
+
+// 2.5 PMTiles (Protomaps Vector tiles) - CRITICAL for Offline PMTiles
+registerRoute(
+  ({ url }) => url.pathname.endsWith('.pmtiles') || url.pathname.includes('.pmtiles'),
+  new CacheFirst({
+    cacheName: 'pmtiles-cache',
+    plugins: [
+      new RangeRequestsPlugin(),
+      new CacheableResponsePlugin({ statuses: [200] }),
+      new ExpirationPlugin({ maxEntries: 10, maxAgeSeconds: 365 * 24 * 60 * 60 }),
     ],
   })
 );
@@ -80,7 +115,7 @@ registerRoute(
     plugins: [
       new RangeRequestsPlugin(),
       new ExpirationPlugin({ maxEntries: 10, maxAgeSeconds: 7 * 24 * 60 * 60 }),
-      new CacheableResponsePlugin({ statuses: [200, 206] }),
+      new CacheableResponsePlugin({ statuses: [200] }),
     ],
   })
 );

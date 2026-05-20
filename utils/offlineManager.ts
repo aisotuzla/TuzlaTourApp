@@ -84,6 +84,7 @@ export const downloadOfflinePack = async (
 
   try {
     const mapCache = await caches.open('local-map-tiles');
+    const pmtilesCache = await caches.open('pmtiles-cache');
     const dataCache = await caches.open('local-data');
     const imgCache = await caches.open('images');
 
@@ -97,7 +98,9 @@ export const downloadOfflinePack = async (
           try {
             // Determine which cache to use
             let targetCache = imgCache;
-            if (url.includes('.pmtiles') || url.includes('/style/')) {
+            if (url.includes('.pmtiles')) {
+              targetCache = pmtilesCache;
+            } else if (url.includes('/style/')) {
               targetCache = mapCache;
             } else if (url.endsWith('.geojson') || url.endsWith('.json')) {
               targetCache = dataCache;
@@ -141,6 +144,7 @@ export const clearOfflinePack = async (): Promise<void> => {
   if (typeof window === 'undefined' || !window.caches) return;
   try {
     await caches.delete('local-map-tiles');
+    await caches.delete('pmtiles-cache');
     await caches.delete('local-data');
     await caches.delete('images');
   } catch (error) {
