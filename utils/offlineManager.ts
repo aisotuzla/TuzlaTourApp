@@ -10,7 +10,8 @@ export interface OfflineProgress {
 
 // Fixed core assets needed for the offline map and app shell
 const CORE_ASSETS = [
-  '/assets/tuzla-map.geojson',
+  '/maps/TuzlaTourGuide.geojson',
+  '/maps/tuzla.pmtiles',
   '/style/offline-style.json',
   '/poi.geojson',
   '/MAP/buildings.geojson',
@@ -75,18 +76,7 @@ export const downloadOfflinePack = async (
 
   let urls = getOfflineAssetUrls();
 
-  onProgress({ total: urls.length, downloaded: 0, status: 'downloading', message: 'Gathering map tiles...' });
-
-  try {
-    // Try to fetch the tile list manifest
-    const tileResp = await fetch('/MAP/tiles-list.geojson');
-    if (tileResp.ok) {
-      const tiles: string[] = await tileResp.json();
-      urls = [...urls, ...tiles];
-    }
-  } catch (err) {
-    console.warn('Could not load tiles-list.geojson, proceeding with core assets only', err);
-  }
+  onProgress({ total: urls.length, downloaded: 0, status: 'downloading', message: 'Gathering assets...' });
 
   let downloadedCount = 0;
 
@@ -107,7 +97,7 @@ export const downloadOfflinePack = async (
           try {
             // Determine which cache to use
             let targetCache = imgCache;
-            if (url.includes('/MAP/tiles/')) {
+            if (url.includes('.pmtiles') || url.includes('/style/')) {
               targetCache = mapCache;
             } else if (url.endsWith('.geojson') || url.endsWith('.json')) {
               targetCache = dataCache;

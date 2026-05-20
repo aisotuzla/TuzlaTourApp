@@ -55,3 +55,4 @@ npm_wsl.log
 build/
 .agent/
 README.md
+.env*.local

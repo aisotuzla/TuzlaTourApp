@@ -10,9 +10,7 @@
   "sources": {
     "raster-tiles": {
       "type": "raster",
-      "tiles": [
-        "/MAP/tiles/{z}/{x}/{y}.png"
-      ],
+      "url": "pmtiles:///maps/tuzla.pmtiles",
       "tileSize": 256,
       "minzoom": 14,
       "maxzoom": 16,
@@ -20,7 +18,7 @@
     },
     "pois": {
       "type": "geojson",
-      "data": "/poi.geojson"
+      "data": "/maps/TuzlaTourGuide.geojson"
     },
     "buildings": {
       "type": "geojson",

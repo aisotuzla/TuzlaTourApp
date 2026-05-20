@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
           enabled: true,
           type: 'module'
         },
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'assets/**/*', 'MAP/**/*', 'poi.geojson', 'style/*.json'],
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'assets/**/*', 'maps/**/*', 'MAP/**/*', 'poi.geojson', 'style/*.json'],
         manifest: {
           name: 'Tuzla Virtual Tour Guide',
           short_name: 'Tuzla Guide',
@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => {
           ]
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,json,geojson,webp,mp4,webm}'],
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,json,geojson,webp,mp4,webm,pmtiles}'],
           maximumFileSizeToCacheInBytes: 30 * 1024 * 1024, // 30MB max for precache (accommodates ~18MB videos)
           runtimeCaching: [
             {
@@ -125,6 +125,21 @@ export default defineConfig(({ mode }) => {
                 cacheableResponse: {
                   statuses: [0, 200]
                 }
+              }
+            },
+            {
+              urlPattern: /.*\.pmtiles/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'pmtiles-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                },
+                cacheableResponse: {
+                  statuses: [0, 200, 206]
+                },
+                rangeRequests: true
               }
             },
             {

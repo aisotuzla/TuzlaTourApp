@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { Protocol } from 'pmtiles';
 import { AppFeatures } from '../utils/platform';
 import { Language } from '../types';
 import { TUZLA_CENTER, LOCATIONS } from '../constants';
@@ -25,6 +26,10 @@ const QUEST_TARGETS = [
   { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4' },
   { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, image: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/tvrle.png' },
 ];
+
+// Initialize PMTiles Protocol once
+const pmtilesProtocol = new Protocol();
+maplibregl.addProtocol('pmtiles', pmtilesProtocol.tile);
 
 interface MapQuestViewProps {
   lang: Language;

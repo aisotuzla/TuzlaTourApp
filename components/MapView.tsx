@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Language } from '../types';
+import { Protocol } from 'pmtiles';
 import { TUZLA_CENTER } from '../constants';
 import { AppFeatures } from '../utils/platform';
 import { Search, X, Loader2, Navigation, Layers, MapPin, Landmark, Compass, Eye, Route, Sparkles, Clock, Footprints } from 'lucide-react';
@@ -15,10 +16,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 let _tuzlaMapCache: any[] | null = null;
 let _tuzlaMapLoading: Promise<any[] | null> | null = null;
 
+// Initialize PMTiles Protocol once
+const pmtilesProtocol = new Protocol();
+maplibregl.addProtocol('pmtiles', pmtilesProtocol.tile);
+
 async function getTuzlaMapFeatures(): Promise<any[] | null> {
   if (_tuzlaMapCache) return _tuzlaMapCache;
   if (_tuzlaMapLoading) return _tuzlaMapLoading;
-  _tuzlaMapLoading = fetch('/assets/tuzla-map.geojson')
+  _tuzlaMapLoading = fetch('/maps/TuzlaTourGuide.geojson')
     .then(r => r.ok ? r.json() : null)
     .then(data => {
       _tuzlaMapCache = data?.features ?? null;
@@ -240,7 +245,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     try {
       let combinedResults: any[] = [];
 
-      // 1. Search tuzla-map.geojson (full OSM dataset + merged POIs) — cached in memory
+      // 1. Search TuzlaTourGuide.geojson (full OSM dataset + merged POIs) — cached in memory
       try {
         const features = await getTuzlaMapFeatures();
         if (features) {
@@ -278,8 +283,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
           combinedResults = localMatches;
         }
       } catch (err) {
-        // Fallback to poi.geojson if tuzla-map.geojson is unavailable
-        console.warn('tuzla-map.geojson unavailable, falling back to poi.geojson:', err);
+        // Fallback to poi.geojson if TuzlaTourGuide.geojson is unavailable
+        console.warn('TuzlaTourGuide.geojson unavailable, falling back to poi.geojson:', err);
         try {
           const fallbackRes = await fetch('/poi.geojson');
           if (fallbackRes.ok) {
