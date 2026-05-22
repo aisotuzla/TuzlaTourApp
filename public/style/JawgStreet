@@ -1,0 +1,19 @@
+<head>
+    <link href='https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.css' rel='stylesheet' />
+    <script src='https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.js'></script>
+</head>
+
+<body>
+    <div id='map' style='width: 400px; height: 300px;'></div>
+    <script>
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: "https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=CNt3aKmcJfGXrMZdGvkz60kDHIJ8Bfz9tfgdbUuvYs6Xma1MQcHpMLtDzoF3laoj",
+            zoom: 3,
+            center: [0, 0]
+        });
+        maplibregl.setRTLTextPlugin(
+            'https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.3.0/dist/mapbox-gl-rtl-text.js'
+        );
+    </script>
+</body>

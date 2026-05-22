@@ -78,6 +78,17 @@ export const downloadOfflinePack = async (
 
   onProgress({ total: urls.length, downloaded: 0, status: 'downloading', message: 'Gathering assets...' });
 
+  // Fetch raster tiles manifest and append to URLs
+  try {
+    const res = await fetch('/maps/tiles.json');
+    if (res.ok) {
+      const tileUrls: string[] = await res.json();
+      urls = urls.concat(tileUrls);
+    }
+  } catch (err) {
+    console.warn('Failed to load tiles.json manifest for offline raster tiles', err);
+  }
+
   let downloadedCount = 0;
 
   onProgress({ total: urls.length, downloaded: 0, status: 'downloading', message: 'Starting download...' });
@@ -101,6 +112,8 @@ export const downloadOfflinePack = async (
             if (url.includes('.pmtiles')) {
               targetCache = pmtilesCache;
             } else if (url.includes('/style/')) {
+              targetCache = mapCache;
+            } else if (url.includes('/maps/tiles/')) {
               targetCache = mapCache;
             } else if (url.endsWith('.geojson') || url.endsWith('.json')) {
               targetCache = dataCache;

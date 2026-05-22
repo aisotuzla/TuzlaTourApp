@@ -29,7 +29,7 @@ self.addEventListener('install', (event) => {
           '/maps/TuzlaTourGuide.geojson',
           '/style/offline-style.json',
           '/poi.geojson',
-          '/MAP/buildings.geojson'
+          '/maps/buildings.geojson'
         ]).catch((err) => console.warn('Failed to cache core map data on install:', err));
       })
     ])
@@ -50,7 +50,7 @@ registerRoute(
 
 // 2. Local Map Tiles (CRITICAL for Offline Map)
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/MAP/tiles/'),
+  ({ url }) => url.pathname.startsWith('/maps/tiles/'),
   new CacheFirst({
     cacheName: 'local-map-tiles',
     plugins: [
@@ -62,12 +62,12 @@ registerRoute(
 
 // 2.5 PMTiles (Protomaps Vector tiles) - CRITICAL for Offline PMTiles
 registerRoute(
-  ({ url }) => url.pathname.endsWith('.pmtiles') || url.pathname.includes('.pmtiles'),
+  ({ url }) => url.pathname.includes('tuzla.pmtiles'),
   new CacheFirst({
     cacheName: 'pmtiles-cache',
     plugins: [
       new RangeRequestsPlugin(),
-      new CacheableResponsePlugin({ statuses: [200] }),
+      new CacheableResponsePlugin({ statuses: [200, 206] }),
       new ExpirationPlugin({ maxEntries: 10, maxAgeSeconds: 365 * 24 * 60 * 60 }),
     ],
   })
@@ -95,7 +95,7 @@ registerRoute(
   })
 );
 
-// 5. Images (JPG, PNG, WEBP, SVG)
+// 6. Images (JPG, PNG, WEBP, SVG)
 registerRoute(
   ({ request }) => request.destination === 'image',
   new CacheFirst({
@@ -107,7 +107,7 @@ registerRoute(
   })
 );
 
-// 6. Videos (MP4, WEBM) - Use RangeRequests for partial content
+// 5. Videos (MP4, WEBM) - Use RangeRequests for partial content
 registerRoute(
   ({ request }) => request.destination === 'video',
   new CacheFirst({
@@ -115,7 +115,7 @@ registerRoute(
     plugins: [
       new RangeRequestsPlugin(),
       new ExpirationPlugin({ maxEntries: 10, maxAgeSeconds: 7 * 24 * 60 * 60 }),
-      new CacheableResponsePlugin({ statuses: [200] }),
+      new CacheableResponsePlugin({ statuses: [200, 206] }),
     ],
   })
 );

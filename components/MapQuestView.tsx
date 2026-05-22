@@ -4,9 +4,9 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { Protocol } from 'pmtiles';
 import { AppFeatures } from '../utils/platform';
 import { Language } from '../types';
-import { TUZLA_CENTER, LOCATIONS } from '../constants';
+import { TUZLA_CENTER, LOCATIONS, TUZLA_WIFI_DATA } from '../constants';
 import { tuzlaHotelData } from '../tuzlaHotelData';
-import { QrCode, Navigation, Gamepad2, CheckCircle2, Lock, Play, X, Trophy } from 'lucide-react';
+import { QrCode, Navigation, Gamepad2, CheckCircle2, Lock, Play, X, Trophy, Route, Compass, Landmark, Loader2, Clock, Footprints, Hotel as HotelIcon } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNetwork } from '../hooks/useNetwork';
@@ -27,9 +27,89 @@ const QUEST_TARGETS = [
   { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, image: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/tvrle.png' },
 ];
 
-// Initialize PMTiles Protocol once
-const pmtilesProtocol = new Protocol();
-maplibregl.addProtocol('pmtiles', pmtilesProtocol.tile);
+const ROUTE_POI_PRESETS = [
+  {
+    name: { bs: 'Panonska Jezera', en: 'Pannonian Lakes' },
+    lat: 44.53888255374366,
+    lon: 18.680032450849325,
+    category: 'nature',
+    entryFee: 'Paid 7.5 KM - 9 KM for entire day',
+  },
+  {
+    name: { bs: 'Slana Banja Park', en: 'Slana Banja Park' },
+    lat: 44.53846734540082,
+    lon: 18.685620782683003,
+    category: 'nature',
+  },
+  {
+    name: { bs: 'Tuzla Old Town (Čaršija)', en: 'Tuzla Old Town (Čaršija)' },
+    lat: 44.53824258043878,
+    lon: 18.67589812243773,
+    category: 'culture',
+  },
+  {
+    name: { bs: 'Trg Slobode', en: 'Freedom Square' },
+    lat: 44.53954253369571,
+    lon: 18.67508475352372,
+    category: 'culture',
+  },
+  {
+    name: { bs: 'Spomenik Kralju Tvrtku (I)', en: 'King Tvrtko Monument' },
+    lat: 44.53812247668793,
+    lon: 18.678359094003866,
+    category: 'history',
+  },
+  {
+    name: { bs: 'Spomenik Meši Selimoviću', en: 'Mesa Selimovic Monument' },
+    lat: 44.53710706292608,
+    lon: 18.67822758905615,
+    category: 'culture',
+  },
+  {
+    name: { bs: 'Džamija Šarena (Atik)', en: 'Atik Mosque' },
+    lat: 44.54001556181191,
+    lon: 18.673365480509432,
+    category: 'religion',
+  },
+  {
+    name: { bs: 'Saborna Crkva', en: 'Orthodox Cathedral' },
+    lat: 44.53800051276164,
+    lon: 18.679763716121386,
+    category: 'religion',
+  },
+  {
+    name: { bs: 'Tržni centar Bingo (BCC)', en: 'Bingo Shopping Center' },
+    lat: 44.53188635183338,
+    lon: 18.652020274686947,
+    category: 'shopping',
+  },
+  {
+    name: { bs: 'TC Robot', en: 'Robot Shopping Center' },
+    lat: 44.53454365316736,
+    lon: 18.682516897004632,
+    category: 'shopping',
+  },
+  {
+    name: { bs: 'TC Mercator', en: 'Mercator Shopping Center' },
+    lat: 44.5327311385098,
+    lon: 18.68292815613492,
+    category: 'shopping',
+  },
+  {
+    name: { bs: 'TC Tuzlanka', en: 'Tuzlanka Shopping Center' },
+    lat: 44.538634727509304,
+    lon: 18.664878503738578,
+    category: 'shopping',
+  },
+];
+
+// Initialize PMTiles Protocol safely
+try {
+  const pmtilesProtocol = new Protocol();
+  maplibregl.addProtocol('pmtiles', pmtilesProtocol.tile);
+} catch (e) {
+  // Protocol might already be added
+}
 
 interface MapQuestViewProps {
   lang: Language;
@@ -56,6 +136,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const userLocationRef = useRef<[number, number] | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -63,7 +144,16 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const isOnline = useNetwork();
   const OFFLINE_STYLE = '/style/offline-style.json';
-  const ONLINE_STYLE = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
+  const ONLINE_STYLE = 'https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=CNt3aKmcJfGXrMZdGvkz60kDHIJ8Bfz9tfgdbUuvYs6Xma1MQcHpMLtDzoF3laoj';
+
+  // Navigation state
+  const [selectedNavTarget, setSelectedNavTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
+  const [routeDistance, setRouteDistance] = useState<number | null>(null);
+  const [routeTime, setRouteTime] = useState<number | null>(null);
+  const [isRouteLoading, setIsRouteLoading] = useState(false);
+  const [activeModalTab, setActiveModalTab] = useState<'poi' | 'hotel'>('poi');
 
   const scannerContainerId = "map-quest-reader";
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
@@ -106,15 +196,15 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           paint: {
             'fill-extrusion-color': [
               'interpolate', ['linear'], ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
-              0, '#94a3b8',
-              20, '#64748b',
-              50, '#475569',
-              100, '#334155'
+              0, '#53565cff',
+              20, '#677891ff',
+              50, '#8496afff',
+              100, '#9aa1b1ff'
             ],
             'fill-extrusion-height': [
               'interpolate', ['linear'], ['zoom'],
               14, 0,
-              15, ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
+              15, ['*', ['coalesce', ['get', 'render_height'], ['get', 'height'], 15], 1.8],
             ],
             'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
             'fill-extrusion-opacity': 0.9,
@@ -186,8 +276,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       style: styleToUse,
       center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
       zoom: 15,
-      minZoom: isOnline ? 0 : 14,
-      maxZoom: isOnline ? 20 : 16,
+      minZoom: (isOnline && !isOfflineMode) ? 0 : 14,
+      maxZoom: (isOnline && !isOfflineMode) ? 20 : 16,
       pitch: 75,
       bearing: -15,
       attributionControl: false,
@@ -199,6 +289,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       if (isOnline && (e.error?.message?.includes('401') || e.error?.message?.includes('403') || e.error?.message?.includes('Failed to fetch') || e.error?.message?.includes('NetworkError'))) {
         setIsOfflineMode(true);
         map.current?.setStyle(OFFLINE_STYLE);
+        // Lock zoom to 14-16 for offline raster tiles
+        map.current?.setMinZoom(14);
+        map.current?.setMaxZoom(16);
         // Ensure we signal loaded so markers can appear
         setTimeout(() => setIsLoaded(true), 1000);
       }
@@ -388,6 +481,36 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       if (isOnline) {
         setupHighlighters(map.current!);
       }
+
+      // Add WiFi Spot Markers
+      const WIFI_ICON_URL = 'https://api.geoapify.com/v2/icon/?type=circle&color=%233038da&size=20&icon=wifi&iconType=lucide&contentSize=10&shadowColor=%23b4b4b4&contentColor=%23057ae7&scaleFactor=2&apiKey=65090a03070e4e1898694f7a18ba415b';
+      TUZLA_WIFI_DATA.forEach(spot => {
+        const wifiEl = document.createElement('div');
+        wifiEl.className = 'wifi-marker';
+        wifiEl.style.cssText = 'cursor:pointer;transition:transform 0.2s;';
+        wifiEl.innerHTML = `<img src="${WIFI_ICON_URL}" width="32" height="40" alt="WiFi" style="pointer-events:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />`;
+        wifiEl.onmouseenter = () => { wifiEl.style.transform = 'scale(1.2)'; };
+        wifiEl.onmouseleave = () => { wifiEl.style.transform = 'scale(1)'; };
+
+        new maplibregl.Marker({ element: wifiEl, anchor: 'bottom' })
+          .setLngLat([spot.longitude, spot.latitude])
+          .setPopup(new maplibregl.Popup({ offset: 25, maxWidth: '260px' }).setHTML(`
+            <div style="font-family:'Quicksand',sans-serif;padding:12px;background:#0f172a;border-radius:16px;color:white;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <div style="background:#3038da;padding:6px;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a10 10 0 0 1 14 0"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 9.5a14 14 0 0 1 20 0"/><circle cx="12" cy="20" r="1"/></svg>
+                </div>
+                <h3 style="font-weight:800;font-size:14px;margin:0;color:#60a5fa;">${spot.name[lang]}</h3>
+              </div>
+              <p style="font-size:11px;margin:0 0 8px 0;color:#94a3b8;line-height:1.4;">${spot.description[lang]}</p>
+              <div style="background:rgba(48,56,218,0.15);border:1px solid rgba(48,56,218,0.3);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px;">
+                <span style="font-size:10px;font-weight:700;color:#818cf8;">SSID:</span>
+                <span style="font-size:12px;font-weight:900;color:#c7d2fe;">${spot.ssid}</span>
+              </div>
+            </div>
+          `))
+          .addTo(map.current!);
+      });
     });
 
     // Special case: if offline mode kicks in via error handler, we might miss 'load'
@@ -402,6 +525,77 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       map.current = null;
     };
   }, []);
+
+  // Route calculation
+  const clearRoute = () => {
+    if (map.current) {
+      try {
+        if (map.current.getLayer('route-layer')) map.current.removeLayer('route-layer');
+        if (map.current.getLayer('route-layer-casing')) map.current.removeLayer('route-layer-casing');
+        if (map.current.getSource('route-source')) map.current.removeSource('route-source');
+      } catch (err) {
+        console.warn('Error clearing route layers:', err);
+      }
+    }
+    setRouteDistance(null);
+    setRouteTime(null);
+  };
+
+  const calculateRoute = async (startLoc: [number, number], target: { name: string; lat: number; lon: number }) => {
+    if (!map.current || !isLoaded) return;
+    setIsRouteLoading(true);
+    try {
+      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || '63e8b34f44974d71bc70aad63e5b56ba';
+      const url = `https://api.geoapify.com/v1/routing?waypoints=${startLoc[1]},${startLoc[0]}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Routing API request failed');
+      const data = await res.json();
+      if (!data?.features?.length) throw new Error('No route found');
+
+      const routeFeature = data.features[0];
+      setRouteDistance(routeFeature.properties.distance);
+      setRouteTime(routeFeature.properties.time);
+
+      if (!map.current) return;
+      if (map.current.getSource('route-source')) {
+        (map.current.getSource('route-source') as maplibregl.GeoJSONSource).setData(data);
+      } else {
+        map.current.addSource('route-source', { type: 'geojson', data });
+        map.current.addLayer({
+          id: 'route-layer-casing', type: 'line', source: 'route-source',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': '#1c8a44ff', 'line-width': 9, 'line-opacity': 0.5 }
+        });
+        map.current.addLayer({
+          id: 'route-layer', type: 'line', source: 'route-source',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': '#22c55e', 'line-width': 4, 'line-opacity': 0.9 }
+        });
+      }
+
+      const coordinates = routeFeature.geometry.coordinates;
+      if (coordinates?.length) {
+        const bounds = new maplibregl.LngLatBounds();
+        coordinates.forEach((coord: [number, number]) => bounds.extend(coord));
+        map.current.fitBounds(bounds, { padding: { top: 120, bottom: 260, left: 60, right: 60 }, duration: 1500 });
+      }
+    } catch (error) {
+      console.error('Error calculating route:', error);
+    } finally {
+      setIsRouteLoading(false);
+    }
+  };
+
+  // Trigger route calculation when navigation starts
+  useEffect(() => {
+    if (isNavigating && selectedNavTarget && isLoaded) {
+      const start = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]] as [number, number];
+      calculateRoute(start, selectedNavTarget);
+    } else {
+      clearRoute();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNavigating, selectedNavTarget, isLoaded]);
 
   // Handle Offline Map Styles
   useEffect(() => {
@@ -657,6 +851,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         (pos) => {
           const { latitude, longitude } = pos.coords;
           setUserLocation([latitude, longitude]);
+          userLocationRef.current = [longitude, latitude];
 
           if (map.current && isLoaded) {
             if (!userMarker.current) {
@@ -841,7 +1036,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       </AnimatePresence>
 
       {/* TOP FLOATING HUB */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 w-[95%] max-w-lg">
+      <div className="absolute top-6 inset-x-0 mx-auto z-10 w-[95%] max-w-lg">
         <div className={`bg-slate-900/40 ${isUtilityMode ? 'backdrop-blur-sm shadow-lg' : 'backdrop-blur-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]'} px-6 py-4 rounded-[2.5rem] border border-white/20 flex items-center justify-between`}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40 rotate-3 transition-transform hover:rotate-0">
@@ -859,6 +1054,19 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
               className="w-14 h-14 flex items-center justify-center bg-white/10 hover:bg-amber-500 text-white hover:text-slate-900 rounded-2xl transition-all active:scale-90 border border-white/10 group shadow-lg"
             >
               <QrCode className="w-6 h-6 transition-transform group-hover:scale-110" />
+            </button>
+            <button
+              onClick={() => {
+                if (isNavigating) {
+                  setIsNavigating(false);
+                  setSelectedNavTarget(null);
+                } else {
+                  setIsPresetModalOpen(true);
+                }
+              }}
+              className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all active:scale-90 border shadow-lg ${isNavigating ? 'bg-red-500 border-red-400 text-white animate-pulse' : 'bg-white/10 border-white/10 text-white hover:bg-emerald-500'}`}
+            >
+              {isNavigating ? <X className="w-6 h-6" /> : <Route className="w-6 h-6 transition-transform group-hover:scale-110" />}
             </button>
             <button
               onClick={onToggleAR}
@@ -1060,6 +1268,234 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             <div>
               <span className="text-[10px] font-black uppercase tracking-widest text-green-100 block mb-1">New Reward Unlocked</span>
               <span className="text-lg font-black uppercase text-white leading-none">{successMessage}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Destination Preset Selector Modal */}
+      <AnimatePresence>
+        {isPresetModalOpen && (
+          <div className="fixed inset-0 z-[4000] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              className="w-full max-w-lg overflow-hidden border bg-slate-900/95 backdrop-blur-2xl border-white/10 rounded-3xl shadow-2xl flex flex-col max-h-[80vh]"
+            >
+              {/* Modal Header */}
+              <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
+                    <Compass className="text-emerald-500" size={24} />
+                    {lang === 'bs' ? 'Odaberi Odredište' : 'Choose Destination'}
+                  </h3>
+                  <p className="text-xs font-bold text-slate-400 mt-1">
+                    {lang === 'bs' ? 'Započni pješačku rutu kroz Tuzlu' : 'Start a walking route through Tuzla'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsPresetModalOpen(false)}
+                  className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Tabs */}
+              <div className="px-6 py-2 border-b border-white/5 flex gap-2">
+                <button
+                  onClick={() => setActiveModalTab('poi')}
+                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'poi'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    }`}
+                >
+                  <Landmark size={16} />
+                  {lang === 'bs' ? 'Znamenitosti' : 'Landmarks'}
+                </button>
+                <button
+                  onClick={() => setActiveModalTab('hotel')}
+                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'hotel'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    }`}
+                >
+                  <HotelIcon size={16} />
+                  {lang === 'bs' ? 'Hoteli' : 'Hotels'}
+                </button>
+              </div>
+
+              {/* Scrollable List */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
+                {activeModalTab === 'poi' ? (
+                  ROUTE_POI_PRESETS.map((poi, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setSelectedNavTarget({
+                          name: poi.name[lang] || poi.name.en,
+                          lat: poi.lat,
+                          lon: poi.lon
+                        });
+                        setIsNavigating(true);
+                        setIsPresetModalOpen(false);
+                      }}
+                      className="w-full p-4 bg-white/5 hover:bg-emerald-600/20 hover:border-emerald-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                          <Landmark size={20} />
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-white group-hover:text-emerald-300 transition-colors">
+                            {poi.name[lang] || poi.name.en}
+                          </h4>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/80">
+                            {poi.category}
+                          </span>
+                        </div>
+                      </div>
+                      <Route size={20} className="text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
+                    </button>
+                  ))
+                ) : (
+                  tuzlaHotelData.map((hotel, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setSelectedNavTarget({
+                          name: hotel.name,
+                          lat: hotel.latitude,
+                          lon: hotel.longitude
+                        });
+                        setIsNavigating(true);
+                        setIsPresetModalOpen(false);
+                      }}
+                      className="w-full p-4 bg-white/5 hover:bg-emerald-600/20 hover:border-emerald-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                          <HotelIcon size={20} />
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-white group-hover:text-emerald-300 transition-colors">
+                            {hotel.name}
+                          </h4>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/80">
+                            {hotel.rating} ★ • {hotel.priceRange}
+                          </span>
+                        </div>
+                      </div>
+                      <Route size={20} className="text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
+                    </button>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Navigation HUD Panel */}
+      <AnimatePresence>
+        {isNavigating && selectedNavTarget && (
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 50, opacity: 0 }}
+            className="absolute bottom-28 left-0 right-0 z-20 flex justify-center px-4 pointer-events-none"
+          >
+            <div className="w-full max-w-md pointer-events-auto bg-slate-950/90 backdrop-blur-xl border border-emerald-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4">
+              {/* Header Info */}
+              <div className="flex items-start justify-between">
+                <div className="flex gap-3">
+                  <div className="p-3 bg-emerald-600/20 text-emerald-400 rounded-2xl flex items-center justify-center border border-emerald-500/20">
+                    <Route size={24} className="animate-pulse" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400">
+                      {lang === 'bs' ? 'U Toku je Pješačka Ruta' : 'Walking Route in Progress'}
+                    </span>
+                    <h4 className="text-base font-black text-white line-clamp-1 mt-0.5">
+                      {selectedNavTarget.name}
+                    </h4>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsNavigating(false);
+                    setSelectedNavTarget(null);
+                  }}
+                  className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Navigation Data Grid */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* Distance Card */}
+                <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <Footprints size={14} />
+                    <span className="text-xs font-bold">{lang === 'bs' ? 'Udaljenost' : 'Distance'}</span>
+                  </div>
+                  <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
+                    {isRouteLoading ? (
+                      <Loader2 className="animate-spin text-emerald-400" size={20} />
+                    ) : routeDistance !== null ? (
+                      routeDistance >= 1000 ? (
+                        <>
+                          {(routeDistance / 1000).toFixed(1)}
+                          <span className="text-xs text-emerald-400 font-bold">km</span>
+                        </>
+                      ) : (
+                        <>
+                          {Math.round(routeDistance)}
+                          <span className="text-xs text-emerald-400 font-bold">m</span>
+                        </>
+                      )
+                    ) : (
+                      '--'
+                    )}
+                  </div>
+                </div>
+
+                {/* Duration Card */}
+                <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <Clock size={14} />
+                    <span className="text-xs font-bold">{lang === 'bs' ? 'Vrijeme' : 'Duration'}</span>
+                  </div>
+                  <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
+                    {isRouteLoading ? (
+                      <Loader2 className="animate-spin text-emerald-400" size={20} />
+                    ) : routeTime !== null ? (
+                      <>
+                        {Math.ceil(routeTime / 60)}
+                        <span className="text-xs text-emerald-400 font-bold">min</span>
+                      </>
+                    ) : (
+                      '--'
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setIsNavigating(false);
+                    setSelectedNavTarget(null);
+                  }}
+                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-red-600/20"
+                >
+                  {lang === 'bs' ? 'Završi' : 'End'}
+                </button>
+              </div>
             </div>
           </motion.div>
         )}

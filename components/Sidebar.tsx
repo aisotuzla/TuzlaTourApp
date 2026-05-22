@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import OfflineManagerUI from './OfflineManagerUI';
+
 import { AppTab, Language } from '../types';
 import {
   Wallet,
@@ -131,11 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
           >
             {/* Header */}
             <div className="p-6 flex items-center justify-between border-b border-slate-100">
-              <img
-                src="/assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png"
-                alt="Tuzla Menu Logo"
-                className="h-10 w-auto object-contain"
-              />
+  
               <button
                 onClick={() => onClose()}
                 className="p-2 rounded-full hover:bg-slate-100 transition-colors"
@@ -189,7 +185,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
 
             {/* Footer - Spacer */}
             <div className="p-4 border-t border-slate-100 text-center">
-              <OfflineManagerUI lang={lang} />
+
             </div>
           </motion.aside>
         </>

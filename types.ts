@@ -14,6 +14,16 @@ export interface LocationData {
   image?: string;
 }
 
+export interface WifiSpot {
+  id: string;
+  name: Record<Language, string>;
+  description: Record<Language, string>;
+  latitude: number;
+  longitude: number;
+  ssid: string;
+}
+
+
 export interface ParkingLot {
   id: string;
   name: string;

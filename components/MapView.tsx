@@ -3,7 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Language } from '../types';
 import { Protocol } from 'pmtiles';
-import { TUZLA_CENTER } from '../constants';
+import { TUZLA_CENTER, TUZLA_WIFI_DATA } from '../constants';
 import { AppFeatures } from '../utils/platform';
 import { Search, X, Loader2, Navigation, Layers, MapPin, Landmark, Compass, Eye, Route, Sparkles, Clock, Footprints } from 'lucide-react';
 import { WeatherWidget } from './WeatherWidget';
@@ -16,9 +16,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 let _tuzlaMapCache: any[] | null = null;
 let _tuzlaMapLoading: Promise<any[] | null> | null = null;
 
-// Initialize PMTiles Protocol once
-const pmtilesProtocol = new Protocol();
-maplibregl.addProtocol('pmtiles', pmtilesProtocol.tile);
+// Initialize PMTiles Protocol safely
+try {
+  const pmtilesProtocol = new Protocol();
+  maplibregl.addProtocol('pmtiles', pmtilesProtocol.tile);
+} catch (e) {
+  // Protocol might already be added
+}
 
 async function getTuzlaMapFeatures(): Promise<any[] | null> {
   if (_tuzlaMapCache) return _tuzlaMapCache;
@@ -45,39 +49,93 @@ const ONLINE_STYLE = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json
 const ROUTE_POI_PRESETS = [
   {
     name: { bs: 'Panonska Jezera', en: 'Pannonian Lakes' },
-    lat: 44.5385,
-    lon: 18.6800,
-    category: 'nature'
+    lat: 44.53888255374366,
+    lon: 18.680032450849325,
+    category: 'nature',
+    entryFee: "Paid 7.5 KM - 9 KM for entire day",
+    description: "The Pannonian Lakes are a unique complex of three salt lakes located in the heart of Tuzla. Created during mineral extraction activities in the late 19th and early 20th centuries, the lakes have since transformed into a popular recreational destination. Rich in minerals and natural beauty, the largest lake, Panonsko Jezero I, offers swimming, sunbathing, and numerous amenities including restaurants, sports facilities, and event spaces. The entire complex provides a refreshing urban oasis with its blend of natural landscapes and modern tourist infrastructure."
+  },
+  {
+    name: { bs: 'Slana Banja Park', en: 'Slana Banja Park' },
+    lat: 44.53846734540082,
+    lon: 18.685620782683003,
+    category: 'nature',
+    entryFee: "free",
+    description: "A sprawling, peaceful memorial park and pine forest on a hill overlooking the Pannonian lakes. It contains walking paths, fountains, and monuments dedicated to anti-fascist heroes and veterans."
+  },
+  {
+    name: { bs: 'Tuzla Old Town (Čaršija)', en: 'Tuzla Old Town (Čaršija)' },
+    lat: 44.53824258043878,
+    lon: 18.67589812243773,
+    category: 'culture',
+    entryFee: "free",
+    description: "A vibrant pedestrian zone with colorful Austro-Hungarian facades, traditional craft shops, cafes, and historic religious landmarks including the Turalibeg Mosque."
   },
   {
     name: { bs: 'Trg Slobode', en: 'Freedom Square' },
-    lat: 44.5384,
-    lon: 18.6756,
-    category: 'culture'
+    lat: 44.53954253369571,
+    lon: 18.67508475352372,
+    category: 'culture',
+    entryFee: "free",
+    description: "The old city gate and a deeply significant historical site. It serves as a central meeting point in the pedestrian zone and houses a memorial dedicated to the tragic loss of young lives during the 1995 shelling."
   },
   {
-    name: { bs: 'Spomenik Kralju Tvrtku', en: 'King Tvrtko Monument' },
-    lat: 44.5369,
-    lon: 18.6720,
-    category: 'history'
+    name: { bs: 'Spomenik Kralju Tvrtku (I)', en: 'King Tvrtko Monument' },
+    lat: 44.53812247668793,
+    lon: 18.678359094003866,
+    category: 'history',
+    entryFee: "free",
+    description: "A centrally located urban park and historical site featuring a majestic bronze statue of medieval Bosnia's first king, Tvrtko I Kotromanić. The park offers scenic walking paths, a stone replica of the landmark Charter of Kulin, an elegant central fountain, and peaceful green areas for relaxation in the heart of the city."
   },
   {
     name: { bs: 'Spomenik Meši Selimoviću', en: 'Mesa Selimovic Monument' },
-    lat: 44.5365,
-    lon: 18.6738,
-    category: 'culture'
+    lat: 44.53710706292608,
+    lon: 18.67822758905615,
+    category: 'culture',
+    entryFee: "free",
+    description: "A culturally significant monument dedicated to the renowned Bosnian novelist, philosopher, and Nobel laureate, Meša Selimović. This evocative sculpture stands as a tribute to one of the most important literary figures of the former Yugoslavia, situated in a prominent location within the city's cultural landscape."
   },
   {
     name: { bs: 'Džamija Šarena (Atik)', en: 'Atik Mosque' },
-    lat: 44.5392,
-    lon: 18.6732,
-    category: 'religion'
+    lat: 44.54001556181191,
+    lon: 18.673365480509432,
+    category: 'religion',
+    description: "The historic Atik Mosque, locally known as Šarena Džamija (the Colorful Mosque), is an active place of worship and a protected cultural monument in the heart of Tuzla. Built in the early 16th century, its distinctively painted wooden exterior and intimate prayer hall make it one of the city’s most picturesque religious landmarks. The mosque is renowned for its tranquil atmosphere, traditional Bosnian Islamic architecture, and the peaceful courtyard that serves as a quiet retreat within the bustling old town."
   },
   {
     name: { bs: 'Saborna Crkva', en: 'Orthodox Cathedral' },
-    lat: 44.5350,
-    lon: 18.6781,
-    category: 'religion'
+    lat: 44.53800051276164,
+    lon: 18.679763716121386,
+    category: 'religion',
+    entryFee: "free",
+    description: "The largest and most significant Orthodox Christian church in Tuzla, the Holy Mother of God Cathedral (Saborna Crkva) is a beautiful example of Serbian Orthodox ecclesiastical architecture. Constructed in the 19th century, the cathedral features striking frescoes, a prominent bell tower, and a serene interior that reflects the rich spiritual heritage of the region. It serves as the administrative center of the Eparchy of Zvornik and Tuzla and is a focal point for Orthodox Christian life in the city."
+  },
+  {
+    name: { bs: 'Tržni centar Bingo (BCC)', en: 'Bingo Shopping Center' },
+    lat: 44.53188635183338,
+    lon: 18.652020274686947,
+    category: "shopping",
+    description: "The largest modern shopping mall in the region, featuring a vast hypermarket, international retail fashion brands, a multiplex cinema, bowling alley, and extensive dining areas."
+  },
+  {
+    name: { bs: 'TC Robot', en: 'Robot Shopping Center' },
+    lat: 44.53454365316736,
+    lon: 18.682516897004632,
+    category: "shopping"
+  },
+  {
+    name: { bs: 'TC Mercator', en: 'Mercator Shopping Center' },
+    lat: 44.5327311385098,
+    lon: 18.68292815613492,
+    category: "shopping",
+    description: "An established and easily accessible shopping center located near the main southern transit road, offering a well-stocked supermarket, clothing stores, electronics shop, and cozy cafes.",
+  },
+  {
+    name: { bs: 'TC Tuzlanka', en: 'Tuzlanka Shopping Center' },
+    lat: 44.538634727509304,
+    lon: 18.664878503738578,
+    category: "shopping",
+    description: "A multi-floor shopping mall located dynamically near the city center and student campus, featuring retail fashion outlets, electronics stores, home goods, and a panoramic rooftop café."
   }
 ];
 
@@ -181,9 +239,9 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
             'line-cap': 'round'
           },
           paint: {
-            'line-color': '#16a34a',
-            'line-width': 8,
-            'line-opacity': 0.4
+            'line-color': '#1c8a44ff',
+            'line-width': 9,
+            'line-opacity': 0.5
           }
         });
 
@@ -425,29 +483,29 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         // Set 3D light for premium feel
         map.current?.setLight({
           anchor: 'viewport',
-          color: '#ffffff',
+          color: '#f5f5f5ff',
           intensity: 0.4,
           position: [1.15, 210, 30]
         });
 
         // Apply custom style refinements (from Mapa-Tuzle.js)
         if (isOnline) {
-          map.current?.setPaintProperty('background', 'background-color', '#f2ebc9');
+          map.current?.setPaintProperty('background', 'background-color', '#eee6bdff');
           map.current?.setPaintProperty('park', 'fill-color', '#b0d38aff');
-          map.current?.setPaintProperty('park_outline', 'line-color', '#a3e660ff');
-          map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(215,190,154,0.49)');
+          map.current?.setPaintProperty('park_outline', 'line-color', '#8edd3fff');
+          map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(199, 167, 122, 0.49)');
           map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(91, 160, 51, 0.7)');
           map.current?.setPaintProperty('landcover_grass', 'fill-color', '#81c756ff');
           map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#f0f4e4');
-          map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#ffd7eb');
-          map.current?.setPaintProperty('landuse_school', 'fill-color', '#f1f4b7');
+          map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#e7bad1ff');
+          map.current?.setPaintProperty('landuse_school', 'fill-color', '#b8bb7fff');
           map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-          map.current?.setPaintProperty('water', 'fill-color', '#81b7ffff');
+          map.current?.setPaintProperty('water', 'fill-color', '#9accffff');
           map.current?.setPaintProperty('aeroway_runway', 'line-color', '#d9d6d3');
           map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#f2f5f6');
           map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');
-          map.current?.setPaintProperty('road_minor_casing', 'line-color', '#3e3b38');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#d58a48');
+          map.current?.setPaintProperty('road_minor_casing', 'line-color', '#312f2dff');
+          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#db7720ff');
           map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', { "base": 1.2, "stops": [[8, 1.5882352941176472], [20, 18]] });
           map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#f0a461');
           map.current?.setPaintProperty('road_motorway_casing', 'line-color', '#f49e53');
@@ -464,7 +522,15 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
           map.current?.setLayoutProperty('road_one_way_arrow', 'text-size', 1);
           map.current?.setPaintProperty('road_one_way_arrow_opposite', 'text-color', '#b0abab');
           map.current?.setLayoutProperty('road_one_way_arrow_opposite', 'text-size', 1);
-          map.current?.setPaintProperty('building-3d', 'fill-extrusion-color', '#c9c2c2');
+          map.current?.setPaintProperty('building-3d', 'fill-extrusion-color', '#c2d4eeff');
+          // Increase building height by 1.8x for premium visual depth
+          try {
+            map.current?.setPaintProperty('building-3d', 'fill-extrusion-height', [
+              'interpolate', ['linear'], ['zoom'],
+              14, 0,
+              15, ['*', ['coalesce', ['get', 'render_height'], ['get', 'height'], 15], 1.8],
+            ]);
+          } catch (_) {}
           map.current?.setLayoutProperty('water_name_line', 'visibility', 'none');
           map.current?.setLayoutProperty('water_name_point', 'visibility', 'none');
           map.current?.setLayoutProperty('poi_transit', 'text-size', 13);
@@ -504,6 +570,36 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
           `))
           .addTo(map.current!);
       });
+
+      // Add WiFi Spot Markers
+      const WIFI_ICON_URL = 'https://api.geoapify.com/v2/icon/?type=circle&color=%233038da&size=20&icon=wifi&iconType=lucide&contentSize=10&shadowColor=%23b4b4b4&contentColor=%23057ae7&scaleFactor=2&apiKey=65090a03070e4e1898694f7a18ba415b';
+      TUZLA_WIFI_DATA.forEach(spot => {
+        const wifiEl = document.createElement('div');
+        wifiEl.className = 'wifi-marker';
+        wifiEl.style.cssText = 'cursor:pointer;transition:transform 0.2s;';
+        wifiEl.innerHTML = `<img src="${WIFI_ICON_URL}" width="32" height="40" alt="WiFi" style="pointer-events:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />`;
+        wifiEl.onmouseenter = () => { wifiEl.style.transform = 'scale(1.2)'; };
+        wifiEl.onmouseleave = () => { wifiEl.style.transform = 'scale(1)'; };
+
+        new maplibregl.Marker({ element: wifiEl, anchor: 'bottom' })
+          .setLngLat([spot.longitude, spot.latitude])
+          .setPopup(new maplibregl.Popup({ offset: 25, maxWidth: '260px' }).setHTML(`
+            <div style="font-family:'Quicksand',sans-serif;padding:12px;background:#0f172a;border-radius:16px;color:white;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <div style="background:#3038da;padding:6px;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a10 10 0 0 1 14 0"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 9.5a14 14 0 0 1 20 0"/><circle cx="12" cy="20" r="1"/></svg>
+                </div>
+                <h3 style="font-weight:800;font-size:14px;margin:0;color:#60a5fa;">${spot.name[lang]}</h3>
+              </div>
+              <p style="font-size:11px;margin:0 0 8px 0;color:#94a3b8;line-height:1.4;">${spot.description[lang]}</p>
+              <div style="background:rgba(48,56,218,0.15);border:1px solid rgba(48,56,218,0.3);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px;">
+                <span style="font-size:10px;font-weight:700;color:#818cf8;">SSID:</span>
+                <span style="font-size:12px;font-weight:900;color:#c7d2fe;">${spot.ssid}</span>
+              </div>
+            </div>
+          `))
+          .addTo(map.current!);
+      });
     });
 
     // Error handling with automatic fallback to offline style if online fails
@@ -512,6 +608,9 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
       if (isOnline && (e.error?.message?.includes('Failed to fetch') || e.error?.status === 401)) {
         console.log("⚠️ MapView: Online style failed, falling back to local offline-style.json");
         map.current?.setStyle(OFFLINE_STYLE);
+        // Lock zoom to 14-16 for offline raster tiles
+        map.current?.setMinZoom(14);
+        map.current?.setMaxZoom(16);
       }
     });
 
@@ -567,7 +666,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
       <div ref={mapContainer} className="h-full w-full bg-slate-900" />
 
       {/* Search Overlay */}
-      <div className={`absolute top-6 left-1/2 -translate-x-1/2 z-20 w-[90%] max-w-lg transition-all duration-500 ${isSearchOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
+      <div className={`absolute top-6 inset-x-0 mx-auto z-20 w-[90%] max-w-lg transition-all duration-500 ${isSearchOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
         <form onSubmit={handleSearch} className="relative">
           <input
             type="text"
@@ -642,8 +741,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
             }
           }}
           className={`w-14 h-14 rounded-2xl shadow-2xl border flex items-center justify-center transition-all duration-300 ${isNavigating
-              ? 'bg-red-500 hover:bg-red-600 border-red-400 text-white hover:scale-110 active:scale-95 animate-pulse'
-              : 'bg-white/90 border-white/20 text-blue-600 hover:scale-110 active:scale-95'
+            ? 'bg-red-500 hover:bg-red-600 border-red-400 text-white hover:scale-110 active:scale-95 animate-pulse'
+            : 'bg-white/90 border-white/20 text-blue-600 hover:scale-110 active:scale-95'
             }`}
         >
           {isNavigating ? (
@@ -692,8 +791,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                 <button
                   onClick={() => setActiveModalTab('poi')}
                   className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'poi'
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
                     }`}
                 >
                   <Landmark size={16} />
@@ -702,8 +801,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                 <button
                   onClick={() => setActiveModalTab('hotel')}
                   className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'hotel'
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
                     }`}
                 >
                   <HotelIcon size={16} />
@@ -786,12 +885,12 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
       <AnimatePresence>
         {isNavigating && selectedTarget && (
           <motion.div
-            initial={{ y: 50, opacity: 0, x: '-50%' }}
-            animate={{ y: 0, opacity: 1, x: '-50%' }}
-            exit={{ y: 50, opacity: 0, x: '-50%' }}
-            className="absolute bottom-28 left-1/2 -translate-x-1/2 z-20 w-[92%] max-w-md"
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 50, opacity: 0 }}
+            className="absolute bottom-28 left-0 right-0 z-20 flex justify-center px-4 pointer-events-none"
           >
-            <div className="bg-slate-950/80 backdrop-blur-xl border border-blue-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4">
+            <div className="w-full max-w-md pointer-events-auto bg-slate-950/80 backdrop-blur-xl border border-blue-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4">
               {/* Header Info */}
               <div className="flex items-start justify-between">
                 <div className="flex gap-3">

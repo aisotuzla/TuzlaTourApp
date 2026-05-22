@@ -1,4 +1,4 @@
-import { Language, TranslationSet, Location, LocationData, ParkingLot } from "./types";
+import { Language, TranslationSet, Location, LocationData, ParkingLot, WifiSpot } from "./types";
 
 export const TUZLA_CENTER: [number, number] = [44.5388, 18.6750];
 
@@ -1091,3 +1091,97 @@ export const TUZLA_PARKING_DATA: ParkingLot[] = [
     features: ["Large neighborhood lot", "Easy connection to eastern bypass"]
   }
 ];
+
+export const TUZLA_WIFI_DATA: WifiSpot[] = [
+  {
+    id: "wifi-trg-slobode",
+    name: {
+      en: "Free WiFi - Freedom Square",
+      bs: "Besplatan WiFi - Trg Slobode",
+      de: "Kostenloses WLAN - Freiheitsplatz",
+      tr: "Ücretsiz WiFi - Özgürlük Meydanı"
+    },
+    description: {
+      en: "High-speed public WiFi available throughout Freedom Square. Provided by the City of Tuzla.",
+      bs: "Brzi javni WiFi dostupan na cijelom području Trga Slobode. Obezbjeđuje Grad Tuzla.",
+      de: "Schnelles öffentliches WLAN auf dem gesamten Freiheitsplatz. Bereitgestellt von der Stadt Tuzla.",
+      tr: "Özgürlük Meydanı genelinde yüksek hızlı ücretsiz kamu WiFi. Tuzla Belediyesi tarafından sağlanmaktadır."
+    },
+    latitude: 44.53956,
+    longitude: 18.67570,
+    ssid: "Tuzla_Free_WiFi"
+  },
+  {
+    id: "wifi-panonika",
+    name: {
+      en: "Free WiFi - Pannonian Lakes",
+      bs: "Besplatan WiFi - Panonska Jezera",
+      de: "Kostenloses WLAN - Pannonische Seen",
+      tr: "Ücretsiz WiFi - Pannonian Gölleri"
+    },
+    description: {
+      en: "Free WiFi coverage near the main entrance and first lake area. Active during summer season.",
+      bs: "Besplatan WiFi signal u blizini glavnog ulaza i prvog jezera. Aktivno tokom ljetne sezone.",
+      de: "Kostenloser WLAN-Empfang in der Nähe des Haupteingangs und des ersten Sees. Aktiv während der Sommersaison.",
+      tr: "Ana giriş ve ilk göl bölgesi yakınında ücretsiz WiFi kapsama alanı. Yaz sezonu boyunca aktiftir."
+    },
+    latitude: 44.53880,
+    longitude: 18.68005,
+    ssid: "Panonika_Guest"
+  },
+  {
+    id: "wifi-slana-banja",
+    name: {
+      en: "Free WiFi - Slana Banja Park",
+      bs: "Besplatan WiFi - Slana Banja",
+      de: "Kostenloses WLAN - Slana Banja Park",
+      tr: "Ücretsiz WiFi - Slana Banja Parkı"
+    },
+    description: {
+      en: "Free public WiFi coverage around the central memorial area of Slana Banja Park.",
+      bs: "Besplatan javni WiFi signal oko centralnog spomen-obilježja u parku Slana Banja.",
+      de: "Kostenloses öffentliches WLAN rund um den zentralen Gedenkbereich des Slana Banja Parks.",
+      tr: "Slana Banja Parkı'nın merkezi anıt alanı çevresinde ücretsiz kamu WiFi."
+    },
+    latitude: 44.53820,
+    longitude: 18.68540,
+    ssid: "Slana_Banja_Free"
+  },
+  {
+    id: "wifi-soni-trg",
+    name: {
+      en: "Free WiFi - Salt Square",
+      bs: "Besplatan WiFi - Soni Trg",
+      de: "Kostenloses WLAN - Salzplatz",
+      tr: "Ücretsiz WiFi - Tuz Meydanı"
+    },
+    description: {
+      en: "Free municipal WiFi network surrounding the historic Salt Square.",
+      bs: "Besplatna gradska WiFi mreža na prostoru istorijskog Sonog Trga.",
+      de: "Kostenloses städtisches WLAN-Netzwerk rund um den historischen Salzplatz.",
+      tr: "Tarihi Tuz Meydanı'nı çevreleyen ücretsiz belediye WiFi ağı."
+    },
+    latitude: 44.53877,
+    longitude: 18.67305,
+    ssid: "Grad_Tuzla_WiFi"
+  },
+  {
+    id: "wifi-bcc",
+    name: {
+      en: "Free WiFi - Bingo City Center",
+      bs: "Besplatan WiFi - Bingo City Center",
+      de: "Kostenloses WLAN - Bingo City Center",
+      tr: "Ücretsiz WiFi - Bingo City Center"
+    },
+    description: {
+      en: "High-speed mall WiFi available for all visitors. Connect and browse instantly.",
+      bs: "Brzi WiFi tržnog centra dostupan za sve posjetioce. Povežite se i surfajte odmah.",
+      de: "Schnelles WLAN im Einkaufszentrum für alle Besucher. Sofort verbinden und surfen.",
+      tr: "Tüm ziyaretçiler için yüksek hızlı alışveriş merkezi WiFi. Anında bağlanın ve göz atın."
+    },
+    latitude: 44.53185,
+    longitude: 18.65215,
+    ssid: "BCC_FREE_WIFI"
+  }
+];
+

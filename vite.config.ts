@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
           enabled: true,
           type: 'module'
         },
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'assets/**/*', 'maps/**/*', 'MAP/**/*', 'poi.geojson', 'style/*.json'],
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'assets/**/*', 'maps/**/*', 'poi.geojson', 'style/*.json'],
         manifest: {
           name: 'Tuzla Virtual Tour Guide',
           short_name: 'Tuzla Guide',
@@ -72,7 +72,7 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico}'],
-          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
+          maximumFileSizeToCacheInBytes: 20 * 1024 * 1024, // 20MB limit
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -103,6 +103,22 @@ export default defineConfig(({ mode }) => {
               }
             },
             {
+              urlPattern: /\.(?:mp4|webm)$/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'video-cache',
+                expiration: {
+                  maxEntries: 15,
+                  maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200]
+                },
+                rangeRequests: true
+              }
+
+            },
+            {
               urlPattern: /^https:\/\/api\.jawg\.io\/.*/i,
               handler: 'StaleWhileRevalidate',
               options: {
@@ -117,7 +133,7 @@ export default defineConfig(({ mode }) => {
               }
             },
             {
-              urlPattern: /^\/MAP\/tiles\/.*/i,
+              urlPattern: /^\/maps\/tiles\/.*/i,
               handler: 'CacheFirst',
               options: {
                 cacheName: 'map-tiles-cache',
@@ -157,21 +173,6 @@ export default defineConfig(({ mode }) => {
                 cacheableResponse: {
                   statuses: [0, 200]
                 }
-              }
-            },
-            {
-              urlPattern: /\.(?:mp4|webm)$/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'video-cache',
-                expiration: {
-                  maxEntries: 15,
-                  maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
-                },
-                cacheableResponse: {
-                  statuses: [0, 200]
-                },
-                rangeRequests: true
               }
             }
           ]
