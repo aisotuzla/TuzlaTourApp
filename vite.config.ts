@@ -11,13 +11,15 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default defineConfig(({ mode }) => {
+import type { UserConfig, ConfigEnv } from 'vite';
+
+export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, '.', '');
   return {
     server: {
       port: 3000,
       host: '0.0.0.0',
-      https: true,
+
     },
     plugins: [
       basicSsl(),

@@ -69,31 +69,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
       id: AppTab.MAP,
       icon: Map,
       label: { en: 'Map', bs: 'Mapa', de: 'Karte', tr: 'Harita' },
-      color: 'bg-blue-50 text-blue-600'
+      color: 'bg-blue-100 text-blue-900'
     },
     {
       id: AppTab.QUEST,
       icon: Gamepad2,
       label: { en: 'Quest', bs: 'Potraga', de: 'Quest', tr: 'Görev' },
-      color: 'bg-amber-100 text-amber-700 border-2 border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
-    },
-    {
-      id: AppTab.GALLERY,
-      icon: BookOpen, // User wanted others to follow darker to end
-      label: { en: 'Gallery', bs: 'Galerija', de: 'Galerie', tr: 'Galeri' },
-      color: 'bg-blue-100 text-blue-700'
-    },
-    {
-      id: AppTab.TASK_MANAGER,
-      icon: CheckSquare,
-      label: { en: 'Task Manager', bs: 'Planer', de: 'Aufgaben', tr: 'Görevler' },
-      color: 'bg-blue-200 text-blue-800'
+      color: 'bg-blue-150 text-blue-700'
     },
     {
       id: AppTab.PARKING,
       icon: ParkingCircle,
-      label: { en: 'SMS Parking', bs: 'Parking', de: 'Parken', tr: 'Otopark' },
-      color: 'bg-blue-300 text-blue-900'
+      label: { en: 'Parking', bs: 'Parking', de: 'Parken', tr: 'Otopark' },
+      color: 'bg-blue-200 text-blue-800'
+    },
+    {
+      id: AppTab.TASK_MANAGER,
+      icon: CheckSquare,
+      label: { en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
+      color: 'bg-blue-300 text-blue-800'
     },
     {
       id: AppTab.WALLET,
@@ -131,7 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
           >
             {/* Header */}
             <div className="p-6 flex items-center justify-between border-b border-slate-100">
-  
+
               <button
                 onClick={() => onClose()}
                 className="p-2 rounded-full hover:bg-slate-100 transition-colors"

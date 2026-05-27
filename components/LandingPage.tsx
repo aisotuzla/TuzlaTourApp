@@ -1,4 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
+import { ZoomIn } from 'lucide-react';
+import type { FC } from 'react';
+
+// Lazy‑loaded sub‑components for better initial load performance
+const LandingNavCards = lazy(() => import('./LandingNavCards'));
+const LandingExternalLinks = lazy(() => import('./LandingExternalLinks'));
+const LandingPhotoAlbum = lazy(() => import('./LandingPhotoAlbum'));
+
 import { AppTab, Language } from '../types';
 import {
   ArrowRight,
@@ -88,16 +96,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
   const isOnline = useNetwork();
 
-  // 40-second automatic scroll
-  useEffect(() => {
-    if (isHeroReady && isHeroPlaying && isOnline && !hasVideoError) {
-      const timer = setTimeout(() => {
-        cardsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 40000);
-      return () => clearTimeout(timer);
-    }
-  }, [isHeroReady, isHeroPlaying, isOnline, hasVideoError]);
-
   const toggleHeroVideo = () => {
     if (heroVideoRef.current) {
       if (isHeroPlaying) {
@@ -137,25 +135,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       <section className="relative h-screen w-full overflow-hidden bg-white">
         {(!isHeroReady || hasVideoError) && (
           <div className="absolute inset-0 z-10 bg-slate-950 flex items-center justify-center overflow-hidden">
-            {/* Pulsating Backdrop Image starting at 10% opacity, going up to 60% */}
-            <motion.img
-              src="/assets/Gallery/City Guide/GradTuzla-1.webp"
-              alt="Backdrop"
-              className="absolute inset-0 w-full h-full object-cover scale-105 filter blur-lg brightness-50"
-              initial={{ opacity: 0.1 }}
-              animate={{ opacity: [0.1, 0.6, 0.1] }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-            
-            {/* Subtle Gradient Overlay */}
-            <div className="absolute inset-0 bg-blue-950/45 backdrop-blur-md" />
 
             {/* Glowing Glassmorphic Container */}
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
@@ -171,19 +153,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                   transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                 />
               </div>
-
-              {/* Title & Status */}
-              <h2 className="text-white text-xl font-black uppercase tracking-widest font-quicksand mb-2 drop-shadow-md">
-                Tuzla Virtual Tour
-              </h2>
-              <p className="text-blue-100/80 text-sm font-bold tracking-wide">
-                {hasVideoError ? (
-                  lang === 'bs' ? 'Dobrodošli u Tuzlu' : lang === 'de' ? 'Willkommen in Tuzla' : lang === 'tr' ? "Tuzla'ya Hoş Geldiniz" : 'Welcome to Tuzla'
-                ) : (
-                  lang === 'bs' ? 'Učitavanje doživljaja...' : lang === 'de' ? 'Erlebnis wird geladen...' : lang === 'tr' ? 'Deneyim yükleniyor...' : 'Loading experience...'
-                )}
-              </p>
-
               {/* Progress Indicator */}
               {!hasVideoError && (
                 <div className="relative w-28 h-1 bg-white/20 rounded-full overflow-hidden mt-6">
@@ -292,137 +261,147 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           </div>
         </section>
 
-        {/* 3. EXTERNAL PARTNER LINKS */}
-        <section className="py-16">
-          <div className="mb-12 text-center md:text-left">
-            <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
-              {t.linksTitle}
-            </h2>
-            <div className="w-24 h-2 bg-blue-600 rounded-full mt-2 mx-auto md:mx-0" />
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            {externalLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col items-center justify-center p-8 bg-white rounded-[2rem] border border-blue-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 active:scale-95"
-              >
-                <div className="h-16 w-full flex items-center justify-center mb-4">
-                  <img src={link.logo} alt={link.name} className="h-full w-auto object-contain transition-transform group-hover:scale-110" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-blue-900/60 group-hover:text-blue-600 transition-colors">{link.name}</span>
-              </a>
-            ))}
-          </div>
-        </section>
-
-        {/* 4. PHOTO ALBUM */}
-        <section>
-          <div className="mb-10">
-            <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
-              {t.albumTitle}
-            </h2>
-            <div className="w-20 h-2 bg-blue-600 rounded-full mt-2" />
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {previewImages.slice(0, 12).map((src, idx) => (
-              <button
-                key={src}
-                onClick={() => openGallery(previewImages, idx)}
-                className="relative aspect-square rounded-2xl overflow-hidden border-2 border-blue-400/60 shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:scale-[1.02] transition-all duration-500 active:scale-95 group"
-              >
-                <img src={src} alt="Tuzla Photo" className="h-full w-full object-cover" loading="lazy" />
-                <div className="absolute inset-0 bg-blue-600/0 hover:bg-blue-600/10 transition-colors" />
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-12 text-center">
-            <p className="text-xl font-black text-blue-900/80 italic font-quicksand leading-relaxed max-w-2xl mx-auto px-4">
-              {lang === 'bs' || lang === 'en' || lang === 'de' || lang === 'tr'
-                ? 'Posjetite Tuzlu' : 'Visit Tuzla'}
-            </p>
-            <div className="w-12 h-1 bg-amber-400 rounded-full mx-auto mt-4 opacity-50" />
-          </div>
-        </section>
-
-        {/* 4.5. SOCIAL & COMMUNITY */}
-        <section className="pt-12 pb-6">
-          <div className="mb-10 text-center flex flex-col items-center">
-            <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
-              {lang === 'bs' ? 'Zajednica & Mreže' : 'Community & Social'}
-            </h2>
-            <div className="w-20 h-2 bg-blue-600 rounded-full mt-2" />
-          </div>
-
-          <div className="flex flex-col items-center gap-8">
-            <div className="flex justify-center flex-wrap gap-4 sm:gap-6">
-              <a href="https://x.com/icptuzla" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#1DA1F2] hover:bg-[#1DA1F2]/10 transition-colors relative group">
-                <img src="/assets/x.svg" alt="X" className="w-6 h-6" />
-                <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Twitter (X)</span>
-              </a>
-              <a href="https://www.facebook.com/AmirICPTuzla" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#4267B2] hover:bg-[#4267B2]/10 transition-colors relative group">
-                <Facebook className="w-6 h-6" />
-                <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Facebook</span>
-              </a>
-              <a href="https://www.linkedin.com/in/icptuzla-amir-mulaosmanovic-ab356a34b/" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#0077b5] hover:bg-[#0077b5]/10 transition-colors relative group">
-                <Linkedin className="w-6 h-6" />
-                <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">LinkedIn</span>
-              </a>
-              <button onClick={handleShare} className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors relative group cursor-pointer">
-                <Share2 className="w-6 h-6" />
-                <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Share App</span>
-              </button>
-            </div>
-
-            <div className="flex flex-wrap justify-center items-center gap-8 text-sm font-bold uppercase tracking-widest">
-              <a
-                href="#"
-                className="flex items-center gap-2 group hover:text-blue-600 transition-colors border-b-2 border-transparent hover:border-blue-600 pb-1 text-slate-400"
-              >
-                <img
-                  src="/assets/Gallery/QuestQRLocations/LogoICP3D.webp"
-                  alt="ICP Logo"
-                  className="w-6 h-6 object-contain pointer-events-none group-hover:scale-110 transition-transform"
-                />
-                <span>ICP Tuzla</span>
-              </a>
-            </div>
-          </div>
-        </section>
-
-        {/* 5. EXPLORE MORE ENDING */}
-        <section className="py-24 border-t border-slate-100 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-8"
+        {/* 2.5. Pannonica Special */}
+        <div className="w-full mt-8 relative rounded-[2.5rem] overflow-hidden shadow-2xl border-2 border-blue-400/40 group">
+          <div
+            className="cursor-pointer"
+            onClick={() => openGallery(['/assets/Pannonica.webp', ...previewImages], 0)}
           >
-            <div className="inline-block p-4 bg-blue-50 rounded-3xl mb-4">
-              <Home className="w-8 h-8 text-blue-600" />
-            </div>
-            <h2 className="text-4xl font-black text-blue-900 uppercase tracking-tight font-quicksand">
-              {lang === 'bs' ? 'Istražite više' : 'Explore More'}
-            </h2>
-            <p className="text-slate-500 max-w-lg mx-auto text-lg leading-relaxed font-medium">
-              {lang === 'bs'
-                ? 'Vaše putovanje se ne završava ovdje. Tuzla nudi beskrajne priče i skrivene dragulje.'
-                : 'Your journey doesn\'t end here. Tuzla offers endless stories and hidden gems waiting to be discovered.'}
-            </p>
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="mt-8 px-12 py-5 bg-blue-600 text-white font-black rounded-[2rem] shadow-2xl hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm flex items-center gap-3 mx-auto font-quicksand"
+            <img
+              src="/assets/Pannonica.webp"
+              alt="Pannonica Lakes"
+              className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
+          <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-sm text-white/80 p-2.5 rounded-2xl pointer-events-none">
+            <ZoomIn size={20} />
+          </div>
+        </div>
+
+          <div className="w-full flex justify-center mt-4">
+            <a
+              href="https://panonika.ba"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:scale-105 transition-transform duration-300"
             >
-              <ArrowUp className="w-5 h-5" />
-              {lang === 'bs' ? 'Povratak na vrh' : 'Back to Home'}
-            </button>
-          </motion.div>
-        </section>
+              <img
+                src="/assets/panonikalogo.webp"
+                alt="Pannonica Logo"
+                className="w-[200px] h-[50px] object-contain"
+              />
+            </a>
+          </div>
+
+          {/* 3. EXTERNAL PARTNER LINKS – lazy loaded */}
+          <Suspense fallback={<div className="text-center py-8">Loading links...</div>}>
+            <LandingExternalLinks lang={lang} t={t} />
+          </Suspense>
+
+          {/* 4. PHOTO ALBUM */}
+          <section>
+            <div className="mb-10">
+              <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
+                {t.albumTitle}
+              </h2>
+              <div className="w-20 h-2 bg-blue-600 rounded-full mt-2" />
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {previewImages.slice(0, 12).map((src, idx) => (
+                <button
+                  key={src}
+                  onClick={() => openGallery(previewImages, idx)}
+                  className="relative aspect-square rounded-2xl overflow-hidden border-2 border-blue-400/60 shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:scale-[1.02] transition-all duration-500 active:scale-95 group"
+                >
+                  <img src={src} alt="Tuzla Photo" className="h-full w-full object-cover" loading="lazy" />
+                  <div className="absolute inset-0 bg-blue-600/0 hover:bg-blue-600/10 transition-colors" />
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-12 text-center">
+              <p className="text-xl font-black text-blue-900/80 italic font-quicksand leading-relaxed max-w-2xl mx-auto px-4">
+                {lang === 'bs' || lang === 'en' || lang === 'de' || lang === 'tr'
+                  ? 'Posjetite Tuzlu' : 'Visit Tuzla'}
+              </p>
+              <div className="w-12 h-1 bg-amber-400 rounded-full mx-auto mt-4 opacity-50" />
+            </div>
+          </section>
+
+          {/* 4.5. SOCIAL & COMMUNITY */}
+          <section className="pt-12 pb-6">
+            <div className="mb-10 text-center flex flex-col items-center">
+              <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
+                {lang === 'bs' ? 'Zajednica & Mreže' : 'Community & Social'}
+              </h2>
+              <div className="w-20 h-2 bg-blue-600 rounded-full mt-2" />
+            </div>
+
+            <div className="flex flex-col items-center gap-8">
+              <div className="flex justify-center flex-wrap gap-4 sm:gap-6">
+                <a href="https://x.com/icptuzla" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#1DA1F2] hover:bg-[#1DA1F2]/10 transition-colors relative group">
+                  <img src="/assets/x.svg" alt="X" className="w-6 h-6" />
+                  <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Twitter (X)</span>
+                </a>
+                <a href="https://www.facebook.com/AmirICPTuzla" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#4267B2] hover:bg-[#4267B2]/10 transition-colors relative group">
+                  <Facebook className="w-6 h-6" />
+                  <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Facebook</span>
+                </a>
+                <a href="https://www.linkedin.com/in/icptuzla-amir-mulaosmanovic-ab356a34b/" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#0077b5] hover:bg-[#0077b5]/10 transition-colors relative group">
+                  <Linkedin className="w-6 h-6" />
+                  <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">LinkedIn</span>
+                </a>
+                <button onClick={handleShare} className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors relative group cursor-pointer">
+                  <Share2 className="w-6 h-6" />
+                  <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Share App</span>
+                </button>
+              </div>
+
+              <div className="flex flex-wrap justify-center items-center gap-8 text-sm font-bold uppercase tracking-widest">
+                <a
+                  href="#"
+                  className="flex items-center gap-2 group hover:text-blue-600 transition-colors border-b-2 border-transparent hover:border-blue-600 pb-1 text-slate-400"
+                >
+                  <img
+                    src="/assets/Gallery/QuestQRLocations/LogoICP3D.webp"
+                    alt="ICP Logo"
+                    className="w-6 h-6 object-contain pointer-events-none group-hover:scale-110 transition-transform"
+                  />
+                  <span>ICP Tuzla</span>
+                </a>
+              </div>
+            </div>
+          </section>
+
+          {/* 5. EXPLORE MORE ENDING */}
+          <section className="py-24 border-t border-slate-100 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="space-y-8"
+            >
+              <div className="inline-block p-4 bg-blue-50 rounded-3xl mb-4">
+                <Home className="w-8 h-8 text-blue-600" />
+              </div>
+              <h2 className="text-4xl font-black text-blue-900 uppercase tracking-tight font-quicksand">
+                {lang === 'bs' ? 'Istražite više' : 'Explore More'}
+              </h2>
+              <p className="text-slate-500 max-w-lg mx-auto text-lg leading-relaxed font-medium">
+                {lang === 'bs'
+                  ? 'Vaše putovanje se ne završava ovdje. Tuzla nudi beskrajne priče i skrivene dragulje.'
+                  : 'Your journey doesn\'t end here. Tuzla offers endless stories and hidden gems waiting to be discovered.'}
+              </p>
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="mt-8 px-12 py-5 bg-blue-600 text-white font-black rounded-[2rem] shadow-2xl hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm flex items-center gap-3 mx-auto font-quicksand"
+              >
+                <ArrowUp className="w-5 h-5" />
+                {lang === 'bs' ? 'Povratak na vrh' : 'Back to Home'}
+              </button>
+            </motion.div>
+          </section>
       </div>
 
 
