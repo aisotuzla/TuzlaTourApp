@@ -84,9 +84,13 @@ registerRoute(
   })
 );
 
-// 4. External Map Styles/Assets (Jawg, etc.)
+// 4. External Map Styles/Assets (Geoapify, Jawg, OSM, etc.)
 registerRoute(
-  ({ url }) => url.origin.includes('api.jawg.io') || url.origin.includes('tile.openstreetmap.org'),
+  ({ url }) => 
+    url.origin.includes('api.jawg.io') || 
+    url.origin.includes('tile.openstreetmap.org') ||
+    url.origin.includes('maps.geoapify.com') ||
+    url.origin.includes('api.geoapify.com'),
   new StaleWhileRevalidate({
     cacheName: 'external-map-assets',
     plugins: [

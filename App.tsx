@@ -3,21 +3,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import Sidebar from './components/Sidebar';
 import LandingPage from './components/LandingPage';
-import MapView from './components/MapView';
-import MapQuestView from './components/MapQuestView';
-import History from './components/History';
-import CityGuide from './components/CityGuide';
-import Gallery from './components/Gallery';
-import Wallet from './components/Wallet';
 import SecurityGuard from './components/SecurityGuard';
-import TaskManager from './components/TaskManager';
-import Food from './components/Food';
-import Accommodation from './components/Accommodation';
-import ARGuide from './components/ARGuide';
-import Parking from './components/Parking';
-import WorldCup2026 from './components/WorldCup2026';
-import SpecialCollection from './components/SpecialCollection';
 import LanguageSelector from './components/LanguageSelector';
+
+const MapView = React.lazy(() => import('./components/MapView'));
+const MapQuestView = React.lazy(() => import('./components/MapQuestView'));
+const History = React.lazy(() => import('./components/History'));
+const CityGuide = React.lazy(() => import('./components/CityGuide'));
+const Gallery = React.lazy(() => import('./components/Gallery'));
+const Wallet = React.lazy(() => import('./components/Wallet'));
+const TaskManager = React.lazy(() => import('./components/TaskManager'));
+const Food = React.lazy(() => import('./components/Food'));
+const Accommodation = React.lazy(() => import('./components/Accommodation'));
+const ARGuide = React.lazy(() => import('./components/ARGuide'));
+const Parking = React.lazy(() => import('./components/Parking'));
+const WorldCup2026 = React.lazy(() => import('./components/WorldCup2026'));
+const SpecialCollection = React.lazy(() => import('./components/SpecialCollection'));
 
 import { Menu, QrCode, Globe } from 'lucide-react';
 import { App as CapApp } from '@capacitor/app';

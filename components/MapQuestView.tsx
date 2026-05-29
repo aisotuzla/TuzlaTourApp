@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Protocol } from 'pmtiles';
+
 import { AppFeatures } from '../utils/platform';
 import { Language } from '../types';
-import { TUZLA_CENTER, LOCATIONS, TUZLA_WIFI_DATA } from '../constants';
+import { TUZLA_CENTER, LOCATIONS } from '../constants';
 import { tuzlaHotelData } from '../tuzlaHotelData';
 import { QrCode, Navigation, Gamepad2, CheckCircle2, Lock, Play, X, Trophy, Route, Compass, Landmark, Loader2, Clock, Footprints, Hotel as HotelIcon } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -135,12 +135,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
-  const [mapStyleType, setMapStyleType] = useState<'bright' | 'liberty'>('bright');
+  const [useFallbackStyle, setUseFallbackStyle] = useState(false);
   const isOnline = useNetwork();
   const OFFLINE_STYLE = '/style/offline-style.json';
-  const ONLINE_STYLE_BRIGHT = 'https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
-  const ONLINE_STYLE_LIBERTY = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
-  const ONLINE_STYLE = mapStyleType === 'bright' ? ONLINE_STYLE_BRIGHT : ONLINE_STYLE_LIBERTY;
+  const ONLINE_STYLE_PRIMARY = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
+  const ONLINE_STYLE_FALLBACK = 'https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
+  const ONLINE_STYLE = useFallbackStyle ? ONLINE_STYLE_FALLBACK : ONLINE_STYLE_PRIMARY;
 
   // Navigation state
   const [selectedNavTarget, setSelectedNavTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
@@ -279,15 +279,23 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       attributionControl: false,
     });
 
-    // FAIL-SAFE: If map style fails to load, fallback to local GeoJSON
+    // FAIL-SAFE: If primary style fails, try fallback (osm-bright), then offline
     map.current.on('error', (e) => {
-      console.warn("🗺️ MapQuest: Style error detected, attempting local fallback...", e.error?.message);
+      console.warn("🗺️ MapQuest: Style error detected, attempting fallback...", e.error?.message);
       if (isOnline && (e.error?.message?.includes('401') || e.error?.message?.includes('403') || e.error?.message?.includes('Failed to fetch') || e.error?.message?.includes('NetworkError'))) {
-        setIsOfflineMode(true);
-        map.current?.setStyle(OFFLINE_STYLE);
-        // Lock zoom to 14-16 for offline raster tiles
-        map.current?.setMinZoom(14);
-        map.current?.setMaxZoom(16);
+        if (!useFallbackStyle) {
+          // First fallback: try secondary osm-bright style
+          console.warn("🗺️ MapQuest: Primary style (osm-liberty) failed, trying fallback (osm-bright)...");
+          setUseFallbackStyle(true);
+          map.current?.setStyle(ONLINE_STYLE_FALLBACK);
+        } else {
+          // Second fallback: go fully offline
+          console.warn("🗺️ MapQuest: Fallback style also failed, switching to offline mode.");
+          setIsOfflineMode(true);
+          map.current?.setStyle(OFFLINE_STYLE);
+          map.current?.setMinZoom(14);
+          map.current?.setMaxZoom(16);
+        }
         // Ensure we signal loaded so markers can appear
         setTimeout(() => setIsLoaded(true), 1000);
       }
@@ -537,35 +545,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         setupHighlighters(map.current!);
       }
 
-      // Add WiFi Spot Markers
-      const WIFI_ICON_URL = 'https://api.geoapify.com/v2/icon/?type=circle&color=%233038da&size=20&icon=wifi&iconType=lucide&contentSize=10&shadowColor=%23b4b4b4&contentColor=%23057ae7&scaleFactor=2&apiKey=65090a03070e4e1898694f7a18ba415b';
-      TUZLA_WIFI_DATA.forEach(spot => {
-        const wifiEl = document.createElement('div');
-        wifiEl.className = 'wifi-marker';
-        wifiEl.style.cssText = 'cursor:pointer;transition:transform 0.2s;';
-        wifiEl.innerHTML = `<img src="${WIFI_ICON_URL}" width="32" height="40" alt="WiFi" style="pointer-events:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />`;
-        wifiEl.onmouseenter = () => { wifiEl.style.transform = 'scale(1.2)'; };
-        wifiEl.onmouseleave = () => { wifiEl.style.transform = 'scale(1)'; };
 
-        new maplibregl.Marker({ element: wifiEl, anchor: 'bottom' })
-          .setLngLat([spot.longitude, spot.latitude])
-          .setPopup(new maplibregl.Popup({ offset: 25, maxWidth: '260px' }).setHTML(`
-            <div style="font-family:'Quicksand',sans-serif;padding:12px;background:#0f172a;border-radius:16px;color:white;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <div style="background:#3038da;padding:6px;border-radius:10px;display:flex;align-items:center;justify-content:center;">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a10 10 0 0 1 14 0"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 9.5a14 14 0 0 1 20 0"/><circle cx="12" cy="20" r="1"/></svg>
-                </div>
-                <h3 style="font-weight:800;font-size:14px;margin:0;color:#60a5fa;">${spot.name[lang]}</h3>
-              </div>
-              <p style="font-size:11px;margin:0 0 8px 0;color:#94a3b8;line-height:1.4;">${spot.description[lang]}</p>
-              <div style="background:rgba(48,56,218,0.15);border:1px solid rgba(48,56,218,0.3);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px;">
-                <span style="font-size:10px;font-weight:700;color:#818cf8;">SSID:</span>
-                <span style="font-size:12px;font-weight:900;color:#c7d2fe;">${spot.ssid}</span>
-              </div>
-            </div>
-          `))
-          .addTo(map.current!);
-      });
     });
 
     // Special case: if offline mode kicks in via error handler, we might miss 'load'
@@ -668,7 +648,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         // Advanced 3D Lighting
         map.current.setLight({
           anchor: 'viewport',
-          color: '#cacacaff',
+          color: '#636161ff',
           intensity: 0.4,
           position: [1.15, 210, 30]
         });
@@ -687,19 +667,19 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
           map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#d1d1d1');
           map.current?.setPaintProperty('road_service_track_casing', 'line-color', '#a6a4a0');
-          map.current?.setPaintProperty('road_service_track_casing', 'line-width', {"base":1.2,"stops":[[15,0.7272727272727272],[16,2.9090909090909087],[20,16]]});
+          map.current?.setPaintProperty('road_service_track_casing', 'line-width', { "base": 1.2, "stops": [[15, 0.7272727272727272], [16, 2.9090909090909087], [20, 16]] });
           map.current?.setPaintProperty('road_minor_casing', 'line-color', '#3e3b38');
           map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#d58a48');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', {"base":1.2,"stops":[[8,1.5882352941176472],[20,18]]});
+          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', { "base": 1.2, "stops": [[8, 1.5882352941176472], [20, 18]] });
           map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#f0a461');
           map.current?.setPaintProperty('road_motorway_casing', 'line-color', '#f49e53');
           map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#a06346');
-          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', {"base":1.2,"stops":[[14,0.30000000000000004],[20,3]]});
+          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.30000000000000004], [20, 3]] });
           map.current?.setPaintProperty('road_motorway_link', 'line-color', '#e5972f');
           map.current?.setPaintProperty('road_service_track', 'line-color', '#ecdcdc');
-          map.current?.setPaintProperty('road_minor', 'line-width', {"base":1.2,"stops":[[13.5,0],[14,2.638888888888889],[20,19]]});
+          map.current?.setPaintProperty('road_minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 2.638888888888889], [20, 19]] });
           map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fce174');
-          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', {"base":1.2,"stops":[[6.5,0],[8,0.5769230769230769],[20,15]]});
+          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', { "base": 1.2, "stops": [[6.5, 0], [8, 0.5769230769230769], [20, 15]] });
           map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#ffb16e');
           map.current?.setPaintProperty('road_motorway', 'line-color', '#db9b45');
           map.current?.setPaintProperty('road_one_way_arrow', 'text-color', '#b3acac');
@@ -711,7 +691,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           map.current?.setLayoutProperty('water_name_point', 'visibility', 'none');
           map.current?.setLayoutProperty('poi_transit', 'text-size', 13);
           map.current?.setPaintProperty('road_label', 'text-color', '#5d5858');
-          map.current?.setLayoutProperty('road_label', 'text-size', {"base":1,"stops":[[13,9.23076923076923],[14,10]]});
+          map.current?.setLayoutProperty('road_label', 'text-size', { "base": 1, "stops": [[13, 9.23076923076923], [14, 10]] });
           map.current?.setPaintProperty('road_shield', 'text-color', '#2e2a2a');
         } catch (err) {
           console.warn("⚠️ MapQuest: Some style refinements could not be applied.", err);
@@ -728,7 +708,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       map.current.setMinZoom(14);
       map.current.setMaxZoom(16);
     }
-  }, [isOnline, isLoaded, policy.mapFx.enable3dBuildings, policy.mapFx.maxPitch, mapStyleType]);
+  }, [isOnline, isLoaded, policy.mapFx.enable3dBuildings, policy.mapFx.maxPitch, useFallbackStyle]);
 
   // Update Quest Markers
   useEffect(() => {
@@ -1073,14 +1053,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           <Navigation size={20} />
         </button>
 
-        {/* STYLE TOGGLE BUTTON */}
-        <button
-          onClick={() => setMapStyleType(prev => prev === 'bright' ? 'liberty' : 'bright')}
-          className="absolute bottom-24 right-6 z-20 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center text-amber-400 active:scale-95 transition-all group"
-          title="Toggle Map Style"
-        >
-          <Compass className="w-6 h-6 transition-transform group-hover:rotate-45" />
-        </button>
+
       </div>
 
       {/* OFFLINE INDICATOR BAR */}

@@ -1,0 +1,70 @@
+const map = new maplibregl.Map({
+    container: 'my-map',
+    style: 'https: //maps.geoapify.com/v1/styles/maptiler-3d/style.json?apiKey=65090a03070e4e1898694f7a18ba415b',
+});
+map.on('load', () => {
+    map.setPaintProperty('background', 'background-color', '#e5ecdf');
+    map.setPaintProperty('landuse-residential', 'fill-color', '#e3d296');
+    map.setPaintProperty('landcover_grass', 'fill-color', '#a7db4e');
+    map.setPaintProperty('park', 'fill-color', 'rgba(182,
+    250,
+    65,
+    0.53)');
+    map.setPaintProperty('landcover_wood', 'fill-color', '#a7cb6a');
+    map.setPaintProperty('water', 'fill-color', '#74aad1');
+    map.setPaintProperty('landuse_overlay_national_park', 'fill-color', '#e0ee98');
+    map.setPaintProperty('park_outline', 'line-color', 'rgba(154,
+    197,
+    80,
+    0.69)');
+    map.setPaintProperty('road_area_pier', 'fill-color', '#cbc3a8');
+    map.setPaintProperty('road_path', 'line-color', '#ffa943');
+    map.setPaintProperty('road_path', 'line-width',
+    {
+        "base": 1.55,
+        "stops": [
+            [
+                4,
+                0.125
+            ],
+            [
+                20,
+                5
+            ]
+        ]
+    });
+    map.setPaintProperty('road_minor', 'line-color', '#f0f0f0');
+    map.setPaintProperty('road_trunk_primary', 'line-color', '#f68e4e');
+    map.setPaintProperty('road_trunk_primary', 'line-width',
+    {
+        "base": 1.4,
+        "stops": [
+            [
+                6,
+                0.5833333333333333
+            ],
+            [
+                20,
+                35
+            ]
+        ]
+    });
+    map.setPaintProperty('road_secondary_tertiary', 'line-color', '#eaea75');
+    map.setPaintProperty('road_secondary_tertiary', 'line-width',
+    {
+        "base": 1.4,
+        "stops": [
+            [
+                6,
+                0.6500000000000001
+            ],
+            [
+                20,
+                26
+            ]
+        ]
+    });
+    map.setPaintProperty('road_major_motorway', 'line-color', '#c99954');
+    map.setPaintProperty('bridge_major', 'line-color', '#d5d3d3');
+    map.setPaintProperty('building-3d', 'fill-extrusion-color', '#bbbdc9');
+});
