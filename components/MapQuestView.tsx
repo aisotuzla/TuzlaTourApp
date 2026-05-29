@@ -192,9 +192,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           paint: {
             'fill-extrusion-color': [
               'interpolate', ['linear'], ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
-              0, '#53565cff',
-              20, '#677891ff',
-              50, '#8496afff',
+              0, '#9ca5b8ff',
+              20, '#9cadc7ff',
+              50, '#b0bed1ff',
               100, '#9aa1b1ff'
             ],
             'fill-extrusion-height': [
@@ -438,7 +438,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           map.current.setLayoutProperty('water-offset', 'visibility', 'none');
           map.current.setPaintProperty('water', 'fill-color', '#9ecaf6');
           map.current.setPaintProperty('building', 'fill-color', '#d9d9d9');
-          map.current.setPaintProperty('building-top', 'fill-color', '#d1cfcd');
+          map.current.setPaintProperty('building-top', 'fill-color', '#e4e1dfff');
           map.current.setPaintProperty('aeroway-area', 'fill-color', '#e0dfe9');
           map.current.setPaintProperty('aeroway-runway', 'line-color', '#c6c6ca');
           map.current.setPaintProperty('highway-area', 'fill-color', 'rgba(204,200,200,0.56)');

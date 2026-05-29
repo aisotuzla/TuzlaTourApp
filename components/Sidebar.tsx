@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
       icon: BookOpen,
       label: { en: 'City Guide', bs: 'Gradski Vodič', de: 'Stadtführer', tr: 'Şehir Rehberi' },
       isHeader: true,
-      color: 'text-blue-900 font-black'
+      color: 'text-blue-900'
     },
     {
       id: AppTab.HISTORY,
@@ -81,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
       id: AppTab.PARKING,
       icon: ParkingCircle,
       label: { en: 'Parking', bs: 'Parking', de: 'Parken', tr: 'Otopark' },
-      color: 'bg-blue-300 text-blue-850'
+      color: 'bg-blue-300 text-blue-900'
     },
     {
       id: AppTab.TASK_MANAGER,

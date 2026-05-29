@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Language } from '../types';
-import { TUZLA_CENTER, TUZLA_WIFI_DATA } from '../constants';
+import { TUZLA_CENTER } from '../constants';
 import { AppFeatures } from '../utils/platform';
 import { Search, X, Loader2, Navigation, Landmark, Compass, Route, Clock, Footprints } from 'lucide-react';
 import { WeatherWidget } from './WeatherWidget';
@@ -481,35 +481,6 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
           .addTo(map.current!);
       });
 
-      // Add WiFi Spot Markers
-      const WIFI_ICON_URL = 'https://api.geoapify.com/v2/icon/?type=circle&color=%233038da&size=20&icon=wifi&iconType=lucide&contentSize=10&shadowColor=%23b4b4b4&contentColor=%23057ae7&scaleFactor=2&apiKey=65090a03070e4e1898694f7a18ba415b';
-      TUZLA_WIFI_DATA.forEach(spot => {
-        const wifiEl = document.createElement('div');
-        wifiEl.className = 'wifi-marker';
-        wifiEl.style.cssText = 'cursor:pointer;transition:transform 0.2s;';
-        wifiEl.innerHTML = `<img src="${WIFI_ICON_URL}" width="32" height="40" alt="WiFi" style="pointer-events:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />`;
-        wifiEl.onmouseenter = () => { wifiEl.style.transform = 'scale(1.2)'; };
-        wifiEl.onmouseleave = () => { wifiEl.style.transform = 'scale(1)'; };
-
-        new maplibregl.Marker({ element: wifiEl, anchor: 'bottom' })
-          .setLngLat([spot.longitude, spot.latitude])
-          .setPopup(new maplibregl.Popup({ offset: 25, maxWidth: '260px' }).setHTML(`
-            <div style="font-family:'Quicksand',sans-serif;padding:12px;background:#0f172a;border-radius:16px;color:white;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <div style="background:#3038da;padding:6px;border-radius:10px;display:flex;align-items:center;justify-content:center;">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a10 10 0 0 1 14 0"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 9.5a14 14 0 0 1 20 0"/><circle cx="12" cy="20" r="1"/></svg>
-                </div>
-                <h3 style="font-weight:800;font-size:14px;margin:0;color:#60a5fa;">${spot.name[lang]}</h3>
-              </div>
-              <p style="font-size:11px;margin:0 0 8px 0;color:#94a3b8;line-height:1.4;">${spot.description[lang]}</p>
-              <div style="background:rgba(48,56,218,0.15);border:1px solid rgba(48,56,218,0.3);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px;">
-                <span style="font-size:10px;font-weight:700;color:#818cf8;">SSID:</span>
-                <span style="font-size:12px;font-weight:900;color:#c7d2fe;">${spot.ssid}</span>
-              </div>
-            </div>
-          `))
-          .addTo(map.current!);
-      });
     });
 
     map.current.on('error', (e) => {
