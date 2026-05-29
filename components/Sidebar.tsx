@@ -69,25 +69,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
       id: AppTab.MAP,
       icon: Map,
       label: { en: 'Map', bs: 'Mapa', de: 'Karte', tr: 'Harita' },
-      color: 'bg-blue-100 text-blue-900'
+      color: 'bg-blue-100 text-blue-700'
     },
     {
       id: AppTab.QUEST,
       icon: Gamepad2,
       label: { en: 'Quest', bs: 'Potraga', de: 'Quest', tr: 'Görev' },
-      color: 'bg-blue-150 text-blue-700'
+      color: 'bg-blue-200 text-blue-800'
     },
     {
       id: AppTab.PARKING,
       icon: ParkingCircle,
       label: { en: 'Parking', bs: 'Parking', de: 'Parken', tr: 'Otopark' },
-      color: 'bg-blue-200 text-blue-800'
+      color: 'bg-blue-300 text-blue-850'
     },
     {
       id: AppTab.TASK_MANAGER,
       icon: CheckSquare,
       label: { en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
-      color: 'bg-blue-300 text-blue-800'
+      color: 'bg-blue-400 text-blue-900'
     },
     {
       id: AppTab.WALLET,

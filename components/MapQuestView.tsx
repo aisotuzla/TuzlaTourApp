@@ -14,6 +14,7 @@ import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { QuestQualityMode } from '../utils/questRuntimePolicy';
 import { getDistance } from '../utils/geoUtils';
 
+
 const QUEST_TARGETS = [
   { id: 'irish', name: { en: 'Irish Pub', bs: 'Irish Pub' }, image: '/assets/Gallery/QuestQRLocations/Irish.webp' },
   { id: 'Papi Gelato', name: { en: 'Papi Gelato', bs: 'Papi Gelato' }, image: '/assets/Gallery/QuestQRLocations/PapiGelato.png' },
@@ -103,14 +104,6 @@ const ROUTE_POI_PRESETS = [
   },
 ];
 
-// Initialize PMTiles Protocol safely
-try {
-  const pmtilesProtocol = new Protocol();
-  maplibregl.addProtocol('pmtiles', pmtilesProtocol.tile);
-} catch (e) {
-  // Protocol might already be added
-}
-
 interface MapQuestViewProps {
   lang: Language;
   features: AppFeatures;
@@ -142,9 +135,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
+  const [mapStyleType, setMapStyleType] = useState<'bright' | 'liberty'>('bright');
   const isOnline = useNetwork();
   const OFFLINE_STYLE = '/style/offline-style.json';
-  const ONLINE_STYLE = 'https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=CNt3aKmcJfGXrMZdGvkz60kDHIJ8Bfz9tfgdbUuvYs6Xma1MQcHpMLtDzoF3laoj';
+  const ONLINE_STYLE_BRIGHT = 'https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
+  const ONLINE_STYLE_LIBERTY = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
+  const ONLINE_STYLE = mapStyleType === 'bright' ? ONLINE_STYLE_BRIGHT : ONLINE_STYLE_LIBERTY;
 
   // Navigation state
   const [selectedNavTarget, setSelectedNavTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
@@ -417,6 +413,65 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       try {
         if (!map.current?.isStyleLoaded()) return;
 
+        // Apply custom Geoapify Map Styles
+        try {
+          map.current.setPaintProperty('background', 'background-color', '#e1eed2');
+          map.current.setPaintProperty('landuse-residential', 'fill-color', 'rgba(170,157,144,0.2)');
+          map.current.setPaintProperty('landuse-commercial', 'fill-color', 'rgba(173,177,219,0.23)');
+          map.current.setPaintProperty('landuse-industrial', 'fill-color', 'rgba(182,193,215,0.34)');
+          map.current.setPaintProperty('park', 'fill-color', '#c5e1a9');
+          map.current.setPaintProperty('park-outline', 'line-color', 'rgba(97,168,50,0.66)');
+          map.current.setPaintProperty('landuse-hospital', 'fill-color', '#ecc4d8');
+          map.current.setPaintProperty('landuse-school', 'fill-color', '#e0dae6');
+          map.current.setPaintProperty('landcover-wood', 'fill-color', '#549c30');
+          map.current.setPaintProperty('landcover-grass', 'fill-color', '#b3db8c');
+          map.current.setPaintProperty('landcover-grass-park', 'fill-color', '#c3f095');
+          map.current.setPaintProperty('waterway-river', 'line-color', '#85bcf2');
+          map.current.setLayoutProperty('water-offset', 'visibility', 'none');
+          map.current.setPaintProperty('water', 'fill-color', '#9ecaf6');
+          map.current.setPaintProperty('building', 'fill-color', '#d9d9d9');
+          map.current.setPaintProperty('building-top', 'fill-color', '#d1cfcd');
+          map.current.setPaintProperty('aeroway-area', 'fill-color', '#e0dfe9');
+          map.current.setPaintProperty('aeroway-runway', 'line-color', '#c6c6ca');
+          map.current.setPaintProperty('highway-area', 'fill-color', 'rgba(204,200,200,0.56)');
+          map.current.setPaintProperty('highway-motorway-link-casing', 'line-color', '#bb671e');
+          map.current.setPaintProperty('highway-motorway-link-casing', 'line-width', { "base": 1.2, "stops": [[12, 1.0666666666666667], [13, 3.2], [14, 4.266666666666667], [20, 16]] });
+          map.current.setPaintProperty('highway-link-casing', 'line-color', '#b77a47');
+          map.current.setPaintProperty('highway-minor-casing', 'line-color', '#c7baba');
+          map.current.setPaintProperty('highway-minor-casing', 'line-width', { "base": 1.2, "stops": [[12, 0.30000000000000004], [13, 0.6000000000000001], [14, 2.4000000000000004], [20, 9]] });
+          map.current.setPaintProperty('highway-secondary-tertiary-casing', 'line-color', '#e79a55');
+          map.current.setPaintProperty('highway-primary-casing', 'line-color', '#924707');
+          map.current.setPaintProperty('highway-primary-casing', 'line-width', { "base": 1.2, "stops": [[7, 0], [8, 0.5454545454545454], [9, 1.3636363636363635], [20, 20]] });
+          map.current.setPaintProperty('highway-trunk-casing', 'line-color', '#d78945');
+          map.current.setPaintProperty('highway-motorway-casing', 'line-color', '#b2580a');
+          map.current.setPaintProperty('highway-path', 'line-color', '#f39c44');
+          map.current.setPaintProperty('highway-motorway-link', 'line-color', '#d7a35d');
+          map.current.setPaintProperty('highway-link', 'line-color', '#f8f8f6');
+          map.current.setPaintProperty('highway-minor', 'line-color', '#f1f1f1');
+          map.current.setPaintProperty('highway-minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 3.0434782608695645], [20, 14]] });
+          map.current.setPaintProperty('highway-secondary-tertiary', 'line-color', '#f6e17a');
+          map.current.setPaintProperty('highway-primary', 'line-color', '#ec9b40');
+          map.current.setPaintProperty('highway-primary', 'line-width', { "base": 1.2, "stops": [[8.5, 0], [9, 0.4166666666666666], [20, 15]] });
+          map.current.setPaintProperty('highway-trunk', 'line-color', '#ffefb1');
+          map.current.setPaintProperty('highway-motorway', 'line-color', '#c89550');
+          map.current.setPaintProperty('railway', 'line-color', '#999696');
+          map.current.setPaintProperty('waterway-name', 'text-color', '#3a87d5');
+          map.current.setPaintProperty('water-name-lakeline', 'text-color', '#4695e6');
+          map.current.setLayoutProperty('water-name-other', 'visibility', 'none');
+          map.current.setPaintProperty('poi-level-3', 'text-color', '#0f0e0e');
+          map.current.setPaintProperty('poi-level-2', 'text-color', '#615656');
+          map.current.setPaintProperty('poi-level-1', 'text-color', '#5b5252');
+          map.current.setPaintProperty('road_oneway', 'text-color', '#7e7a7a');
+          map.current.setPaintProperty('road_oneway_opposite', 'text-color', '#989494');
+          map.current.setPaintProperty('highway-name-path', 'text-color', '#b9834d');
+          map.current.setPaintProperty('highway-name-minor', 'text-color', '#61472c');
+          map.current.setPaintProperty('highway-name-major', 'text-color', '#7e5933');
+          map.current.setPaintProperty('highway-shield', 'text-color', '#1c1b1b');
+          map.current.setPaintProperty('place-other', 'text-color', '#471c1c');
+        } catch (paintErr) {
+          console.warn("Could not apply all Geoapify custom paint properties:", paintErr);
+        }
+
         // Advanced 3D Lighting for metallic effect
         map.current?.setLight({
           anchor: 'viewport',
@@ -620,32 +675,31 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
         // Apply custom style refinements (from Mapa-Tuzle.js)
         try {
-          map.current?.setPaintProperty('background', 'background-color', '#f2ebc9');
-          map.current?.setPaintProperty('park', 'fill-color', '#d1e8b9');
-          map.current?.setPaintProperty('park_outline', 'line-color', '#b4f275');
-          map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(215,190,154,0.49)');
-          map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(148,203,117,0.7)');
-          map.current?.setPaintProperty('landcover_grass', 'fill-color', '#a0d381');
-          map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#f0f4e4');
-          map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#ffd7eb');
-          map.current?.setPaintProperty('landuse_school', 'fill-color', '#f1f4b7');
+          map.current?.setPaintProperty('background', 'background-color', '#ebf6e9');
+          map.current?.setPaintProperty('park', 'fill-color', '#97cb86');
+          map.current?.setPaintProperty('park_outline', 'line-color', '#a6e16c');
+          map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(221,197,164,0.49)');
+          map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(109,195,59,0.7)');
+          map.current?.setPaintProperty('landcover_grass', 'fill-color', '#79c14e');
+          map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#e8eed7');
+          map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#f8d1e4');
+          map.current?.setPaintProperty('landuse_school', 'fill-color', '#fae8fa');
           map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-          map.current?.setPaintProperty('water', 'fill-color', '#8caff8');
-          map.current?.setPaintProperty('aeroway_runway', 'line-color', '#d9d6d3');
-          map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#f2f5f6');
-          map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');
+          map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#d1d1d1');
+          map.current?.setPaintProperty('road_service_track_casing', 'line-color', '#a6a4a0');
+          map.current?.setPaintProperty('road_service_track_casing', 'line-width', {"base":1.2,"stops":[[15,0.7272727272727272],[16,2.9090909090909087],[20,16]]});
           map.current?.setPaintProperty('road_minor_casing', 'line-color', '#3e3b38');
           map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#d58a48');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', { "base": 1.2, "stops": [[8, 1.5882352941176472], [20, 18]] });
+          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', {"base":1.2,"stops":[[8,1.5882352941176472],[20,18]]});
           map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#f0a461');
           map.current?.setPaintProperty('road_motorway_casing', 'line-color', '#f49e53');
           map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#a06346');
-          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.30000000000000004], [20, 3]] });
+          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', {"base":1.2,"stops":[[14,0.30000000000000004],[20,3]]});
           map.current?.setPaintProperty('road_motorway_link', 'line-color', '#e5972f');
           map.current?.setPaintProperty('road_service_track', 'line-color', '#ecdcdc');
-          map.current?.setPaintProperty('road_minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 2.638888888888889], [20, 19]] });
+          map.current?.setPaintProperty('road_minor', 'line-width', {"base":1.2,"stops":[[13.5,0],[14,2.638888888888889],[20,19]]});
           map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fce174');
-          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', { "base": 1.2, "stops": [[6.5, 0], [8, 0.5769230769230769], [20, 15]] });
+          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', {"base":1.2,"stops":[[6.5,0],[8,0.5769230769230769],[20,15]]});
           map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#ffb16e');
           map.current?.setPaintProperty('road_motorway', 'line-color', '#db9b45');
           map.current?.setPaintProperty('road_one_way_arrow', 'text-color', '#b3acac');
@@ -657,7 +711,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           map.current?.setLayoutProperty('water_name_point', 'visibility', 'none');
           map.current?.setLayoutProperty('poi_transit', 'text-size', 13);
           map.current?.setPaintProperty('road_label', 'text-color', '#5d5858');
-          map.current?.setLayoutProperty('road_label', 'text-size', { "base": 1, "stops": [[13, 9.23076923076923], [14, 10]] });
+          map.current?.setLayoutProperty('road_label', 'text-size', {"base":1,"stops":[[13,9.23076923076923],[14,10]]});
           map.current?.setPaintProperty('road_shield', 'text-color', '#2e2a2a');
         } catch (err) {
           console.warn("⚠️ MapQuest: Some style refinements could not be applied.", err);
@@ -674,7 +728,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       map.current.setMinZoom(14);
       map.current.setMaxZoom(16);
     }
-  }, [isOnline, isLoaded, policy.mapFx.enable3dBuildings, policy.mapFx.maxPitch]);
+  }, [isOnline, isLoaded, policy.mapFx.enable3dBuildings, policy.mapFx.maxPitch, mapStyleType]);
 
   // Update Quest Markers
   useEffect(() => {
@@ -1017,6 +1071,15 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           className="absolute bottom-24 left-6 z-20 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center text-blue-400 active:scale-95 transition-all"
         >
           <Navigation size={20} />
+        </button>
+
+        {/* STYLE TOGGLE BUTTON */}
+        <button
+          onClick={() => setMapStyleType(prev => prev === 'bright' ? 'liberty' : 'bright')}
+          className="absolute bottom-24 right-6 z-20 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center text-amber-400 active:scale-95 transition-all group"
+          title="Toggle Map Style"
+        >
+          <Compass className="w-6 h-6 transition-transform group-hover:rotate-45" />
         </button>
       </div>
 

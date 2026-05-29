@@ -2,48 +2,22 @@ import React, { useRef, useEffect, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Language } from '../types';
-import { Protocol } from 'pmtiles';
 import { TUZLA_CENTER, TUZLA_WIFI_DATA } from '../constants';
 import { AppFeatures } from '../utils/platform';
-import { Search, X, Loader2, Navigation, Layers, MapPin, Landmark, Compass, Eye, Route, Sparkles, Clock, Footprints } from 'lucide-react';
+import { Search, X, Loader2, Navigation, Landmark, Compass, Route, Clock, Footprints } from 'lucide-react';
 import { WeatherWidget } from './WeatherWidget';
 import { useNetwork } from '../hooks/useNetwork';
 import { tuzlaHotelData } from '../tuzlaHotelData';
 import { Hotel as HotelIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Module-level cache — tuzla-map.geojson is 8MB+, load once per session
-let _tuzlaMapCache: any[] | null = null;
-let _tuzlaMapLoading: Promise<any[] | null> | null = null;
-
-// Initialize PMTiles Protocol safely
-try {
-  const pmtilesProtocol = new Protocol();
-  maplibregl.addProtocol('pmtiles', pmtilesProtocol.tile);
-} catch (e) {
-  // Protocol might already be added
-}
-
-async function getTuzlaMapFeatures(): Promise<any[] | null> {
-  if (_tuzlaMapCache) return _tuzlaMapCache;
-  if (_tuzlaMapLoading) return _tuzlaMapLoading;
-  _tuzlaMapLoading = fetch('/maps/TuzlaTourGuide.geojson')
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      _tuzlaMapCache = data?.features ?? null;
-      _tuzlaMapLoading = null;
-      return _tuzlaMapCache;
-    })
-    .catch(() => { _tuzlaMapLoading = null; return null; });
-  return _tuzlaMapLoading;
-}
 
 interface MapViewProps {
   lang: Language;
   features: AppFeatures;
 }
 
-const OFFLINE_STYLE = '/style/offline-style.json';
+
 const ONLINE_STYLE = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
 
 const ROUTE_POI_PRESETS = [
@@ -294,7 +268,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNavigating, selectedTarget, isLoaded]); // intentionally excludes userLocation
 
-  // Local GeoJSON Search (Offline-First)
+  // Local GeoJSON Search
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -303,14 +277,13 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     try {
       let combinedResults: any[] = [];
 
-      // 1. Search TuzlaTourGuide.geojson (full OSM dataset + merged POIs) — cached in memory
+      // 1. Search TuzlaTourGuide.geojson (local POI dataset)
       try {
-        const features = await getTuzlaMapFeatures();
-        if (features) {
+        const res = await fetch('/maps/TuzlaTourGuide.geojson');
+        if (res.ok) {
+          const data = await res.json();
           const query = searchQuery.toLowerCase();
-          const localData = { features };
-
-          const localMatches = localData.features
+          const localMatches = (data.features || [])
             .filter((f: any) => {
               const props = f.properties || {};
               return (
@@ -324,45 +297,21 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                 props.tourism?.toLowerCase().includes(query)
               );
             })
-            .filter((f: any) => f.geometry?.type === 'Point') // only mappable points
-            .slice(0, 20) // cap before mapping
+            .filter((f: any) => f.geometry?.type === 'Point')
+            .slice(0, 20)
             .map((f: any) => {
               const props = f.properties || {};
-              const displayName = props.name || props['name:bs'] || props.amenity || props.shop || 'Unnamed';
-              const category = props.category || props.amenity || props.shop || props.tourism || props.office || 'POI';
               return {
-                display_name: displayName,
+                display_name: props.name || props['name:bs'] || props.amenity || props.shop || 'Unnamed',
                 lat: f.geometry.coordinates[1],
                 lon: f.geometry.coordinates[0],
-                category,
+                category: props.category || props.amenity || props.shop || props.tourism || 'POI',
               };
             });
-
           combinedResults = localMatches;
         }
       } catch (err) {
-        // Fallback to poi.geojson if TuzlaTourGuide.geojson is unavailable
-        console.warn('TuzlaTourGuide.geojson unavailable, falling back to poi.geojson:', err);
-        try {
-          const fallbackRes = await fetch('/poi.geojson');
-          if (fallbackRes.ok) {
-            const fallbackData = await fallbackRes.json();
-            const query = searchQuery.toLowerCase();
-            combinedResults = fallbackData.features
-              .filter((f: any) =>
-                f.properties.name?.toLowerCase().includes(query) ||
-                f.properties.name_bs?.toLowerCase().includes(query)
-              )
-              .map((f: any) => ({
-                display_name: f.properties.name,
-                lat: f.geometry.coordinates[1],
-                lon: f.geometry.coordinates[0],
-                category: f.properties.category || 'POI',
-              }));
-          }
-        } catch (fbErr) {
-          console.warn('Fallback poi.geojson also failed:', fbErr);
-        }
+        console.warn('TuzlaTourGuide.geojson search failed:', err);
       }
 
       // 2. If online, also query Geoapify for real addresses
@@ -457,16 +406,13 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    // Determine style based on connectivity
-    const styleToUse = isOnline ? ONLINE_STYLE : OFFLINE_STYLE;
-
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: styleToUse,
+      style: ONLINE_STYLE,
       center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
       zoom: 16,
-      minZoom: isOnline ? 0 : 14,
-      maxZoom: isOnline ? 20 : 16,
+      minZoom: 0,
+      maxZoom: 20,
       pitch: 45,
       bearing: 0
     });
@@ -474,72 +420,36 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
     map.current.on('load', () => {
       setIsLoaded(true);
 
-      // Add standard navigation controls
       map.current?.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'bottom-right');
 
+      // Apply custom paint properties for osm-liberty style
       try {
-        if (!map.current?.isStyleLoaded()) return;
-
-        // Set 3D light for premium feel
-        map.current?.setLight({
-          anchor: 'viewport',
-          color: '#f5f5f5ff',
-          intensity: 0.4,
-          position: [1.15, 210, 30]
-        });
-
-        // Apply custom style refinements (from Mapa-Tuzle.js)
-        if (isOnline) {
-          map.current?.setPaintProperty('background', 'background-color', '#eee6bdff');
-          map.current?.setPaintProperty('park', 'fill-color', '#b0d38aff');
-          map.current?.setPaintProperty('park_outline', 'line-color', '#8edd3fff');
-          map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(199, 167, 122, 0.49)');
-          map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(91, 160, 51, 0.7)');
-          map.current?.setPaintProperty('landcover_grass', 'fill-color', '#81c756ff');
-          map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#f0f4e4');
-          map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#e7bad1ff');
-          map.current?.setPaintProperty('landuse_school', 'fill-color', '#b8bb7fff');
-          map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-          map.current?.setPaintProperty('water', 'fill-color', '#9accffff');
-          map.current?.setPaintProperty('aeroway_runway', 'line-color', '#d9d6d3');
-          map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#f2f5f6');
-          map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');
-          map.current?.setPaintProperty('road_minor_casing', 'line-color', '#312f2dff');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#db7720ff');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', { "base": 1.2, "stops": [[8, 1.5882352941176472], [20, 18]] });
-          map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#f0a461');
-          map.current?.setPaintProperty('road_motorway_casing', 'line-color', '#f49e53');
-          map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#a06346');
-          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.30000000000000004], [20, 3]] });
-          map.current?.setPaintProperty('road_motorway_link', 'line-color', '#e5972f');
-          map.current?.setPaintProperty('road_service_track', 'line-color', '#ecdcdc');
-          map.current?.setPaintProperty('road_minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 2.638888888888889], [20, 19]] });
-          map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fce174');
-          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', { "base": 1.2, "stops": [[6.5, 0], [8, 0.5769230769230769], [20, 15]] });
-          map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#ffb16e');
-          map.current?.setPaintProperty('road_motorway', 'line-color', '#db9b45');
-          map.current?.setPaintProperty('road_one_way_arrow', 'text-color', '#b3acac');
-          map.current?.setLayoutProperty('road_one_way_arrow', 'text-size', 1);
-          map.current?.setPaintProperty('road_one_way_arrow_opposite', 'text-color', '#b0abab');
-          map.current?.setLayoutProperty('road_one_way_arrow_opposite', 'text-size', 1);
-          map.current?.setPaintProperty('building-3d', 'fill-extrusion-color', '#c2d4eeff');
-          // Increase building height by 1.8x for premium visual depth
-          try {
-            map.current?.setPaintProperty('building-3d', 'fill-extrusion-height', [
-              'interpolate', ['linear'], ['zoom'],
-              14, 0,
-              15, ['*', ['coalesce', ['get', 'render_height'], ['get', 'height'], 15], 1.8],
-            ]);
-          } catch (_) {}
-          map.current?.setLayoutProperty('water_name_line', 'visibility', 'none');
-          map.current?.setLayoutProperty('water_name_point', 'visibility', 'none');
-          map.current?.setLayoutProperty('poi_transit', 'text-size', 13);
-          map.current?.setPaintProperty('road_label', 'text-color', '#5d5858');
-          map.current?.setLayoutProperty('road_label', 'text-size', { "base": 1, "stops": [[13, 9.23076923076923], [14, 10]] });
-          map.current?.setPaintProperty('road_shield', 'text-color', '#2e2a2a');
-        }
+        map.current?.setPaintProperty('background', 'background-color', '#e5eade');
+        map.current?.setPaintProperty('park', 'fill-color', '#cdf0aa');
+        map.current?.setPaintProperty('park_outline', 'line-color', '#bbe592');
+        map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(227,207,180,0.49)');
+        map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(113,191,67,0.7)');
+        map.current?.setPaintProperty('landcover_grass', 'fill-color', '#a8d78c');
+        map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#e2e8d0');
+        map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#f4c8de');
+        map.current?.setPaintProperty('landuse_school', 'fill-color', '#f8dada');
+        map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
+        map.current?.setPaintProperty('road_minor_casing', 'line-color', '#000000');
+        map.current?.setPaintProperty('road_minor_casing', 'line-width', {"base":1.2,"stops":[[12,0.24999999999999986],[13,0.4999999999999997],[14,1.999999999999999],[20,10]]});
+        map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#f0bb50');
+        map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#e69249');
+        map.current?.setPaintProperty('road_trunk_primary_casing', 'line-width', {"base":1.2,"stops":[[5,0.5090909090909089],[6,0.8909090909090907],[7,2.2272727272727266],[20,28]]});
+        map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#f8ba94');
+        map.current?.setPaintProperty('road_path_pedestrian', 'line-width', {"base":1.2,"stops":[[14,0.4],[20,4]]});
+        map.current?.setPaintProperty('road_motorway_link', 'line-color', '#f8c47e');
+        map.current?.setPaintProperty('road_service_track', 'line-color', '#cfcfcf');
+        map.current?.setPaintProperty('road_link', 'line-color', '#f6e49b');
+        map.current?.setPaintProperty('road_minor', 'line-width', {"base":1.2,"stops":[[13.5,0],[14,2.7777777777777777],[20,20]]});
+        map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fff186');
+        map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#f2c860');
+        map.current?.setPaintProperty('road_motorway', 'line-color', '#eea33e');
       } catch (err) {
-        console.warn("⚠️ MapView: Some style refinements could not be applied.", err);
+        console.warn('⚠️ MapView: Some style refinements could not be applied.', err);
       }
 
       // Add Hotel Markers
@@ -602,23 +512,15 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
       });
     });
 
-    // Error handling with automatic fallback to offline style if online fails
     map.current.on('error', (e) => {
-      console.warn("Map error detected:", e.error?.message);
-      if (isOnline && (e.error?.message?.includes('Failed to fetch') || e.error?.status === 401)) {
-        console.log("⚠️ MapView: Online style failed, falling back to local offline-style.json");
-        map.current?.setStyle(OFFLINE_STYLE);
-        // Lock zoom to 14-16 for offline raster tiles
-        map.current?.setMinZoom(14);
-        map.current?.setMaxZoom(16);
-      }
+      console.warn('Map error:', e.error?.message);
     });
 
     return () => {
       map.current?.remove();
       map.current = null;
     };
-  }, [isOnline]);
+  }, []);
 
   useEffect(() => {
     if (!map.current || !isLoaded) return;
