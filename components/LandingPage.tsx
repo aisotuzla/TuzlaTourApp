@@ -133,26 +133,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
-              className="absolute inset-0 z-30 bg-slate-950 flex flex-col items-center justify-center"
+              className="absolute inset-0 z-30 bg-white flex flex-col items-center justify-center"
             >
-              {/* Premium cinematic city-blur background underlay */}
-              <div 
-                className="absolute inset-0 bg-cover bg-center opacity-40 scale-105 blur-lg"
-                style={{ backgroundImage: "url('/assets/Gallery/City Guide/GradTuzla-1.webp')" }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-blue-950/60 via-slate-950/80 to-slate-950" />
-              
               <div className="relative z-10 flex flex-col items-center gap-6">
                 <motion.img 
                   src="/assets/Tuzlalogo.webp" 
                   alt="Tuzla Logo" 
-                  className="w-48 h-48 object-contain filter drop-shadow-[0_10px_30px_rgba(59,130,246,0.3)]" 
+                  className="w-48 h-48 object-contain filter drop-shadow-[0_10px_30px_rgba(59,130,246,0.15)]" 
                   animate={{ scale: [1, 1.03, 1] }}
                   transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                 />
                 <div className="flex flex-col items-center gap-3">
-                  <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin opacity-80" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-400/80 animate-pulse font-quicksand mt-2">
+                  <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin opacity-80" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-900/80 animate-pulse font-quicksand mt-2">
                     {lang === 'bs' ? 'Učitavanje Tuzle...' : 'Discovering Tuzla...'}
                   </span>
                 </div>
