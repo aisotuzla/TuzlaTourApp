@@ -126,34 +126,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   return (
     <div className="bg-white">
       {/* 1. HERO SECTION */}
-      <section className="relative h-screen w-full overflow-hidden bg-white">
-        <AnimatePresence>
-          {!isHeroReady && (
-            <motion.div
-              initial={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
-              className="absolute inset-0 z-30 bg-white flex flex-col items-center justify-center"
-            >
-              <div className="relative z-10 flex flex-col items-center gap-6">
-                <motion.img 
-                  src="/assets/Tuzlalogo.webp" 
-                  alt="Tuzla Logo" 
-                  className="w-48 h-48 object-contain filter drop-shadow-[0_10px_30px_rgba(59,130,246,0.15)]" 
-                  animate={{ scale: [1, 1.03, 1] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                />
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin opacity-80" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-900/80 animate-pulse font-quicksand mt-2">
-                    {lang === 'bs' ? 'Učitavanje Tuzle...' : 'Discovering Tuzla...'}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
+      <section 
+        className="relative h-screen w-full overflow-hidden bg-slate-900 bg-cover bg-center"
+        style={{ backgroundImage: 'url("/assets/aisotz.png")' }}
+      >
         <video
             ref={heroVideoRef}
             autoPlay
@@ -161,13 +137,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             loop
             playsInline
             preload="auto"
-            className="absolute inset-0 h-full w-full object-cover"
+            poster="/assets/aisotz.png"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isHeroReady ? 'opacity-100' : 'opacity-0'}`}
             src={videoSrc}
             onLoadedData={() => setIsHeroReady(true)}
             onCanPlay={() => setIsHeroReady(true)}
             onEnded={handleHeroVideoEnd}
           />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
 
         {/* Play Button Overlay for Hero */}
         <AnimatePresence>

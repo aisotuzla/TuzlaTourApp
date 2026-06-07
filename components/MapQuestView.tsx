@@ -192,10 +192,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           paint: {
             'fill-extrusion-color': [
               'interpolate', ['linear'], ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
-              0, '#9ca5b8ff',
-              20, '#9cadc7ff',
-              50, '#b0bed1ff',
-              100, '#9aa1b1ff'
+              0, '#cfd8dcff',
+              20, '#b0c4deff',
+              50, '#d3d3d3ff',
+              100, '#e0e0e0ff'
             ],
             'fill-extrusion-height': [
               'interpolate', ['linear'], ['zoom'],
