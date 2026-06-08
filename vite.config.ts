@@ -42,7 +42,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           enabled: true,
           type: 'module'
         },
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'assets/**/*', 'maps/**/*', 'poi.geojson', 'style/*.json'],
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
         manifest: {
           name: 'Tuzla Virtual Tour Guide',
           short_name: 'Tuzla Guide',
@@ -73,8 +73,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           ]
         },
         injectManifest: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,json}'],
-          maximumFileSizeToCacheInBytes: 25 * 1024 * 1024 // 25MB limit
+          globPatterns: ['**/*.{js,css,html,ico,svg,json,woff,woff2}'],
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB limit
         }
       })
     ],

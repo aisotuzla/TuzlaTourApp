@@ -14,20 +14,6 @@ import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { QuestQualityMode } from '../utils/questRuntimePolicy';
 import { getDistance } from '../utils/geoUtils';
 
-
-const QUEST_TARGETS = [
-  { id: 'irish', name: { en: 'Irish Pub', bs: 'Irish Pub' }, image: '/assets/Gallery/QuestQRLocations/Irish.webp' },
-  { id: 'Papi Gelato', name: { en: 'Papi Gelato', bs: 'Papi Gelato' }, image: '/assets/Gallery/QuestQRLocations/PapiGelato.png' },
-  { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, image: '/assets/Gallery/QuestQRLocations/QR Banja.png' },
-  { id: 'panonika', name: { en: 'Pannonica Office', bs: 'Panonika Ured' }, image: '/assets/Gallery/QuestQRLocations/Panonika.webp' },
-  { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, image: '/assets/Gallery/QuestQRLocations/slapovi.webp' },
-  { id: 'ismet', name: { en: 'Ismet Mujezinovic', bs: 'Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/QRIsmet.webp' },
-  { id: 'atelje_ismet', name: { en: 'Atelje Ismet Mujezinovic', bs: 'Atelje Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/Atelje Ismet Mujezinovic.png' },
-  { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, image: '/assets/Gallery/QuestQRLocations/Bingo City Centar.png', website: 'https://tuzla.bingocitycenter.ba/' },
-  { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4' },
-  { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, image: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/tvrle.png' },
-];
-
 const ROUTE_POI_PRESETS = [
   {
     name: { bs: 'Panonska Jezera', en: 'Pannonian Lakes' },
@@ -104,6 +90,19 @@ const ROUTE_POI_PRESETS = [
   },
 ];
 
+const QUEST_TARGETS = [
+  { id: 'irish', name: { en: 'Irish Pub', bs: 'Irish Pub' }, image: '/assets/Gallery/QuestQRLocations/Irish.webp' },
+  { id: 'Papi Gelato', name: { en: 'Papi Gelato', bs: 'Papi Gelato' }, image: '/assets/Gallery/QuestQRLocations/PapiGelato.png' },
+  { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, image: '/assets/Gallery/QuestQRLocations/QR Banja.png' },
+  { id: 'panonika', name: { en: 'Pannonica Office', bs: 'Panonika Ured' }, image: '/assets/Gallery/QuestQRLocations/Panonika.webp' },
+  { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, image: '/assets/Gallery/QuestQRLocations/slapovi.webp' },
+  { id: 'ismet', name: { en: 'Ismet Mujezinovic', bs: 'Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/QRIsmet.webp' },
+  { id: 'atelje_ismet', name: { en: 'Atelje Ismet Mujezinovic', bs: 'Atelje Ismet Mujezinović' }, image: '/assets/Gallery/QuestQRLocations/Atelje Ismet Mujezinovic.png' },
+  { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, image: '/assets/Gallery/QuestQRLocations/Bingo City Centar.png', website: 'https://tuzla.bingocitycenter.ba/' },
+  { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4' },
+  { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, image: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/tvrle.png' },
+];
+
 interface MapQuestViewProps {
   lang: Language;
   features: AppFeatures;
@@ -138,7 +137,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [useFallbackStyle, setUseFallbackStyle] = useState(false);
   const isOnline = useNetwork();
   const OFFLINE_STYLE = '/style/offline-style.json';
-  const ONLINE_STYLE_PRIMARY = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
+  const ONLINE_STYLE_PRIMARY = 'https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
   const ONLINE_STYLE_FALLBACK = 'https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
   const ONLINE_STYLE = useFallbackStyle ? ONLINE_STYLE_FALLBACK : ONLINE_STYLE_PRIMARY;
 
@@ -190,13 +189,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           type: 'fill-extrusion',
           minzoom: 14,
           paint: {
-            'fill-extrusion-color': [
-              'interpolate', ['linear'], ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
-              0, '#cfd8dcff',
-              20, '#b0c4deff',
-              50, '#d3d3d3ff',
-              100, '#e0e0e0ff'
-            ],
+            'fill-extrusion-color': '#d6dbe2ff',
             'fill-extrusion-height': [
               'interpolate', ['linear'], ['zoom'],
               14, 0,
@@ -232,7 +225,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         'line-color': '#facc15',
         'line-width': 12,
         'line-blur': 8,
-        'line-opacity': 0.3
+        'line-opacity': 0.5
       }
     }, '3d-buildings');
 
@@ -423,6 +416,36 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
         // Apply custom Geoapify Map Styles
         try {
+
+          if (map.current) {
+            map.current.setPaintProperty('background', 'background-color', '#e7efd8');
+            map.current.setPaintProperty('park', 'fill-color', '#ade674');
+            map.current.setPaintProperty('park_outline', 'line-color', '#c8e9a6');
+            map.current.setPaintProperty('landuse_residential', 'fill-color', 'rgba(219,199,224,0.49)');
+            map.current.setPaintProperty('landcover_wood', 'fill-color', 'rgba(101,177,58,0.7)');
+            map.current.setPaintProperty('landcover_grass', 'fill-color', '#b2eb91');
+            map.current.setPaintProperty('landuse_hospital', 'fill-color', '#e9a5c7');
+            map.current.setPaintProperty('landuse_school', 'fill-color', '#ede1e8');
+            map.current.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
+            map.current.setLayoutProperty('waterway_river', 'visibility', 'none');
+            map.current.setLayoutProperty('waterway_other', 'visibility', 'none');
+            map.current.setPaintProperty('water', 'fill-color', '#79a1f7');
+            map.current.setPaintProperty('road_area_pattern', 'fill-color', '#d4d0d0');
+            map.current.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#f58829');
+            map.current.setPaintProperty('road_path_pedestrian', 'line-color', '#afa1a1');
+            map.current.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.3999999999999999], [20, 4]] });
+            map.current.setPaintProperty('road_motorway_link', 'line-color', '#e7bd85');
+            map.current.setPaintProperty('road_service_track', 'line-color', '#f3f295');
+            map.current.setPaintProperty('road_link', 'line-color', '#e9d47d');
+            map.current.setPaintProperty('road_minor', 'line-color', '#ffffff');
+            map.current.setPaintProperty('road_secondary_tertiary', 'line-color', '#fde06c');
+            map.current.setPaintProperty('road_trunk_primary', 'line-color', '#f5bc53');
+            map.current.setPaintProperty('road_motorway', 'line-color', '#c08e4b');
+            map.current.setPaintProperty('building', 'fill-color', '#9cb0c4');
+            map.current.setPaintProperty('building-3d', 'fill-extrusion-color', '#d7dfe2');
+          }
+
+          // QUEST_TARGETS is defined at module scope
           map.current.setPaintProperty('background', 'background-color', '#e1eed2');
           map.current.setPaintProperty('landuse-residential', 'fill-color', 'rgba(170,157,144,0.2)');
           map.current.setPaintProperty('landuse-commercial', 'fill-color', 'rgba(173,177,219,0.23)');
@@ -437,8 +460,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           map.current.setPaintProperty('waterway-river', 'line-color', '#85bcf2');
           map.current.setLayoutProperty('water-offset', 'visibility', 'none');
           map.current.setPaintProperty('water', 'fill-color', '#9ecaf6');
-          map.current.setPaintProperty('building', 'fill-color', '#d9d9d9');
-          map.current.setPaintProperty('building-top', 'fill-color', '#e4e1dfff');
+          map.current.setPaintProperty('building', 'fill-color', '#f1f5f9');
+          map.current.setPaintProperty('building-top', 'fill-color', '#f8fafc');
           map.current.setPaintProperty('aeroway-area', 'fill-color', '#e0dfe9');
           map.current.setPaintProperty('aeroway-runway', 'line-color', '#c6c6ca');
           map.current.setPaintProperty('highway-area', 'fill-color', 'rgba(204,200,200,0.56)');
@@ -487,53 +510,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           intensity: 0.4,
           position: [1.15, 210, 30]
         });
-
-        // Apply custom style refinements (from Mapa-Tuzle.js)
-        if (isOnline) {
-          map.current?.setPaintProperty('background', 'background-color', '#f2ebc9');
-          map.current?.setPaintProperty('park', 'fill-color', '#d1e8b9');
-          map.current?.setPaintProperty('park_outline', 'line-color', '#b4f275');
-          map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(215,190,154,0.49)');
-          map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(148,203,117,0.7)');
-          map.current?.setPaintProperty('landcover_grass', 'fill-color', '#a0d381');
-          map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#f0f4e4');
-          map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#ffd7eb');
-          map.current?.setPaintProperty('landuse_school', 'fill-color', '#f1f4b7');
-          map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-          map.current?.setPaintProperty('water', 'fill-color', '#8caff8');
-          map.current?.setPaintProperty('aeroway_runway', 'line-color', '#d9d6d3');
-          map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#f2f5f6');
-          map.current?.setPaintProperty('road_motorway_link_casing', 'line-color', '#ff9437');
-          map.current?.setPaintProperty('road_minor_casing', 'line-color', '#3e3b38');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#d58a48');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', { "base": 1.2, "stops": [[8, 1.5882352941176472], [20, 18]] });
-          map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#f0a461');
-          map.current?.setPaintProperty('road_motorway_casing', 'line-color', '#f49e53');
-          map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#a06346');
-          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.30000000000000004], [20, 3]] });
-          map.current?.setPaintProperty('road_motorway_link', 'line-color', '#e5972f');
-          map.current?.setPaintProperty('road_service_track', 'line-color', '#ecdcdc');
-          map.current?.setPaintProperty('road_minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 2.638888888888889], [20, 19]] });
-          map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fce174');
-          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', { "base": 1.2, "stops": [[6.5, 0], [8, 0.5769230769230769], [20, 15]] });
-          map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#ffb16e');
-          map.current?.setPaintProperty('road_motorway', 'line-color', '#db9b45');
-          map.current?.setPaintProperty('road_one_way_arrow', 'text-color', '#b3acac');
-          map.current?.setLayoutProperty('road_one_way_arrow', 'text-size', 1);
-          map.current?.setPaintProperty('road_one_way_arrow_opposite', 'text-color', '#b0abab');
-          map.current?.setLayoutProperty('road_one_way_arrow_opposite', 'text-size', 1);
-          map.current?.setPaintProperty('building-3d', 'fill-extrusion-color', '#c9c2c2');
-          map.current?.setLayoutProperty('water_name_line', 'visibility', 'none');
-          map.current?.setLayoutProperty('water_name_point', 'visibility', 'none');
-          map.current?.setLayoutProperty('poi_transit', 'text-size', 13);
-          map.current?.setLayoutProperty('poi_transit', 'text-offset', [0, 0]);
-          map.current?.setPaintProperty('poi_transit', 'text-color', '#e4e2e2');
-          map.current?.setPaintProperty('poi_transit', 'text-halo-color', '#776c6c');
-          map.current?.setPaintProperty('poi_transit', 'text-halo-width', 1.5);
-          map.current?.setPaintProperty('poi', 'text-color', '#333131');
-          map.current?.setPaintProperty('road_label', 'text-color', '#5d5858');
-          map.current?.setLayoutProperty('road_label', 'text-size', { "base": 1, "stops": [[13, 9.23076923076923], [14, 10]] });
-        }
       } catch (e) {
         console.warn("MapQuest: Error applying style refinements", e);
       }
@@ -648,54 +624,11 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         // Advanced 3D Lighting
         map.current.setLight({
           anchor: 'viewport',
-          color: '#636161ff',
+          color: '#a1a1a1ff',
           intensity: 0.4,
           position: [1.15, 210, 30]
         });
 
-        // Apply custom style refinements (from Mapa-Tuzle.js)
-        try {
-          map.current?.setPaintProperty('background', 'background-color', '#ebf6e9');
-          map.current?.setPaintProperty('park', 'fill-color', '#97cb86');
-          map.current?.setPaintProperty('park_outline', 'line-color', '#a6e16c');
-          map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(221,197,164,0.49)');
-          map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(109,195,59,0.7)');
-          map.current?.setPaintProperty('landcover_grass', 'fill-color', '#79c14e');
-          map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#e8eed7');
-          map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#f8d1e4');
-          map.current?.setPaintProperty('landuse_school', 'fill-color', '#fae8fa');
-          map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-          map.current?.setPaintProperty('road_area_pattern', 'fill-color', '#d1d1d1');
-          map.current?.setPaintProperty('road_service_track_casing', 'line-color', '#a6a4a0');
-          map.current?.setPaintProperty('road_service_track_casing', 'line-width', { "base": 1.2, "stops": [[15, 0.7272727272727272], [16, 2.9090909090909087], [20, 16]] });
-          map.current?.setPaintProperty('road_minor_casing', 'line-color', '#3e3b38');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#d58a48');
-          map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-width', { "base": 1.2, "stops": [[8, 1.5882352941176472], [20, 18]] });
-          map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#f0a461');
-          map.current?.setPaintProperty('road_motorway_casing', 'line-color', '#f49e53');
-          map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#a06346');
-          map.current?.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.30000000000000004], [20, 3]] });
-          map.current?.setPaintProperty('road_motorway_link', 'line-color', '#e5972f');
-          map.current?.setPaintProperty('road_service_track', 'line-color', '#ecdcdc');
-          map.current?.setPaintProperty('road_minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 2.638888888888889], [20, 19]] });
-          map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fce174');
-          map.current?.setPaintProperty('road_secondary_tertiary', 'line-width', { "base": 1.2, "stops": [[6.5, 0], [8, 0.5769230769230769], [20, 15]] });
-          map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#ffb16e');
-          map.current?.setPaintProperty('road_motorway', 'line-color', '#db9b45');
-          map.current?.setPaintProperty('road_one_way_arrow', 'text-color', '#b3acac');
-          map.current?.setLayoutProperty('road_one_way_arrow', 'text-size', 1);
-          map.current?.setPaintProperty('road_one_way_arrow_opposite', 'text-color', '#b0abab');
-          map.current?.setLayoutProperty('road_one_way_arrow_opposite', 'text-size', 1);
-          map.current?.setPaintProperty('building-3d', 'fill-extrusion-color', '#c9c2c2');
-          map.current?.setLayoutProperty('water_name_line', 'visibility', 'none');
-          map.current?.setLayoutProperty('water_name_point', 'visibility', 'none');
-          map.current?.setLayoutProperty('poi_transit', 'text-size', 13);
-          map.current?.setPaintProperty('road_label', 'text-color', '#5d5858');
-          map.current?.setLayoutProperty('road_label', 'text-size', { "base": 1, "stops": [[13, 9.23076923076923], [14, 10]] });
-          map.current?.setPaintProperty('road_shield', 'text-color', '#2e2a2a');
-        } catch (err) {
-          console.warn("⚠️ MapQuest: Some style refinements could not be applied.", err);
-        }
 
         if (policy.mapFx.enable3dBuildings) {
           setupBuildings(map.current);

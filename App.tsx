@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import Sidebar from './components/Sidebar';
@@ -39,11 +39,33 @@ import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 
+// Solana Connect Imports
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { clusterApiUrl } from '@solana/web3.js';
+import '@solana/wallet-adapter-react-ui/styles.css';
+
 const App: React.FC = () => {
+  const endpoint = useMemo(() => clusterApiUrl('devnet'), []);
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+    ],
+    []
+  );
+
   return (
     <TonConnectUIProvider manifestUrl="https://tuzla-tour-guide.vercel.app/tonconnect-manifest.json">
       <QueryClientProvider client={queryClient}>
-        <AppContent />
+        <ConnectionProvider endpoint={endpoint}>
+          <WalletProvider wallets={wallets} autoConnect>
+            <WalletModalProvider>
+              <AppContent />
+            </WalletModalProvider>
+          </WalletProvider>
+        </ConnectionProvider>
       </QueryClientProvider>
     </TonConnectUIProvider>
   );
@@ -72,15 +94,6 @@ const AppContent: React.FC = () => {
       }, 400);
       return () => clearTimeout(timeout);
     }
-  }, []);
-
-  // Automatically open sidebar after 40 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsDrawerOpen(true);
-    }, 40000); // 40 seconds
-
-    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {

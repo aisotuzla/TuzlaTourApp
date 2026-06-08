@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { Wallet as WalletIcon, Lock, Camera, CheckCircle2, Trophy, Home, Stethoscope, Globe, X } from 'lucide-react';
+import { Wallet as WalletIcon, Lock, Camera, CheckCircle2, Trophy, Home, Stethoscope, Globe, X, Copy, ExternalLink, Zap } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -12,6 +12,11 @@ import SpecialCollection from './SpecialCollection';
 
 // TON Connect Imports
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
+
+// Solana Imports
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 interface WalletProps {
     lang: Language;
@@ -24,6 +29,8 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const [error, setError] = useState<string | null>(null);
     const [bamValue, setBamValue] = useState<string>('');
     const [isForeground, setIsForeground] = useState(true);
+    const [solBalance, setSolBalance] = useState<number | null>(null);
+    const [copySuccess, setCopySuccess] = useState(false);
     const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
     const scannerContainerId = "wallet-reader";
 
@@ -31,6 +38,41 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const tonAddress = useTonAddress();
     const t = TRANSLATIONS[lang];
     const eurValue = bamValue ? (parseFloat(bamValue) / 1.95583).toFixed(2) : '0.00';
+
+    // Solana wallet state
+    const { publicKey, disconnect: solDisconnect, connected: solConnected, wallet: solWallet } = useWallet();
+    const { connection } = useConnection();
+
+    // Fetch SOL balance when connected
+    useEffect(() => {
+        if (!publicKey || !connection) { setSolBalance(null); return; }
+        let cancelled = false;
+        const fetchBalance = async () => {
+            try {
+                const lamports = await connection.getBalance(publicKey);
+                if (!cancelled) setSolBalance(lamports / LAMPORTS_PER_SOL);
+            } catch {
+                if (!cancelled) setSolBalance(null);
+            }
+        };
+        fetchBalance();
+        const id = connection.onAccountChange(publicKey, (info) => {
+            if (!cancelled) setSolBalance(info.lamports / LAMPORTS_PER_SOL);
+        });
+        return () => {
+            cancelled = true;
+            connection.removeAccountChangeListener(id);
+        };
+    }, [publicKey, connection]);
+
+    const handleCopyAddress = () => {
+        if (!publicKey) return;
+        navigator.clipboard.writeText(publicKey.toBase58());
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
+    };
+
+    const shortAddress = (addr: string) => `${addr.slice(0, 4)}...${addr.slice(-4)}`;
 
     useEffect(() => {
         if (isScanning) startScanner();
@@ -87,7 +129,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
             <div className="fixed inset-0 bg-black z-[1000] flex flex-col">
                 <div className="relative h-[70vh]">
                     <div id={scannerContainerId} className="w-full h-full" />
-                    <button 
+                    <button
                         onClick={() => setIsScanning(false)}
                         className="absolute top-8 right-8 p-4 bg-white/10 rounded-full text-white backdrop-blur-md"
                     >
@@ -117,7 +159,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
 
                 <AnimatePresence mode="wait">
                     {activeSubTab === 'PAYMENT' && (
-                        <motion.div 
+                        <motion.div
                             key="payment"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -132,44 +174,125 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                             </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div className="p-8 glassy rounded-[3rem] border border-blue-100 shadow-xl space-y-8">
-                                    <div className="flex justify-between items-center">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
-                                                <WalletIcon size={24} />
+                                {/* ── Left Column: TON + Solana + Scanner ── */}
+                                <div className="space-y-6">
+
+                                    {/* TON Card */}
+                                    <div className="p-6 glassy rounded-[2rem] border border-blue-100 shadow-xl space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                                    <WalletIcon size={18} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">TON Network</p>
+                                                    <p className="text-base font-black text-blue-950">
+                                                        {tonAddress ? shortAddress(tonAddress) : (lang === 'bs' ? 'Nije spojeno' : 'Not connected')}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Secure Pay</p>
-                                                <p className="text-xl font-black text-blue-950">0.00 TON</p>
+                                            <div className="scale-90 origin-right">
+                                                <TonConnectButton />
                                             </div>
-                                        </div>
-                                        <div className="scale-90 origin-right">
-                                            <TonConnectButton />
                                         </div>
                                     </div>
 
+                                    {/* Solana Card */}
+                                    <div className="p-6 glassy rounded-[2rem] border border-purple-100 shadow-xl space-y-4">
+                                        <div className="flex justify-between items-center flex-wrap gap-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                    <Zap size={18} className="text-white" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Solana (Devnet)</p>
+                                                    {solConnected && publicKey ? (
+                                                        <p className="text-base font-black text-purple-950">{shortAddress(publicKey.toBase58())}</p>
+                                                    ) : (
+                                                        <p className="text-base font-black text-slate-400">{lang === 'bs' ? 'Nije spojeno' : 'Not connected'}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <WalletMultiButton
+                                                style={{
+                                                    background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+                                                    borderRadius: '1rem',
+                                                    fontSize: '11px',
+                                                    fontWeight: 900,
+                                                    height: '40px',
+                                                    padding: '0 16px',
+                                                }}
+                                            />
+                                        </div>
+
+                                        {/* SOL Balance + Address actions */}
+                                        <AnimatePresence>
+                                            {solConnected && publicKey && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="pt-4 border-t border-purple-100 space-y-3"
+                                                >
+                                                    <div className="flex items-center justify-between">
+                                                        <div>
+                                                            <p className="text-[10px] font-bold text-purple-300 uppercase">SOL Balance</p>
+                                                            <p className="text-2xl font-black text-purple-700">
+                                                                {solBalance !== null ? `◎ ${solBalance.toFixed(4)}` : '—'}
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={handleCopyAddress}
+                                                                className="p-2 bg-purple-100 rounded-xl hover:bg-purple-200 transition-all active:scale-90"
+                                                                title="Copy address"
+                                                            >
+                                                                {copySuccess
+                                                                    ? <CheckCircle2 size={16} className="text-green-600" />
+                                                                    : <Copy size={16} className="text-purple-600" />
+                                                                }
+                                                            </button>
+                                                            <button
+                                                                onClick={() => window.open(`https://explorer.solana.com/address/${publicKey.toBase58()}?cluster=devnet`, '_blank')}
+                                                                className="p-2 bg-purple-100 rounded-xl hover:bg-purple-200 transition-all active:scale-90"
+                                                                title="View on explorer"
+                                                            >
+                                                                <ExternalLink size={16} className="text-purple-600" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-[10px] text-purple-300 font-mono break-all">
+                                                        {publicKey.toBase58()}
+                                                    </p>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+
+                                    {/* Scan & Pay */}
                                     <button
                                         onClick={() => setIsScanning(true)}
-                                        className="w-full h-20 bg-blue-600 text-white font-black rounded-3xl shadow-xl flex items-center justify-center gap-3 hover:bg-blue-700 active:scale-95 transition-all"
+                                        className="w-full h-16 bg-blue-600 text-white font-black rounded-2xl shadow-xl flex items-center justify-center gap-3 hover:bg-blue-700 active:scale-95 transition-all"
                                     >
-                                        <Camera size={24} />
-                                        SCAN & PAY
+                                        <Camera size={22} />
+                                        SCAN &amp; PAY
                                     </button>
 
-                                    <div className="pt-8 border-t border-blue-100">
-                                        <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest mb-4">Currency Converter</h3>
-                                        <div className="space-y-4">
+                                    {/* Currency Converter */}
+                                    <div className="p-6 glassy rounded-[2rem] border border-blue-100 shadow-xl space-y-4">
+                                        <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest">Currency Converter</h3>
+                                        <div className="space-y-3">
                                             <div>
                                                 <label className="text-[10px] font-bold text-blue-300 uppercase block mb-1">Enter BAM</label>
-                                                <input 
+                                                <input
                                                     type="number"
                                                     value={bamValue}
                                                     onChange={(e) => setBamValue(e.target.value)}
                                                     placeholder="0.00"
-                                                    className="w-full bg-blue-50 border border-blue-100 rounded-2xl px-6 py-4 text-blue-950 font-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full bg-blue-50 border border-blue-100 rounded-2xl px-5 py-3 text-blue-950 font-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 />
                                             </div>
-                                            <div className="bg-blue-900/5 p-6 rounded-3xl border border-blue-100/50">
+                                            <div className="bg-blue-900/5 p-5 rounded-2xl border border-blue-100/50">
                                                 <p className="text-[10px] font-bold text-blue-300 uppercase mb-1">Estimated EUR</p>
                                                 <p className="text-3xl font-black text-blue-600">€ {eurValue}</p>
                                             </div>
@@ -177,33 +300,34 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                     </div>
                                 </div>
 
+                                {/* ── Right Column: Partner Links ── */}
                                 <div className="p-8 glassy rounded-[3rem] border border-emerald-100 shadow-xl space-y-6">
                                     <h2 className="text-xl font-black text-emerald-950 uppercase tracking-tight flex items-center gap-2">
                                         <Globe size={20} className="text-emerald-600" />
                                         Partner Agencies
                                     </h2>
                                     <div className="space-y-4">
-                                        <button 
+                                        <button
                                             onClick={() => window.open('https://travelagency-icptuzla.wasmer.app/', '_blank')}
                                             className="w-full h-16 bg-emerald-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
                                         >
                                             <Globe size={18} />
                                             TRAVEL AGENCIES
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => window.open('https://dentist-tuzla.onhercules.app/dentist-tourism/', '_blank')}
                                             className="w-full h-16 bg-white text-blue-600 border-2 border-blue-50 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
                                         >
                                             <Stethoscope size={18} />
                                             DENTAL TOURISM
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => window.open('https://aisotuzlazip--aisotuzla.replit.app/', '_blank')}
                                             className="w-full h-16 bg-blue-600 text-yellow-400 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
                                         >
                                             AISO TUZLA
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => setActiveSubTab('WC')}
                                             className="w-full h-16 bg-[#001489] text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all border border-[#001489]/20 hover:border-yellow-400"
                                         >
@@ -217,7 +341,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                     )}
 
                     {activeSubTab === 'WC' && (
-                        <motion.div 
+                        <motion.div
                             key="wc"
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -253,5 +377,6 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
         </div>
     );
 };
+
 
 export default Wallet;

@@ -126,25 +126,28 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   return (
     <div className="bg-white">
       {/* 1. HERO SECTION */}
-      <section 
-        className="relative h-screen w-full overflow-hidden bg-slate-900 bg-cover bg-center"
-        style={{ backgroundImage: 'url("/assets/aisotz.png")' }}
+      <section
+        className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center"
       >
+        <img 
+          src="/assets/Tuzlacrestsaturation.webp" 
+          alt="Tuzla Logo" 
+          className={`absolute z-10 w-[2cm] h-[2cm] md:w-[4cm] md:h-[4cm] object-contain pointer-events-none transition-opacity duration-1000 ${isHeroReady ? 'opacity-0' : 'opacity-100'}`} 
+        />
         <video
-            ref={heroVideoRef}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster="/assets/aisotz.png"
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isHeroReady ? 'opacity-100' : 'opacity-0'}`}
-            src={videoSrc}
-            onLoadedData={() => setIsHeroReady(true)}
-            onCanPlay={() => setIsHeroReady(true)}
-            onEnded={handleHeroVideoEnd}
-          />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
+          ref={heroVideoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isHeroReady ? 'opacity-100' : 'opacity-0'} z-0`}
+          src={videoSrc}
+          onLoadedData={() => setIsHeroReady(true)}
+          onCanPlay={() => setIsHeroReady(true)}
+          onEnded={handleHeroVideoEnd}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 z-0" />
 
         {/* Play Button Overlay for Hero */}
         <AnimatePresence>

@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
+import { precacheAndRoute, cleanupOutdatedCaches, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute, NavigationRoute } from 'workbox-routing';
 import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
@@ -125,16 +125,24 @@ registerRoute(
 );
 
 // 7. Navigation Route (SPA Support)
-registerRoute(
-  new NavigationRoute(
-    new NetworkFirst({
-      cacheName: 'pages',
-      plugins: [
-        new CacheableResponsePlugin({ statuses: [200] }),
-      ],
-    })
-  )
-);
+// Serve precached index.html instantly for all navigation requests
+try {
+  registerRoute(
+    new NavigationRoute(createHandlerBoundToURL('/index.html'))
+  );
+} catch (error) {
+  // Fallback in case index.html is not in the precache manifest
+  registerRoute(
+    new NavigationRoute(
+      new NetworkFirst({
+        cacheName: 'pages',
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [200] }),
+        ],
+      })
+    )
+  );
+}
 
 // Handle skipWaiting
 self.addEventListener('message', (event) => {

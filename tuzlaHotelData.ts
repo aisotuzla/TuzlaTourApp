@@ -5,7 +5,7 @@
 
 export interface HotelData {
   name: string;
-  description: { en: string; bs: string; de: string };
+  description: { en: string; bs: string; de: string; tr?: string };
   rating: number;
   user_ratings_total: number;
   address: string;
