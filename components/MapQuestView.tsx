@@ -958,7 +958,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const lockedItems = QUEST_TARGETS.filter(item => !unlockedRewards.includes(item.id));
 
   return (
-    <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-900 font-quicksand">
+    <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-900 font-quicksand brightness-[1.1]">
 
 
       {/* MAP VIEW */}

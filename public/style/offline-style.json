@@ -7,11 +7,18 @@
   "sources": {
     "local-raster": {
       "type": "raster",
-      "tiles": ["/maps/tiles/{z}/{x}/{y}.png"],
+      "tiles": [
+        "/maps/tiles/{z}/{x}/{y}.png"
+      ],
       "tileSize": 256,
       "minzoom": 14,
       "maxzoom": 16,
-      "bounds": [18.55, 44.50, 18.75, 44.58]
+      "bounds": [
+        18.55,
+        44.50,
+        18.75,
+        44.58
+      ]
     },
     "app-buildings": {
       "type": "geojson",
@@ -53,23 +60,56 @@
       "paint": {
         "fill-extrusion-color": [
           "interpolate",
-          ["linear"],
-          ["coalesce", ["get", "height"], 15],
-          0, "#53565c",
-          20, "#677891",
-          50, "#8496af",
-          100, "#9aa1b1"
+          [
+            "linear"
+          ],
+          [
+            "coalesce",
+            [
+              "get",
+              "height"
+            ],
+            15
+          ],
+          0,
+          "#ffffff",
+          20,
+          "#677891",
+          50,
+          "#E5E4E2",
+          100,
+          "#E5E4E2"
         ],
         "fill-extrusion-height": [
           "interpolate",
-          ["linear"],
-          ["zoom"],
-          13, 0,
-          14, ["*", ["coalesce", ["get", "height"], 15], 3.5]
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0,
+          14,
+          [
+            "*",
+            [
+              "coalesce",
+              [
+                "get",
+                "height"
+              ],
+              15
+            ],
+            3.5
+          ]
         ],
         "fill-extrusion-base": [
           "coalesce",
-          ["get", "min_height"],
+          [
+            "get",
+            "min_height"
+          ],
           0
         ],
         "fill-extrusion-opacity": 0.75
@@ -88,7 +128,10 @@
         "line-color": "#3b82f6",
         "line-width": 3,
         "line-opacity": 0.7,
-        "line-dasharray": [2, 1]
+        "line-dasharray": [
+          2,
+          1
+        ]
       }
     },
     {

@@ -298,6 +298,21 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Privacy Disclaimer */}
+                                    <div className="px-2 text-[11px] text-slate-500 font-light italic leading-relaxed space-y-3 pb-4">
+                                        <p>
+                                            This application functions as a non-custodial, self-sovereign interface. We provide the tools for you to interact with information and blockchain services, but you maintain absolute ownership and control of your digital assets and identity.
+                                        </p>
+                                        <p className="font-medium text-slate-600 not-italic">Key Privacy &amp; Data Security Points</p>
+                                        <ul className="list-disc pl-4 space-y-2">
+                                            <li><span className="font-medium not-italic text-slate-600">Zero Custody of Assets:</span> We do not hold your private keys, seed phrases, or digital assets. You have sole, exclusive control over your wallet. We cannot access, recover, or move your funds.</li>
+                                            <li><span className="font-medium not-italic text-slate-600">Privacy-by-Design:</span> In compliance with the new Law on Personal Data Protection of Bosnia and Herzegovina (Official Gazette of BiH, No. 12/25, aligned with GDPR), this app is built to collect zero personal identifying information (PII).</li>
+                                            <li><span className="font-medium not-italic text-slate-600">No Data Storage:</span> We do not store your personal history, location logs, or behavioral data on our servers. Any interaction—including AI queries or image analysis for landmark identification—is processed anonymously.</li>
+                                            <li><span className="font-medium not-italic text-slate-600">On-Device Processing:</span> Wherever possible, data processing is handled locally on your own device to ensure your information never leaves your possession.</li>
+                                            <li><span className="font-medium not-italic text-slate-600">User Responsibility:</span> Because we hold no data or keys, we cannot assist with account recovery. Your security rests entirely on your protection of your private keys and device credentials.</li>
+                                        </ul>
+                                    </div>
                                 </div>
 
                                 {/* ── Right Column: Partner Links ── */}
@@ -322,7 +337,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                             DENTAL TOURISM
                                         </button>
                                         <button
-                                            onClick={() => window.open('https://aisotuzlazip--aisotuzla.replit.app/', '_blank')}
+                                            onClick={() => window.open('https://aiso-tuzla-ai.lovable.app/', '_blank')}
                                             className="w-full h-16 bg-blue-600 text-yellow-400 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
                                         >
                                             AISO TUZLA
