@@ -12,7 +12,6 @@
         "skipLibCheck": true,
         "types": [
             "node",
-            "vite/client",
             "vite-plugin-pwa/react",
             "vite-plugin-pwa/client"
         ],

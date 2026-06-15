@@ -142,6 +142,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           muted
           loop
           playsInline
+          crossOrigin="anonymous"
           preload="auto"
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isHeroReady ? 'opacity-100' : 'opacity-0'} z-0`}
           src={videoSrc}
