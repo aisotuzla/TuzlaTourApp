@@ -33,6 +33,7 @@
     "@tanstack/react-query": "^5.100.8",
     "@tonconnect/ui-react": "^2.4.4",
     "@types/mapbox-gl": "^3.4.1",
+    "@vercel/blob": "^2.4.0",
     "@wasmer/sdk": "^0.10.0",
     "framer-motion": "^12.38.0",
     "glob": "^13.0.4",
@@ -58,7 +59,7 @@
     "rimraf": "^6.0.1",
     "tailwindcss": "^4.2.0",
     "typescript": "~5.8.2",
-    "vercel": "^50.44.0",
+    "vercel": "^54.14.0",
     "vite": "^6.4.2",
     "vite-plugin-pwa": "^1.2.0"
   },

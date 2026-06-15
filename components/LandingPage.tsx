@@ -88,7 +88,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const [isHeroReady, setIsHeroReady] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
-  const videoSrc = platform === 'web' ? "/assets/Gallery/Photos/HDweb_compressed.mp4" : platform === 'android' ? "/assets/Gallery/Photos/tz_compressed.mp4" : "/assets/Gallery/Photos/HDweb_compressed.mp4";
+  const webVideoSrc = import.meta.env.VITE_VERCEL_BLOB_HERO_WEB || "/assets/Gallery/Photos/HDweb_compressed.mp4";
+  const androidVideoSrc = import.meta.env.VITE_VERCEL_BLOB_HERO_ANDROID || "/assets/Gallery/Photos/tz_compressed.mp4";
+  const videoSrc = platform === 'web' ? webVideoSrc : platform === 'android' ? androidVideoSrc : webVideoSrc;
 
   const toggleHeroVideo = () => {
     if (heroVideoRef.current) {
