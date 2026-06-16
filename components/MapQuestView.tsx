@@ -137,8 +137,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [useFallbackStyle, setUseFallbackStyle] = useState(false);
   const isOnline = useNetwork();
   const OFFLINE_STYLE = '/style/offline-style.json';
-  const ONLINE_STYLE_PRIMARY = 'https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
-  const ONLINE_STYLE_FALLBACK = 'https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX';
+  const ONLINE_STYLE_FALLBACK = 'https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
+  const ONLINE_STYLE_PRIMARY = 'https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX';
   const ONLINE_STYLE = useFallbackStyle ? ONLINE_STYLE_FALLBACK : ONLINE_STYLE_PRIMARY;
 
   // Navigation state
