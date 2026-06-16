@@ -138,7 +138,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const isOnline = useNetwork();
   const OFFLINE_STYLE = '/style/offline-style.json';
   const ONLINE_STYLE_PRIMARY = 'https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
-  const ONLINE_STYLE_FALLBACK = 'https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
+  const ONLINE_STYLE_FALLBACK = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
   const ONLINE_STYLE = useFallbackStyle ? ONLINE_STYLE_FALLBACK : ONLINE_STYLE_PRIMARY;
 
   // Navigation state
@@ -278,7 +278,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       if (isOnline && (e.error?.message?.includes('401') || e.error?.message?.includes('403') || e.error?.message?.includes('Failed to fetch') || e.error?.message?.includes('NetworkError'))) {
         if (!useFallbackStyle) {
           // First fallback: try secondary osm-bright style
-          console.warn("🗺️ MapQuest: Primary style (osm-liberty) failed, trying fallback (osm-bright)...");
+          console.warn("🗺️ MapQuest: Primary style (osm-bright) failed, trying fallback (osm-liberty)...");
           setUseFallbackStyle(true);
           map.current?.setStyle(ONLINE_STYLE_FALLBACK);
         } else {
@@ -421,7 +421,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             map.current.setPaintProperty('background', 'background-color', '#e7efd8');
             map.current.setPaintProperty('park', 'fill-color', '#ade674');
             map.current.setPaintProperty('park_outline', 'line-color', '#c8e9a6');
-            map.current.setPaintProperty('landuse_residential', 'fill-color', 'rgba(219,199,224,0.49)');
+            map.current.setPaintProperty('landuse_residential', 'fill-color', 'rgba(244, 240, 245, 0.49)');
             map.current.setPaintProperty('landcover_wood', 'fill-color', 'rgba(101,177,58,0.7)');
             map.current.setPaintProperty('landcover_grass', 'fill-color', '#b2eb91');
             map.current.setPaintProperty('landuse_hospital', 'fill-color', '#e9a5c7');
@@ -447,9 +447,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
           // QUEST_TARGETS is defined at module scope
           map.current.setPaintProperty('background', 'background-color', '#e1eed2');
-          map.current.setPaintProperty('landuse-residential', 'fill-color', 'rgba(170,157,144,0.2)');
-          map.current.setPaintProperty('landuse-commercial', 'fill-color', 'rgba(173,177,219,0.23)');
-          map.current.setPaintProperty('landuse-industrial', 'fill-color', 'rgba(182,193,215,0.34)');
+          map.current.setPaintProperty('landuse-residential', 'fill-color', 'rgba(201, 196, 190, 0.74)');
+          map.current.setPaintProperty('landuse-commercial', 'fill-color', 'rgba(191, 195, 235, 0.52)');
+          map.current.setPaintProperty('landuse-industrial', 'fill-color', 'rgba(182, 193, 215, 0.47)');
           map.current.setPaintProperty('park', 'fill-color', '#c5e1a9');
           map.current.setPaintProperty('park-outline', 'line-color', 'rgba(97,168,50,0.66)');
           map.current.setPaintProperty('landuse-hospital', 'fill-color', '#ecc4d8');
