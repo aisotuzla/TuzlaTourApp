@@ -19,7 +19,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     server: {
       port: 3000,
       host: '0.0.0.0',
-
+      open: true,
     },
     plugins: [
       basicSsl(),
@@ -97,6 +97,22 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         },
       },
       chunkSizeWarningLimit: 2000,
+    },
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'framer-motion',
+        'lucide-react',
+        'maplibre-gl',
+        'html5-qrcode',
+        '@tonconnect/ui-react',
+        '@tanstack/react-query',
+        '@solana/wallet-adapter-react',
+        '@solana/wallet-adapter-react-ui',
+        '@solana/wallet-adapter-wallets',
+        '@solana/web3.js'
+      ]
     },
     resolve: {
       alias: {

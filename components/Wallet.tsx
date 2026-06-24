@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { Wallet as WalletIcon, Lock, Camera, CheckCircle2, Trophy, Home, Stethoscope, Globe, X, Copy, ExternalLink, Zap } from 'lucide-react';
+import { Wallet as WalletIcon, Lock, Camera, CheckCircle2, Home, Stethoscope, Globe, X, Copy, ExternalLink, Zap } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Lazy load components to keep Wallet bundle small
-import WorldCup2026 from './WorldCup2026';
-import SpecialCollection from './SpecialCollection';
+
 
 // TON Connect Imports
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
@@ -24,7 +22,7 @@ interface WalletProps {
 
 const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const [isScanning, setIsScanning] = useState(false);
-    const [activeSubTab, setActiveSubTab] = useState<'PAYMENT' | 'WC'>('PAYMENT');
+    const [activeSubTab, setActiveSubTab] = useState<'PAYMENT'>('PAYMENT');
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [bamValue, setBamValue] = useState<string>('');
@@ -342,31 +340,14 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                         >
                                             AISO TUZLA
                                         </button>
-                                        <button
-                                            onClick={() => setActiveSubTab('WC')}
-                                            className="w-full h-16 bg-[#001489] text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all border border-[#001489]/20 hover:border-yellow-400"
-                                        >
-                                            <Trophy size={18} className="text-yellow-400" />
-                                            WORLD CUP 2026
-                                        </button>
+
                                     </div>
                                 </div>
                             </div>
                         </motion.div>
                     )}
 
-                    {activeSubTab === 'WC' && (
-                        <motion.div
-                            key="wc"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                        >
-                            <Suspense fallback={<div className="p-20 text-center font-black text-blue-900">LOADING WORLD CUP...</div>}>
-                                <WorldCup2026 lang={lang} onBack={() => setActiveSubTab('PAYMENT')} />
-                            </Suspense>
-                        </motion.div>
-                    )}
+
 
                 </AnimatePresence>
             </div>

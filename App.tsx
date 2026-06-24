@@ -17,8 +17,7 @@ const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
 const ARGuide = React.lazy(() => import('./components/ARGuide'));
 const Parking = React.lazy(() => import('./components/Parking'));
-const WorldCup2026 = React.lazy(() => import('./components/WorldCup2026'));
-const SpecialCollection = React.lazy(() => import('./components/SpecialCollection'));
+
 
 import { Menu, QrCode, Globe } from 'lucide-react';
 import { App as CapApp } from '@capacitor/app';
@@ -227,8 +226,7 @@ const AppContent: React.FC = () => {
               />
             );
             case AppTab.PARKING: return <Parking lang={lang} />;
-            case AppTab.WORLD_CUP_2026: return <WorldCup2026 lang={lang} onBack={() => setActiveTab(AppTab.LANDING)} />;
-            case AppTab.SPECIAL_COLLECTION: return <SpecialCollection lang={lang} onBack={() => setActiveTab(AppTab.LANDING)} />;
+
             case AppTab.TRAVEL_AGENCIES:
               return (
                 <div className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center">
