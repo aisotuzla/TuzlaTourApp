@@ -321,3 +321,17 @@ body {
 .hotel-marker:active div, .hotel-marker-container:active div {
     transform: scale(0.9);
 }
+
+/* Global Mobile Optimization: Disable heavy blur effects */
+.backdrop-blur,
+.backdrop-blur-sm,
+.backdrop-blur-md,
+.backdrop-blur-lg,
+.backdrop-blur-xl,
+.backdrop-blur-2xl,
+.backdrop-blur-3xl,
+.glassy,
+.glass-header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}

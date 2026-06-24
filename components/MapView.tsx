@@ -766,7 +766,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
             <motion.div
               drag
               dragMomentum={false}
-              className="w-full max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950/90 backdrop-blur-md border border-blue-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4"
+              className="w-full max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950 border border-blue-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4"
             >
               {/* Header Info */}
               <div className="flex items-start justify-between">
