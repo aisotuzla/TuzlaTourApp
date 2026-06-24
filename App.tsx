@@ -31,8 +31,7 @@ import { getAppFeatures } from './utils/platform';
 import ReloadPrompt from './components/ReloadPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
 
-// TON Connect Imports
-import { TonConnectUIProvider } from '@tonconnect/ui-react';
+// TON Connect Removed
 
 // Sui Connect is removed
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -56,17 +55,15 @@ const App: React.FC = () => {
   );
 
   return (
-    <TonConnectUIProvider manifestUrl="https://tuzla-tour-guide.vercel.app/tonconnect-manifest.json">
-      <QueryClientProvider client={queryClient}>
-        <ConnectionProvider endpoint={endpoint}>
-          <WalletProvider wallets={wallets} autoConnect>
-            <WalletModalProvider>
-              <AppContent />
-            </WalletModalProvider>
-          </WalletProvider>
-        </ConnectionProvider>
-      </QueryClientProvider>
-    </TonConnectUIProvider>
+    <QueryClientProvider client={queryClient}>
+      <ConnectionProvider endpoint={endpoint}>
+        <WalletProvider wallets={wallets} autoConnect>
+          <WalletModalProvider>
+            <AppContent />
+          </WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
+    </QueryClientProvider>
   );
 };
 

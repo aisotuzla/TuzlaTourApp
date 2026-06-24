@@ -8,9 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 
 
-// TON Connect Imports
-import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
-
+// TON Connect Removed
 // Solana Imports
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
@@ -33,7 +31,6 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const scannerContainerId = "wallet-reader";
 
     const isOnline = useNetwork();
-    const tonAddress = useTonAddress();
     const t = TRANSLATIONS[lang];
     const eurValue = bamValue ? (parseFloat(bamValue) / 1.95583).toFixed(2) : '0.00';
 
@@ -175,25 +172,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                 {/* ── Left Column: TON + Solana + Scanner ── */}
                                 <div className="space-y-6">
 
-                                    {/* TON Card */}
-                                    <div className="p-6 glassy rounded-[2rem] border border-blue-100 shadow-xl space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
-                                                    <WalletIcon size={18} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">TON Network</p>
-                                                    <p className="text-base font-black text-blue-950">
-                                                        {tonAddress ? shortAddress(tonAddress) : (lang === 'bs' ? 'Nije spojeno' : 'Not connected')}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div className="scale-90 origin-right">
-                                                <TonConnectButton />
-                                            </div>
-                                        </div>
-                                    </div>
+
 
                                     {/* Solana Card */}
                                     <div className="p-6 glassy rounded-[2rem] border border-purple-100 shadow-xl space-y-4">

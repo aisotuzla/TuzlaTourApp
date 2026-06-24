@@ -91,7 +91,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
             'vendor-ui': ['framer-motion', 'lucide-react'],
             'vendor-map': ['maplibre-gl'],
             'vendor-qr': ['html5-qrcode'],
-            'vendor-blockchain': ['@tonconnect/ui-react'],
             'vendor-query': ['@tanstack/react-query']
           }
         },
@@ -106,7 +105,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         'lucide-react',
         'maplibre-gl',
         'html5-qrcode',
-        '@tonconnect/ui-react',
         '@tanstack/react-query',
         '@solana/wallet-adapter-react',
         '@solana/wallet-adapter-react-ui',

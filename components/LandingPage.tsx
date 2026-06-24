@@ -95,11 +95,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
   const isDev = import.meta.env.DEV;
   const defaultWebSrc = "/assets/Gallery/Photos/HDweb_compressed.mp4";
-  const defaultAndroidSrc = "/assets/Gallery/Photos/tz_compressed.mp4";
 
   const initialWebSrc = cleanSrc(isDev ? '' : import.meta.env.VITE_VERCEL_BLOB_HERO_WEB) || defaultWebSrc;
-  const initialAndroidSrc = cleanSrc(isDev ? '' : import.meta.env.VITE_VERCEL_BLOB_HERO_ANDROID) || defaultAndroidSrc;
-  const preferredSrc = platform === 'web' ? initialWebSrc : platform === 'android' ? initialAndroidSrc : initialWebSrc;
+  const preferredSrc = initialWebSrc;
 
   const [videoSrc, setVideoSrc] = useState(preferredSrc);
 
@@ -120,7 +118,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   };
 
   const handleVideoError = () => {
-    const fallback = platform === 'android' ? defaultAndroidSrc : defaultWebSrc;
+    const fallback = defaultWebSrc;
     if (videoSrc !== fallback) {
       console.warn(`Video failed to load from ${videoSrc}. Falling back to local asset: ${fallback}`);
       setVideoSrc(fallback);

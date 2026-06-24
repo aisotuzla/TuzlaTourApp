@@ -38,7 +38,7 @@
       "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "#0f172a"
+        "background-color": "#eaeef7"
       }
     },
     {
@@ -58,7 +58,7 @@
       "source": "app-buildings",
       "minzoom": 13,
       "paint": {
-        "fill-extrusion-color": "#f8fafc",
+        "fill-extrusion-color": "#eaeef7",
         "fill-extrusion-height": [
           "get",
           "height"
