@@ -47,8 +47,8 @@
       "source": "local-raster",
       "paint": {
         "raster-opacity": 1,
-        "raster-saturation": -0.3,
-        "raster-brightness-max": 0.7,
+        "raster-saturation": -0.2,
+        "raster-brightness-max": 0.95,
         "raster-contrast": 0.1
       }
     },
@@ -58,51 +58,10 @@
       "source": "app-buildings",
       "minzoom": 13,
       "paint": {
-        "fill-extrusion-color": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "coalesce",
-            [
-              "get",
-              "height"
-            ],
-            15
-          ],
-          0,
-          "#ffffff",
-          20,
-          "#677891",
-          50,
-          "#E5E4E2",
-          100,
-          "#E5E4E2"
-        ],
+        "fill-extrusion-color": "#f8fafc",
         "fill-extrusion-height": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          13,
-          0,
-          14,
-          [
-            "*",
-            [
-              "coalesce",
-              [
-                "get",
-                "height"
-              ],
-              15
-            ],
-            3.5
-          ]
+          "get",
+          "height"
         ],
         "fill-extrusion-base": [
           "coalesce",
@@ -112,7 +71,8 @@
           ],
           0
         ],
-        "fill-extrusion-opacity": 0.75
+        "fill-extrusion-opacity": 0.95,
+        "fill-extrusion-vertical-gradient": true
       }
     },
     {

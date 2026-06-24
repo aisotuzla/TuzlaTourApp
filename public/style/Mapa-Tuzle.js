@@ -11,9 +11,9 @@ map.on('load', () => {
     map.setPaintProperty('background', 'background-color', '#f2ebc9');
     map.setPaintProperty('park', 'fill-color', '#d1e8b9');
     map.setPaintProperty('park_outline', 'line-color', '#b4f275');
-    map.setPaintProperty('landuse_residential', 'fill-color', 'rgba(215,190,154,0.49)');
-    map.setPaintProperty('landcover_wood', 'fill-color', 'rgba(148,203,117,0.7)');
-    map.setPaintProperty('landcover_grass', 'fill-color', '#a0d381');
+    map.setPaintProperty('landuse_residential', 'fill-color', 'rgba(255, 249, 241, 0.49)');
+    map.setPaintProperty('landcover_wood', 'fill-color', 'rgba(165, 252, 115, 0.7)');
+    map.setPaintProperty('landcover_grass', 'fill-color', '#93db66ff');
     map.setPaintProperty('landuse_cemetery', 'fill-color', '#f0f4e4');
     map.setPaintProperty('landuse_hospital', 'fill-color', '#ffd7eb');
     map.setPaintProperty('landuse_school', 'fill-color', '#f1f4b7');
@@ -40,7 +40,7 @@ map.on('load', () => {
     map.setLayoutProperty('road_one_way_arrow', 'text-size', 1);
     map.setPaintProperty('road_one_way_arrow_opposite', 'text-color', '#b0abab');
     map.setLayoutProperty('road_one_way_arrow_opposite', 'text-size', 1);
-    map.setPaintProperty('building-3d', 'fill-extrusion-color', '#c9c2c2');
+    map.setPaintProperty('building-3d', 'fill-extrusion-color', '#fcf5f5ff');
     map.setLayoutProperty('water_name_line', 'visibility', 'none');
     map.setLayoutProperty('water_name_point', 'visibility', 'none');
     map.setLayoutProperty('poi_transit', 'text-size', 13);
