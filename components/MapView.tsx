@@ -435,16 +435,16 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         map.current?.setPaintProperty('landuse_school', 'fill-color', '#f8dada');
         map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
         map.current?.setPaintProperty('road_minor_casing', 'line-color', '#000000');
-        map.current?.setPaintProperty('road_minor_casing', 'line-width', {"base":1.2,"stops":[[12,0.24999999999999986],[13,0.4999999999999997],[14,1.999999999999999],[20,10]]});
+        map.current?.setPaintProperty('road_minor_casing', 'line-width', { "base": 1.2, "stops": [[12, 0.24999999999999986], [13, 0.4999999999999997], [14, 1.999999999999999], [20, 10]] });
         map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#f0bb50');
         map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#e69249');
-        map.current?.setPaintProperty('road_trunk_primary_casing', 'line-width', {"base":1.2,"stops":[[5,0.5090909090909089],[6,0.8909090909090907],[7,2.2272727272727266],[20,28]]});
+        map.current?.setPaintProperty('road_trunk_primary_casing', 'line-width', { "base": 1.2, "stops": [[5, 0.5090909090909089], [6, 0.8909090909090907], [7, 2.2272727272727266], [20, 28]] });
         map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#f8ba94');
-        map.current?.setPaintProperty('road_path_pedestrian', 'line-width', {"base":1.2,"stops":[[14,0.4],[20,4]]});
+        map.current?.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.4], [20, 4]] });
         map.current?.setPaintProperty('road_motorway_link', 'line-color', '#f8c47e');
         map.current?.setPaintProperty('road_service_track', 'line-color', '#cfcfcf');
         map.current?.setPaintProperty('road_link', 'line-color', '#f6e49b');
-        map.current?.setPaintProperty('road_minor', 'line-width', {"base":1.2,"stops":[[13.5,0],[14,2.7777777777777777],[20,20]]});
+        map.current?.setPaintProperty('road_minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 2.7777777777777777], [20, 20]] });
         map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fff186');
         map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#f2c860');
         map.current?.setPaintProperty('road_motorway', 'line-color', '#eea33e');
@@ -761,9 +761,13 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
-            className="absolute bottom-28 left-0 right-0 z-20 flex justify-center px-4 pointer-events-none"
+            className="absolute inset-0 z-20 pointer-events-none flex items-end justify-center pb-28 px-4"
           >
-            <div className="w-full max-w-md pointer-events-auto bg-slate-950/80 backdrop-blur-xl border border-blue-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4">
+            <motion.div
+              drag
+              dragMomentum={false}
+              className="w-full max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950/90 backdrop-blur-md border border-blue-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4"
+            >
               {/* Header Info */}
               <div className="flex items-start justify-between">
                 <div className="flex gap-3">
@@ -852,7 +856,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                   {lang === 'bs' ? 'Završi' : 'End'}
                 </button>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

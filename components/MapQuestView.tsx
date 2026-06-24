@@ -1374,9 +1374,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
-            className="absolute bottom-28 left-0 right-0 z-20 flex justify-center px-4 pointer-events-none"
+            className="absolute inset-0 z-20 pointer-events-none flex items-end justify-center pb-28 px-4"
           >
-            <div className="w-full max-w-md pointer-events-auto bg-slate-950/90 backdrop-blur-xl border border-emerald-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4">
+            <motion.div
+              drag
+              dragMomentum={false}
+              className="w-full max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950 border border-emerald-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4"
+            >
               {/* Header Info */}
               <div className="flex items-start justify-between">
                 <div className="flex gap-3">
@@ -1465,7 +1469,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                   {lang === 'bs' ? 'Završi' : 'End'}
                 </button>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -88,9 +88,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const [isHeroReady, setIsHeroReady] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
-  const webVideoSrc = import.meta.env.VITE_VERCEL_BLOB_HERO_WEB || "/assets/Gallery/Photos/HDweb_compressed.mp4";
-  const androidVideoSrc = import.meta.env.VITE_VERCEL_BLOB_HERO_ANDROID || "/assets/Gallery/Photos/tz_compressed.mp4";
-  const videoSrc = platform === 'web' ? webVideoSrc : platform === 'android' ? androidVideoSrc : webVideoSrc;
+  const cleanSrc = (src?: string) => {
+    if (!src) return '';
+    return src.replace(/^["']|["']$/g, '');
+  };
+
+  const isDev = import.meta.env.DEV;
+  const defaultWebSrc = "/assets/Gallery/Photos/HDweb_compressed.mp4";
+  const defaultAndroidSrc = "/assets/Gallery/Photos/tz_compressed.mp4";
+
+  const initialWebSrc = cleanSrc(isDev ? '' : import.meta.env.VITE_VERCEL_BLOB_HERO_WEB) || defaultWebSrc;
+  const initialAndroidSrc = cleanSrc(isDev ? '' : import.meta.env.VITE_VERCEL_BLOB_HERO_ANDROID) || defaultAndroidSrc;
+  const preferredSrc = platform === 'web' ? initialWebSrc : platform === 'android' ? initialAndroidSrc : initialWebSrc;
+
+  const [videoSrc, setVideoSrc] = useState(preferredSrc);
 
   const toggleHeroVideo = () => {
     if (heroVideoRef.current) {
@@ -106,6 +117,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
   const handleHeroVideoEnd = () => {
     setIsHeroPlaying(false);
+  };
+
+  const handleVideoError = () => {
+    const fallback = platform === 'android' ? defaultAndroidSrc : defaultWebSrc;
+    if (videoSrc !== fallback) {
+      console.warn(`Video failed to load from ${videoSrc}. Falling back to local asset: ${fallback}`);
+      setVideoSrc(fallback);
+    } else {
+      console.error("Local fallback video also failed to load.");
+    }
   };
 
   const handleShare = async () => {
@@ -131,10 +152,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       <section
         className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center"
       >
-        <img 
-          src="/assets/Tuzlacrestsaturation.webp" 
-          alt="Tuzla Logo" 
-          className={`absolute z-10 w-[2cm] h-[2cm] md:w-[4cm] md:h-[4cm] object-contain pointer-events-none transition-opacity duration-1000 ${isHeroReady ? 'opacity-0' : 'opacity-100'}`} 
+        <img
+          src="/assets/Tuzlacrestsaturation.webp"
+          alt="Tuzla Logo"
+          className={`absolute z-10 w-[2cm] h-[2cm] md:w-[4cm] md:h-[4cm] object-contain pointer-events-none transition-opacity duration-1000 ${isHeroReady ? 'opacity-0' : 'opacity-100'}`}
         />
         <video
           ref={heroVideoRef}
@@ -142,13 +163,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           muted
           loop
           playsInline
-          crossOrigin="anonymous"
           preload="auto"
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isHeroReady ? 'opacity-100' : 'opacity-0'} z-0`}
+          className="absolute inset-0 h-full w-full object-cover z-0"
           src={videoSrc}
+          onLoadedMetadata={() => setIsHeroReady(true)}
           onLoadedData={() => setIsHeroReady(true)}
           onCanPlay={() => setIsHeroReady(true)}
+          onCanPlayThrough={() => setIsHeroReady(true)}
+          onPlaying={() => setIsHeroReady(true)}
           onEnded={handleHeroVideoEnd}
+          onError={handleVideoError}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 z-0" />
 
