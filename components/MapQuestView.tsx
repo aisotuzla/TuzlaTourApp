@@ -14,7 +14,15 @@ import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { QuestQualityMode } from '../utils/questRuntimePolicy';
 import { getDistance } from '../utils/geoUtils';
 
-const ROUTE_POI_PRESETS = [
+interface RoutePoiPreset {
+  name: Partial<Record<Language, string>> & { en: string; bs: string };
+  lat: number;
+  lon: number;
+  category: string;
+  entryFee?: string;
+}
+
+const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
   {
     name: { bs: 'Panonska Jezera', en: 'Pannonian Lakes' },
     lat: 44.53888255374366,
@@ -1129,10 +1137,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                           else if ((item as any).website) window.open((item as any).website, '_blank');
                         }}
                       >
-                        <img src={item.image} alt={item.name[lang]} className={`w-full h-full object-cover brightness-[0.7] ${isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'}`} />
+                        <img src={item.image} alt={item.name.en} className={`w-full h-full object-cover brightness-[0.7] ${isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'}`} />
                         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 to-transparent p-5 flex flex-col justify-center">
                           <span className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-1 leading-none">{lang === 'bs' ? 'Otključano' : 'Unlocked'}</span>
-                          <h3 className="text-lg font-black text-white uppercase leading-none tracking-tight">{item.name[lang]}</h3>
+                          <h3 className="text-lg font-black text-white uppercase leading-none tracking-tight">{item.name.en}</h3>
                         </div>
                         {item.video && (
                           <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40">
@@ -1304,7 +1312,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                       key={idx}
                       onClick={() => {
                         setSelectedNavTarget({
-                          name: poi.name[lang] || poi.name.en,
+                          name: (poi.name[lang] ?? poi.name.en),
                           lat: poi.lat,
                           lon: poi.lon
                         });
@@ -1319,7 +1327,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                         </div>
                         <div>
                           <h4 className="font-extrabold text-white group-hover:text-emerald-300 transition-colors">
-                            {poi.name[lang] || poi.name.en}
+                            {poi.name[lang] ?? poi.name.en}
                           </h4>
                           <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/80">
                             {poi.category}

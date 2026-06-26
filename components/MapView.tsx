@@ -20,7 +20,16 @@ interface MapViewProps {
 
 const ONLINE_STYLE = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
 
-const ROUTE_POI_PRESETS = [
+interface RoutePoiPreset {
+  name: Partial<Record<Language, string>> & { en: string; bs: string };
+  lat: number;
+  lon: number;
+  category: string;
+  entryFee?: string;
+  description?: string;
+}
+
+const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
   {
     name: { bs: 'Panonska Jezera', en: 'Pannonian Lakes' },
     lat: 44.53888255374366,
@@ -691,7 +700,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                       key={idx}
                       onClick={() => {
                         setSelectedTarget({
-                          name: poi.name[lang] || poi.name.en,
+                          name: poi.name[lang] ?? poi.name.en,
                           lat: poi.lat,
                           lon: poi.lon
                         });
@@ -706,7 +715,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                         </div>
                         <div>
                           <h4 className="font-extrabold text-white group-hover:text-blue-300 transition-colors">
-                            {poi.name[lang] || poi.name.en}
+                            {poi.name[lang] ?? poi.name.en}
                           </h4>
                           <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">
                             {poi.category}
