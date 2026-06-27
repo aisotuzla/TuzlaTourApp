@@ -2,10 +2,7 @@ import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { ZoomIn } from 'lucide-react';
 import type { FC } from 'react';
 
-// Lazy‑loaded sub‑components for better initial load performance
-const LandingNavCards = lazy(() => import('./LandingNavCards'));
-const LandingExternalLinks = lazy(() => import('./LandingExternalLinks'));
-const LandingPhotoAlbum = lazy(() => import('./LandingPhotoAlbum'));
+
 
 import { AppTab, Language } from '../types';
 import {
@@ -150,16 +147,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       <section
         className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center"
       >
-        <img
-          src="/assets/Tuzlacrestsaturation.webp"
-          alt="Tuzla Logo"
-          className={`absolute z-10 w-[2cm] h-[2cm] md:w-[4cm] md:h-[4cm] object-contain pointer-events-none transition-opacity duration-1000 ${isHeroReady ? 'opacity-0' : 'opacity-100'}`}
-        />
         <video
           ref={heroVideoRef}
           autoPlay
           muted
-          loop
           playsInline
           preload="auto"
           className="absolute inset-0 h-full w-full object-cover z-0"
@@ -273,10 +264,34 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           </a>
         </div>
 
-        {/* 3. EXTERNAL PARTNER LINKS – lazy loaded */}
-        <Suspense fallback={<div className="text-center py-8">Loading links...</div>}>
-          <LandingExternalLinks lang={lang} t={t} />
-        </Suspense>
+        {/* 3. EXTERNAL PARTNER LINKS */}
+        <section className="py-16">
+          <div className="mb-12 text-center md:text-left">
+            <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
+              {t.linksTitle}
+            </h2>
+            <div className="w-24 h-2 bg-blue-600 rounded-full mt-2 mx-auto md:mx-0" />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+            {externalLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col items-center justify-center p-8 bg-white rounded-[2rem] border border-blue-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 active:scale-95"
+              >
+                <div className="h-16 w-full flex items-center justify-center mb-4">
+                  <img src={link.logo} alt={link.name} className="h-full w-auto object-contain transition-transform group-hover:scale-110" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-blue-900/60 group-hover:text-blue-600 transition-colors">
+                  {link.name}
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
 
         {/* 4. PHOTO ALBUM */}
         <section>

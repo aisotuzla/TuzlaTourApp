@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
+
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { Wallet as WalletIcon, Lock, Camera, CheckCircle2, Home, Stethoscope, Globe, X, Copy, ExternalLink, Zap } from 'lucide-react';
+import { Wallet as WalletIcon, Lock, CheckCircle2, Home, Stethoscope, Globe, X, Copy, ExternalLink, Zap } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -19,20 +19,12 @@ interface WalletProps {
 }
 
 const Wallet: React.FC<WalletProps> = ({ lang }) => {
-    const [isScanning, setIsScanning] = useState(false);
     const [activeSubTab, setActiveSubTab] = useState<'PAYMENT'>('PAYMENT');
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [bamValue, setBamValue] = useState<string>('');
-    const [isForeground, setIsForeground] = useState(true);
     const [solBalance, setSolBalance] = useState<number | null>(null);
     const [copySuccess, setCopySuccess] = useState(false);
-    const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
-    const scannerContainerId = "wallet-reader";
 
     const isOnline = useNetwork();
     const t = TRANSLATIONS[lang];
-    const eurValue = bamValue ? (parseFloat(bamValue) / 1.95583).toFixed(2) : '0.00';
 
     // Solana wallet state
     const { publicKey, disconnect: solDisconnect, connected: solConnected, wallet: solWallet } = useWallet();
@@ -69,75 +61,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
 
     const shortAddress = (addr: string) => `${addr.slice(0, 4)}...${addr.slice(-4)}`;
 
-    useEffect(() => {
-        if (isScanning) startScanner();
-        else stopScanner();
-        return () => {
-            if (html5QrCodeRef.current?.isScanning) {
-                html5QrCodeRef.current.stop().catch(() => { }).then(() => html5QrCodeRef.current?.clear()).catch(() => { });
-            }
-        };
-    }, [isScanning]);
 
-    useEffect(() => {
-        const handleVisibility = () => {
-            const visible = document.visibilityState === 'visible';
-            setIsForeground(visible);
-            if (!visible) {
-                setIsScanning(false);
-                void stopScanner();
-            }
-        };
-        document.addEventListener('visibilitychange', handleVisibility);
-        return () => document.removeEventListener('visibilitychange', handleVisibility);
-    }, []);
-
-    const startScanner = async () => {
-        try {
-            setError(null);
-            const html5QrCode = new Html5Qrcode(scannerContainerId);
-            html5QrCodeRef.current = html5QrCode;
-            const config = { fps: 10, qrbox: (vw: number, vh: number) => { const s = Math.min(vw, vh) * 0.7; return { width: s, height: s }; } };
-            await html5QrCode.start({ facingMode: "environment" }, config, handleScanSuccess, () => { });
-        } catch (err) {
-            setError("Camera access denied or error starting scanner.");
-            setIsScanning(false);
-        }
-    };
-
-    const stopScanner = async () => {
-        if (html5QrCodeRef.current?.isScanning) {
-            try { await html5QrCodeRef.current.stop(); html5QrCodeRef.current.clear(); } catch (err) { }
-        }
-    };
-
-    const handleScanSuccess = (decodedText: string) => {
-        setSuccessMessage(`Scanned: ${decodedText}. Processing payment...`);
-        setTimeout(() => {
-            setSuccessMessage("Payment logic placeholder - OAuth required for real transactions.");
-            setIsScanning(false);
-        }, 2000);
-    };
-
-    if (isScanning) {
-        return (
-            <div className="fixed inset-0 bg-black z-[1000] flex flex-col">
-                <div className="relative h-[70vh]">
-                    <div id={scannerContainerId} className="w-full h-full" />
-                    <button
-                        onClick={() => setIsScanning(false)}
-                        className="absolute top-8 right-8 p-4 bg-white/10 rounded-full text-white backdrop-blur-md"
-                    >
-                        <X size={24} />
-                    </button>
-                </div>
-                <div className="flex-1 bg-slate-950 p-8 flex flex-col items-center justify-center text-center">
-                    <p className="text-white font-black uppercase tracking-widest text-xs">Align QR Code within frame</p>
-                    <div className="mt-4 h-1 w-24 bg-blue-600 rounded-full animate-pulse" />
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="min-h-screen bg-slate-50/50 pb-32">
@@ -169,7 +93,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                             </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                {/* ── Left Column: TON + Solana + Scanner ── */}
+                                {/* ── Left Column: Solana + Scanner ── */}
                                 <div className="space-y-6">
 
 
@@ -246,35 +170,6 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                         </AnimatePresence>
                                     </div>
 
-                                    {/* Scan & Pay */}
-                                    <button
-                                        onClick={() => setIsScanning(true)}
-                                        className="w-full h-16 bg-blue-600 text-white font-black rounded-2xl shadow-xl flex items-center justify-center gap-3 hover:bg-blue-700 active:scale-95 transition-all"
-                                    >
-                                        <Camera size={22} />
-                                        SCAN &amp; PAY
-                                    </button>
-
-                                    {/* Currency Converter */}
-                                    <div className="p-6 glassy rounded-[2rem] border border-blue-100 shadow-xl space-y-4">
-                                        <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest">Currency Converter</h3>
-                                        <div className="space-y-3">
-                                            <div>
-                                                <label className="text-[10px] font-bold text-blue-300 uppercase block mb-1">Enter BAM</label>
-                                                <input
-                                                    type="number"
-                                                    value={bamValue}
-                                                    onChange={(e) => setBamValue(e.target.value)}
-                                                    placeholder="0.00"
-                                                    className="w-full bg-blue-50 border border-blue-100 rounded-2xl px-5 py-3 text-blue-950 font-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div>
-                                            <div className="bg-blue-900/5 p-5 rounded-2xl border border-blue-100/50">
-                                                <p className="text-[10px] font-bold text-blue-300 uppercase mb-1">Estimated EUR</p>
-                                                <p className="text-3xl font-black text-blue-600">€ {eurValue}</p>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     {/* Privacy Disclaimer */}
                                     <div className="px-2 text-[11px] text-slate-500 font-light italic leading-relaxed space-y-3 pb-4">
@@ -336,17 +231,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                 </AnimatePresence>
             </div>
 
-            {/* Popups */}
-            {successMessage && (
-                <div className="fixed bottom-28 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-8 py-4 rounded-full font-bold shadow-2xl z-[1000] animate-bounce">
-                    {successMessage}
-                </div>
-            )}
-            {error && (
-                <div className="fixed bottom-28 left-1/2 -translate-x-1/2 bg-red-500 text-white px-8 py-4 rounded-full font-bold shadow-2xl z-[1000]">
-                    {error}
-                </div>
-            )}
+
 
             <style>{`
                 .glassy {

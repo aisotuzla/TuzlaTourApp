@@ -48,7 +48,6 @@ const App: React.FC = () => {
   const endpoint = useMemo(() => clusterApiUrl('devnet'), []);
   const wallets = useMemo(
     () => [
-      new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
     ],
     []
