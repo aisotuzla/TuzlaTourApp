@@ -20,13 +20,19 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       port: 3000,
       host: '0.0.0.0',
       open: true,
+      watch: {
+        ignored: ['**/rollup/**', '**/rollup/test/**'],
+      },
+      fs: {
+        deny: ['rollup'],
+      },
     },
     plugins: [
       basicSsl(),
       react(),
       tailwindcss(),
       nodePolyfills({
-        include: ['buffer', 'process', 'crypto', 'stream', 'util', 'events'],
+        include: ['buffer', 'process', 'crypto', 'stream', 'util', 'events', 'vm'],
         globals: {
           Buffer: true,
           global: true,
@@ -85,6 +91,15 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     },
     build: {
       rollupOptions: {
+        onwarn(warning, defaultHandler) {
+          if (
+            warning.code === 'INVALID_ANNOTATION' &&
+            warning.message.includes('Rollup cannot interpret due to the position of the comment')
+          ) {
+            return;
+          }
+          defaultHandler(warning);
+        },
         output: {
           manualChunks: {
             'vendor-react': ['react', 'react-dom'],
@@ -110,7 +125,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         '@solana/wallet-adapter-react-ui',
         '@solana/wallet-adapter-wallets',
         '@solana/web3.js'
-      ]
+      ],
+      exclude: ['rollup'],
     },
     resolve: {
       alias: {
