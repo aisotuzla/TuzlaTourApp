@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { Wallet as WalletIcon, Lock, CheckCircle2, Home, Stethoscope, Globe, X, Copy, ExternalLink, Zap } from 'lucide-react';
+import { Wallet as WalletIcon, Lock, CheckCircle2, Home, Stethoscope, Globe, X, Copy, ExternalLink, Zap, QrCode, Award } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Html5Qrcode } from 'html5-qrcode';
 
 
 
@@ -23,6 +24,11 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const [bamValue, setBamValue] = useState<string>('');
     const [solBalance, setSolBalance] = useState<number | null>(null);
     const [copySuccess, setCopySuccess] = useState(false);
+
+    const [isScanning, setIsScanning] = useState(false);
+    const [scannedReward, setScannedReward] = useState<string | null>(null);
+    const [isMinting, setIsMinting] = useState(false);
+    const scannerRef = useRef<Html5Qrcode | null>(null);
 
     const isOnline = useNetwork();
     const t = TRANSLATIONS[lang];
@@ -63,7 +69,71 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
 
     const shortAddress = (addr: string) => `${addr.slice(0, 4)}...${addr.slice(-4)}`;
 
+    const startScanner = async () => {
+        setIsScanning(true);
+        setScannedReward(null);
+        setTimeout(async () => {
+            if (!document.getElementById('wallet-reader')) return;
+            try {
+                const scanner = new Html5Qrcode('wallet-reader');
+                scannerRef.current = scanner;
+                await scanner.start(
+                    { facingMode: 'environment' },
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    (decodedText) => {
+                        setScannedReward(decodedText);
+                        stopScanner();
+                    },
+                    (errorMessage) => { }
+                );
+            } catch (err) {
+                console.error("Scanner error", err);
+                setIsScanning(false);
+                alert(lang === 'bs' ? "Nije moguće pokrenuti kameru." : "Could not start camera.");
+            }
+        }, 100);
+    };
 
+    const stopScanner = () => {
+        if (scannerRef.current) {
+            scannerRef.current.stop().then(() => {
+                scannerRef.current?.clear();
+                scannerRef.current = null;
+                setIsScanning(false);
+            }).catch(e => {
+                console.error(e);
+                setIsScanning(false);
+            });
+        } else {
+            setIsScanning(false);
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            if (scannerRef.current) {
+                scannerRef.current.stop().catch(() => {});
+            }
+        }
+    }, []);
+
+    const handleMint = async () => {
+        if (!solConnected || !publicKey) {
+            alert(lang === 'bs' ? 'Molimo spojite Solflare novčanik.' : 'Please connect your Solflare wallet.');
+            return;
+        }
+        setIsMinting(true);
+        try {
+            // Simulate mint transaction for Solflare interaction
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            alert(lang === 'bs' ? `Uspješno mintano u Solflare: ${scannedReward}` : `Successfully minted to Solflare: ${scannedReward}`);
+            setScannedReward(null);
+        } catch (error) {
+            alert(lang === 'bs' ? "Mintanje nije uspjelo" : "Minting failed");
+        } finally {
+            setIsMinting(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-slate-50/50 pb-32">
@@ -171,6 +241,70 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                             )}
                                         </AnimatePresence>
                                     </div>
+                                    {/* NFT Rewards Card */}
+                                    <div className="p-6 glassy rounded-[2rem] border border-fuchsia-100 shadow-xl space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                                                    <Award size={18} className="text-white" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] font-black text-fuchsia-400 uppercase tracking-widest">NFT Rewards</p>
+                                                    <p className="text-base font-black text-fuchsia-950">Scan & Mint</p>
+                                                </div>
+                                            </div>
+                                            {!isScanning && !scannedReward && (
+                                                <button
+                                                    onClick={startScanner}
+                                                    className="w-10 h-10 bg-fuchsia-100 text-fuchsia-600 rounded-xl flex items-center justify-center hover:bg-fuchsia-200 transition-colors active:scale-95"
+                                                    title="Scan QR Code"
+                                                >
+                                                    <QrCode size={20} />
+                                                </button>
+                                            )}
+                                        </div>
+                                        
+                                        <AnimatePresence>
+                                            {isScanning && (
+                                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                                                    <div className="relative rounded-2xl overflow-hidden bg-black aspect-square max-h-64 mx-auto w-full max-w-[256px] border-4 border-fuchsia-100 mt-4">
+                                                        <div id="wallet-reader" className="w-full h-full"></div>
+                                                        <button onClick={stopScanner} className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 z-50">
+                                                            <X size={16} />
+                                                        </button>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                            
+                                            {scannedReward && (
+                                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="pt-4 border-t border-fuchsia-100 space-y-3">
+                                                    <div className="p-4 bg-fuchsia-50 rounded-xl border border-fuchsia-100 text-center">
+                                                        <p className="text-xs font-bold text-fuchsia-600 uppercase mb-1">Found Reward</p>
+                                                        <p className="text-sm font-black text-fuchsia-950 truncate">{scannedReward}</p>
+                                                    </div>
+                                                    <button
+                                                        onClick={handleMint}
+                                                        disabled={isMinting || !solConnected}
+                                                        className={`w-full py-3 rounded-xl font-black uppercase tracking-widest text-sm flex justify-center items-center gap-2 transition-all ${
+                                                            !solConnected ? 'bg-slate-100 text-slate-400 cursor-not-allowed' :
+                                                            isMinting ? 'bg-fuchsia-300 text-fuchsia-700 animate-pulse' : 'bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white shadow-lg hover:shadow-xl active:scale-95'
+                                                        }`}
+                                                    >
+                                                        {isMinting ? (lang === 'bs' ? 'Mintanje...' : 'Minting...') : (lang === 'bs' ? 'Mintaj na Solflare' : 'Mint to Solflare')}
+                                                    </button>
+                                                    {!solConnected && (
+                                                        <p className="text-[10px] text-center text-rose-500 font-bold uppercase mt-2">
+                                                            {lang === 'bs' ? 'Spojite Solflare novčanik za mintanje' : 'Connect Solflare wallet to mint'}
+                                                        </p>
+                                                    )}
+                                                    <button onClick={() => setScannedReward(null)} className="w-full text-center text-xs text-slate-400 font-bold uppercase hover:text-slate-600">
+                                                        Cancel
+                                                    </button>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+
                                     {/* Currency Converter */}
                                     <div className="p-6 glassy rounded-[2rem] border border-blue-100 shadow-xl space-y-4">
                                         <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest">Currency Converter</h3>
