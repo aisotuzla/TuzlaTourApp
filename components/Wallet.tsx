@@ -20,11 +20,13 @@ interface WalletProps {
 
 const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const [activeSubTab, setActiveSubTab] = useState<'PAYMENT'>('PAYMENT');
+    const [bamValue, setBamValue] = useState<string>('');
     const [solBalance, setSolBalance] = useState<number | null>(null);
     const [copySuccess, setCopySuccess] = useState(false);
 
     const isOnline = useNetwork();
     const t = TRANSLATIONS[lang];
+    const eurValue = bamValue ? (parseFloat(bamValue) / 1.95583).toFixed(2) : '0.00';
 
     // Solana wallet state
     const { publicKey, disconnect: solDisconnect, connected: solConnected, wallet: solWallet } = useWallet();
@@ -169,7 +171,26 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                             )}
                                         </AnimatePresence>
                                     </div>
-
+                                    {/* Currency Converter */}
+                                    <div className="p-6 glassy rounded-[2rem] border border-blue-100 shadow-xl space-y-4">
+                                        <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest">Currency Converter</h3>
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="text-[10px] font-bold text-blue-300 uppercase block mb-1">Enter BAM</label>
+                                                <input
+                                                    type="number"
+                                                    value={bamValue}
+                                                    onChange={(e) => setBamValue(e.target.value)}
+                                                    placeholder="0.00"
+                                                    className="w-full bg-blue-50 border border-blue-100 rounded-2xl px-5 py-3 text-blue-950 font-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+                                            <div className="bg-blue-900/5 p-5 rounded-2xl border border-blue-100/50">
+                                                <p className="text-[10px] font-bold text-blue-300 uppercase mb-1">Estimated EUR</p>
+                                                <p className="text-3xl font-black text-blue-600">€ {eurValue}</p>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     {/* Privacy Disclaimer */}
                                     <div className="px-2 text-[11px] text-slate-500 font-light italic leading-relaxed space-y-3 pb-4">

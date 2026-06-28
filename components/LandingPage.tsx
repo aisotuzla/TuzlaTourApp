@@ -81,7 +81,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const { openGallery } = useImage();
   const { platform } = getAppFeatures();
   const [heroLoopCount, setHeroLoopCount] = useState(0);
-  const [isHeroPlaying, setIsHeroPlaying] = useState(true);
+  const [isHeroPlaying, setIsHeroPlaying] = useState(false);
   const [isHeroReady, setIsHeroReady] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
@@ -147,44 +147,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       <section
         className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center"
       >
-        <video
-          ref={heroVideoRef}
-          autoPlay
-          muted
-          playsInline
-          preload="auto"
+        <img
+          src="/assets/tuzguide.webp"
+          alt="Tuzla Guide"
           className="absolute inset-0 h-full w-full object-cover z-0"
-          src={videoSrc}
-          onLoadedMetadata={() => setIsHeroReady(true)}
-          onLoadedData={() => setIsHeroReady(true)}
-          onCanPlay={() => setIsHeroReady(true)}
-          onCanPlayThrough={() => setIsHeroReady(true)}
-          onPlaying={() => setIsHeroReady(true)}
-          onEnded={handleHeroVideoEnd}
-          onError={handleVideoError}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 z-0" />
 
-        {/* Play Button Overlay for Hero */}
-        <AnimatePresence>
-          {!isHeroPlaying && (
-            <motion.div
-              initial={{ x: 100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 100, opacity: 0 }}
-              className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none text-white"
-            >
-              <button
-                onClick={toggleHeroVideo}
-                title="Play Video"
-                aria-label="Play Video"
-                className="pointer-events-auto w-24 h-24 bg-white/20 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95"
-              >
-                <Play className="w-10 h-10 fill-current ml-1" />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
         <div className="absolute top-[75%] -translate-y-1/2 left-0 right-0 flex flex-col items-center justify-center text-white gap-4 pointer-events-none z-10">
           <motion.div
             animate={{ y: [0, 10, 0] }}
@@ -324,7 +293,45 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           </div>
         </section>
 
-        {/* 4.5. SOCIAL & COMMUNITY */}
+        {/* 4.5. SMARTPHONE VIDEO */}
+        <section className="py-16 flex flex-col items-center">
+          <div className="mb-10 text-center">
+            <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
+              Video
+            </h2>
+            <div className="w-16 h-2 bg-blue-600 rounded-full mt-2 mx-auto" />
+          </div>
+          <div className="relative w-[300px] h-[600px] border-[14px] border-slate-900 rounded-[3rem] bg-black shadow-2xl overflow-hidden ring-4 ring-slate-800">
+            <div className="absolute top-0 inset-x-0 h-6 bg-slate-900 rounded-b-2xl w-32 mx-auto z-30"></div>
+            <video
+              ref={heroVideoRef}
+              playsInline
+              className="absolute inset-0 h-full w-full object-cover z-0"
+              src={videoSrc}
+              onEnded={handleHeroVideoEnd}
+              onError={handleVideoError}
+            />
+            <AnimatePresence>
+              {!isHeroPlaying && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 flex items-center justify-center z-20 bg-black/30"
+                >
+                  <button
+                    onClick={toggleHeroVideo}
+                    className="w-16 h-16 bg-white/20 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95"
+                  >
+                    <Play className="w-8 h-8 fill-current ml-1" />
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </section>
+
+        {/* 4.6. SOCIAL & COMMUNITY */}
         <section className="pt-12 pb-6">
           <div className="mb-10 text-center flex flex-col items-center">
             <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">

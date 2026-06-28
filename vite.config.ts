@@ -40,9 +40,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         },
       }),
       VitePWA({
-        strategies: 'injectManifest',
-        srcDir: 'src',
-        filename: 'service-worker.ts',
+        strategies: 'generateSW',
         registerType: 'autoUpdate',
         devOptions: {
           enabled: true,
@@ -78,7 +76,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
             }
           ]
         },
-        injectManifest: {
+        workbox: {
           globPatterns: ['**/*.{js,css,html,ico,svg,json,woff,woff2}'],
           maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB limit
         }

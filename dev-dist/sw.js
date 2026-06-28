@@ -22,27 +22,27 @@ if (!self.define) {
   const singleRequire = (uri, parentUri) => {
     uri = new URL(uri + ".js", parentUri).href;
     return registry[uri] || (
-
-      new Promise(resolve => {
-        if ("document" in self) {
-          const script = document.createElement("script");
-          script.src = uri;
-          script.onload = resolve;
-          document.head.appendChild(script);
-        } else {
-          nextDefineUri = uri;
-          importScripts(uri);
-          resolve();
-        }
-      })
-
-        .then(() => {
-          let promise = registry[uri];
-          if (!promise) {
-            throw new Error(`Module ${uri} didn’t register its module`);
+      
+        new Promise(resolve => {
+          if ("document" in self) {
+            const script = document.createElement("script");
+            script.src = uri;
+            script.onload = resolve;
+            document.head.appendChild(script);
+          } else {
+            nextDefineUri = uri;
+            importScripts(uri);
+            resolve();
           }
-          return promise;
         })
+      
+      .then(() => {
+        let promise = registry[uri];
+        if (!promise) {
+          throw new Error(`Module ${uri} didn’t register its module`);
+        }
+        return promise;
+      })
     );
   };
 
@@ -67,81 +67,22 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-afebcc4b'], (function (workbox) {
-  'use strict';
+define(['./workbox-7e5eb42b'], (function (workbox) { 'use strict';
 
   self.skipWaiting();
   workbox.clientsClaim();
-
   /**
    * The precacheAndRoute() method efficiently caches and responds to
    * requests for URLs in the manifest.
    * See https://goo.gl/S9QRab
    */
   workbox.precacheAndRoute([{
-    "url": "registerSW.js",
-    "revision": "3ca0b8505b4bec776b69afdba2768812"
-  }, {
     "url": "index.html",
-    "revision": "0.t7nj3v4dfag"
+    "revision": "0.e679ejreoeg"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
-  workbox.registerRoute(/^https:\/\/fonts\.googleapis\.com\/.*/i, new workbox.CacheFirst({
-    "cacheName": "google-fonts-cache",
-    plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 10,
-      maxAgeSeconds: 31536000
-    }), new workbox.CacheableResponsePlugin({
-      statuses: [0, 200]
-    })]
-  }), 'GET');
-  workbox.registerRoute(/^https:\/\/fonts\.gstatic\.com\/.*/i, new workbox.CacheFirst({
-    "cacheName": "gstatic-fonts-cache",
-    plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 20,
-      maxAgeSeconds: 31536000
-    }), new workbox.CacheableResponsePlugin({
-      statuses: [0, 200]
-    })]
-  }), 'GET');
-  workbox.registerRoute(/^https:\/\/api\.jawg\.io\/.*/i, new workbox.StaleWhileRevalidate({
-    "cacheName": "jawg-maps-cache",
-    plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 200,
-      maxAgeSeconds: 2592000
-    }), new workbox.CacheableResponsePlugin({
-      statuses: [0, 200]
-    })]
-  }), 'GET');
-  workbox.registerRoute(/^\/maps\/tiles\/.*/i, new workbox.CacheFirst({
-    "cacheName": "map-tiles-cache",
-    plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 1000,
-      maxAgeSeconds: 31536000
-    }), new workbox.CacheableResponsePlugin({
-      statuses: [0, 200]
-    })]
-  }), 'GET');
-  workbox.registerRoute(/\.(?:webp|jpg|jpeg|png|svg)$/i, new workbox.CacheFirst({
-    "cacheName": "images-cache",
-    plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 150,
-      maxAgeSeconds: 2592000
-    }), new workbox.CacheableResponsePlugin({
-      statuses: [0, 200]
-    })]
-  }), 'GET');
-  workbox.registerRoute(/\.(?:mp4|webm)$/i, new workbox.CacheFirst({
-    "cacheName": "video-cache",
-    plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 15,
-      maxAgeSeconds: 604800
-    }), new workbox.CacheableResponsePlugin({
-      statuses: [0, 200]
-    }), new workbox.RangeRequestsPlugin()]
-  }), 'GET');
 
 }));

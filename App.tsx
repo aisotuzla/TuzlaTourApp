@@ -30,10 +30,6 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { getAppFeatures } from './utils/platform';
 import ReloadPrompt from './components/ReloadPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
-
-// TON Connect Removed
-
-// Sui Connect is removed
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 
@@ -77,19 +73,6 @@ const AppContent: React.FC = () => {
   const [isWalletUnlocked, setIsWalletUnlocked] = useState(false);
   const features = getAppFeatures();
 
-  // Performance: Hide splash screen once React is ready
-  useEffect(() => {
-    const splash = document.getElementById('app-splash');
-    if (splash) {
-      // Small timeout to ensure the first React frame is rendered
-      const timeout = setTimeout(() => {
-        splash.classList.add('fade-out');
-        // Remove from DOM after transition completes (matching 0.5s CSS)
-        setTimeout(() => splash.remove(), 500);
-      }, 400);
-      return () => clearTimeout(timeout);
-    }
-  }, []);
 
   useEffect(() => {
     const loadUnlocked = async () => {
@@ -222,32 +205,6 @@ const AppContent: React.FC = () => {
               />
             );
             case AppTab.PARKING: return <Parking lang={lang} />;
-
-            case AppTab.TRAVEL_AGENCIES:
-              return (
-                <div className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center">
-                  <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl border border-emerald-100 max-w-md w-full">
-                    <div className="w-20 h-20 bg-emerald-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                      <Globe className="w-10 h-10 text-emerald-600" />
-                    </div>
-                    <h1 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tighter">
-                      {lang === 'bs' ? 'PUTNIČKE AGENCIJE' : 'TRAVEL AGENCIES'}
-                    </h1>
-                    <p className="text-slate-500 mb-8 font-medium">
-                      {lang === 'bs' 
-                        ? 'Istražite najbolje ponude i destinacije naših partnerskih agencija.' 
-                        : 'Explore the best offers and destinations from our partner agencies.'}
-                    </p>
-                    <button 
-                      onClick={() => window.open('https://travelagency-icptuzla.wasmer.app/', '_blank')}
-                      className="w-full py-4 bg-emerald-600 text-white font-black rounded-2xl shadow-xl shadow-emerald-200 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest"
-                    >
-                      {lang === 'bs' ? 'OTVORI STRANICU' : 'OPEN WEBSITE'}
-                    </button>
-                  </div>
-                </div>
-              );
-
             default: return <LandingPage lang={lang} onNavigate={navigateToTab} />;
           }
         })()}
