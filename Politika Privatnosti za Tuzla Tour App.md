@@ -30,11 +30,11 @@ B. Pristup kameri i obrada slika (AI funkcije)
 
     Pravni osnov: Izričiti pristanak (putem dozvole za pristup kameri) i izvršenje ugovorne usluge (isporuka tražene AI analize).
 
-C. Podaci o Web3 novčaniku 
+C. Podaci o Web3 novčaniku (Solana)
 
     Svrha: Omogućavanje sigurnog otključavanja digitalnih nagrada, postignuća ili lokalnih popusta putem blockchain mreža.
 
-    Obrada: Aplikacija čita samo vašu javnu adresu novčanika kako bi potvrdila vezu i transakcije. Apsolutno nikada ne tražimo, niti imamo pristup vašim privatnim ključevima ili tajnim frazama (seed phrases). Istorijom transakcija upravlja vaš eksterni pružalac usluga novčanika (npr. Tonkeeper, MyTonWallet).
+    Obrada: Aplikacija čita samo vašu javnu adresu novčanika kako bi potvrdila vezu i transakcije. Apsolutno nikada ne tražimo, niti imamo pristup vašim privatnim ključevima ili tajnim frazama (seed phrases). Istorijom transakcija upravlja vaš eksterni pružalac usluga novčanika (npr. Solflare, Phantom).
 
     Pravni osnov: Obrada je neophodna za izvršenje usluge (isporuka nagrada) u kojoj ste vi korisnik.
 
