@@ -145,12 +145,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
     <div className="bg-white">
       {/* 1. HERO SECTION */}
       <section
-        className="relative h-screen w-full overflow-hidden bg-black flex items-center justify-center"
+        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-white"
       >
         <img
+          src="/assets/Gallery/tuzguidewide.webp"
+          alt="Tuzla Guide Wide"
+          className="hidden md:block absolute inset-0 h-full w-full object-cover z-0"
+        />
+        <img
           src="/assets/tuzguide.webp"
-          alt="Tuzla Guide"
-          className="absolute inset-0 h-full w-full object-contain z-0"
+          alt="Tuzla Guide Mobile"
+          className="block md:hidden absolute inset-0 h-full w-full object-cover z-0"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 z-0" />
 
