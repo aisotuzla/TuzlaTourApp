@@ -78,7 +78,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,svg,json,woff,woff2}'],
-          globStrict: false,
           maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB limit
         }
       })
