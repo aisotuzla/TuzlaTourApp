@@ -312,14 +312,33 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               src={videoSrc}
               onEnded={handleHeroVideoEnd}
               onError={handleVideoError}
+              preload="none"
             />
+            {/* Black cover hides native browser play button */}
             <AnimatePresence>
               {!isHeroPlaying && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 flex items-center justify-center z-20 bg-black/30"
+                  className="absolute inset-0 z-10 bg-black flex items-center justify-center"
+                >
+                  <img
+                    src="/assets/Gallery/tuzguidewide.webp"
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover opacity-40"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {/* Custom play button always on top */}
+            <AnimatePresence>
+              {!isHeroPlaying && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 flex items-center justify-center z-20"
                 >
                   <button
                     onClick={toggleHeroVideo}

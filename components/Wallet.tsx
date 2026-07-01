@@ -136,7 +136,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50/50 pb-32">
+        <div className="min-h-screen bg-slate-50/50 pb-32 overflow-x-hidden">
             <div className="max-w-6xl mx-auto p-4 sm:p-8">
                 {/* Offline Warning */}
                 {!isOnline && (
@@ -171,8 +171,8 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
 
 
                                     {/* Solana Card */}
-                                    <div className="p-6 glassy rounded-[2rem] border border-purple-100 shadow-xl space-y-4">
-                                        <div className="flex justify-between items-center flex-wrap gap-3">
+                                    <div className="p-4 sm:p-6 glassy rounded-[2rem] border border-purple-100 shadow-xl space-y-4 overflow-hidden">
+                                        <div className="flex justify-between items-center flex-wrap gap-2 max-w-full">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                                                     <Zap size={18} className="text-white" />
@@ -186,16 +186,22 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                                     )}
                                                 </div>
                                             </div>
-                                            <WalletMultiButton
-                                                style={{
-                                                    background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
-                                                    borderRadius: '1rem',
-                                                    fontSize: '11px',
-                                                    fontWeight: 900,
-                                                    height: '40px',
-                                                    padding: '0 16px',
-                                                }}
-                                            />
+                                            <div className="max-w-[160px] overflow-hidden">
+                                              <WalletMultiButton
+                                                  style={{
+                                                      background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+                                                      borderRadius: '1rem',
+                                                      fontSize: '10px',
+                                                      fontWeight: 900,
+                                                      height: '36px',
+                                                      padding: '0 12px',
+                                                      maxWidth: '100%',
+                                                      overflow: 'hidden',
+                                                      textOverflow: 'ellipsis',
+                                                      whiteSpace: 'nowrap',
+                                                  }}
+                                              />
+                                            </div>
                                         </div>
 
                                         {/* SOL Balance + Address actions */}
@@ -242,7 +248,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                         </AnimatePresence>
                                     </div>
                                     {/* NFT Rewards Card */}
-                                    <div className="p-6 glassy rounded-[2rem] border border-fuchsia-100 shadow-xl space-y-4">
+                                    <div className="p-4 sm:p-6 glassy rounded-[2rem] border border-fuchsia-100 shadow-xl space-y-4 overflow-hidden">
                                         <div className="flex justify-between items-center">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -306,7 +312,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                     </div>
 
                                     {/* Currency Converter */}
-                                    <div className="p-6 glassy rounded-[2rem] border border-blue-100 shadow-xl space-y-4">
+                                    <div className="p-4 sm:p-6 glassy rounded-[2rem] border border-blue-100 shadow-xl space-y-4 overflow-hidden">
                                         <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest">Currency Converter</h3>
                                         <div className="space-y-3">
                                             <div>
@@ -343,7 +349,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                 </div>
 
                                 {/* ── Right Column: Partner Links ── */}
-                                <div className="p-8 glassy rounded-[3rem] border border-emerald-100 shadow-xl space-y-6">
+                                <div className="p-4 sm:p-8 glassy rounded-[2rem] sm:rounded-[3rem] border border-emerald-100 shadow-xl space-y-6 overflow-hidden">
                                     <h2 className="text-xl font-black text-emerald-950 uppercase tracking-tight flex items-center gap-2">
                                         <Globe size={20} className="text-emerald-600" />
                                         Partner Agencies

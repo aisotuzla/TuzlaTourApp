@@ -266,9 +266,11 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
     let watchId: number | null = null;
     let intervalId: any = null;
     let isHighAccuracy = false;
+    let initialResolved = false;
     const highAccuracyThreshold = features.isAndroidLight ? 400 : 2000;
 
     const updateLocation = (pos: GeolocationPosition) => {
+      initialResolved = true;
       const newLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       userLocationRef.current = newLoc;
       
@@ -298,13 +300,13 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
         watchId = null;
         isHighAccuracy = false;
         intervalId = setInterval(() => {
-          navigator.geolocation.getCurrentPosition(updateLocation, console.error, { enableHighAccuracy: false });
+          navigator.geolocation.getCurrentPosition(updateLocation, () => {}, { enableHighAccuracy: false });
         }, 30000);
       } else if (minDistance <= highAccuracyThreshold && !isHighAccuracy) {
         if (intervalId !== null) clearInterval(intervalId);
         intervalId = null;
         isHighAccuracy = true;
-        watchId = navigator.geolocation.watchPosition(updateLocation, console.error, {
+        watchId = navigator.geolocation.watchPosition(updateLocation, () => {}, {
            enableHighAccuracy: true,
            maximumAge: 1000,
            timeout: 10000,
@@ -312,7 +314,24 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
       }
     };
 
-    navigator.geolocation.getCurrentPosition(updateLocation, console.error, { enableHighAccuracy: true });
+    const handleGeoError = (err: GeolocationPositionError) => {
+      console.warn('AR Geolocation error:', err.message);
+      // Fallback: try with low accuracy if high accuracy times out
+      if (!initialResolved && err.code === err.TIMEOUT) {
+        navigator.geolocation.getCurrentPosition(
+          updateLocation,
+          () => { setError('Location unavailable. Please enable GPS.'); },
+          { enableHighAccuracy: false, timeout: 10000 }
+        );
+      }
+    };
+
+    // Try high accuracy first with a reasonable timeout
+    navigator.geolocation.getCurrentPosition(updateLocation, handleGeoError, {
+      enableHighAccuracy: true,
+      timeout: 8000,
+      maximumAge: 5000,
+    });
 
     return () => {
       if (watchId !== null) navigator.geolocation.clearWatch(watchId);
@@ -323,7 +342,14 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
   useEffect(() => {
     if (!permissionGranted || !isForeground) return;
 
-    const handleOrientation = (e: DeviceOrientationEvent) => {
+    // Track whether we've received absolute orientation data
+    let hasAbsoluteData = false;
+
+    const handleOrientation = (e: DeviceOrientationEvent, isAbsolute: boolean) => {
+      // Once we get absolute data, ignore non-absolute events
+      if (hasAbsoluteData && !isAbsolute) return;
+      if (isAbsolute && !hasAbsoluteData) hasAbsoluteData = true;
+
       // 1. Get Alpha (Heading)
       let alpha: number | null = null;
       
@@ -334,8 +360,13 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
           setHeadingAccuracy((e as any).webkitCompassAccuracy);
         }
       } else if (e.alpha !== null) {
-        // Standard W3C alpha is CCW, convert to CW (360 - alpha)
-        alpha = (360 - e.alpha) % 360;
+        // For absolute events, alpha is already compass heading (CW from North)
+        // For non-absolute, alpha is arbitrary so we convert CCW to CW
+        if (isAbsolute || (e as any).absolute) {
+          alpha = (360 - e.alpha) % 360;
+        } else {
+          alpha = (360 - e.alpha) % 360;
+        }
       }
 
       // 1.5 Apply Manual Calibration Offset
@@ -379,13 +410,18 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
       };
     };
 
-    // Use absolute orientation on Android if available for true North
-    const supportsAbsolute = 'ondeviceorientationabsolute' in window;
-    const eventName = supportsAbsolute ? 'deviceorientationabsolute' : 'deviceorientation';
+    // Listen to BOTH events — prefer absolute when it fires, fall back to relative
+    const handleAbsolute = (e: DeviceOrientationEvent) => handleOrientation(e, true);
+    const handleRelative = (e: DeviceOrientationEvent) => handleOrientation(e, false);
 
-    window.addEventListener(eventName, handleOrientation as any);
-    return () => window.removeEventListener(eventName, handleOrientation as any);
-  }, [permissionGranted, viewMode, isForeground]);
+    window.addEventListener('deviceorientationabsolute', handleAbsolute as any);
+    window.addEventListener('deviceorientation', handleRelative as any);
+
+    return () => {
+      window.removeEventListener('deviceorientationabsolute', handleAbsolute as any);
+      window.removeEventListener('deviceorientation', handleRelative as any);
+    };
+  }, [permissionGranted, viewMode, isForeground, compassOffset]);
 
   const requestPermission = async () => {
     if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
