@@ -288,8 +288,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
           <div className="mt-12 text-center">
             <p className="text-xl font-black text-blue-900/80 italic font-quicksand leading-relaxed max-w-2xl mx-auto px-4">
-              {lang === 'bs' || lang === 'en' || lang === 'de' || lang === 'tr'
-                ? 'Posjetite Tuzlu' : 'Visit Tuzla'}
+              {t.albumText}
             </p>
             <div className="w-12 h-1 bg-amber-400 rounded-full mx-auto mt-4 opacity-50" />
           </div>
@@ -303,7 +302,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             </h2>
             <div className="w-16 h-2 bg-blue-600 rounded-full mt-2 mx-auto" />
           </div>
-          <div className="relative w-[340px] h-[680px] border-[14px] border-slate-900 rounded-[3rem] bg-black shadow-2xl overflow-hidden ring-4 ring-slate-800">
+          <div className="relative w-[350px] h-[700px] border-[14px] border-slate-900 rounded-[3rem] bg-black shadow-2xl overflow-hidden ring-4 ring-slate-800">
             <div className="absolute top-0 inset-x-0 h-6 bg-slate-900 rounded-b-2xl w-32 mx-auto z-30"></div>
             <video
               ref={heroVideoRef}

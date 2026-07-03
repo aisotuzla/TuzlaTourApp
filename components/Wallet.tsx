@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { Wallet as WalletIcon, Lock, CheckCircle2, Home, Stethoscope, Globe, X, Copy, ExternalLink, Zap, QrCode, Award } from 'lucide-react';
+import { Wallet as WalletIcon, Lock, CheckCircle2, Home, Stethoscope, Globe, X, Copy, ExternalLink, Zap, QrCode, Award, ArrowLeftRight } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -22,6 +22,7 @@ interface WalletProps {
 const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const [activeSubTab, setActiveSubTab] = useState<'PAYMENT'>('PAYMENT');
     const [bamValue, setBamValue] = useState<string>('');
+    const [conversionMode, setConversionMode] = useState<'BAM_TO_EUR' | 'EUR_TO_BAM'>('BAM_TO_EUR');
     const [solBalance, setSolBalance] = useState<number | null>(null);
     const [copySuccess, setCopySuccess] = useState(false);
 
@@ -32,7 +33,11 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
 
     const isOnline = useNetwork();
     const t = TRANSLATIONS[lang];
-    const eurValue = bamValue ? (parseFloat(bamValue) / 1.95583).toFixed(2) : '0.00';
+    const convertedValue = bamValue
+        ? conversionMode === 'BAM_TO_EUR'
+            ? (parseFloat(bamValue) / 1.95583).toFixed(2)
+            : (parseFloat(bamValue) * 1.95583).toFixed(2)
+        : '0.00';
 
     // Solana wallet state
     const { publicKey, disconnect: solDisconnect, connected: solConnected, wallet: solWallet } = useWallet();
@@ -231,15 +236,16 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                                                     : <Copy size={16} className="text-purple-600" />
                                                                 }
                                                             </button>
-                                                            <button
-                                                                onClick={() => window.open(`https://explorer.solana.com/address/${publicKey.toBase58()}?cluster=devnet`, '_blank')}
-                                                                className="p-2 bg-purple-100 rounded-xl hover:bg-purple-200 transition-all active:scale-90"
-                                                                title="View on explorer"
-                                                            >
-                                                                <ExternalLink size={16} className="text-purple-600" />
-                                                            </button>
                                                         </div>
                                                     </div>
+                                                    {/* Solana Explorer Button */}
+                                                    <button
+                                                        onClick={() => window.open(`https://explorer.solana.com/address/${publicKey.toBase58()}?cluster=devnet`, '_blank')}
+                                                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow hover:shadow-lg active:scale-95 transition-all"
+                                                    >
+                                                        <ExternalLink size={14} />
+                                                        {lang === 'bs' ? 'Pregledaj na Solana Exploreru' : 'View on Solana Explorer'}
+                                                    </button>
                                                     <p className="text-[10px] text-purple-300 font-mono break-all">
                                                         {publicKey.toBase58()}
                                                     </p>
@@ -313,10 +319,25 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
 
                                     {/* Currency Converter */}
                                     <div className="p-4 sm:p-6 glassy rounded-[2rem] border border-blue-100 shadow-xl space-y-4 overflow-hidden">
-                                        <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest">Currency Converter</h3>
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest">Currency Converter</h3>
+                                            <button
+                                                onClick={() => {
+                                                    setConversionMode(m => m === 'BAM_TO_EUR' ? 'EUR_TO_BAM' : 'BAM_TO_EUR');
+                                                    setBamValue('');
+                                                }}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-blue-700 active:scale-95 transition-all shadow"
+                                                title="Switch conversion direction"
+                                            >
+                                                <ArrowLeftRight size={12} />
+                                                {conversionMode === 'BAM_TO_EUR' ? 'BAM → EUR' : 'EUR → BAM'}
+                                            </button>
+                                        </div>
                                         <div className="space-y-3">
                                             <div>
-                                                <label className="text-[10px] font-bold text-blue-300 uppercase block mb-1">Enter BAM</label>
+                                                <label className="text-[10px] font-bold text-blue-300 uppercase block mb-1">
+                                                    {conversionMode === 'BAM_TO_EUR' ? 'Enter BAM' : 'Enter EUR'}
+                                                </label>
                                                 <input
                                                     type="number"
                                                     value={bamValue}
@@ -326,8 +347,15 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                                 />
                                             </div>
                                             <div className="bg-blue-900/5 p-5 rounded-2xl border border-blue-100/50">
-                                                <p className="text-[10px] font-bold text-blue-300 uppercase mb-1">Estimated EUR</p>
-                                                <p className="text-3xl font-black text-blue-600">€ {eurValue}</p>
+                                                <p className="text-[10px] font-bold text-blue-300 uppercase mb-1">
+                                                    {conversionMode === 'BAM_TO_EUR' ? 'Estimated EUR' : 'Estimated BAM'}
+                                                </p>
+                                                <p className="text-3xl font-black text-blue-600">
+                                                    {conversionMode === 'BAM_TO_EUR' ? `€ ${convertedValue}` : `KM ${convertedValue}`}
+                                                </p>
+                                                <p className="text-[10px] text-blue-300 mt-1">
+                                                    Rate: 1 EUR = 1.95583 BAM
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
