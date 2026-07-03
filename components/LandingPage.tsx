@@ -35,6 +35,7 @@ const copy = {
     linksTitle: 'Quick Links',
     albumTitle: 'Photo Gallery',
     explore: 'Explore',
+    gipsLabel: 'Track your City Bus Line Location',
   },
   bs: {
     heroScroll: 'Istražite Tuzlu',
@@ -42,6 +43,7 @@ const copy = {
     linksTitle: 'Brzi linkovi i partneri',
     albumTitle: 'Foto Galerija',
     explore: 'Istraži',
+    gipsLabel: 'GIPS Red Vožnje i Lokacija',
   },
   de: {
     heroScroll: 'Entdecke Tuzla',
@@ -49,6 +51,7 @@ const copy = {
     linksTitle: 'Schnellzugriffe und Partner',
     albumTitle: 'Fotoalbum',
     explore: 'Entdecken',
+    gipsLabel: 'Track your City Bus Line Location',
   },
   tr: {
     heroScroll: 'Tuzla\'yi Keşfet',
@@ -56,6 +59,7 @@ const copy = {
     linksTitle: 'Hizli Linkler ve Partnerler',
     albumTitle: 'Fotoğraf Albümü',
     explore: 'Keşfet',
+    gipsLabel: 'Track your City Bus Line Location',
   },
 } as const;
 
@@ -350,6 +354,27 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             </AnimatePresence>
           </div>
         </section>
+
+        {/* 4.55. GIPS BUS TRACKING */}
+        <div className="w-full flex flex-col items-center mt-2 mb-6">
+          <a
+            href="https://www.gipstk.com/red-voznje/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex flex-col items-center gap-3 hover:scale-105 active:scale-95 transition-transform duration-300"
+          >
+            <div className="w-[180px] h-[90px] bg-white rounded-2xl shadow-lg border border-blue-100 flex items-center justify-center overflow-hidden group-hover:shadow-blue-200 group-hover:shadow-xl transition-shadow duration-300">
+              <img
+                src="/assets/Gallery/gipslogo.png"
+                alt="GIPS Logo"
+                className="w-full h-full object-contain p-3"
+              />
+            </div>
+            <span className="text-sm font-bold text-blue-700 uppercase tracking-wider text-center px-4">
+              {t.gipsLabel}
+            </span>
+          </a>
+        </div>
 
         {/* 4.6. SOCIAL & COMMUNITY */}
         <section className="pt-8 pb-4">
