@@ -51,23 +51,23 @@ const copy = {
     linksTitle: 'Schnellzugriffe und Partner',
     albumTitle: 'Fotoalbum',
     explore: 'Entdecken',
-    gipsLabel: 'Track your City Bus Line Location',
+    gipsLabel: 'Stadtbus-Linie in Echtzeit verfolgen',
   },
   tr: {
-    heroScroll: 'Tuzla\'yi Keşfet',
-    cardsTitle: 'Yolculuğun Burada Başliyor',
-    linksTitle: 'Hizli Linkler ve Partnerler',
+    heroScroll: 'Tuzla\'yı Keşfet',
+    cardsTitle: 'Yolculuğun Burada Başlıyor',
+    linksTitle: 'Hızlı Bağlantılar ve Ortaklar',
     albumTitle: 'Fotoğraf Albümü',
     explore: 'Keşfet',
-    gipsLabel: 'Track your City Bus Line Location',
+    gipsLabel: 'Şehir Otobüs Hattını Canlı Takip Et',
   },
 } as const;
 
 const navCards = [
-  { id: AppTab.CITY_GUIDE, title: { en: 'City Guide', bs: 'Gradski Vodič' }, image: '/assets/Gallery/City Guide/GradTuzla-1.webp', color: 'blue' },
-  { id: AppTab.FOOD, title: { en: 'Food', bs: 'Hrana' }, image: '/assets/Gallery/Food/foodprime.webp', color: 'orange' },
-  { id: AppTab.ACCOMMODATION, title: { en: 'Accommodation', bs: 'Smještaj' }, image: '/assets/Gallery/Accommodation/mellain.webp', color: 'indigo' },
-  { id: AppTab.MAP, title: { en: 'Map', bs: 'Mapa' }, image: '/assets/MapaBosnia.webp', color: 'blue' },
+  { id: AppTab.CITY_GUIDE, title: { en: 'City Guide', bs: 'Gradski Vodič', de: 'Stadtführer', tr: 'Şehir Rehberi' }, image: '/assets/Gallery/City Guide/GradTuzla-1.webp', color: 'blue' },
+  { id: AppTab.FOOD, title: { en: 'Food', bs: 'Hrana', de: 'Essen & Trinken', tr: 'Yemek & İçecek' }, image: '/assets/Gallery/Food/foodprime.webp', color: 'orange' },
+  { id: AppTab.ACCOMMODATION, title: { en: 'Accommodation', bs: 'Smještaj', de: 'Unterkunft', tr: 'Konaklama' }, image: '/assets/Gallery/Accommodation/mellain.webp', color: 'indigo' },
+  { id: AppTab.MAP, title: { en: 'Map', bs: 'Mapa', de: 'Karte', tr: 'Harita' }, image: '/assets/MapaBosnia.webp', color: 'blue' },
 ];
 
 const externalLinks = [
@@ -152,14 +152,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-white"
       >
         <img
-          src="/assets/Gallery/tuzguidewide.webp"
-          alt="Tuzla Guide Wide"
-          className="hidden md:block absolute inset-0 h-full w-full object-cover z-0"
-        />
-        <img
           src="/assets/tuzguide.webp"
-          alt="Tuzla Guide Mobile"
-          className="block md:hidden absolute inset-0 h-full w-full object-cover z-0"
+          alt="Tuzla"
+          className="absolute inset-0 h-full w-full object-cover z-0"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 z-0" />
 
@@ -211,21 +206,29 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         </section>
 
         {/* 2.5. Pannonica Special */}
-        <div className="w-full mt-8 relative rounded-[2.5rem] overflow-hidden shadow-2xl border-2 border-blue-400/40 group">
-          <div
-            className="cursor-pointer"
-            onClick={() => openGallery(['/assets/Pannonica.webp', ...previewImages], 0)}
-          >
-            <img
-              src="/assets/Pannonica.webp"
-              alt="Pannonica Lakes"
-              className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-          </div>
-          <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-sm text-white/80 p-2.5 rounded-2xl pointer-events-none">
-            <ZoomIn size={20} />
-          </div>
-        </div>
+        {(() => {
+          const pannonicaSrc = lang === 'bs' ? '/assets/PannonicaBA.webp'
+            : lang === 'de' ? '/assets/PannonicaDE.webp'
+              : lang === 'tr' ? '/assets/PannonicaTR.webp'
+                : '/assets/Pannonica.webp';
+          return (
+            <div className="w-full mt-8 relative rounded-[2.5rem] overflow-hidden shadow-2xl border-2 border-blue-400/40 group">
+              <div
+                className="cursor-pointer"
+                onClick={() => openGallery([pannonicaSrc, ...previewImages], 0)}
+              >
+                <img
+                  src={pannonicaSrc}
+                  alt="Pannonica Lakes"
+                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-sm text-white/80 p-2.5 rounded-2xl pointer-events-none">
+                <ZoomIn size={20} />
+              </div>
+            </div>
+          );
+        })()}
 
         <div className="w-full flex justify-center mt-4">
           <a

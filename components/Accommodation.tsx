@@ -105,7 +105,7 @@ const HotelCardsSection: React.FC<{ lang: Language }> = ({ lang }) => {
               <div className="flex items-center justify-between pt-4 border-t border-blue-50">
                 <div>
                   <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">
-                    {lang === 'en' ? 'Price range' : lang === 'de' ? 'Preisspanne' : 'Cijena'}
+                    {lang === 'en' ? 'Price range' : lang === 'de' ? 'Preisspanne' : lang === 'tr' ? 'Fiyat aralığı' : 'Cijena'}
                   </p>
                   <p className="font-black text-blue-950 text-sm">{hotel.priceRange}</p>
                 </div>
@@ -113,7 +113,7 @@ const HotelCardsSection: React.FC<{ lang: Language }> = ({ lang }) => {
                   {ratingDots(hotel.rating).map((filled, i) => (
                     <div key={i} className={`w-2 h-2 rounded-full ${filled ? 'bg-yellow-500' : 'bg-gray-200'}`} />
                   ))}
-                  <span className="text-[9px] font-bold text-blue-900/40 ml-1">{hotel.user_ratings_total} reviews</span>
+                  <span className="text-[9px] font-bold text-blue-900/40 ml-1">{hotel.user_ratings_total} {lang === 'en' ? 'reviews' : lang === 'de' ? 'Bewertungen' : lang === 'tr' ? 'yorum' : 'recenzija'}</span>
                 </div>
               </div>
 
@@ -200,17 +200,19 @@ const Accommodation: React.FC<AccommodationProps> = ({ lang }) => {
       <header className="text-center space-y-4">
         <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-blue-700 shadow-sm">
           <Building2 className="h-4 w-4" />
-          {lang === 'en' ? 'Stay in Tuzla' : lang === 'de' ? 'Unterkunft in Tuzla' : 'Smještaj u Tuzli'}
+          {lang === 'en' ? 'Stay in Tuzla' : lang === 'de' ? 'Unterkunft in Tuzla' : lang === 'tr' ? 'Tuzla\'da Kal' : 'Smještaj u Tuzli'}
         </div>
         <h1 className="text-4xl md:text-6xl font-black text-blue-950 uppercase tracking-tighter">
-          {lang === 'en' ? 'Accommodation' : lang === 'de' ? 'Unterkunft' : 'Smještaj'}
+          {lang === 'en' ? 'Accommodation' : lang === 'de' ? 'Unterkunft' : lang === 'tr' ? 'Konaklama' : 'Smještaj'}
         </h1>
         <p className="text-blue-600 font-medium text-lg max-w-2xl mx-auto leading-relaxed">
           {lang === 'en'
             ? 'Hotels, apartments, and travel links in one place.'
             : lang === 'de'
               ? 'Hotels, Apartments und Reiselinks an einem Ort.'
-              : 'Hoteli, apartmani i putni linkovi na jednom mjestu.'}
+              : lang === 'tr'
+                ? 'Oteller, daireler ve seyahat bağlantıları tek yerde.'
+                : 'Hoteli, apartmani i putni linkovi na jednom mjestu.'}
         </p>
       </header>
 
@@ -225,7 +227,9 @@ const Accommodation: React.FC<AccommodationProps> = ({ lang }) => {
             ? 'Use the sidebar for History, Map, Quest, Gallery, and Parking.'
             : lang === 'de'
               ? 'Nutze die Seitenleiste für Geschichte, Karte, Quest, Galerie und Parken.'
-              : 'Koristi bočnu traku za historiju, mapu, quest, galeriju i parking.'}
+              : lang === 'tr'
+                ? 'Tarih, Harita, Görev, Galeri ve Park için kenar çubuğunu kullanın.'
+                : 'Koristi bočnu traku za historiju, mapu, quest, galeriju i parking.'}
         </div>
       </section>
 

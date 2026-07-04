@@ -21,12 +21,14 @@ const ARMarker: React.FC<{
   domRef: React.RefObject<HTMLDivElement | null>;
   distRef: React.RefObject<HTMLSpanElement | null>;
   currentDistState: React.MutableRefObject<number>;
-}> = ({ location, lang, onSelect, domRef, distRef, currentDistState }) => {
+  registerLockSetter: (id: string, setter: React.Dispatch<React.SetStateAction<boolean>> | null) => void;
+}> = ({ location, lang, onSelect, domRef, distRef, currentDistState, registerLockSetter }) => {
   const [isLocked, setIsLocked] = useState(false);
 
-  // We still need to manage the "Locked" state via React because it affects classes/icons,
-  // but we'll expose a toggle for the master loop to call.
-  (location as any)._setIsLocked = setIsLocked;
+  useEffect(() => {
+    registerLockSetter(location.id, setIsLocked);
+    return () => registerLockSetter(location.id, null);
+  }, [location.id, registerLockSetter]);
 
   const getCategoryColor = (category: string, locked: boolean) => {
     if (locked) return 'bg-amber-400 border-amber-500 text-amber-600 shadow-[0_0_20px_rgba(251,191,36,0.5)]';
@@ -96,6 +98,7 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
   // Master Loop Refs
   const lastFrameTimeRef = useRef<number>(0);
   const markerRefs = useRef<Record<string, { dom: HTMLDivElement | null, dist: HTMLSpanElement | null, currentDist: number }>>({});
+  const markerLockSettersRef = useRef<Record<string, React.Dispatch<React.SetStateAction<boolean>> | undefined>>({});
   const leftArrowRef = useRef<HTMLDivElement>(null);
   const rightArrowRef = useRef<HTMLDivElement>(null);
   const horizonIndicatorRef = useRef<HTMLDivElement>(null);
@@ -108,6 +111,11 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
     { value: 'balanced', label: 'Bal' },
     { value: 'saver', label: 'Save' },
   ];
+
+  const registerMarkerLockSetter = useCallback((id: string, setter: React.Dispatch<React.SetStateAction<boolean>> | null) => {
+    if (setter) markerLockSettersRef.current[id] = setter;
+    else delete markerLockSettersRef.current[id];
+  }, []);
 
   useEffect(() => {
     const handleVisibility = () => {
@@ -165,7 +173,7 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
 
             // Update locked state if needed (minimal React calls)
             const isLocked = proj.stage === ARStage.TARGET_LOCK || proj.stage === ARStage.PRECISE;
-            const setLocked = (loc as any)._setIsLocked;
+            const setLocked = markerLockSettersRef.current[loc.id];
             if (setLocked) setLocked(isLocked);
           }
         });
@@ -226,6 +234,11 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
 
   const startCamera = useCallback(async () => {
     try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setError("Camera is not available in this browser.");
+        setCameraActive(false);
+        return;
+      }
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: { ideal: 'environment' },
@@ -255,13 +268,20 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
   }, []);
 
   useEffect(() => {
-    if (!permissionGranted || !isForeground) return;
+    if (!permissionGranted || !isForeground) {
+      if (cameraActive) stopCamera();
+      return;
+    }
     if (shouldCameraBeOn && !cameraActive) startCamera();
     else if (!shouldCameraBeOn && cameraActive) stopCamera();
   }, [shouldCameraBeOn, permissionGranted, cameraActive, startCamera, stopCamera, isForeground]);
 
   useEffect(() => {
     if (!permissionGranted || !isForeground) return;
+    if (!navigator.geolocation) {
+      setError('Location is not available in this browser.');
+      return;
+    }
 
     let watchId: number | null = null;
     let intervalId: any = null;
@@ -424,12 +444,29 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
   }, [permissionGranted, viewMode, isForeground, compassOffset]);
 
   const requestPermission = async () => {
-    if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
-      const res = await (DeviceOrientationEvent as any).requestPermission();
-      if (res === 'granted') setPermissionGranted(true);
-      else setError("Permission denied.");
-    } else {
+    setError(null);
+
+    if (!window.isSecureContext && window.location.hostname !== 'localhost') {
+      setError("AR needs HTTPS so the browser can allow sensors and location.");
+      return;
+    }
+
+    try {
+      const OrientationEvent = window.DeviceOrientationEvent as typeof DeviceOrientationEvent | undefined;
+      if (OrientationEvent && typeof (OrientationEvent as any).requestPermission === 'function') {
+        const res = await (OrientationEvent as any).requestPermission();
+        if (res !== 'granted') {
+          setError("Motion sensor permission denied.");
+          return;
+        }
+      } else if (!OrientationEvent) {
+        setError("Motion sensors are not available on this device.");
+      }
+
       setPermissionGranted(true);
+    } catch (err) {
+      console.warn('AR permission error:', err);
+      setError("Could not start AR sensors.");
     }
   };
 
@@ -462,6 +499,7 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
                   domRef={{ get current() { return refs.dom }, set current(v) { refs.dom = v } }}
                   distRef={{ get current() { return refs.dist }, set current(v) { refs.dist = v } }}
                   currentDistState={{ get current() { return refs.currentDist }, set current(v) { refs.currentDist = v } }}
+                  registerLockSetter={registerMarkerLockSetter}
                 />
                );
             })}
@@ -511,7 +549,18 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-40 p-8 text-center">
           <Compass className="w-16 h-16 text-blue-400 mb-6 animate-bounce" />
           <h2 className="text-2xl font-black text-white mb-2">Enable AR Sensors</h2>
+          {error && (
+            <p className="max-w-xs text-sm text-amber-200 font-bold mb-5">
+              {error}
+            </p>
+          )}
           <button onClick={requestPermission} className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-xl hover:bg-blue-700 transition-all">Start AR Guide</button>
+        </div>
+      )}
+
+      {permissionGranted && error && (
+        <div className="absolute top-28 left-4 right-4 z-[70] rounded-2xl border border-amber-300/50 bg-amber-950/85 px-4 py-3 text-center text-xs font-bold text-amber-100">
+          {error}
         </div>
       )}
 
