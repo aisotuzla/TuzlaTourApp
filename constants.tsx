@@ -968,7 +968,7 @@ export const TUZLA_PARKING_DATA: ParkingLot[] = [
     area: "Parking Omega",
     address: "Univerzitetska",
     coordinates: [18.663186, 44.538282],
-    features: ["Commercial surface lot", "Short-term validation"]
+    features: ["No Charge", "Commercial surface lot", "Short-term validation"]
   },
   {
     id: "slatina-main",
@@ -1080,7 +1080,7 @@ export const TUZLA_PARKING_DATA: ParkingLot[] = [
     area: "Sjenjak",
     address: "Ismeta Mujezinovica B-blok",
     coordinates: [18.699787, 44.533239],
-    features: ["Open public bay", "Feeder lanes to high-rise zones"]
+    features: ["No Charge", "Open public bay", "Feeder lanes to high-rise zones"]
   },
   {
     id: "sjenjak-main",
@@ -1088,7 +1088,7 @@ export const TUZLA_PARKING_DATA: ParkingLot[] = [
     area: "Sjenjak",
     address: "GMMX+3CH block",
     coordinates: [18.699862, 44.532244],
-    features: ["Large neighborhood lot", "Easy connection to eastern bypass"]
+    features: ["No Charge", "Large neighborhood lot", "Easy connection to eastern bypass"]
   }
 ];
 
