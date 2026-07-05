@@ -923,20 +923,64 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     }
   }, [navigationTarget, isLoaded, policy.mapFx.maxPitch]);
 
-  // Scanner Logic (Same as before)
+  // Scanner Logic — wait for AnimatePresence to finish rendering the container
   useEffect(() => {
-    if (isScanning) startScanner();
-    else stopScanner();
-    return () => { stopScanner(); };
+    let cancelled = false;
+    if (isScanning) {
+      // Delay to let AnimatePresence spring animation render and size the container
+      const timer = setTimeout(() => {
+        if (!cancelled) startScanner();
+      }, 350);
+      return () => { cancelled = true; clearTimeout(timer); stopScanner(); };
+    } else {
+      stopScanner();
+    }
+    return () => { cancelled = true; stopScanner(); };
   }, [isScanning]);
 
   const startScanner = async () => {
+    // Ensure the container element exists and has dimensions
+    const container = document.getElementById(scannerContainerId);
+    if (!container) {
+      console.warn('[QR Scanner] Container not found:', scannerContainerId);
+      setIsScanning(false);
+      return;
+    }
+
+    // Stop any existing scanner instance first
+    if (html5QrCodeRef.current) {
+      try {
+        if (html5QrCodeRef.current.isScanning) {
+          await html5QrCodeRef.current.stop();
+        }
+        html5QrCodeRef.current.clear();
+      } catch (_) { /* ignore cleanup errors */ }
+      html5QrCodeRef.current = null;
+    }
+
     try {
-      const html5QrCode = new Html5Qrcode(scannerContainerId);
+      const html5QrCode = new Html5Qrcode(scannerContainerId, {
+        verbose: false,
+        experimentalFeatures: { useBarCodeDetectorIfSupported: true }
+      });
       html5QrCodeRef.current = html5QrCode;
+
+      // Use a smaller qrbox relative to container for better detection
+      const containerRect = container.getBoundingClientRect();
+      const scanSize = Math.min(
+        Math.floor(containerRect.width * 0.85),
+        Math.floor(containerRect.height * 0.85),
+        scannerQrSize
+      );
+
       await html5QrCode.start(
         { facingMode: "environment" },
-        { fps: scannerFps, qrbox: { width: scannerQrSize, height: scannerQrSize } },
+        {
+          fps: scannerFps,
+          qrbox: { width: Math.max(scanSize, 150), height: Math.max(scanSize, 150) },
+          aspectRatio: 1.0,
+          disableFlip: false,
+        },
         (decodedText) => {
           const matched = LOCATIONS.find(l => l.qrCode === decodedText);
           if (matched) {
@@ -948,17 +992,29 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             if (matched.id === 'mesa_selimovic') {
               setPlayingVideo('/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4');
             }
+          } else {
+            // Show feedback for unmatched QR codes so user knows scanning works
+            setSuccessMessage(`Scanned: "${decodedText}" — not a quest QR`);
+            setTimeout(() => setSuccessMessage(null), 2500);
           }
         },
-        () => { }
+        () => { /* ignore per-frame scan failures */ }
       );
-    } catch (err) { setIsScanning(false); }
+    } catch (err) {
+      console.error('[QR Scanner] Start error:', err);
+      setIsScanning(false);
+    }
   };
 
   const stopScanner = async () => {
-    if (html5QrCodeRef.current?.isScanning) {
-      await html5QrCodeRef.current.stop();
-      html5QrCodeRef.current.clear();
+    if (html5QrCodeRef.current) {
+      try {
+        if (html5QrCodeRef.current.isScanning) {
+          await html5QrCodeRef.current.stop();
+        }
+        html5QrCodeRef.current.clear();
+      } catch (_) { /* ignore stop errors */ }
+      html5QrCodeRef.current = null;
     }
   };
 
@@ -1078,9 +1134,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             <div className="relative w-full h-[40vh] flex flex-col items-center justify-center mb-12">
               {!isUtilityMode && <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-12 bg-amber-500/10 blur-[40px] rounded-full" />}
 
-              <div className="relative w-64 h-64">
+              <div className="relative w-72 h-72">
                 {/* Real Camera Feed */}
-                <div id={scannerContainerId} className="absolute inset-0 rounded-3xl overflow-hidden bg-black border-2 border-white/10 shadow-[0_0_80px_rgba(245,158,11,0.1)]" style={{ backgroundColor: 'black' }} />
+                <div id={scannerContainerId} className="absolute inset-0 rounded-2xl overflow-clip bg-black border-2 border-white/10 shadow-[0_0_80px_rgba(245,158,11,0.1)]" style={{ backgroundColor: 'black', minWidth: '280px', minHeight: '280px' }} />
 
                 {/* Cyber Frame Decor */}
                 <div className="absolute -inset-4 border-2 border-white/5 rounded-[2.5rem] pointer-events-none" />
