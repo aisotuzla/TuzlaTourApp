@@ -615,29 +615,7 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
             <button onClick={() => setShowHelp(!showHelp)} title="Help" aria-label="Help" className="bg-black/60 p-2 rounded-full border border-white/20 text-white"><Info className="w-5 h-5" /></button>
         </div>
       </div>
-      <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[65] flex items-center gap-1 rounded-2xl border border-white/20 bg-black/55 p-1">
-        {qualityOptions.map((option) => (
-          <button
-            key={option.value}
-            onClick={() => setMode(option.value)}
-            className={`pointer-events-auto px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors ${
-              mode === option.value ? 'bg-amber-400 text-slate-900' : 'text-slate-200 hover:bg-white/10'
-            }`}
-          >
-            {option.label}
-          </button>
-        ))}
-        <div className="w-[1px] h-4 bg-white/20 mx-1" />
-        <button
-          onClick={() => setCompassOffset(prev => prev === 0 ? 180 : 0)}
-          className={`pointer-events-auto px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors ${
-            compassOffset === 180 ? 'bg-red-500 text-white' : 'text-slate-200 hover:bg-white/10'
-          }`}
-          title="Flip Compass 180°"
-        >
-          {compassOffset === 180 ? 'Offset: 180°' : 'Flip'}
-        </button>
-      </div>
+
       
       {headingAccuracy !== null && headingAccuracy > 20 && (
         <div className="absolute top-28 left-1/2 -translate-x-1/2 bg-amber-500/90 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase z-50 animate-pulse">

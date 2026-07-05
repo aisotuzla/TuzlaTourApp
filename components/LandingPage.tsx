@@ -51,7 +51,6 @@ const copy = {
     cardsTitle: 'Tvoje putovanje počinje ovdje',
     linksTitle: 'Brzi linkovi i partneri',
     albumTitle: 'Foto Galerija',
-    albumText: 'Nijedna fotografija ne može prikazati sav šarm i ljepotu ovog grada, zato dođite i posjetite nas.',
     videoTitle: 'Video',
     communityTitle: 'Zajednica i mreže',
     exploreMoreTitle: 'Istražite više',
@@ -329,12 +328,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             ))}
           </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-xl font-black text-blue-900/80 italic font-quicksand leading-relaxed max-w-2xl mx-auto px-4">
-              {t.albumText}
-            </p>
-            <div className="w-12 h-1 bg-amber-400 rounded-full mx-auto mt-4 opacity-50" />
-          </div>
+
         </section>
 
         {/* 4.5. SMARTPHONE VIDEO */}

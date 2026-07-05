@@ -370,9 +370,9 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     busStation: 'Autobuska Stanica Tuzla',
     batteryWarning: 'Štednja baterije aktivna. Smanjite svjetlinu i koristite AR vodic samo u pokretu za duže trajanje.',
     selectNetwork: 'Odaberi mrežu',
-    tonWallet: 'TON novčanik',
+    tonWallet: 'SOL novčanik',
     switchNetwork: 'Promijeni mrežu',
-    connectedToTon: 'Povezan na TON',
+    connectedToTon: 'Povezan na SOL',
     walletLocked: 'Novčanik Zaključan',
     setWalletPin: 'Postavi PIN novčanika',
     confirmPin: 'Potvrdi PIN',
@@ -381,7 +381,7 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     parkingSearch: 'Pretraži parkinge...',
     locationNotAvailable: 'Lokacija nije dostupna.',
     zonesLabel: 'Zone',
-    galleryCharmText: 'Nijedna fotografija ne može vam dočarati šarm i ljepotu ovog grada, zato dođite i posjetite nas.',
+    galleryCharmText: ""
   },
   de: {
     welcome: 'Willkommen in Tuzla!',
