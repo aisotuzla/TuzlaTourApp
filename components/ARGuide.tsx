@@ -476,9 +476,14 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
         <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-700" />
       ) : (
         <div className="absolute inset-0 w-full h-full bg-black">
-          <img src="/assets/Gallery/tuzlaline23.webp" className="w-full h-full object-cover" alt="AR Background" />
-          <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px]"></div>
-
+          <iframe
+            src="/assets/Gallery/QuestQRLocations/Tvrko%20pannellum/pannellum/pannellum.htm?panorama=../tz.jpg&autoLoad=true"
+            className="w-full h-full border-none pointer-events-auto"
+            title="Tuzla Panorama"
+            allow="gyroscope; accelerometer"
+            allowFullScreen
+          />
+          <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none"></div>
         </div>
       )}
 
