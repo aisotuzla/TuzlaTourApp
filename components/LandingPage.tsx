@@ -34,6 +34,15 @@ const copy = {
     cardsTitle: 'Your Journey Starts Here',
     linksTitle: 'Quick Links',
     albumTitle: 'Photo Gallery',
+    albumText: 'No photo can show the full charm and beauty of this city, so come and visit us.',
+    videoTitle: 'Video',
+    communityTitle: 'Community & Social',
+    exploreMoreTitle: 'Explore More',
+    exploreMoreText: "Your journey doesn't end here. Tuzla offers endless stories and hidden gems waiting to be discovered.",
+    backToTop: 'Back to Home',
+    shareApp: 'Share App',
+    shareText: 'Check out this interactive map and guide to Tuzla!',
+    linkCopied: 'Link copied to clipboard!',
     explore: 'Explore',
     gipsLabel: 'Track your City Bus Line Location',
   },
@@ -42,14 +51,32 @@ const copy = {
     cardsTitle: 'Tvoje putovanje počinje ovdje',
     linksTitle: 'Brzi linkovi i partneri',
     albumTitle: 'Foto Galerija',
+    albumText: 'Nijedna fotografija ne može prikazati sav šarm i ljepotu ovog grada, zato dođite i posjetite nas.',
+    videoTitle: 'Video',
+    communityTitle: 'Zajednica i mreže',
+    exploreMoreTitle: 'Istražite više',
+    exploreMoreText: 'Vaše putovanje se ne završava ovdje. Tuzla nudi beskrajne priče i skrivene dragulje.',
+    backToTop: 'Povratak na vrh',
+    shareApp: 'Podijeli aplikaciju',
+    shareText: 'Istraži Tuzlu kroz ovu interaktivnu aplikaciju!',
+    linkCopied: 'Link kopiran!',
     explore: 'Istraži',
-    gipsLabel: 'GIPS Red Vožnje i Lokacija',
+    gipsLabel: 'GIPS red vožnje i lokacija',
   },
   de: {
     heroScroll: 'Entdecke Tuzla',
     cardsTitle: 'Deine Reise beginnt hier',
     linksTitle: 'Schnellzugriffe und Partner',
     albumTitle: 'Fotoalbum',
+    albumText: 'Kein Foto kann den ganzen Charme und die Schönheit dieser Stadt zeigen. Kommen Sie und besuchen Sie uns.',
+    videoTitle: 'Video',
+    communityTitle: 'Community & Soziale Medien',
+    exploreMoreTitle: 'Mehr Entdecken',
+    exploreMoreText: 'Ihre Reise endet hier nicht. Tuzla bietet unzählige Geschichten und verborgene Orte, die darauf warten, entdeckt zu werden.',
+    backToTop: 'Zurück nach oben',
+    shareApp: 'App teilen',
+    shareText: 'Entdecke Tuzla mit dieser interaktiven Karte und diesem Reiseführer!',
+    linkCopied: 'Link wurde kopiert!',
     explore: 'Entdecken',
     gipsLabel: 'Stadtbus-Linie in Echtzeit verfolgen',
   },
@@ -58,13 +85,22 @@ const copy = {
     cardsTitle: 'Yolculuğun Burada Başlıyor',
     linksTitle: 'Hızlı Bağlantılar ve Ortaklar',
     albumTitle: 'Fotoğraf Albümü',
+    albumText: 'Hiçbir fotoğraf bu şehrin tüm cazibesini ve güzelliğini gösteremez; gelin ve bizi ziyaret edin.',
+    videoTitle: 'Video',
+    communityTitle: 'Topluluk ve Sosyal Medya',
+    exploreMoreTitle: 'Daha Fazla Keşfet',
+    exploreMoreText: 'Yolculuğunuz burada bitmiyor. Tuzla, keşfedilmeyi bekleyen sayısız hikaye ve gizli güzellik sunuyor.',
+    backToTop: 'Başa dön',
+    shareApp: 'Uygulamayı paylaş',
+    shareText: 'Bu interaktif harita ve rehberle Tuzla’yı keşfet!',
+    linkCopied: 'Bağlantı kopyalandı!',
     explore: 'Keşfet',
-    gipsLabel: 'Şehir Otobüs Hattını Canlı Takip Et',
+    gipsLabel: 'Şehir otobüs hattını canlı takip et',
   },
 } as const;
 
 const navCards = [
-  { id: AppTab.CITY_GUIDE, title: { en: 'City Guide', bs: 'Gradski Vodič', de: 'Stadtführer', tr: 'Şehir Rehberi' }, image: '/assets/Gallery/City Guide/GradTuzla-1.webp', color: 'blue' },
+  { id: AppTab.CITY_GUIDE, title: { en: 'City Guide', bs: 'Gradski vodič', de: 'Stadtführer', tr: 'Şehir Rehberi' }, image: '/assets/Gallery/City Guide/GradTuzla-1.webp', color: 'blue' },
   { id: AppTab.FOOD, title: { en: 'Food', bs: 'Hrana', de: 'Essen & Trinken', tr: 'Yemek & İçecek' }, image: '/assets/Gallery/Food/foodprime.webp', color: 'orange' },
   { id: AppTab.ACCOMMODATION, title: { en: 'Accommodation', bs: 'Smještaj', de: 'Unterkunft', tr: 'Konaklama' }, image: '/assets/Gallery/Accommodation/mellain.webp', color: 'indigo' },
   { id: AppTab.MAP, title: { en: 'Map', bs: 'Mapa', de: 'Karte', tr: 'Harita' }, image: '/assets/MapaBosnia.webp', color: 'blue' },
@@ -133,7 +169,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       try {
         await navigator.share({
           title: 'Tuzla Virtual Tour Guide',
-          text: lang === 'bs' ? 'Istraži Tuzlu kroz ovu interaktivnu aplikaciju!' : 'Check out this interactive map and guide to Tuzla!',
+          text: t.shareText,
           url: window.location.href,
         });
       } catch (error) {
@@ -141,7 +177,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert(lang === 'bs' ? 'Link kopiran!' : 'Link copied to clipboard!');
+      alert(t.linkCopied);
     }
   };
 
@@ -305,7 +341,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         <section className="py-10 flex flex-col items-center">
           <div className="mb-10 text-center">
             <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
-              Video
+              {t.videoTitle}
             </h2>
             <div className="w-16 h-2 bg-blue-600 rounded-full mt-2 mx-auto" />
           </div>
@@ -383,7 +419,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         <section className="pt-8 pb-4">
           <div className="mb-10 text-center flex flex-col items-center">
             <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
-              {lang === 'bs' ? 'Zajednica & Mreže' : 'Community & Social'}
+              {t.communityTitle}
             </h2>
             <div className="w-20 h-2 bg-blue-600 rounded-full mt-2" />
           </div>
@@ -408,7 +444,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               </a>
               <button onClick={handleShare} className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors relative group cursor-pointer">
                 <Share2 className="w-6 h-6" />
-                <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Share App</span>
+                <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">{t.shareApp}</span>
               </button>
             </div>
 
@@ -440,19 +476,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               <Home className="w-8 h-8 text-blue-600" />
             </div>
             <h2 className="text-4xl font-black text-blue-900 uppercase tracking-tight font-quicksand">
-              {lang === 'bs' ? 'Istražite više' : 'Explore More'}
+              {t.exploreMoreTitle}
             </h2>
             <p className="text-slate-500 max-w-lg mx-auto text-lg leading-relaxed font-medium">
-              {lang === 'bs'
-                ? 'Vaše putovanje se ne završava ovdje. Tuzla nudi beskrajne priče i skrivene dragulje.'
-                : 'Your journey doesn\'t end here. Tuzla offers endless stories and hidden gems waiting to be discovered.'}
+              {t.exploreMoreText}
             </p>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="mt-8 px-12 py-5 bg-blue-600 text-white font-black rounded-[2rem] shadow-2xl hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm flex items-center gap-3 mx-auto font-quicksand"
             >
               <ArrowUp className="w-5 h-5" />
-              {lang === 'bs' ? 'Povratak na vrh' : 'Back to Home'}
+              {t.backToTop}
             </button>
           </motion.div>
         </section>
