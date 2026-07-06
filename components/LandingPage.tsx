@@ -193,7 +193,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 z-0" />
 
-        <div className="absolute top-[75%] -translate-y-1/2 left-0 right-0 flex flex-col items-center justify-center text-white gap-4 pointer-events-none z-10">
+        <div className="absolute top-[100%] -translate-y-1/2 left-0 right-0 flex flex-col items-center justify-center text-white gap-4 pointer-events-none z-10">
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ repeat: Infinity, duration: 2 }}
