@@ -184,7 +184,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
     <div className="bg-white">
       {/* 1. HERO SECTION */}
       <section
-        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-white"
+        className="relative h-screen w-full max-w-[880px] mx-auto overflow-hidden flex items-center justify-center bg-white rounded-3xl border-2 border-blue-600 shadow-[0_0_30px_rgba(59,130,246,0.6)]"
       >
         <img
           src="/assets/tuzguide.webp"
