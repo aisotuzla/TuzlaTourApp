@@ -960,29 +960,18 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
     try {
       const html5QrCode = new Html5Qrcode(scannerContainerId, {
-        verbose: false,
-        experimentalFeatures: { useBarCodeDetectorIfSupported: true }
+        verbose: false
       });
       html5QrCodeRef.current = html5QrCode;
-
-      // Use a smaller qrbox relative to container for better detection
-      const containerRect = container.getBoundingClientRect();
-      const scanSize = Math.min(
-        Math.floor(containerRect.width * 0.85),
-        Math.floor(containerRect.height * 0.85),
-        scannerQrSize
-      );
 
       await html5QrCode.start(
         { facingMode: "environment" },
         {
           fps: scannerFps,
-          qrbox: { width: Math.max(scanSize, 150), height: Math.max(scanSize, 150) },
-          aspectRatio: 1.0,
           disableFlip: false,
         },
         (decodedText) => {
-          const matched = LOCATIONS.find(l => l.qrCode === decodedText);
+          const matched = LOCATIONS.find(l => l.qrCode === decodedText.trim());
           if (matched) {
             onRewardFound(matched.id);
             setSuccessMessage(`Unlocked: ${matched.name[lang]}`);
@@ -994,7 +983,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             }
           } else {
             // Show feedback for unmatched QR codes so user knows scanning works
-            setSuccessMessage(`Scanned: "${decodedText}" — not a quest QR`);
+            setSuccessMessage(`Scanned: "${decodedText.trim()}" — not a quest QR`);
             setTimeout(() => setSuccessMessage(null), 2500);
           }
         },
