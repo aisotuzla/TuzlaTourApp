@@ -870,15 +870,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
         )}
       </AnimatePresence>
 
-      {/* Floating Location Action Button */}
-      <div className="absolute bottom-10 left-10 z-10">
-        <button
-          onClick={() => userLocation && map.current?.flyTo({ center: userLocation, zoom: 17, pitch: 60 })}
-          className="w-16 h-16 bg-blue-600 text-white rounded-[2rem] shadow-[0_15px_40px_rgba(37,99,235,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all group"
-        >
-          <Navigation size={28} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-        </button>
-      </div>
+
 
       {!isLoaded && (
         <div className="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center z-50">

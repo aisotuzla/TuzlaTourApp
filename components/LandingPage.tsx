@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { ZoomIn } from 'lucide-react';
 import type { FC } from 'react';
-
+import NewsTicker from './NewsTicker';
 
 
 import { AppTab, Language } from '../types';
@@ -486,7 +486,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         </section>
       </div>
 
-
+      <NewsTicker lang={lang} />
     </div>
   );
 };

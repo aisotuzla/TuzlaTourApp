@@ -964,573 +964,599 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       });
       html5QrCodeRef.current = html5QrCode;
 
-      await html5QrCode.start(
-        { facingMode: "environment" },
-        {
-          fps: scannerFps,
-          disableFlip: false,
-        },
-        (decodedText) => {
-          const matched = LOCATIONS.find(l => l.qrCode === decodedText.trim());
-          if (matched) {
-            onRewardFound(matched.id);
-            setSuccessMessage(`Unlocked: ${matched.name[lang]}`);
-            setTimeout(() => setSuccessMessage(null), 3000);
-            setIsScanning(false);
+      const onScanSuccess = (decodedText: string) => {
+        const matched = LOCATIONS.find(l => l.qrCode === decodedText.trim());
+        if (matched) {
+          onRewardFound(matched.id);
+          setSuccessMessage(`Unlocked: ${matched.name[lang]}`);
+          setTimeout(() => setSuccessMessage(null), 3000);
+          setIsScanning(false);
 
-            if (matched.id === 'mesa_selimovic') {
-              setPlayingVideo('/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4');
-            }
-          } else {
-            // Show feedback for unmatched QR codes so user knows scanning works
-            setSuccessMessage(`Scanned: "${decodedText.trim()}" — not a quest QR`);
-            setTimeout(() => setSuccessMessage(null), 2500);
+          if (matched.id === 'mesa_selimovic') {
+            setPlayingVideo('/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4');
           }
-        },
-        () => { /* ignore per-frame scan failures */ }
-      );
+        } else {
+          // Show feedback for unmatched QR codes so user knows scanning works
+          setSuccessMessage(`Scanned: "${decodedText.trim()}" — not a quest QR`);
+          setTimeout(() => setSuccessMessage(null), 2500);
+        }
+      };
+
+      try {
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: scannerFps, disableFlip: false },
+          onScanSuccess,
+          () => { /* ignore */ }
+        );
+      } catch (err) {
+        console.warn('[QR Scanner] Environment camera failed, trying fallback to any camera...', err);
+        try {
+          const devices = await Html5Qrcode.getCameras();
+          if (devices && devices.length > 0) {
+            await html5QrCode.start(
+              devices[0].id,
+              { fps: scannerFps, disableFlip: false },
+              onScanSuccess,
+              () => { /* ignore */ }
+            );
+          } else {
+            throw new Error("No cameras found on device.");
+          }
+        } catch (fallbackErr) {
+          console.error('[QR Scanner] Fallback failed:', fallbackErr);
+          setIsScanning(false);
+          setSuccessMessage("Camera error: Could not access camera");
+          setTimeout(() => setSuccessMessage(null), 3000);
+        }
+      }
     } catch (err) {
-      console.error('[QR Scanner] Start error:', err);
+      console.error('[QR Scanner] Initialization error:', err);
       setIsScanning(false);
     }
   };
 
-  const stopScanner = async () => {
-    if (html5QrCodeRef.current) {
-      try {
-        if (html5QrCodeRef.current.isScanning) {
-          await html5QrCodeRef.current.stop();
-        }
-        html5QrCodeRef.current.clear();
-      } catch (_) { /* ignore stop errors */ }
-      html5QrCodeRef.current = null;
-    }
-  };
+    const stopScanner = async () => {
+      if (html5QrCodeRef.current) {
+        try {
+          if (html5QrCodeRef.current.isScanning) {
+            await html5QrCodeRef.current.stop();
+          }
+          html5QrCodeRef.current.clear();
+        } catch (_) { /* ignore stop errors */ }
+        html5QrCodeRef.current = null;
+      }
+    };
 
-  const unlockedItems = QUEST_TARGETS.filter(item => unlockedRewards.includes(item.id));
-  const lockedItems = QUEST_TARGETS.filter(item => !unlockedRewards.includes(item.id));
+    const unlockedItems = QUEST_TARGETS.filter(item => unlockedRewards.includes(item.id));
+    const lockedItems = QUEST_TARGETS.filter(item => !unlockedRewards.includes(item.id));
 
-  return (
-    <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-900 font-quicksand brightness-[1.1]">
-
-
-      {/* MAP VIEW */}
-      <div ref={mapContainer} className="h-full w-full grayscale-[0.05] contrast-[1.05] brightness-[0.9]">
-        {/* RECENTER BUTTON */}
-        <button
-          onClick={() => {
-            if (userLocation && map.current) {
-              map.current.flyTo({ center: [userLocation[1], userLocation[0]], zoom: 17, pitch: 60 });
-            } else {
-              // Try to force a fresh GPS lock
-              navigator.geolocation.getCurrentPosition(
-                (p) => {
-                  const coords: [number, number] = [p.coords.latitude, p.coords.longitude];
-                  setUserLocation(coords);
-                  map.current?.flyTo({ center: [coords[1], coords[0]], zoom: 17, pitch: 60 });
-                },
-                (e) => alert(lang === 'bs' ? 'GPS lokacija nije dostupna.' : 'GPS location not available.'),
-                { enableHighAccuracy: true, timeout: 10000 }
-              );
-            }
-          }}
-          className="absolute bottom-24 left-6 z-20 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center text-blue-400 active:scale-95 transition-all"
-        >
-          <Navigation size={20} />
-        </button>
+    return (
+      <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-900 font-quicksand brightness-[1.1]">
 
 
-      </div>
-
-      {/* OFFLINE INDICATOR BAR */}
-      <AnimatePresence>
-        {isOfflineMode && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            className="absolute top-28 right-6 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-xl border border-blue-500/30 shadow-lg shadow-blue-500/20"
+        {/* MAP VIEW */}
+        <div ref={mapContainer} className="h-full w-full grayscale-[0.05] contrast-[1.05] brightness-[0.9]">
+          {/* RECENTER BUTTON */}
+          <button
+            onClick={() => {
+              if (userLocation && map.current) {
+                map.current.flyTo({ center: [userLocation[1], userLocation[0]], zoom: 17, pitch: 60 });
+              } else {
+                // Try to force a fresh GPS lock
+                navigator.geolocation.getCurrentPosition(
+                  (p) => {
+                    const coords: [number, number] = [p.coords.latitude, p.coords.longitude];
+                    setUserLocation(coords);
+                    map.current?.flyTo({ center: [coords[1], coords[0]], zoom: 17, pitch: 60 });
+                  },
+                  (e) => alert(lang === 'bs' ? 'GPS lokacija nije dostupna.' : 'GPS location not available.'),
+                  { enableHighAccuracy: true, timeout: 10000 }
+                );
+              }
+            }}
+            className="absolute bottom-24 left-6 z-20 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center text-blue-400 active:scale-95 transition-all"
           >
-            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_#3b82f6]" />
-            <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Saved Offline Map Data</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <Navigation size={20} />
+          </button>
 
-      {/* TOP FLOATING HUB */}
-      <div className="absolute top-6 inset-x-0 mx-auto z-10 w-[95%] max-w-lg">
-        <div className={`bg-slate-900/40 ${isUtilityMode ? 'backdrop-blur-sm shadow-lg' : 'backdrop-blur-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]'} px-6 py-4 rounded-[2.5rem] border border-white/20 flex items-center justify-between`}>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40 rotate-3 transition-transform hover:rotate-0">
-              <Trophy className="w-6 h-6 text-slate-900" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-black text-amber-400 uppercase tracking-[0.2em] leading-none mb-1">Explorer Hub</span>
-              <span className="text-xl font-black text-white uppercase tracking-tight leading-none">Tuzla Quest</span>
-            </div>
-          </div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={() => setIsScanning(true)}
-              className="w-14 h-14 flex items-center justify-center bg-white/10 hover:bg-amber-500 text-white hover:text-slate-900 rounded-2xl transition-all active:scale-90 border border-white/10 group shadow-lg"
-            >
-              <QrCode className="w-6 h-6 transition-transform group-hover:scale-110" />
-            </button>
-            <button
-              onClick={() => {
-                if (isNavigating) {
-                  setIsNavigating(false);
-                  setSelectedNavTarget(null);
-                } else {
-                  setIsPresetModalOpen(true);
-                }
-              }}
-              className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all active:scale-90 border shadow-lg ${isNavigating ? 'bg-red-500 border-red-400 text-white animate-pulse' : 'bg-white/10 border-white/10 text-white hover:bg-emerald-500'}`}
-            >
-              {isNavigating ? <X className="w-6 h-6" /> : <Route className="w-6 h-6 transition-transform group-hover:scale-110" />}
-            </button>
-            <button
-              onClick={onToggleAR}
-              className="w-14 h-14 flex items-center justify-center bg-white/10 hover:bg-blue-500 text-white rounded-2xl transition-all active:scale-90 border border-white/10 group shadow-lg"
-            >
-              <Navigation className="w-6 h-6 rotate-45 transition-transform group-hover:scale-110" />
-            </button>
-          </div>
         </div>
-      </div>
-      {/* 3D PITCH CONTROL */}
-      <div className={`absolute right-6 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-3 bg-white/5 ${isUtilityMode ? 'backdrop-blur-sm shadow-lg' : 'backdrop-blur-xl shadow-2xl'} p-3 rounded-full border border-white/10`}>
-        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-black text-white uppercase tracking-tighter">3D</div>
-        <input
-          type="range" min="30" max={policy.mapFx.maxPitch.toString()} defaultValue={Math.min(75, policy.mapFx.maxPitch).toString()}
-          onChange={(e) => map.current?.setPitch(Math.min(parseInt(e.target.value), policy.mapFx.maxPitch))}
-          className="bg-white/20 rounded-full h-32 w-2 focus:outline-none focus:ring-2 focus:ring-amber-500 [writing-mode:vertical-rl] [appearance:slider-vertical] [-webkit-appearance:slider-vertical]"
-        />
-      </div>
 
-      {/* SCANNER OVERLAY */}
-      <AnimatePresence>
-        {isScanning && (
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed inset-0 z-[2000] bg-black flex flex-col pt-32"
-          >
-            {/* LASER SCANNER FRAME */}
-            <div className="relative w-full h-[40vh] flex flex-col items-center justify-center mb-12">
-              {!isUtilityMode && <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-12 bg-amber-500/10 blur-[40px] rounded-full" />}
-
-              <div className="relative w-72 h-72">
-                {/* Real Camera Feed */}
-                <div id={scannerContainerId} className="absolute inset-0 rounded-2xl overflow-clip bg-black border-2 border-white/10 shadow-[0_0_80px_rgba(245,158,11,0.1)]" style={{ backgroundColor: 'black', minWidth: '280px', minHeight: '280px' }} />
-
-                {/* Cyber Frame Decor */}
-                <div className="absolute -inset-4 border-2 border-white/5 rounded-[2.5rem] pointer-events-none" />
-                <div className={`absolute -inset-1 border border-amber-500/50 rounded-[1.5rem] pointer-events-none ${policy.uiFx.enableInfiniteAnimations ? 'animate-pulse' : ''}`} />
-
-                {/* Corner Accents */}
-                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-amber-500 rounded-tl-2xl" />
-                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-amber-500 rounded-tr-2xl" />
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-amber-500 rounded-bl-2xl" />
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-amber-500 rounded-br-2xl" />
-
-                {/* Animated Laser line with blur trail */}
-                {policy.uiFx.enableInfiniteAnimations ? (
-                  <motion.div
-                    animate={{ top: ['0%', '100%', '0%'] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-                    className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent z-10"
-                  >
-                    <div className="absolute inset-0 bg-amber-400 blur-sm opacity-50" />
-                  </motion.div>
-                ) : (
-                  <div className="absolute left-0 top-1/2 w-full h-1 -translate-y-1/2 bg-gradient-to-r from-transparent via-amber-500 to-transparent z-10" />
-                )}
-              </div>
-
-              <div className="mt-8 flex flex-col items-center">
-                <span className="text-amber-400 font-black text-xs uppercase tracking-[0.3em] mb-2 animate-pulse">Scanning Signal</span>
-                <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest text-center px-12 leading-relaxed">
-                  Position QR code within the frame to unlock rewards
-                </span>
-              </div>
-            </div>
-
-            {/* REWARD SECTIONS */}
-            <div className="flex-1 overflow-y-auto px-6 pb-20 hide-scrollbar space-y-12">
-
-              {/* SECTION: UNLOCKED */}
-              {unlockedItems.length > 0 && (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <CheckCircle2 className="w-5 h-5 text-green-400" />
-                    <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">{lang === 'bs' ? 'Otključane Nagrade' : 'Unlocked Rewards'}</h2>
-                    <div className="h-px flex-1 bg-white/10" />
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    {unlockedItems.map((item) => (
-                      <motion.div
-                        layout
-                        key={item.id}
-                        className="group relative h-32 rounded-3xl overflow-hidden border border-amber-400/40 bg-white/5 shadow-xl transition-all active:scale-95"
-                        onClick={() => {
-                          if (item.video) setPlayingVideo(item.video);
-                          else if ((item as any).website) window.open((item as any).website, '_blank');
-                        }}
-                      >
-                        <img src={item.image} alt={item.name.en} className={`w-full h-full object-cover brightness-[0.7] ${isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'}`} />
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 to-transparent p-5 flex flex-col justify-center">
-                          <span className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-1 leading-none">{lang === 'bs' ? 'Otključano' : 'Unlocked'}</span>
-                          <h3 className="text-lg font-black text-white uppercase leading-none tracking-tight">{item.name.en}</h3>
-                        </div>
-                        {item.video && (
-                          <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40">
-                            <Play className="w-5 h-5 text-slate-950 fill-slate-950 ml-0.5" />
-                          </div>
-                        )}
-                        <div className="absolute bottom-0 left-0 h-1 bg-amber-500 transition-all duration-500 w-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* SECTION: LOCKED */}
-              {lockedItems.length > 0 && (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <Lock className="w-5 h-5 text-slate-500" />
-                    <h2 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em]">{lang === 'bs' ? 'Preostali Zadaci' : 'Remaining Quests'}</h2>
-                    <div className="h-px flex-1 bg-white/10" />
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    {lockedItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className="relative h-28 rounded-3xl overflow-hidden border border-white/5 bg-slate-900/50"
-                      >
-                        <img src={item.image} alt="Locked" className={`w-full h-full object-cover grayscale brightness-[0.3] ${isUtilityMode ? 'blur-sm' : 'blur-xl'}`} />
-                        <div className="absolute inset-0 flex items-center justify-between px-8">
-                          <div className="flex flex-col">
-                            <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1 leading-none">Find to Unlock</span>
-                            <h3 className="text-md font-black text-slate-600 uppercase leading-none tracking-tight italic">SECRET LOCATION</h3>
-                          </div>
-                          <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                            <Lock className="w-4 h-4 text-slate-700" />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Close Button */}
-            <button
-              onClick={() => setIsScanning(false)}
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-white/10 hover:bg-white/20 backdrop-blur-2xl border border-white/20 rounded-3xl flex items-center justify-center text-white shadow-2xl active:scale-90 transition-all"
+        {/* OFFLINE INDICATOR BAR */}
+        <AnimatePresence>
+          {isOfflineMode && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="absolute top-28 right-6 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-xl border border-blue-500/30 shadow-lg shadow-blue-500/20"
             >
-              <X className="w-8 h-8" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_#3b82f6]" />
+              <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Saved Offline Map Data</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* VIDEO PLAYER */}
-      <AnimatePresence>
-        {playingVideo && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[5000] bg-black flex flex-col p-6"
-          >
-            <div className="flex-grow flex items-center justify-center bg-black">
-              <video
-                src={playingVideo}
-                autoPlay
-                controls
-                playsInline
-                poster={QUEST_TARGETS.find(q => q.video === playingVideo)?.image}
-                className="w-full max-h-[70vh] rounded-[2.5rem] bg-black shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10"
-              />
+        {/* TOP FLOATING HUB */}
+        <div className="absolute top-6 inset-x-0 mx-auto z-10 w-[95%] max-w-lg">
+          <div className={`bg-slate-900/40 ${isUtilityMode ? 'backdrop-blur-sm shadow-lg' : 'backdrop-blur-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]'} px-6 py-4 rounded-[2.5rem] border border-white/20 flex items-center justify-between`}>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40 rotate-3 transition-transform hover:rotate-0">
+                <Trophy className="w-6 h-6 text-slate-900" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-amber-400 uppercase tracking-[0.2em] leading-none mb-1">Explorer Hub</span>
+                <span className="text-xl font-black text-white uppercase tracking-tight leading-none">Tuzla Quest</span>
+              </div>
             </div>
 
-            <div className="h-48 flex flex-col items-center justify-center gap-6">
-              <h2 className="text-white font-black text-2xl uppercase tracking-tighter text-center">Reward Cinematic Unlocked</h2>
+            <div className="flex gap-2">
               <button
-                onClick={() => setPlayingVideo(null)}
-                className="px-12 py-5 bg-white text-slate-950 rounded-2xl font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all"
+                onClick={() => setIsScanning(true)}
+                className="w-14 h-14 flex items-center justify-center bg-white/10 hover:bg-amber-500 text-white hover:text-slate-900 rounded-2xl transition-all active:scale-90 border border-white/10 group shadow-lg"
               >
-                Return to Quest
+                <QrCode className="w-6 h-6 transition-transform group-hover:scale-110" />
+              </button>
+              <button
+                onClick={() => {
+                  if (isNavigating) {
+                    setIsNavigating(false);
+                    setSelectedNavTarget(null);
+                  } else {
+                    setIsPresetModalOpen(true);
+                  }
+                }}
+                className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all active:scale-90 border shadow-lg ${isNavigating ? 'bg-red-500 border-red-400 text-white animate-pulse' : 'bg-white/10 border-white/10 text-white hover:bg-emerald-500'}`}
+              >
+                {isNavigating ? <X className="w-6 h-6" /> : <Route className="w-6 h-6 transition-transform group-hover:scale-110" />}
+              </button>
+              <button
+                onClick={onToggleAR}
+                className="w-14 h-14 flex items-center justify-center bg-white/10 hover:bg-blue-500 text-white rounded-2xl transition-all active:scale-90 border border-white/10 group shadow-lg"
+              >
+                <Navigation className="w-6 h-6 rotate-45 transition-transform group-hover:scale-110" />
               </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+        {/* 3D PITCH CONTROL */}
+        <div className={`absolute right-6 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-3 bg-white/5 ${isUtilityMode ? 'backdrop-blur-sm shadow-lg' : 'backdrop-blur-xl shadow-2xl'} p-3 rounded-full border border-white/10`}>
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-black text-white uppercase tracking-tighter">3D</div>
+          <input
+            type="range" min="30" max={policy.mapFx.maxPitch.toString()} defaultValue={Math.min(75, policy.mapFx.maxPitch).toString()}
+            onChange={(e) => map.current?.setPitch(Math.min(parseInt(e.target.value), policy.mapFx.maxPitch))}
+            className="bg-white/20 rounded-full h-32 w-2 focus:outline-none focus:ring-2 focus:ring-amber-500 [writing-mode:vertical-rl] [appearance:slider-vertical] [-webkit-appearance:slider-vertical]"
+          />
+        </div>
 
-      {/* SUCCESS POPUP */}
-      <AnimatePresence>
-        {successMessage && (
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-24 left-6 right-6 z-[3000] bg-green-500 text-white p-6 rounded-3xl shadow-[0_20px_50px_rgba(16,185,129,0.4)] flex items-center gap-4"
-          >
-            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
-              <Trophy className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-green-100 block mb-1">New Reward Unlocked</span>
-              <span className="text-lg font-black uppercase text-white leading-none">{successMessage}</span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Destination Preset Selector Modal */}
-      <AnimatePresence>
-        {isPresetModalOpen && (
-          <div className="fixed inset-0 z-[4000] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+        {/* SCANNER OVERLAY */}
+        <AnimatePresence>
+          {isScanning && (
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="w-full max-w-lg overflow-hidden border bg-slate-900/95 backdrop-blur-2xl border-white/10 rounded-3xl shadow-2xl flex flex-col max-h-[80vh]"
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed inset-0 z-[2000] bg-black flex flex-col pt-32"
             >
-              {/* Modal Header */}
-              <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                <div>
-                  <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
-                    <Compass className="text-emerald-500" size={24} />
-                    {lang === 'bs' ? 'Odaberi Odredište' : 'Choose Destination'}
-                  </h3>
-                  <p className="text-xs font-bold text-slate-400 mt-1">
-                    {lang === 'bs' ? 'Započni pješačku rutu kroz Tuzlu' : 'Start a walking route through Tuzla'}
-                  </p>
+              {/* LASER SCANNER FRAME */}
+              <div className="relative w-full h-[40vh] flex flex-col items-center justify-center mb-12">
+                {!isUtilityMode && <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-12 bg-amber-500/10 blur-[40px] rounded-full" />}
+
+                <div className="relative w-72 h-72">
+                  {/* Real Camera Feed */}
+                  <div id={scannerContainerId} className="absolute inset-0 rounded-2xl overflow-clip bg-black border-2 border-white/10 shadow-[0_0_80px_rgba(245,158,11,0.1)]" style={{ backgroundColor: 'black', minWidth: '280px', minHeight: '280px' }} />
+
+                  {/* Cyber Frame Decor */}
+                  <div className="absolute -inset-4 border-2 border-white/5 rounded-[2.5rem] pointer-events-none" />
+                  <div className={`absolute -inset-1 border border-amber-500/50 rounded-[1.5rem] pointer-events-none ${policy.uiFx.enableInfiniteAnimations ? 'animate-pulse' : ''}`} />
+
+                  {/* Corner Accents */}
+                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-amber-500 rounded-tl-2xl" />
+                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-amber-500 rounded-tr-2xl" />
+                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-amber-500 rounded-bl-2xl" />
+                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-amber-500 rounded-br-2xl" />
+
+                  {/* Animated Laser line with blur trail */}
+                  {policy.uiFx.enableInfiniteAnimations ? (
+                    <motion.div
+                      animate={{ top: ['0%', '100%', '0%'] }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+                      className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent z-10"
+                    >
+                      <div className="absolute inset-0 bg-amber-400 blur-sm opacity-50" />
+                    </motion.div>
+                  ) : (
+                    <div className="absolute left-0 top-1/2 w-full h-1 -translate-y-1/2 bg-gradient-to-r from-transparent via-amber-500 to-transparent z-10" />
+                  )}
                 </div>
-                <button
-                  onClick={() => setIsPresetModalOpen(false)}
-                  className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all"
-                >
-                  <X size={20} />
-                </button>
+
+                <div className="mt-8 flex flex-col items-center">
+                  <span className="text-amber-400 font-black text-xs uppercase tracking-[0.3em] mb-2 animate-pulse">Scanning Signal</span>
+                  <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest text-center px-12 leading-relaxed">
+                    Position QR code within the frame to unlock rewards
+                  </span>
+                </div>
               </div>
 
-              {/* Tabs */}
-              <div className="px-6 py-2 border-b border-white/5 flex gap-2">
-                <button
-                  onClick={() => setActiveModalTab('poi')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'poi'
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
-                >
-                  <Landmark size={16} />
-                  {lang === 'bs' ? 'Znamenitosti' : 'Landmarks'}
-                </button>
-                <button
-                  onClick={() => setActiveModalTab('hotel')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'hotel'
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
-                >
-                  <HotelIcon size={16} />
-                  {lang === 'bs' ? 'Hoteli' : 'Hotels'}
-                </button>
-              </div>
+              {/* REWARD SECTIONS */}
+              <div className="flex-1 overflow-y-auto px-6 pb-20 hide-scrollbar space-y-12">
 
-              {/* Scrollable List */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
-                {activeModalTab === 'poi' ? (
-                  ROUTE_POI_PRESETS.map((poi, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setSelectedNavTarget({
-                          name: (poi.name[lang] ?? poi.name.en),
-                          lat: poi.lat,
-                          lon: poi.lon
-                        });
-                        setIsNavigating(true);
-                        setIsPresetModalOpen(false);
-                      }}
-                      className="w-full p-4 bg-white/5 hover:bg-emerald-600/20 hover:border-emerald-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                          <Landmark size={20} />
+                {/* SECTION: UNLOCKED */}
+                {unlockedItems.length > 0 && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <CheckCircle2 className="w-5 h-5 text-green-400" />
+                      <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">{lang === 'bs' ? 'Otključane Nagrade' : 'Unlocked Rewards'}</h2>
+                      <div className="h-px flex-1 bg-white/10" />
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                      {unlockedItems.map((item) => (
+                        <motion.div
+                          layout
+                          key={item.id}
+                          className="group relative h-32 rounded-3xl overflow-hidden border border-amber-400/40 bg-white/5 shadow-xl transition-all active:scale-95"
+                          onClick={() => {
+                            if (item.video) setPlayingVideo(item.video);
+                            else if ((item as any).website) window.open((item as any).website, '_blank');
+                          }}
+                        >
+                          <img src={item.image} alt={item.name.en} className={`w-full h-full object-cover brightness-[0.7] ${isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'}`} />
+                          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 to-transparent p-5 flex flex-col justify-center">
+                            <span className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-1 leading-none">{lang === 'bs' ? 'Otključano' : 'Unlocked'}</span>
+                            <h3 className="text-lg font-black text-white uppercase leading-none tracking-tight">{item.name.en}</h3>
+                          </div>
+                          {item.video && (
+                            <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40">
+                              <Play className="w-5 h-5 text-slate-950 fill-slate-950 ml-0.5" />
+                            </div>
+                          )}
+                          <div className="absolute bottom-0 left-0 h-1 bg-amber-500 transition-all duration-500 w-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* SECTION: LOCKED */}
+                {lockedItems.length > 0 && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <Lock className="w-5 h-5 text-slate-500" />
+                      <h2 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em]">{lang === 'bs' ? 'Preostali Zadaci' : 'Remaining Quests'}</h2>
+                      <div className="h-px flex-1 bg-white/10" />
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                      {lockedItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="relative h-28 rounded-3xl overflow-hidden border border-white/5 bg-slate-900/50"
+                        >
+                          <img src={item.image} alt="Locked" className={`w-full h-full object-cover grayscale brightness-[0.3] ${isUtilityMode ? 'blur-sm' : 'blur-xl'}`} />
+                          <div className="absolute inset-0 flex items-center justify-between px-8">
+                            <div className="flex flex-col">
+                              <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1 leading-none">Find to Unlock</span>
+                              <h3 className="text-md font-black text-slate-600 uppercase leading-none tracking-tight italic">SECRET LOCATION</h3>
+                            </div>
+                            <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                              <Lock className="w-4 h-4 text-slate-700" />
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-extrabold text-white group-hover:text-emerald-300 transition-colors">
-                            {poi.name[lang] ?? poi.name.en}
-                          </h4>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/80">
-                            {poi.category}
-                          </span>
-                        </div>
-                      </div>
-                      <Route size={20} className="text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
-                    </button>
-                  ))
-                ) : (
-                  tuzlaHotelData.map((hotel, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setSelectedNavTarget({
-                          name: hotel.name,
-                          lat: hotel.latitude,
-                          lon: hotel.longitude
-                        });
-                        setIsNavigating(true);
-                        setIsPresetModalOpen(false);
-                      }}
-                      className="w-full p-4 bg-white/5 hover:bg-emerald-600/20 hover:border-emerald-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                          <HotelIcon size={20} />
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-white group-hover:text-emerald-300 transition-colors">
-                            {hotel.name}
-                          </h4>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/80">
-                            {hotel.rating} ★ • {hotel.priceRange}
-                          </span>
-                        </div>
-                      </div>
-                      <Route size={20} className="text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
-                    </button>
-                  ))
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
-      {/* Navigation HUD Panel */}
-      <AnimatePresence>
-        {isNavigating && selectedNavTarget && (
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 50, opacity: 0 }}
-            className="absolute inset-0 z-20 pointer-events-none flex items-end justify-center pb-28 px-4"
-          >
+              {/* Close Button */}
+              <button
+                onClick={() => setIsScanning(false)}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-white/10 hover:bg-white/20 backdrop-blur-2xl border border-white/20 rounded-3xl flex items-center justify-center text-white shadow-2xl active:scale-90 transition-all"
+              >
+                <X className="w-8 h-8" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* VIDEO PLAYER */}
+        <AnimatePresence>
+          {playingVideo && (
             <motion.div
-              drag
-              dragMomentum={false}
-              className="w-full max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950 border border-emerald-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[5000] bg-black flex flex-col p-6"
             >
-              {/* Header Info */}
-              <div className="flex items-start justify-between">
-                <div className="flex gap-3">
-                  <div className="p-3 bg-emerald-600/20 text-emerald-400 rounded-2xl flex items-center justify-center border border-emerald-500/20">
-                    <Route size={24} className="animate-pulse" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400">
-                      {lang === 'bs' ? 'U Toku je Pješačka Ruta' : 'Walking Route in Progress'}
-                    </span>
-                    <h4 className="text-base font-black text-white line-clamp-1 mt-0.5">
-                      {selectedNavTarget.name}
-                    </h4>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    setIsNavigating(false);
-                    setSelectedNavTarget(null);
-                  }}
-                  className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all"
-                >
-                  <X size={18} />
-                </button>
+              <div className="flex-grow flex items-center justify-center bg-black">
+                <video
+                  src={playingVideo}
+                  autoPlay
+                  controls
+                  playsInline
+                  poster={QUEST_TARGETS.find(q => q.video === playingVideo)?.image}
+                  className="w-full max-h-[70vh] rounded-[2.5rem] bg-black shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10"
+                />
               </div>
 
-              {/* Navigation Data Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {/* Distance Card */}
-                <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <Footprints size={14} />
-                    <span className="text-xs font-bold">{lang === 'bs' ? 'Udaljenost' : 'Distance'}</span>
+              <div className="h-48 flex flex-col items-center justify-center gap-6">
+                <h2 className="text-white font-black text-2xl uppercase tracking-tighter text-center">Reward Cinematic Unlocked</h2>
+                <button
+                  onClick={() => setPlayingVideo(null)}
+                  className="px-12 py-5 bg-white text-slate-950 rounded-2xl font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all"
+                >
+                  Return to Quest
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* SUCCESS POPUP */}
+        <AnimatePresence>
+          {successMessage && (
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              className="fixed bottom-24 left-6 right-6 z-[3000] bg-green-500 text-white p-6 rounded-3xl shadow-[0_20px_50px_rgba(16,185,129,0.4)] flex items-center gap-4"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
+                <Trophy className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-green-100 block mb-1">New Reward Unlocked</span>
+                <span className="text-lg font-black uppercase text-white leading-none">{successMessage}</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Destination Preset Selector Modal */}
+        <AnimatePresence>
+          {isPresetModalOpen && (
+            <div className="fixed inset-0 z-[4000] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+                className="w-full max-w-lg overflow-hidden border bg-slate-900/95 backdrop-blur-2xl border-white/10 rounded-3xl shadow-2xl flex flex-col max-h-[80vh]"
+              >
+                {/* Modal Header */}
+                <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
+                      <Compass className="text-emerald-500" size={24} />
+                      {lang === 'bs' ? 'Odaberi Odredište' : 'Choose Destination'}
+                    </h3>
+                    <p className="text-xs font-bold text-slate-400 mt-1">
+                      {lang === 'bs' ? 'Započni pješačku rutu kroz Tuzlu' : 'Start a walking route through Tuzla'}
+                    </p>
                   </div>
-                  <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
-                    {isRouteLoading ? (
-                      <Loader2 className="animate-spin text-emerald-400" size={20} />
-                    ) : routeDistance !== null ? (
-                      routeDistance >= 1000 ? (
+                  <button
+                    onClick={() => setIsPresetModalOpen(false)}
+                    className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Tabs */}
+                <div className="px-6 py-2 border-b border-white/5 flex gap-2">
+                  <button
+                    onClick={() => setActiveModalTab('poi')}
+                    className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'poi'
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                      }`}
+                  >
+                    <Landmark size={16} />
+                    {lang === 'bs' ? 'Znamenitosti' : 'Landmarks'}
+                  </button>
+                  <button
+                    onClick={() => setActiveModalTab('hotel')}
+                    className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'hotel'
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                      }`}
+                  >
+                    <HotelIcon size={16} />
+                    {lang === 'bs' ? 'Hoteli' : 'Hotels'}
+                  </button>
+                </div>
+
+                {/* Scrollable List */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
+                  {activeModalTab === 'poi' ? (
+                    ROUTE_POI_PRESETS.map((poi, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setSelectedNavTarget({
+                            name: (poi.name[lang] ?? poi.name.en),
+                            lat: poi.lat,
+                            lon: poi.lon
+                          });
+                          setIsNavigating(true);
+                          setIsPresetModalOpen(false);
+                        }}
+                        className="w-full p-4 bg-white/5 hover:bg-emerald-600/20 hover:border-emerald-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                            <Landmark size={20} />
+                          </div>
+                          <div>
+                            <h4 className="font-extrabold text-white group-hover:text-emerald-300 transition-colors">
+                              {poi.name[lang] ?? poi.name.en}
+                            </h4>
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/80">
+                              {poi.category}
+                            </span>
+                          </div>
+                        </div>
+                        <Route size={20} className="text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
+                      </button>
+                    ))
+                  ) : (
+                    tuzlaHotelData.map((hotel, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setSelectedNavTarget({
+                            name: hotel.name,
+                            lat: hotel.latitude,
+                            lon: hotel.longitude
+                          });
+                          setIsNavigating(true);
+                          setIsPresetModalOpen(false);
+                        }}
+                        className="w-full p-4 bg-white/5 hover:bg-emerald-600/20 hover:border-emerald-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                            <HotelIcon size={20} />
+                          </div>
+                          <div>
+                            <h4 className="font-extrabold text-white group-hover:text-emerald-300 transition-colors">
+                              {hotel.name}
+                            </h4>
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/80">
+                              {hotel.rating} ★ • {hotel.priceRange}
+                            </span>
+                          </div>
+                        </div>
+                        <Route size={20} className="text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
+                      </button>
+                    ))
+                  )}
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Navigation HUD Panel */}
+        <AnimatePresence>
+          {isNavigating && selectedNavTarget && (
+            <motion.div
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+              className="absolute inset-0 z-20 pointer-events-none flex items-end justify-center pb-28 px-4"
+            >
+              <motion.div
+                drag
+                dragMomentum={false}
+                className="w-full max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950 border border-emerald-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4"
+              >
+                {/* Header Info */}
+                <div className="flex items-start justify-between">
+                  <div className="flex gap-3">
+                    <div className="p-3 bg-emerald-600/20 text-emerald-400 rounded-2xl flex items-center justify-center border border-emerald-500/20">
+                      <Route size={24} className="animate-pulse" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400">
+                        {lang === 'bs' ? 'U Toku je Pješačka Ruta' : 'Walking Route in Progress'}
+                      </span>
+                      <h4 className="text-base font-black text-white line-clamp-1 mt-0.5">
+                        {selectedNavTarget.name}
+                      </h4>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsNavigating(false);
+                      setSelectedNavTarget(null);
+                    }}
+                    className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                {/* Navigation Data Grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Distance Card */}
+                  <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <Footprints size={14} />
+                      <span className="text-xs font-bold">{lang === 'bs' ? 'Udaljenost' : 'Distance'}</span>
+                    </div>
+                    <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
+                      {isRouteLoading ? (
+                        <Loader2 className="animate-spin text-emerald-400" size={20} />
+                      ) : routeDistance !== null ? (
+                        routeDistance >= 1000 ? (
+                          <>
+                            {(routeDistance / 1000).toFixed(1)}
+                            <span className="text-xs text-emerald-400 font-bold">km</span>
+                          </>
+                        ) : (
+                          <>
+                            {Math.round(routeDistance)}
+                            <span className="text-xs text-emerald-400 font-bold">m</span>
+                          </>
+                        )
+                      ) : (
+                        '--'
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Duration Card */}
+                  <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <Clock size={14} />
+                      <span className="text-xs font-bold">{lang === 'bs' ? 'Vrijeme' : 'Duration'}</span>
+                    </div>
+                    <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
+                      {isRouteLoading ? (
+                        <Loader2 className="animate-spin text-emerald-400" size={20} />
+                      ) : routeTime !== null ? (
                         <>
-                          {(routeDistance / 1000).toFixed(1)}
-                          <span className="text-xs text-emerald-400 font-bold">km</span>
+                          {Math.ceil(routeTime / 60)}
+                          <span className="text-xs text-emerald-400 font-bold">min</span>
                         </>
                       ) : (
-                        <>
-                          {Math.round(routeDistance)}
-                          <span className="text-xs text-emerald-400 font-bold">m</span>
-                        </>
-                      )
-                    ) : (
-                      '--'
-                    )}
+                        '--'
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                {/* Duration Card */}
-                <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <Clock size={14} />
-                    <span className="text-xs font-bold">{lang === 'bs' ? 'Vrijeme' : 'Duration'}</span>
-                  </div>
-                  <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
-                    {isRouteLoading ? (
-                      <Loader2 className="animate-spin text-emerald-400" size={20} />
-                    ) : routeTime !== null ? (
-                      <>
-                        {Math.ceil(routeTime / 60)}
-                        <span className="text-xs text-emerald-400 font-bold">min</span>
-                      </>
-                    ) : (
-                      '--'
-                    )}
-                  </div>
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setIsNavigating(false);
+                      setSelectedNavTarget(null);
+                    }}
+                    className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-red-600/20"
+                  >
+                    {lang === 'bs' ? 'Završi' : 'End'}
+                  </button>
                 </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setIsNavigating(false);
-                    setSelectedNavTarget(null);
-                  }}
-                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-red-600/20"
-                >
-                  {lang === 'bs' ? 'Završi' : 'End'}
-                </button>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
 
-      <AnimatePresence>
-      </AnimatePresence>
-    </div>
-  );
-};
+        <AnimatePresence>
+        </AnimatePresence>
+      </div>
+    );
+  };
 
-export default MapQuestView;
+  export default MapQuestView;
+
+
+
+
+
