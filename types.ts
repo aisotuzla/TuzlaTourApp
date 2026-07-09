@@ -133,7 +133,6 @@ export enum AppTab {
   ACCOMMODATION = 'accommodation',
   MAP = 'map',
   QUEST = 'quest',
-  GALLERY = 'gallery',
   WALLET = 'wallet',
   TASK_MANAGER = 'taskManager',
   AR = 'ar',
