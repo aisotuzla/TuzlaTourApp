@@ -77,9 +77,25 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           ]
         },
         workbox: {
-          globPatterns: mode === 'development' ? [] : ['**/*.{js,css,html,ico,png,svg,webp}'],
+          globPatterns: mode === 'development' ? [] : ['**/*.{js,css,html,ico,svg}', 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png'],
           globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
-          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB limit
+          maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB limit for precached shell files
+          runtimeCaching: [
+            {
+              urlPattern: /\.(?:png|jpg|jpeg|svg|webp|gif)$/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'images-cache',
+                expiration: {
+                  maxEntries: 120,
+                  maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200]
+                }
+              }
+            }
+          ]
         }
       })
     ],
@@ -122,7 +138,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         '@tanstack/react-query',
         '@solana/wallet-adapter-react',
         '@solana/wallet-adapter-react-ui',
-        '@solana/wallet-adapter-wallets',
         '@solana/web3.js'
       ],
       exclude: ['rollup'],

@@ -182,13 +182,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
     <div className="bg-white">
       {/* 1. HERO SECTION */}
       <section
-        className="relative h-screen w-full max-w-[880px] mx-auto overflow-hidden flex items-center justify-center bg-white rounded-3xl border-2 border-blue-600 shadow-[0_0_30px_rgba(59,130,246,0.6)]"
+        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-white"
       >
-        <img
-          src="/assets/tuzguide.webp"
-          alt="Tuzla"
-          className="absolute inset-0 h-full w-full object-cover z-0"
-        />
+        <picture className="absolute inset-0 h-full w-full z-0">
+          <source media="(max-width: 640px) or (orientation: portrait)" srcSet="/assets/Gallery/QuestQRLocations/tuzhero.webp" />
+          <img
+            src="/assets/Gallery/Ilovetuzla.webp"
+            alt="Tuzla"
+            className="h-full w-full object-cover"
+          />
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 z-0" />
 
         <div className="absolute top-[100%] -translate-y-1/2 left-0 right-0 flex flex-col items-center justify-center text-white gap-4 pointer-events-none z-10">
@@ -358,7 +361,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                   className="absolute inset-0 z-10 bg-black flex items-center justify-center"
                 >
                   <img
-                    src="/assets/Gallery/tuzguidewide.webp"
+                    src="/assets/Gallery/QuestQRLocations/tuzhero.webp"
                     alt=""
                     className="absolute inset-0 w-full h-full object-cover opacity-40"
                   />

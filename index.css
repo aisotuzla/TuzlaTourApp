@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+
 /* Tuzla Virtual Guide - Global Styles */
 
 @import "tailwindcss";
 
 body {
-    font-family: 'Outfit', 'Inter', sans-serif;
+    font-family: 'Quicksand', sans-serif;
     overflow-x: hidden;
     background: #ffffff;
     -webkit-tap-highlight-color: transparent;
@@ -39,11 +39,6 @@ body {
 .glow-blue {
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
     border: 1px solid rgba(44, 173, 248, 0.4);
-}
-
-.glow-blue-strong {
-    box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
-    border: 2px solid rgba(59, 130, 246, 0.5);
 }
 
 .glow-blue-strong {
@@ -322,16 +317,7 @@ body {
     transform: scale(0.9);
 }
 
-/* Global Mobile Optimization: Disable heavy blur effects */
-.backdrop-blur,
-.backdrop-blur-sm,
-.backdrop-blur-md,
-.backdrop-blur-lg,
-.backdrop-blur-xl,
-.backdrop-blur-2xl,
-.backdrop-blur-3xl,
-.glassy,
-.glass-header {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+@keyframes marker-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.08); opacity: 1; }
 }

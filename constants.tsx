@@ -203,6 +203,46 @@ const LOCATIONS_RAW: Location[] = [
     category: 'nature',
     qrCode: 'Banja',
     discount: 'Health Reward',
+  },
+  {
+    id: 'frida',
+    name: {
+      en: 'Frida',
+      bs: 'Frida',
+      de: 'Frida',
+      tr: 'Frida',
+    },
+    description: {
+      en: 'A vibrant café and cultural spot inspired by Frida Kahlo, located in the heart of Tuzla.',
+      bs: 'Živopisan kafić i kulturno mjesto inspirirano Fridom Kahlo, smješten u srcu Tuzle.',
+      de: 'Ein lebhaftes Café und Kulturort inspiriert von Frida Kahlo, im Herzen von Tuzla.',
+      tr: 'Tuzla\'nın kalbinde, Frida Kahlo\'dan ilham alan canlı bir kafe ve kültür mekanı.',
+    },
+    image: '/assets/Gallery/QuestQRLocations/fridaslika.webp',
+    coordinates: [44.5393, 18.6755],
+    category: 'culture',
+    qrCode: 'Frida',
+    discount: 'Art Reward',
+  },
+  {
+    id: 'neolit',
+    name: {
+      en: 'Neolithic Settlement',
+      bs: 'Neolitsko sojeničko naselje',
+      de: 'Neolithische Siedlung',
+      tr: 'Neolitik Yerleşim',
+    },
+    description: {
+      en: 'A reconstructed Neolithic stilt-house settlement at the Pannonian Lakes complex, showcasing prehistoric life.',
+      bs: 'Rekonstruirano neolitsko sojeničko naselje na kompleksu Panonskih jezera, koje prikazuje prahistorijski život.',
+      de: 'Eine rekonstruierte neolithische Pfahlbausiedlung am Panonischen Seenkomplex, die prähistorisches Leben zeigt.',
+      tr: 'Pannonia Gölleri kompleksindeki yeniden inşa edilmiş Neolitik kazık ev yerleşimi, tarih öncesi yaşamı sergiliyor.',
+    },
+    image: '/assets/Gallery/QuestQRLocations/neolit2.webp',
+    coordinates: [44.5390, 18.6780],
+    category: 'culture',
+    qrCode: 'Neolit',
+    discount: 'Discovery Reward',
   }
 ];
 

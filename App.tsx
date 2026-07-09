@@ -10,7 +10,6 @@ const MapView = React.lazy(() => import('./components/MapView'));
 const MapQuestView = React.lazy(() => import('./components/MapQuestView'));
 const History = React.lazy(() => import('./components/History'));
 const CityGuide = React.lazy(() => import('./components/CityGuide'));
-const Gallery = React.lazy(() => import('./components/Gallery'));
 const Wallet = React.lazy(() => import('./components/Wallet'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
@@ -36,18 +35,12 @@ const queryClient = new QueryClient();
 // Solana Connect Imports
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 const App: React.FC = () => {
   const endpoint = useMemo(() => clusterApiUrl('devnet'), []);
-  const wallets = useMemo(
-    () => [
-      new SolflareWalletAdapter(),
-    ],
-    []
-  );
+  const wallets = useMemo(() => [], []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -181,7 +174,6 @@ const AppContent: React.FC = () => {
                 initialOpenScanner={autoOpenScanner}
               />
             );
-            case AppTab.GALLERY: return <Gallery lang={lang} features={features} />;
             case AppTab.WALLET: return (
               <SecurityGuard
                 lang={lang}
