@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import Sidebar from './components/Sidebar';
@@ -10,7 +10,7 @@ const MapView = React.lazy(() => import('./components/MapView'));
 const MapQuestView = React.lazy(() => import('./components/MapQuestView'));
 const History = React.lazy(() => import('./components/History'));
 const CityGuide = React.lazy(() => import('./components/CityGuide'));
-const Wallet = React.lazy(() => import('./components/Wallet'));
+const WalletShell = React.lazy(() => import('./components/WalletShell'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
@@ -32,25 +32,12 @@ import OfflineIndicator from './components/OfflineIndicator';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 
-// Solana Connect Imports
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { clusterApiUrl } from '@solana/web3.js';
-import '@solana/wallet-adapter-react-ui/styles.css';
+
 
 const App: React.FC = () => {
-  const endpoint = useMemo(() => clusterApiUrl('devnet'), []);
-  const wallets = useMemo(() => [], []);
-
   return (
     <QueryClientProvider client={queryClient}>
-      <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider wallets={wallets} autoConnect>
-          <WalletModalProvider>
-            <AppContent />
-          </WalletModalProvider>
-        </WalletProvider>
-      </ConnectionProvider>
+      <AppContent />
     </QueryClientProvider>
   );
 };
@@ -180,7 +167,7 @@ const AppContent: React.FC = () => {
                 isUnlocked={isWalletUnlocked}
                 onUnlock={() => setIsWalletUnlocked(true)}
               >
-                <Wallet lang={lang} />
+                <WalletShell lang={lang} />
               </SecurityGuard>
             );
             case AppTab.TASK_MANAGER: return <TaskManager lang={lang} />;

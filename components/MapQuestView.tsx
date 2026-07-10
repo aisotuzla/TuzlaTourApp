@@ -99,8 +99,9 @@ const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
 ];
 
 const QUEST_TARGETS = [
-  { id: 'irish', name: { en: 'Irish Pub', bs: 'Irish Pub' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRIrish.webp', Image: '/assets/Gallery/QuestQRLocations/foodprime.webp' },
-  { id: 'Palancikara Bagi', name: { en: 'Pancake Bagi', bs: 'Palančikara Bagi' }, Html5Qrcode: '/assets/Gallery/Food/QuestQRLocations/QRpalacinkara.webp', Image: '/assets/Gallery/Food/bagi.webp' },
+  { id: 'trg_slobode', name: { en: 'Freedom Square', bs: 'Trg slobode' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRTrgSlobode.png', Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp' },
+  { id: '3', name: { en: 'Salt Square', bs: 'Solni trg' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRsonitrg.png', Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp' },
+  { id: 'Palancinkara Bagi', name: { en: 'Pancake Bagi', bs: 'Palančikara Bagi' }, Html5Qrcode: '/assets/Gallery/Food/QuestQRLocations/QRpalacinkara.webp', Image: '/assets/Gallery/Food/bagi.webp' },
   { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QR Banja.png', Image: '/assets/Gallery/Photos/tuzla24.webp' },
   { id: 'frida', name: { en: 'Frida', bs: 'Frida' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRfrida.png', Image: '/assets/Gallery/QuestQRLocations/fridaslika.webp' },
   { id: 'panonika', name: { en: 'Pannonica Office', bs: 'Panonika Ured' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRPanonsko.png', Image: '/assets/Gallery/QuestQRLocations/tuzlaizugla.webp' },
@@ -364,6 +365,14 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     (window as any).playQuestRewardVideo = (videoUrl: string) => {
       setPlayingVideo(videoUrl);
     };
+
+    (window as any).mintNFTReward = (ipfsUrl: string) => {
+      // Open the IPFS NFT card in a new tab so user can preview
+      window.open(ipfsUrl, '_blank', 'noopener,noreferrer');
+      // Dispatch a custom event so App.tsx can navigate to Wallet for minting
+      window.dispatchEvent(new CustomEvent('tuzla:mintNFT', { detail: { ipfsUrl } }));
+    };
+
 
     (window as any).setGlobalMapNavTarget = async (locId: string) => {
       console.log("🚀 Navigating to:", locId);
@@ -664,7 +673,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       '4': '#84cc16', // Lime
       '5': '#ec4899', // Pink
       'mesa_selimovic': '#a855f7', // Purple
-      'irish': '#10b981', // Green
+      'trg_slobode': '#10b981', // Green
       'galerija': '#3b82f6', // Blue
       'banja': '#fbbf24', // Yellow
       'panonika': '#f97316', // Orange
@@ -686,25 +695,43 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       const markerColor = POI_COLORS[loc.id] || '#cbd5e1';
 
       const previewImg = questTarget?.Image || loc.image;
+      // NFT reward POIs — shown mint button when unlocked
+      const NFT_REWARD_IDS = ['frida', 'neolit', 'panonika'];
+      const NFT_IPFS = 'https://bafybeibd5ee6pjvkhn3kuitcclb5zjqdwo23yvprfwsaabcctylesvspsi.ipfs.dweb.link?filename=kenan-alajbegovic.webp';
+      const isNFTReward = NFT_REWARD_IDS.includes(loc.id);
       const popupHtml = `
         <div style="padding: 18px; font-family: 'Quicksand', sans-serif; background: #0f172a; color: white; border-radius: 24px; border: 2px solid ${markerColor}${isUnlocked ? '' : '33'}; box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px ${markerColor}${isUnlocked ? '40' : '05'};">
-          ${isUnlocked && previewImg ? `<img src="${previewImg}" alt="" style="width: 100%; height: 120px; object-fit: cover; border-radius: 16px; margin-bottom: 12px; border: 1px solid ${markerColor}44;" />` : ''}
+          ${previewImg ? `<img src="${previewImg}" alt="" style="width: 100%; height: 120px; object-fit: cover; border-radius: 16px; margin-bottom: 12px; border: 1px solid ${markerColor}${isUnlocked ? '44' : '22'}; opacity: ${isUnlocked ? '1' : '0.45'};" />` : ''}
           <h3 style="margin: 0; font-size: 18px; font-weight: 900; color: ${isUnlocked ? markerColor : '#64748b'}; text-transform: uppercase; letter-spacing: 0.15em; text-shadow: 0 0 10px ${markerColor}44;">${isUnlocked ? loc.name[lang] : '??? Location ???'}</h3>
           <p style="font-size: 14px; margin: 10px 0; color: #94a3b8; line-height: 1.6;">${isUnlocked ? loc.description[lang] : 'Search this area to uncover its history and collect your reward.'}</p>
+          ${isUnlocked && loc.address ? `
+            <div style="font-size: 12px; margin: 8px 0 12px 0; color: #94a3b8; display: flex; align-items: center; gap: 6px;">
+              <span style="color: ${markerColor}; font-size: 14px;">📍</span>
+              <span>${loc.address}</span>
+            </div>
+          ` : ''}
           <div style="display: flex; align-items: center; gap: 8px; margin-top: 15px;">
             ${isQuest ? (!isUnlocked ? '<span style="font-size: 10px; color: #f59e0b; font-weight: 900; background: rgba(245,158,11,0.2); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);">🔒 Quest Active</span>' : '<span style="font-size: 10px; color: #10b981; font-weight: 900; background: rgba(16,185,129,0.2); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.3);">🔓 Reward Unlocked</span>') : ''}
+            ${isNFTReward && isUnlocked ? '<span style="font-size: 10px; color: #a855f7; font-weight: 900; background: rgba(168,85,247,0.15); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(168,85,247,0.4);">🎖️ NFT Reward</span>' : ''}
             <span style="font-size: 10px; color: #475569; font-weight: bold; text-transform: uppercase;">Quest Target</span>
           </div>
-          <div style="display: flex; gap: 8px; margin-top: 18px;">
-            <button onclick="window.setGlobalMapNavTarget('${loc.id}')" style="flex: 1; padding: 12px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; transition: all 0.3s ease;">GPS</button>
-            ${isUnlocked && videoUrl ? `
-              <button onclick="window.playQuestRewardVideo('${videoUrl}')" style="flex: 1.2; padding: 12px; background: #a855f7; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(168,85,247,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
-                ${lang === 'bs' ? '🎬 GLEDAJ' : '🎬 WATCH'}
-              </button>
-            ` : ''}
-            ${loc.website ? `
-              <button onclick="window.open('${loc.website}', '_blank')" style="flex: 1.5; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(37,99,235,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
-                WEBSITE
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 18px;">
+            <div style="display: flex; gap: 8px;">
+              <button onclick="window.setGlobalMapNavTarget('${loc.id}')" style="flex: 1; padding: 12px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; transition: all 0.3s ease;">GPS</button>
+              ${isUnlocked && videoUrl ? `
+                <button onclick="window.playQuestRewardVideo('${videoUrl}')" style="flex: 1.2; padding: 12px; background: #a855f7; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(168,85,247,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  ${lang === 'bs' ? '🎬 GLEDAJ' : '🎬 WATCH'}
+                </button>
+              ` : ''}
+              ${loc.website ? `
+                <button onclick="window.open('${loc.website}', '_blank')" style="flex: 1.5; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(37,99,235,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  WEBSITE
+                </button>
+              ` : ''}
+            </div>
+            ${isNFTReward && isUnlocked ? `
+              <button onclick="window.mintNFTReward('${NFT_IPFS}')" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #7c3aed, #a855f7, #ec4899); color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 0.15em; box-shadow: 0 10px 30px rgba(168,85,247,0.5); display: flex; align-items: center; justify-content: center; gap: 6px;">
+                🎖️ ${lang === 'bs' ? 'MINT NFT NAGRADU → SOLFLARE' : 'MINT NFT REWARD → SOLFLARE'}
               </button>
             ` : ''}
           </div>
@@ -1195,32 +1222,50 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                   </div>
 
                   <div className="grid grid-cols-1 gap-4">
-                    {unlockedItems.map((item) => (
-                      <motion.div
-                        layout
-                        key={item.id}
-                        className="group relative h-32 rounded-3xl overflow-hidden border border-amber-400/40 bg-white/5 shadow-xl transition-all active:scale-95"
-                        onClick={() => {
-                          if (item.video) setPlayingVideo(item.video);
-                          else if ((item as any).website) window.open((item as any).website, '_blank');
-                        }}
-                      >
-                        <img src={item.Image} alt={item.name.en} className={`w-full h-full object-cover brightness-[0.7] ${isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'}`} />
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 to-transparent p-5 flex flex-col justify-center">
-                          <span className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-1 leading-none">{lang === 'bs' ? 'Otključano' : 'Unlocked'}</span>
-                          <h3 className="text-lg font-black text-white uppercase leading-none tracking-tight">{item.name.en}</h3>
+                    {unlockedItems.map((item) => {
+                      const NFT_REWARD_IDS = ['frida', 'neolit', 'slapovi'];
+                      const NFT_IPFS = 'https://bafybeibd5ee6pjvkhn3kuitcclb5zjqdwo23yvprfwsaabcctylesvspsi.ipfs.dweb.link?filename=kenan-alajbegovic.webp';
+                      const isNFTItem = NFT_REWARD_IDS.includes(item.id);
+                      return (
+                        <div key={item.id} className="flex flex-col gap-2">
+                          <motion.div
+                            layout
+                            className="group relative h-32 rounded-3xl overflow-hidden border border-amber-400/40 bg-white/5 shadow-xl transition-all active:scale-95"
+                            onClick={() => {
+                              if (item.video) setPlayingVideo(item.video);
+                              else if ((item as any).website) window.open((item as any).website, '_blank');
+                            }}
+                          >
+                            <img src={item.Image} alt={item.name.en} className={`w-full h-full object-cover brightness-[0.7] ${isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'}`} />
+                            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 to-transparent p-5 flex flex-col justify-center">
+                              <span className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-1 leading-none">{lang === 'bs' ? 'Otključano' : 'Unlocked'}</span>
+                              <h3 className="text-lg font-black text-white uppercase leading-none tracking-tight">{item.name.en}</h3>
+                            </div>
+                            {item.video && (
+                              <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40">
+                                <Play className="w-5 h-5 text-slate-950 fill-slate-950 ml-0.5" />
+                              </div>
+                            )}
+                            <div className="absolute bottom-0 left-0 h-1 bg-amber-500 transition-all duration-500 w-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+                          </motion.div>
+                          {isNFTItem && (
+                            <button
+                              onClick={() => {
+                                window.open(NFT_IPFS, '_blank', 'noopener,noreferrer');
+                              }}
+                              className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm text-white flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
+                              style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7, #ec4899)', boxShadow: '0 8px 25px rgba(168,85,247,0.5)' }}
+                            >
+                              🎖️ {lang === 'bs' ? 'Mint NFT Nagradu → Solflare' : 'Mint NFT Reward → Solflare'}
+                            </button>
+                          )}
                         </div>
-                        {item.video && (
-                          <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40">
-                            <Play className="w-5 h-5 text-slate-950 fill-slate-950 ml-0.5" />
-                          </div>
-                        )}
-                        <div className="absolute bottom-0 left-0 h-1 bg-amber-500 transition-all duration-500 w-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
-                      </motion.div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
+
 
               {/* SECTION: LOCKED */}
               {lockedItems.length > 0 && (

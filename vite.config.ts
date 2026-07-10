@@ -43,8 +43,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         strategies: 'generateSW',
         registerType: 'autoUpdate',
         devOptions: {
-          enabled: true,
-          type: 'module'
+          enabled: false,
         },
         includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
         manifest: {
@@ -136,9 +135,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         'maplibre-gl',
         'html5-qrcode',
         '@tanstack/react-query',
-        '@solana/wallet-adapter-react',
-        '@solana/wallet-adapter-react-ui',
-        '@solana/web3.js'
       ],
       exclude: ['rollup'],
     },

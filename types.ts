@@ -44,6 +44,7 @@ export interface Location {
   qrCode?: string;
   discount?: string | number;
   website?: string;
+  address?: string;
 }
 
 export interface TranslationSet {

@@ -184,14 +184,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       <section
         className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-white"
       >
-        <picture className="absolute inset-0 h-full w-full z-0">
+        <picture className="absolute inset-0 h-full w-full z-0 flex items-center justify-center">
           <source media="(max-width: 640px) or (orientation: portrait)" srcSet="/assets/Gallery/QuestQRLocations/tuzhero.webp" />
           <img
             src="/assets/Gallery/Ilovetuzla.webp"
             alt="Tuzla"
             className="h-full w-full object-cover"
+            style={{ maxWidth: '880px', marginLeft: 'auto', marginRight: 'auto', display: 'block' }}
           />
         </picture>
+
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 z-0" />
 
         <div className="absolute top-[100%] -translate-y-1/2 left-0 right-0 flex flex-col items-center justify-center text-white gap-4 pointer-events-none z-10">

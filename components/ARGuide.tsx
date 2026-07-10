@@ -473,7 +473,7 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
   return (
     <div className="relative w-full h-screen bg-blue-950 overflow-hidden">
       {cameraActive ? (
-        <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-700" />
+        <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover opacity-70 transition-opacity duration-700" />
       ) : (
         <div className="absolute inset-0 w-full h-full bg-black">
           <iframe
