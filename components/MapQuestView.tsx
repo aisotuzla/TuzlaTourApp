@@ -36,12 +36,7 @@ const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
     lon: 18.685620782683003,
     category: 'nature',
   },
-  {
-    name: { bs: 'Tuzla Old Town (Čaršija)', en: 'Tuzla Old Town (Čaršija)' },
-    lat: 44.53824258043878,
-    lon: 18.67589812243773,
-    category: 'culture',
-  },
+
   {
     name: { bs: 'Trg Slobode', en: 'Freedom Square' },
     lat: 44.53954253369571,
@@ -668,7 +663,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
     const POI_COLORS: Record<string, string> = {
       '1': '#06b6d4', // Cyan
-      '2': '#f59e0b', // Amber
       '3': '#e2e8f0', // Silver/White
       '4': '#84cc16', // Lime
       '5': '#ec4899', // Pink

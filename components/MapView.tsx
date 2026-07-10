@@ -46,14 +46,7 @@ const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
     entryFee: "free",
     description: "A sprawling, peaceful memorial park and pine forest on a hill overlooking the Pannonian lakes. It contains walking paths, fountains, and monuments dedicated to anti-fascist heroes and veterans."
   },
-  {
-    name: { bs: 'Tuzla Old Town (Čaršija)', en: 'Tuzla Old Town (Čaršija)' },
-    lat: 44.53824258043878,
-    lon: 18.67589812243773,
-    category: 'culture',
-    entryFee: "free",
-    description: "A vibrant pedestrian zone with colorful Austro-Hungarian facades, traditional craft shops, cafes, and historic religious landmarks including the Turalibeg Mosque."
-  },
+
   {
     name: { bs: 'Trg Slobode', en: 'Freedom Square' },
     lat: 44.53954253369571,

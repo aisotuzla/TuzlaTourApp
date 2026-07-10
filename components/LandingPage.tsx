@@ -179,34 +179,66 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   };
 
   return (
-    <div className="bg-white">
+    <div className="w-full bg-white">
+      <style>{`
+        @media (max-width: 440px) {
+          .hero-section {
+            padding: 0 !important;
+            height: calc(100vh - 88px) !important;
+            min-height: calc(100vh - 88px) !important;
+          }
+          .hero-wrapper {
+            width: 100vw !important;
+            height: 100% !important;
+            max-width: 100% !important;
+            border-radius: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+        }
+        @media (min-width: 441px) {
+          .hero-section {
+            padding: 1.5rem !important;
+            height: calc(100vh - 88px) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+          }
+          .hero-wrapper {
+            width: 100% !important;
+            max-width: 880px !important;
+            aspect-ratio: 880 / 1200 !important;
+            max-height: calc(100vh - 12rem) !important;
+            min-height: 400px !important;
+            border-radius: 2.5rem !important;
+            border: 2px solid rgba(96, 165, 250, 0.4) !important;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.6) !important;
+          }
+        }
+        @media (min-width: 768px) {
+          .hero-section {
+            padding: 2rem !important;
+            height: calc(100vh - 88px) !important;
+          }
+          .hero-wrapper {
+            max-width: 880px !important;
+            max-height: calc(100vh - 12rem) !important;
+          }
+        }
+      `}</style>
+
       {/* 1. HERO SECTION */}
-      <section
-        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-white"
-      >
-        <picture className="absolute inset-0 h-full w-full z-0 flex items-center justify-center">
-          <source media="(max-width: 640px) or (orientation: portrait)" srcSet="/assets/Gallery/QuestQRLocations/tuzhero.webp" />
-          <img
-            src="/assets/Gallery/Ilovetuzla.webp"
-            alt="Tuzla"
-            className="h-full w-full object-cover"
-            style={{ maxWidth: '880px', marginLeft: 'auto', marginRight: 'auto', display: 'block' }}
-          />
-        </picture>
-
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 z-0" />
-
-        <div className="absolute top-[100%] -translate-y-1/2 left-0 right-0 flex flex-col items-center justify-center text-white gap-4 pointer-events-none z-10">
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="flex flex-col items-center gap-2"
-          >
-            <span className="text-sm font-black uppercase tracking-[0.3em] drop-shadow-lg text-white/90">
-              {t.heroScroll}
-            </span>
-            <ArrowDown className="w-6 h-6 text-white/90 mt-2" />
-          </motion.div>
+      <section className="hero-section relative w-full flex flex-col items-center justify-center bg-white">
+        {/* Rounded wrapper with glowing blue border */}
+        <div className="hero-wrapper relative overflow-hidden bg-white flex items-center justify-center">
+          <picture className="w-full h-full">
+            <source media="(max-width: 440px) or (orientation: portrait)" srcSet="/assets/Gallery/QuestQRLocations/tuzla440.webp" />
+            <img
+              src="/assets/Gallery/Ilovetuzla.webp"
+              alt="Tuzla"
+              className="w-full h-full object-cover"
+            />
+          </picture>
         </div>
       </section>
 
@@ -319,7 +351,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {previewImages.slice(0, 12).map((src, idx) => (
+            {previewImages.slice(0, 18).map((src, idx) => (
               <button
                 key={src}
                 onClick={() => openGallery(previewImages, idx)}
@@ -489,7 +521,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         </section>
       </div>
 
-    </div>
+    </div >
   );
 };
 

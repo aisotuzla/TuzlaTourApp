@@ -23,26 +23,7 @@ const LOCATIONS_RAW: Location[] = [
     qrCode: 'Pannonian Lakes',
     discount: '10%',
   },
-  {
-    id: '2',
-    name: {
-      en: 'Old Town (Carsija)',
-      bs: 'Stari grad (Carsija)',
-      de: 'Altstadt (Carsija)',
-      tr: 'Eski Şehir (Çarşı)',
-    },
-    description: {
-      en: 'The historic heart of Tuzla with Ottoman architecture, cafes, and Freedom Square.',
-      bs: 'Historijsko srce Tuzle sa otomanskom arhitekturom, kaficima i Trgom slobode.',
-      de: 'Das historische Herz von Tuzla mit osmanischer Architektur, Cafes und dem Freiheitsplatz.',
-      tr: 'Osmanlı mimarisi, kafeler ve Özgürlük Meydanı ile Tuzla\'nın tarihi kalbi.',
-    },
-    image: '/assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
-    coordinates: [44.5391, 18.6750],
-    category: 'culture',
-    qrCode: 'Old Town',
-    discount: '10%',
-  },
+
   {
     id: '3',
     name: {

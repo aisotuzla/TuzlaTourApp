@@ -24,3 +24,27 @@ declare namespace NodeJS {
 declare const process: {
   env: NodeJS.ProcessEnv;
 };
+
+declare namespace JSX {
+  interface IntrinsicElements {
+    'a-scene': any;
+    'a-assets': any;
+    'a-entity': any;
+    'a-sky': any;
+    'a-camera': any;
+    'a-cursor': any;
+    'a-image': any;
+    'a-text': any;
+    'a-box': any;
+    'a-sphere': any;
+    'a-cylinder': any;
+    'a-plane': any;
+    'a-cone': any;
+    'a-light': any;
+    'a-video': any;
+    'a-videosphere': any;
+    'a-asset-item': any;
+    'a-mixin': any;
+    'a-link': any;
+  }
+}
