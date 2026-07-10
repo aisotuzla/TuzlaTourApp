@@ -198,18 +198,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         }
         @media (min-width: 441px) {
           .hero-section {
-            padding: 1.5rem !important;
-            height: calc(100vh - 88px) !important;
+            padding: 2rem !important;
+            height: auto !important;
+            min-height: calc(100vh - 88px) !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
           }
           .hero-wrapper {
-            width: 100% !important;
-            max-width: 880px !important;
-            aspect-ratio: 880 / 1200 !important;
-            max-height: calc(100vh - 12rem) !important;
-            min-height: 400px !important;
+            width: 880px !important;
+            height: 1200px !important;
+            max-width: 100% !important;
             border-radius: 2.5rem !important;
             border: 2px solid rgba(96, 165, 250, 0.4) !important;
             box-shadow: 0 0 30px rgba(59, 130, 246, 0.6) !important;
@@ -217,12 +216,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         }
         @media (min-width: 768px) {
           .hero-section {
-            padding: 2rem !important;
-            height: calc(100vh - 88px) !important;
+            padding: 3rem 2rem !important;
           }
           .hero-wrapper {
-            max-width: 880px !important;
-            max-height: calc(100vh - 12rem) !important;
+            width: 880px !important;
+            height: 1200px !important;
           }
         }
       `}</style>
@@ -236,7 +234,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             <img
               src="/assets/Gallery/Ilovetuzla.webp"
               alt="Tuzla"
-              className="w-full h-full object-cover"
+              className="w-[880px] h-[1200px] object-cover"
             />
           </picture>
         </div>
