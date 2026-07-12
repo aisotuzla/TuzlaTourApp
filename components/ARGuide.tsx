@@ -66,6 +66,41 @@ const ARMarker: React.FC<{
           </span>
         </div>
       </button>
+      {location.id === 'slana_banja' && (
+  <div style={{ position: 'absolute', top: '-180px', left: '50%', transform: 'translateX(-50%)', width: '150px', height: '150px', pointerEvents: 'none' }}>
+    {React.createElement('model-viewer', {
+      src: "/assets/xlogo/soccer_ball.glb",
+      'auto-rotate': true,
+      'camera-controls': true,
+      'disable-zoom': true,
+      'disable-pan': true,
+      style: { width: '100%', height: '100%', pointerEvents: 'auto' }
+    })}
+  </div>
+)}
+{location.id === 'slatina' && (
+  <div style={{ position: 'absolute', top: '-180px', left: '50%', transform: 'translateX(-50%)', width: '150px', height: '150px', pointerEvents: 'none' }}>
+    {React.createElement('model-viewer', {
+      src: "/assets/xlogo/slatina_model.glb",
+      'auto-rotate': true,
+      'camera-controls': true,
+      'disable-zoom': true,
+      'disable-pan': true,
+      style: { width: '100%', height: '100%', pointerEvents: 'auto' }
+    })}
+  </div>
+)}
+        <div style={{ position: 'absolute', top: '-180px', left: '50%', transform: 'translateX(-50%)', width: '150px', height: '150px', pointerEvents: 'none' }}>
+          {React.createElement('model-viewer', {
+            src: "/assets/xlogo/soccer_ball.glb",
+            'auto-rotate': true,
+            'camera-controls': true,
+            'disable-zoom': true,
+            'disable-pan': true,
+            style: { width: '100%', height: '100%', pointerEvents: 'auto' }
+          })}
+        </div>
+      )}
     </div>
   );
 };

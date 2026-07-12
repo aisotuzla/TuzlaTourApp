@@ -189,6 +189,27 @@ const LOCATIONS_RAW: Location[] = [
     address: 'Park Slana Banja, 75000 Tuzla, Bosnia and Herzegovina',
   },
   {
+    id: 'slatina',
+    name: {
+      en: 'Slatina',
+      bs: 'Slatina',
+      de: 'Slatina',
+      tr: 'Slatina',
+    },
+    description: {
+      en: 'Testing POI for AR demonstration.',
+      bs: 'Testing POI for AR demonstration.',
+      de: 'Testing POI for AR demonstration.',
+      tr: 'Testing POI for AR demonstration.',
+    },
+    image: '/assets/Gallery/Slatina.png',
+    coordinates: [44.54049649757389, 18.663697750609153],
+    category: 'culture',
+    qrCode: 'AR Test Slatina',
+    discount: 'Test',
+    address: 'Slatina Area, 75000 Tuzla, Bosnia and Herzegovina',
+  },
+  {
     id: 'frida',
     name: {
       en: 'Frida',

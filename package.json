@@ -48,6 +48,7 @@
     "postgres": "^3.4.9",
     "react": "18.3.1",
     "react-dom": "^18.3.1",
+    "three.js": "^0.77.1",
     "vite-plugin-node-polyfills": "^0.26.0",
     "vite-pwa": "^1.0.2"
   },

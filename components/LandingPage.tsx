@@ -195,6 +195,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             border: none !important;
             box-shadow: none !important;
           }
+          .hero-image-img {
+            width: 430px !important;
+            height: 820px !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            object-fit: contain !important;
+          }
         }
         @media (min-width: 441px) {
           .hero-section {
@@ -229,12 +236,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       <section className="hero-section relative w-full flex flex-col items-center justify-center bg-white">
         {/* Rounded wrapper with glowing blue border */}
         <div className="hero-wrapper relative overflow-hidden bg-white flex items-center justify-center">
-          <picture className="w-full h-full">
+          <picture className="w-[430px] max-w-full h-[820px] max-h-screen">
             <source media="(max-width: 440px) or (orientation: portrait)" srcSet="/assets/Gallery/QuestQRLocations/tuzla440.webp" />
             <img
               src="/assets/Gallery/Ilovetuzla.webp"
               alt="Tuzla"
-              className="w-[880px] h-[1200px] object-cover"
+              className="w-[880px] h-[1200px] object-cover hero-image-img"
             />
           </picture>
         </div>
