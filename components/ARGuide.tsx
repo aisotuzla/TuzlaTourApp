@@ -67,29 +67,6 @@ const ARMarker: React.FC<{
         </div>
       </button>
       {location.id === 'slana_banja' && (
-  <div style={{ position: 'absolute', top: '-180px', left: '50%', transform: 'translateX(-50%)', width: '150px', height: '150px', pointerEvents: 'none' }}>
-    {React.createElement('model-viewer', {
-      src: "/assets/xlogo/soccer_ball.glb",
-      'auto-rotate': true,
-      'camera-controls': true,
-      'disable-zoom': true,
-      'disable-pan': true,
-      style: { width: '100%', height: '100%', pointerEvents: 'auto' }
-    })}
-  </div>
-)}
-{location.id === 'slatina' && (
-  <div style={{ position: 'absolute', top: '-180px', left: '50%', transform: 'translateX(-50%)', width: '150px', height: '150px', pointerEvents: 'none' }}>
-    {React.createElement('model-viewer', {
-      src: "/assets/xlogo/slatina_model.glb",
-      'auto-rotate': true,
-      'camera-controls': true,
-      'disable-zoom': true,
-      'disable-pan': true,
-      style: { width: '100%', height: '100%', pointerEvents: 'auto' }
-    })}
-  </div>
-)}
         <div style={{ position: 'absolute', top: '-180px', left: '50%', transform: 'translateX(-50%)', width: '150px', height: '150px', pointerEvents: 'none' }}>
           {React.createElement('model-viewer', {
             src: "/assets/xlogo/soccer_ball.glb",
@@ -101,6 +78,29 @@ const ARMarker: React.FC<{
           })}
         </div>
       )}
+      {location.id === 'slatina' && (
+        <div style={{ position: 'absolute', top: '-180px', left: '50%', transform: 'translateX(-50%)', width: '150px', height: '150px', pointerEvents: 'none' }}>
+          {React.createElement('model-viewer', {
+            src: "/assets/xlogo/slatina_model.glb",
+            'auto-rotate': true,
+            'camera-controls': true,
+            'disable-zoom': true,
+            'disable-pan': true,
+            style: { width: '100%', height: '100%', pointerEvents: 'auto' }
+          })}
+        </div>
+      )}
+      <div style={{ position: 'absolute', top: '-180px', left: '50%', transform: 'translateX(-50%)', width: '150px', height: '150px', pointerEvents: 'none' }}>
+        {React.createElement('model-viewer', {
+          src: "/assets/xlogo/soccer_ball.glb",
+          'auto-rotate': true,
+          'camera-controls': true,
+          'disable-zoom': true,
+          'disable-pan': true,
+          style: { width: '100%', height: '100%', pointerEvents: 'auto' }
+        })}
+      </div>
+      )&rbrace;,
     </div>
   );
 };
@@ -113,11 +113,11 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<{ loc: Location, dist: number } | null>(null);
   const userLocationRef = useRef<{ lat: number, lng: number } | null>(null);
-  const orientationRef = useRef<{ 
-    alpha: number | null, 
-    beta: number | null, 
+  const orientationRef = useRef<{
+    alpha: number | null,
+    beta: number | null,
     gamma: number | null,
-    headingAccuracy: number | null 
+    headingAccuracy: number | null
   }>({
     alpha: null, beta: null, gamma: null, headingAccuracy: null,
   });
@@ -328,7 +328,7 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
       initialResolved = true;
       const newLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       userLocationRef.current = newLoc;
-      
+
       let minDistance = Infinity;
       for (const loc of LOCATIONS) {
         const dist = Math.sqrt(
@@ -345,7 +345,7 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
 
       setNearestPOIState(prev => {
         if (prev.stage !== stage || Math.abs(prev.distance - minDistance) > 5) {
-           return { distance: minDistance, stage };
+          return { distance: minDistance, stage };
         }
         return prev;
       });
@@ -355,16 +355,16 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
         watchId = null;
         isHighAccuracy = false;
         intervalId = setInterval(() => {
-          navigator.geolocation.getCurrentPosition(updateLocation, () => {}, { enableHighAccuracy: false });
+          navigator.geolocation.getCurrentPosition(updateLocation, () => { }, { enableHighAccuracy: false });
         }, 30000);
       } else if (minDistance <= highAccuracyThreshold && !isHighAccuracy) {
         if (intervalId !== null) clearInterval(intervalId);
         intervalId = null;
         isHighAccuracy = true;
-        watchId = navigator.geolocation.watchPosition(updateLocation, () => {}, {
-           enableHighAccuracy: true,
-           maximumAge: 1000,
-           timeout: 10000,
+        watchId = navigator.geolocation.watchPosition(updateLocation, () => { }, {
+          enableHighAccuracy: true,
+          maximumAge: 1000,
+          timeout: 10000,
         });
       }
     };
@@ -407,7 +407,7 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
 
       // 1. Get Alpha (Heading)
       let alpha: number | null = null;
-      
+
       // Use webkitCompassHeading for iOS if available
       if ((e as any).webkitCompassHeading !== undefined) {
         alpha = (e as any).webkitCompassHeading;
@@ -444,9 +444,9 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
           betaZeroRef.current = 90; // Default vertical
         }
       }
-      
+
       const betaAdj = beta !== null && betaZeroRef.current !== null ? beta - betaZeroRef.current : beta;
-      
+
       let smoothedAlpha = alpha;
       if (smoothedAlpha !== null) {
         const prev = smoothedAlphaRef.current;
@@ -457,9 +457,9 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
       const accuracy = (e as any).webkitCompassAccuracy ?? null;
       if (accuracy !== null) setHeadingAccuracy(accuracy);
 
-      orientationRef.current = { 
-        alpha: smoothedAlpha, 
-        beta: betaAdj ?? null, 
+      orientationRef.current = {
+        alpha: smoothedAlpha,
+        beta: betaAdj ?? null,
         gamma: e.gamma ?? null,
         headingAccuracy: accuracy
       };
@@ -526,11 +526,11 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
         <>
           <div className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${viewMode === 'AR' ? 'opacity-100' : 'opacity-20'}`}>
             {LOCATIONS.map((loc) => {
-               if (!markerRefs.current[loc.id]) {
-                 markerRefs.current[loc.id] = { dom: null, dist: null, currentDist: Infinity };
-               }
-               const refs = markerRefs.current[loc.id];
-               return (
+              if (!markerRefs.current[loc.id]) {
+                markerRefs.current[loc.id] = { dom: null, dist: null, currentDist: Infinity };
+              }
+              const refs = markerRefs.current[loc.id];
+              return (
                 <ARMarker
                   key={loc.id}
                   location={loc}
@@ -541,47 +541,47 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
                   currentDistState={{ get current() { return refs.currentDist }, set current(v) { refs.currentDist = v } }}
                   registerLockSetter={registerMarkerLockSetter}
                 />
-               );
+              );
             })}
           </div>
 
           {viewMode === 'HORIZON' && (
-             <div className="absolute top-24 inset-x-0 h-32 bg-black/60 border-y border-white/20 overflow-hidden pointer-events-auto shadow-2xl">
-               <div className="relative w-full h-full">
-                 {LOCATIONS.map(loc => {
-                    if (!horizonNodesRefs.current[loc.id]) {
-                      horizonNodesRefs.current[loc.id] = { dom: null, currentDist: Infinity };
-                    }
-                    const hRef = horizonNodesRefs.current[loc.id];
-                    return (
-                      <button
-                        key={loc.id}
-                        ref={(el) => { hRef.dom = el }}
-                        onClick={() => setSelectedLocation({ loc, dist: hRef.currentDist })}
-                        className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center group transition-transform will-change-transform [display:none] [transform:translateX(-50%)]"
-                      >
-                        <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center border-2 border-white/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] group-hover:scale-110">
-                          <MapPin className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="text-[10px] text-white font-black opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap mt-2 bg-blue-950/90 px-2 py-1 rounded-md border border-white/20 shadow-lg">
-                          {loc.name[lang]}
-                        </span>
-                      </button>
-                    );
-                 })}
-                 <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-red-500 rounded-full shadow-[0_0_15px_red] z-10 [transform:translateX(-50%)]"></div>
-               </div>
-             </div>
+            <div className="absolute top-24 inset-x-0 h-32 bg-black/60 border-y border-white/20 overflow-hidden pointer-events-auto shadow-2xl">
+              <div className="relative w-full h-full">
+                {LOCATIONS.map(loc => {
+                  if (!horizonNodesRefs.current[loc.id]) {
+                    horizonNodesRefs.current[loc.id] = { dom: null, currentDist: Infinity };
+                  }
+                  const hRef = horizonNodesRefs.current[loc.id];
+                  return (
+                    <button
+                      key={loc.id}
+                      ref={(el) => { hRef.dom = el }}
+                      onClick={() => setSelectedLocation({ loc, dist: hRef.currentDist })}
+                      className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center group transition-transform will-change-transform [display:none] [transform:translateX(-50%)]"
+                    >
+                      <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center border-2 border-white/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] group-hover:scale-110">
+                        <MapPin className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="text-[10px] text-white font-black opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap mt-2 bg-blue-950/90 px-2 py-1 rounded-md border border-white/20 shadow-lg">
+                        {loc.name[lang]}
+                      </span>
+                    </button>
+                  );
+                })}
+                <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-red-500 rounded-full shadow-[0_0_15px_red] z-10 [transform:translateX(-50%)]"></div>
+              </div>
+            </div>
           )}
 
           <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 pointer-events-none flex justify-between px-4">
             <div ref={leftArrowRef} className="flex flex-col items-center animate-pulse opacity-0 transition-opacity duration-200">
-                <X className="w-10 h-10 text-amber-400 -rotate-90 drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]" />
-                <span className="text-[10px] text-amber-400 font-black uppercase tracking-widest">POI LEFT</span>
+              <X className="w-10 h-10 text-amber-400 -rotate-90 drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]" />
+              <span className="text-[10px] text-amber-400 font-black uppercase tracking-widest">POI LEFT</span>
             </div>
             <div ref={rightArrowRef} className="flex flex-col items-center animate-pulse opacity-0 transition-opacity duration-200">
-                <X className="w-10 h-10 text-amber-400 rotate-90 drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]" />
-                <span className="text-[10px] text-amber-400 font-black uppercase tracking-widest">POI RIGHT</span>
+              <X className="w-10 h-10 text-amber-400 rotate-90 drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]" />
+              <span className="text-[10px] text-amber-400 font-black uppercase tracking-widest">POI RIGHT</span>
             </div>
           </div>
         </>
@@ -621,16 +621,16 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
       )}
 
       {showHelp && (
-          <div className="absolute top-16 left-4 right-4 bg-blue-900/90 border border-white/20 rounded-2xl p-4 text-white text-xs z-[60] animate-in fade-in slide-in-from-top-4">
-              <p className="font-bold mb-1">Hint:</p>
-              {HELP_HINTS[currentStage]}
-          </div>
+        <div className="absolute top-16 left-4 right-4 bg-blue-900/90 border border-white/20 rounded-2xl p-4 text-white text-xs z-[60] animate-in fade-in slide-in-from-top-4">
+          <p className="font-bold mb-1">Hint:</p>
+          {HELP_HINTS[currentStage]}
+        </div>
       )}
 
       {/* Battery Warning at Bottom */}
       <div className="absolute bottom-4 inset-x-0 flex justify-center px-6 pointer-events-none">
         <p className="text-[10px] text-blue-300 font-bold text-center leading-tight uppercase tracking-widest opacity-80">
-           ⚠️ {TRANSLATIONS[lang].batteryWarning}
+          ⚠️ {TRANSLATIONS[lang].batteryWarning}
         </p>
       </div>
 
@@ -641,17 +641,17 @@ const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate }) => {
             {cameraActive
               ? 'Scanning Active'
               : (viewMode === 'HORIZON'
-                  ? (features.isAndroidLight ? 'Compass Mode (Battery Saver)' : 'Compass Mode')
-                  : 'Discovery Mode')}
+                ? (features.isAndroidLight ? 'Compass Mode (Battery Saver)' : 'Compass Mode')
+                : 'Discovery Mode')}
           </span>
         </div>
         <div className="flex gap-2 pointer-events-auto">
-            <button onClick={() => setViewMode(viewMode === 'AR' ? 'HORIZON' : 'AR')} title={viewMode === 'AR' ? 'Switch to Horizon Mode' : 'Switch to AR Mode'} aria-label={viewMode === 'AR' ? 'Switch to Horizon Mode' : 'Switch to AR Mode'} className="bg-blue-600/90 p-2 rounded-full border border-white/20 text-white shadow-lg">{viewMode === 'AR' ? <Compass className="w-5 h-5" /> : <Camera className="w-5 h-5" />}</button>
-            <button onClick={() => setShowHelp(!showHelp)} title="Help" aria-label="Help" className="bg-black/60 p-2 rounded-full border border-white/20 text-white"><Info className="w-5 h-5" /></button>
+          <button onClick={() => setViewMode(viewMode === 'AR' ? 'HORIZON' : 'AR')} title={viewMode === 'AR' ? 'Switch to Horizon Mode' : 'Switch to AR Mode'} aria-label={viewMode === 'AR' ? 'Switch to Horizon Mode' : 'Switch to AR Mode'} className="bg-blue-600/90 p-2 rounded-full border border-white/20 text-white shadow-lg">{viewMode === 'AR' ? <Compass className="w-5 h-5" /> : <Camera className="w-5 h-5" />}</button>
+          <button onClick={() => setShowHelp(!showHelp)} title="Help" aria-label="Help" className="bg-black/60 p-2 rounded-full border border-white/20 text-white"><Info className="w-5 h-5" /></button>
         </div>
       </div>
 
-      
+
       {headingAccuracy !== null && headingAccuracy > 20 && (
         <div className="absolute top-28 left-1/2 -translate-x-1/2 bg-amber-500/90 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase z-50 animate-pulse">
           ⚠️ Compass Calibration Needed

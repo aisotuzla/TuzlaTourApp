@@ -78,7 +78,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         workbox: {
           globPatterns: mode === 'development' ? [] : ['**/*.{js,css,html,ico,svg}', 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png'],
           globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
-          maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB limit for precached shell files
+          maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6MB limit for precached shell files
           runtimeCaching: [
             {
               urlPattern: /\.(?:png|jpg|jpeg|svg|webp|gif)$/,
