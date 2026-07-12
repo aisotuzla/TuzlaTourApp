@@ -24,6 +24,7 @@
     "@capacitor/preferences": "^8.0.1",
     "@emotion/is-prop-valid": "^1.4.0",
     "@ionic/react": "^8.8.2",
+    "@solana/kit": "^7.0.0",
     "@solana/wallet-adapter-react": "^0.15.39",
     "@solana/wallet-adapter-react-ui": "^0.9.39",
     "@solana/web3.js": "^1.98.4",

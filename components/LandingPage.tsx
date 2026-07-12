@@ -235,13 +235,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       {/* 1. HERO SECTION */}
       <section className="hero-section relative w-full flex flex-col items-center justify-center bg-white">
         {/* Rounded wrapper with glowing blue border */}
-        <div className="hero-wrapper relative overflow-hidden bg-white flex items-center justify-center">
-          <picture className="w-[430px] max-w-full h-[820px] max-h-screen">
+        <div className="hero-wrapper relative overflow-hidden bg-white flex items-full screen">
+          <picture className="w-full max-w-[880px] h-auto max-h-screen">
             <source media="(max-width: 440px) or (orientation: portrait)" srcSet="/assets/Gallery/QuestQRLocations/tuzla440.webp" />
             <img
               src="/assets/Gallery/Ilovetuzla.webp"
               alt="Tuzla"
-              className="w-[880px] h-[1200px] object-cover hero-image-img"
+              className="w-full max-w-[880px] h-1200px object-contain hero-image-img"
             />
           </picture>
         </div>

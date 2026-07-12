@@ -136,7 +136,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const userLocationRef = useRef<[number, number] | null>(null);
   const [isScanning, setIsScanning] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [scannerFeedback, setScannerFeedback] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
@@ -164,6 +164,30 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const isBalancedMode = policy.qualityLevel === 'balanced';
   const scannerFps = isUtilityMode ? 10 : (isBalancedMode ? 12 : 15);
   const scannerQrSize = isUtilityMode ? 220 : 250;
+
+  const normalizeQrText = (value: string) => value
+    .normalize('NFD')
+    .replace(/[-]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/gi, '')
+    .toLowerCase();
+
+  const findQuestTargetFromQr = (decodedText: string) => {
+    const normalized = normalizeQrText(decodedText);
+    return QUEST_TARGETS.find(target => {
+      const candidates = [
+        target.id,
+        target.name?.en,
+        target.name?.bs,
+      ].filter(Boolean).map(normalizeQrText);
+
+      return candidates.some(candidate =>
+        candidate === normalized ||
+        candidate.includes(normalized) ||
+        normalized.includes(candidate)
+      );
+    });
+  };
 
   const setupBuildings = (mapInstance: maplibregl.Map) => {
     try {
@@ -674,7 +698,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       'slapovi': '#0ea5e9', // Sky Blue
       'ismet': '#ef4444',  // Red
       'tvrtko_park': '#f59e0b', // Amber/Gold
-      'slana_banja': '#fbbf24', // Yellow
+      'slana_banja': '#a07403ff', // Yellow
       'frida': '#e11d48', // Rose
       'neolit': '#14b8a6', // Teal
       'atelje_ismet': '#8b5cf6', // Violet
@@ -988,21 +1012,40 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       html5QrCodeRef.current = html5QrCode;
 
       const onScanSuccess = (decodedText: string) => {
-        const matched = LOCATIONS.find(l => l.qrCode === decodedText.trim());
-        if (matched) {
-          onRewardFound(matched.id);
-          setSuccessMessage(`Unlocked: ${matched.name[lang]}`);
-          setTimeout(() => setSuccessMessage(null), 3000);
-          setIsScanning(false);
+        const trimmedText = decodedText?.trim() ?? '';
+        const target = findQuestTargetFromQr(trimmedText);
 
-          if (matched.id === 'mesa_selimovic') {
-            setPlayingVideo('/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4');
-          }
-        } else {
-          // Show feedback for unmatched QR codes so user knows scanning works
-          setSuccessMessage(`Scanned: "${decodedText.trim()}" — not a quest QR`);
-          setTimeout(() => setSuccessMessage(null), 2500);
+        if (!target) {
+          setScannerFeedback({
+            text: lang === 'bs'
+              ? 'Pogrešan QR kod. Skenirajte QR kod s pravog mjesta.'
+              : 'Wrong QR code. Scan the QR code for the correct location.',
+            type: 'error',
+          });
+          return;
         }
+
+        if (unlockedRewards.includes(target.id)) {
+          setScannerFeedback({
+            text: lang === 'bs'
+              ? `${target.name.bs} je već otključan.`
+              : `${target.name.en} is already unlocked.`,
+            type: 'success',
+          });
+          setTimeout(() => setScannerFeedback(null), 3000);
+          setIsScanning(false);
+          return;
+        }
+
+        onRewardFound(target.id);
+        setScannerFeedback({
+          text: lang === 'bs'
+            ? `Nagrada za ${target.name.bs} otključana!`
+            : `Reward unlocked for ${target.name.en}!`,
+          type: 'success',
+        });
+        setTimeout(() => setScannerFeedback(null), 3000);
+        setIsScanning(false);
       };
 
       try {
@@ -1029,8 +1072,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         } catch (fallbackErr) {
           console.error('[QR Scanner] Fallback failed:', fallbackErr);
           setIsScanning(false);
-          setSuccessMessage("Camera error: Could not access camera");
-          setTimeout(() => setSuccessMessage(null), 3000);
+          setScannerFeedback({ text: "Camera error: Could not access camera", type: 'error' });
+          setTimeout(() => setScannerFeedback(null), 3000);
         }
       }
     } catch (err) {
@@ -1337,21 +1380,26 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         )}
       </AnimatePresence>
 
-      {/* SUCCESS POPUP */}
+      {/* SCANNER FEEDBACK TOAST */}
       <AnimatePresence>
-        {successMessage && (
+        {scannerFeedback && (
           <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-24 left-6 right-6 z-[3000] bg-green-500 text-white p-6 rounded-3xl shadow-[0_20px_50px_rgba(16,185,129,0.4)] flex items-center gap-4"
+            initial={{ y: 50, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 50, opacity: 0, scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 370, damping: 24 }}
+            className={`fixed bottom-24 left-6 right-6 z-[3000] p-5 rounded-3xl shadow-[0_20px_50px_rgba(15,23,42,0.35)] flex items-center gap-4 ${scannerFeedback.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}
           >
-            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
-              <Trophy className="w-6 h-6 text-white" />
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${scannerFeedback.type === 'success' ? 'bg-white/20' : 'bg-white/20'}`}>
+              {scannerFeedback.type === 'success' ? <Trophy className="w-6 h-6 text-white" /> : <X className="w-6 h-6 text-white" />}
             </div>
-            <div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-green-100 block mb-1">New Reward Unlocked</span>
-              <span className="text-lg font-black uppercase text-white leading-none">{successMessage}</span>
+            <div className="flex-1">
+              <span className="text-[10px] font-black uppercase tracking-widest block mb-1">
+                {scannerFeedback.type === 'success'
+                  ? (lang === 'bs' ? 'Čestitamo' : 'Congratulations')
+                  : (lang === 'bs' ? 'Greška skeniranja' : 'Scan error')}
+              </span>
+              <span className="text-base font-black uppercase leading-none tracking-tight">{scannerFeedback.text}</span>
             </div>
           </motion.div>
         )}
