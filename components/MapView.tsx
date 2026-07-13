@@ -4,17 +4,19 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { Language } from '../types';
 import { TUZLA_CENTER } from '../constants';
 import { AppFeatures } from '../utils/platform';
-import { Search, X, Loader2, Navigation, Landmark, Compass, Route, Clock, Footprints } from 'lucide-react';
+import { Search, X, Loader2, Navigation, Landmark, Compass, Route, Clock, Footprints, Trophy, Lock, QrCode } from 'lucide-react';
 import { WeatherWidget } from './WeatherWidget';
 import { useNetwork } from '../hooks/useNetwork';
 import { tuzlaHotelData } from '../tuzlaHotelData';
 import { Hotel as HotelIcon } from 'lucide-react';
+import { QUEST_TARGETS } from './MapQuestView';
 import { motion, AnimatePresence } from 'framer-motion';
 
 
 interface MapViewProps {
   lang: Language;
   features: AppFeatures;
+  unlockedRewards?: string[];
 }
 
 
@@ -115,7 +117,7 @@ const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
   }
 ];
 
-const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
+const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const userMarker = useRef<maplibregl.Marker | null>(null);
@@ -140,7 +142,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
   const [routeDistance, setRouteDistance] = useState<number | null>(null);
   const [routeTime, setRouteTime] = useState<number | null>(null);
   const [isRouteLoading, setIsRouteLoading] = useState(false);
-  const [activeModalTab, setActiveModalTab] = useState<'poi' | 'hotel'>('poi');
+  const [activeModalTab, setActiveModalTab] = useState<'poi' | 'hotel' | 'qrcode'>('poi');
 
   // Expose global callback for Mapbox popup navigation clicks
   useEffect(() => {
@@ -683,6 +685,16 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                   <HotelIcon size={16} />
                   {lang === 'bs' ? 'Hoteli' : 'Hotels'}
                 </button>
+                <button
+                  onClick={() => setActiveModalTab('qrcode')}
+                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'qrcode'
+                    ? 'bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/30'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    }`}
+                >
+                  <QrCode size={16} />
+                  {lang === 'bs' ? 'QR Kod' : 'QR Code'}
+                </button>
               </div>
 
               {/* Scrollable List */}
@@ -718,7 +730,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                       <Route size={20} className="text-slate-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
                     </button>
                   ))
-                ) : (
+                ) : activeModalTab === 'hotel' ? (
                   tuzlaHotelData.map((hotel, idx) => (
                     <button
                       key={idx}
@@ -749,6 +761,60 @@ const MapView: React.FC<MapViewProps> = ({ lang, features }) => {
                       <Route size={20} className="text-slate-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
                     </button>
                   ))
+                ) : (
+                  /* REWARDS TAB */
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center pb-2">
+                      {unlockedRewards.length} / {QUEST_TARGETS.length} {lang === 'bs' ? 'otključano' : 'unlocked'}
+                    </p>
+                    {QUEST_TARGETS.map((item) => {
+                      const isUnlocked = unlockedRewards.includes(item.id);
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => {
+                            if (!isUnlocked) return;
+                            // Fly to location on map (approximate coords via LOCATIONS)
+                            setIsPresetModalOpen(false);
+                          }}
+                          className={`w-full rounded-2xl overflow-hidden relative flex items-center gap-4 p-3 border transition-all text-left ${
+                            isUnlocked
+                              ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer'
+                              : 'border-white/5 bg-white/3 opacity-60 cursor-default'
+                          }`}
+                        >
+                          <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                            <img
+                              src={item.Image}
+                              alt={item.name.en}
+                              className={`w-full h-full object-cover ${
+                                isUnlocked ? 'brightness-90' : 'grayscale brightness-40 blur-sm'
+                              }`}
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <span className={`text-[9px] font-black uppercase tracking-widest block mb-0.5 ${
+                              isUnlocked ? 'text-amber-400' : 'text-slate-600'
+                            }`}>
+                              {isUnlocked ? (lang === 'bs' ? 'Otključano' : 'Unlocked') : (lang === 'bs' ? 'Zaključano' : 'Locked')}
+                            </span>
+                            <h4 className={`font-extrabold text-sm leading-tight truncate ${
+                              isUnlocked ? 'text-white' : 'text-slate-600 italic'
+                            }`}>
+                              {isUnlocked ? (lang === 'bs' ? item.name.bs : item.name.en) : '??? Secret Location'}
+                            </h4>
+                          </div>
+                          <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${
+                            isUnlocked ? 'bg-amber-500/20' : 'bg-white/5'
+                          }`}>
+                            {isUnlocked
+                              ? <Trophy size={16} className="text-amber-400" />
+                              : <Lock size={14} className="text-slate-600" />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
             </motion.div>

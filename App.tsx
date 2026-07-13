@@ -145,6 +145,7 @@ const AppContent: React.FC = () => {
               <MapView
                 lang={lang}
                 features={features}
+                unlockedRewards={unlockedRewards}
               />
             );
             case AppTab.QUEST: return (

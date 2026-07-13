@@ -99,8 +99,7 @@ const ARMarker: React.FC<{
           'disable-pan': true,
           style: { width: '100%', height: '100%', pointerEvents: 'auto' }
         })}
-      </div>
-      )&rbrace;,
+      </div>  
     </div>
   );
 };

@@ -93,7 +93,7 @@ const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
   },
 ];
 
-const QUEST_TARGETS = [
+export const QUEST_TARGETS = [
   { id: 'trg_slobode', name: { en: 'Freedom Square', bs: 'Trg slobode' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRTrgSlobode.png', Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp' },
   { id: '3', name: { en: 'Salt Square', bs: 'Solni trg' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRsonitrg.png', Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp' },
   { id: 'Palancinkara Bagi', name: { en: 'Pancake Bagi', bs: 'Palančikara Bagi' }, Html5Qrcode: '/assets/Gallery/Food/QuestQRLocations/QRpalacinkara.webp', Image: '/assets/Gallery/Food/bagi.webp' },
@@ -154,7 +154,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [routeDistance, setRouteDistance] = useState<number | null>(null);
   const [routeTime, setRouteTime] = useState<number | null>(null);
   const [isRouteLoading, setIsRouteLoading] = useState(false);
-  const [activeModalTab, setActiveModalTab] = useState<'poi' | 'hotel'>('poi');
+  const [activeModalTab, setActiveModalTab] = useState<'poi' | 'hotel' | 'rewards'>('poi');
 
   const scannerContainerId = "map-quest-reader";
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
@@ -345,9 +345,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           source: 'nav-line',
           layout: { 'line-join': 'round', 'line-cap': 'round' },
           paint: {
-            'line-color': '#a855f7',
+            'line-color': '#3b82f6',
             'line-width': 5,
-            'line-opacity': 0.85
+            'line-opacity': 0.9
           }
         });
       }
@@ -1457,6 +1457,16 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                   <HotelIcon size={16} />
                   {lang === 'bs' ? 'Hoteli' : 'Hotels'}
                 </button>
+                <button
+                  onClick={() => setActiveModalTab('rewards')}
+                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'rewards'
+                    ? 'bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/30'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    }`}
+                >
+                  <Trophy size={16} />
+                  {lang === 'bs' ? 'Nagrade' : 'Rewards'}
+                </button>
               </div>
 
               {/* Scrollable List */}
@@ -1492,7 +1502,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                       <Route size={20} className="text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
                     </button>
                   ))
-                ) : (
+                ) : activeModalTab === 'hotel' ? (
                   tuzlaHotelData.map((hotel, idx) => (
                     <button
                       key={idx}
@@ -1523,6 +1533,88 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                       <Route size={20} className="text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
                     </button>
                   ))
+                ) : (
+                  /* REWARDS TAB — locked/unlocked POI list */
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center pb-2">
+                      {unlockedRewards.length} / {QUEST_TARGETS.length} {lang === 'bs' ? 'otključano' : 'unlocked'}
+                    </p>
+                    {QUEST_TARGETS.map((item) => {
+                      const isUnlocked = unlockedRewards.includes(item.id);
+                      // Find map coordinates from LOCATIONS list
+                      const locData = LOCATIONS.find(l => l.id === item.id);
+                      return (
+                        <button
+                          key={item.id}
+                          disabled={!isUnlocked}
+                          onClick={() => {
+                            if (!isUnlocked || !locData) return;
+                            setIsPresetModalOpen(false);
+                            if (map.current) {
+                              map.current.flyTo({
+                                center: [locData.coordinates[1], locData.coordinates[0]],
+                                zoom: 18,
+                                pitch: Math.min(60, policy.mapFx.maxPitch),
+                                duration: 1800,
+                              });
+                              // Draw blue tracking line
+                              const navSrc = map.current.getSource('nav-line') as maplibregl.GeoJSONSource;
+                              const ul = userLocationRef.current;
+                              if (navSrc && ul) {
+                                navSrc.setData({
+                                  type: 'Feature',
+                                  properties: {},
+                                  geometry: {
+                                    type: 'LineString',
+                                    coordinates: [
+                                      [ul[0], ul[1]],
+                                      [locData.coordinates[1], locData.coordinates[0]]
+                                    ]
+                                  }
+                                });
+                              }
+                            }
+                          }}
+                          className={`w-full rounded-2xl overflow-hidden relative flex items-center gap-4 p-3 border transition-all text-left ${
+                            isUnlocked
+                              ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 active:scale-95 cursor-pointer'
+                              : 'border-white/5 bg-white/3 opacity-60 cursor-default'
+                          }`}
+                        >
+                          <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                            <img
+                              src={item.Image}
+                              alt={item.name.en}
+                              className={`w-full h-full object-cover ${
+                                isUnlocked ? 'brightness-90' : 'grayscale brightness-40 blur-sm'
+                              }`}
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <span className={`text-[9px] font-black uppercase tracking-widest block mb-0.5 ${
+                              isUnlocked ? 'text-amber-400' : 'text-slate-600'
+                            }`}>
+                              {isUnlocked ? (lang === 'bs' ? 'Otključano' : 'Unlocked') : (lang === 'bs' ? 'Zaključano' : 'Locked')}
+                            </span>
+                            <h4 className={`font-extrabold text-sm leading-tight truncate ${
+                              isUnlocked ? 'text-white' : 'text-slate-600 italic'
+                            }`}>
+                              {isUnlocked
+                                ? (lang === 'bs' ? item.name.bs : item.name.en)
+                                : '??? Secret Location'}
+                            </h4>
+                          </div>
+                          <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${
+                            isUnlocked ? 'bg-amber-500/20' : 'bg-white/5'
+                          }`}>
+                            {isUnlocked
+                              ? <Trophy size={16} className="text-amber-400" />
+                              : <Lock size={14} className="text-slate-600" />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
             </motion.div>
