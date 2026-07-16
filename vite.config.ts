@@ -45,7 +45,31 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         devOptions: {
           enabled: false,
         },
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+        includeAssets: [
+          'favicon.ico',
+          'apple-touch-icon.png',
+          // Critical landing page images precached for offline
+          'assets/Gallery/QuestQRLocations/tuzla440.webp',
+          'assets/Gallery/Ilovetuzla.webp',
+          'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
+          'assets/MapaBosnia.webp',
+          'assets/Pannonica.webp',
+          'assets/PannonicaBA.webp',
+          'assets/panonikalogo.webp',
+          'assets/aisologo.webp',
+          'assets/x.svg',
+          'assets/bluesky.svg',
+          'assets/Gallery/City Guide/GradTuzla-1.webp',
+          'assets/Gallery/Food/foodprime.webp',
+          'assets/Gallery/Accommodation/mellain.webp',
+          'assets/Gallery/QuestQRLocations/tztzlogo.webp',
+          'assets/Gallery/QuestQRLocations/Zastava_tuzle.webp',
+          'assets/Gallery/QuestQRLocations/wizzurl.webp',
+          'assets/Gallery/QuestQRLocations/ilincicaba.webp',
+          'assets/Gallery/QuestQRLocations/tuzhero.webp',
+          'assets/Gallery/gipslogo.png',
+          'resources/TuzlaTourAppLogo96x96.png',
+        ],
         manifest: {
           name: 'Tuzla Virtual Tour Guide',
           short_name: 'Tuzla Guide',
@@ -76,12 +100,66 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           ]
         },
         workbox: {
-          globPatterns: mode === 'development' ? [] : ['**/*.{js,css,html,ico,svg}', 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png'],
+          // Precache the app shell: all built JS/CSS/HTML + icons
+          globPatterns: mode === 'development' ? [] : ['**/*.{js,css,html,ico,svg}'],
           globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
           maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6MB limit for precached shell files
+          cleanupOutdatedCaches: true,
+          // SPA navigation fallback — serves index.html for all navigation requests when offline
+          navigateFallback: 'index.html',
+          navigateFallbackDenylist: [/^\/api\//, /^\/manifest\.json$/],
+          // Skip waiting so new SW activates immediately
+          skipWaiting: true,
+          clientsClaim: true,
           runtimeCaching: [
+            // 1. Google Fonts stylesheets (lightweight, changes rarely)
             {
-              urlPattern: /\.(?:png|jpg|jpeg|svg|webp|gif)$/,
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'google-fonts-stylesheets',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            // 2. Google Fonts webfont files (large, immutable per URL)
+            {
+              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-webfonts',
+                expiration: {
+                  maxEntries: 30,
+                  maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            // 3. Landing page & gallery images — CacheFirst for speed
+            {
+              urlPattern: /\/assets\/.*\.(?:png|jpg|jpeg|webp|gif|svg)$/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'landing-images-cache',
+                expiration: {
+                  maxEntries: 200,
+                  maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            // 4. All other images (e.g. from CDN or external)
+            {
+              urlPattern: /\.(?:png|jpg|jpeg|svg|webp|gif)$/i,
               handler: 'CacheFirst',
               options: {
                 cacheName: 'images-cache',
@@ -90,12 +168,73 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
                   maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
                 },
                 cacheableResponse: {
-                  statuses: [0, 200]
-                }
-              }
-            }
-          ]
-        }
+                  statuses: [0, 200],
+                },
+              },
+            },
+            // 5. Video files — NetworkFirst (large, don't bloat cache)
+            {
+              urlPattern: /\.(?:mp4|webm|ogg)$/i,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'video-cache',
+                expiration: {
+                  maxEntries: 5,
+                  maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+                networkTimeoutSeconds: 10,
+              },
+            },
+            // 6. Map tiles — CacheFirst for fast map loads
+            {
+              urlPattern: /^https:\/\/.*\.(?:tile|tiles)\..*\/\d+\/\d+\/\d+/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'map-tiles-cache',
+                expiration: {
+                  maxEntries: 500,
+                  maxAgeSeconds: 14 * 24 * 60 * 60, // 14 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            // 7. GeoJSON / static data files
+            {
+              urlPattern: /\.(?:json|geojson)$/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'data-cache',
+                expiration: {
+                  maxEntries: 30,
+                  maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            // 8. CDN scripts (A-Frame, model-viewer, Google Analytics)
+            {
+              urlPattern: /^https:\/\/(aframe\.io|ajax\.googleapis\.com|www\.googletagmanager\.com)\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'cdn-scripts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+          ],
+        },
       })
     ],
     define: {
@@ -115,12 +254,18 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           defaultHandler(warning);
         },
         output: {
-          manualChunks: {
-            'vendor-react': ['react', 'react-dom'],
-            'vendor-ui': ['framer-motion', 'lucide-react'],
-            'vendor-map': ['maplibre-gl'],
-            'vendor-qr': ['html5-qrcode'],
-            'vendor-query': ['@tanstack/react-query']
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+                return 'vendor-react';
+              }
+              if (id.includes('maplibre-gl')) {
+                return 'vendor-map';
+              }
+              if (id.includes('html5-qrcode')) {
+                return 'vendor-qr';
+              }
+            }
           }
         },
       },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 const ReloadPrompt: React.FC = () => {
@@ -20,9 +20,18 @@ const ReloadPrompt: React.FC = () => {
     setNeedRefresh(false);
   };
 
+  useEffect(() => {
+    if (offlineReady) {
+      const timeout = setTimeout(() => {
+        close();
+      }, 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [offlineReady]);
+
   return (
     <div className="ReloadPrompt-container">
-      {needRefresh && (
+      {(needRefresh || offlineReady) && (
         <div className="fixed bottom-20 left-4 right-4 z-[9999] animate-bounce-in">
           <div className="bg-white/80 backdrop-blur-md border border-blue-200 rounded-2xl shadow-2xl p-4 flex flex-col gap-3 max-w-sm mx-auto">
             <div className="flex items-center gap-3">

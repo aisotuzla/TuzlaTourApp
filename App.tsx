@@ -1,10 +1,23 @@
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, Suspense } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { App as CapApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
+import { Menu } from 'lucide-react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import Sidebar from './components/Sidebar';
 import LandingPage from './components/LandingPage';
 import SecurityGuard from './components/SecurityGuard';
 import LanguageSelector from './components/LanguageSelector';
+import FullScreenImageViewer from './components/FullScreenImageViewer';
+import ErrorBoundary from './components/ErrorBoundary';
+import ReloadPrompt from './components/ReloadPrompt';
+import OfflineIndicator from './components/OfflineIndicator';
+
+import { AppTab } from './types';
+import { ImageProvider } from './hooks/ImageContext';
+import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
+import { useDraggablePopups } from './hooks/useDraggablePopups';
 
 const MapView = React.lazy(() => import('./components/MapView'));
 const MapQuestView = React.lazy(() => import('./components/MapQuestView'));
@@ -17,79 +30,61 @@ const Accommodation = React.lazy(() => import('./components/Accommodation'));
 const ARGuide = React.lazy(() => import('./components/ARGuide'));
 const Parking = React.lazy(() => import('./components/Parking'));
 
-
-import { Menu, QrCode, Globe } from 'lucide-react';
-import { App as CapApp } from '@capacitor/app';
-import { Capacitor } from '@capacitor/core';
-import { AppTab, Language } from './types';
-import { Preferences } from '@capacitor/preferences';
-import { ImageProvider } from './hooks/ImageContext';
-import FullScreenImageViewer from './components/FullScreenImageViewer';
-import ErrorBoundary from './components/ErrorBoundary';
-import { getAppFeatures } from './utils/platform';
-import ReloadPrompt from './components/ReloadPrompt';
-import OfflineIndicator from './components/OfflineIndicator';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 
+const getTabFromPath = (path: string): AppTab => {
+  switch (path) {
+    case '/': return AppTab.LANDING;
+    case '/city-guide': return AppTab.CITY_GUIDE;
+    case '/history': return AppTab.HISTORY;
+    case '/map': return AppTab.MAP;
+    case '/quest': return AppTab.QUEST;
+    case '/wallet': return AppTab.WALLET;
+    case '/task-manager': return AppTab.TASK_MANAGER;
+    case '/food': return AppTab.FOOD;
+    case '/accommodation': return AppTab.ACCOMMODATION;
+    case '/ar': return AppTab.AR;
+    case '/parking': return AppTab.PARKING;
+    default: return AppTab.LANDING;
+  }
+};
 
-
-const App: React.FC = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AppContent />
-    </QueryClientProvider>
-  );
+const getPathFromTab = (tab: AppTab): string => {
+  switch (tab) {
+    case AppTab.LANDING: return '/';
+    case AppTab.CITY_GUIDE: return '/city-guide';
+    case AppTab.HISTORY: return '/history';
+    case AppTab.MAP: return '/map';
+    case AppTab.QUEST: return '/quest';
+    case AppTab.WALLET: return '/wallet';
+    case AppTab.TASK_MANAGER: return '/task-manager';
+    case AppTab.FOOD: return '/food';
+    case AppTab.ACCOMMODATION: return '/accommodation';
+    case AppTab.AR: return '/ar';
+    case AppTab.PARKING: return '/parking';
+    default: return '/';
+  }
 };
 
 const AppContent: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<AppTab>(AppTab.LANDING);
-  const [lang, setLang] = useState<Language>('bs');
-  const [unlockedRewards, setUnlockedRewards] = useState<string[]>([]);
+  const { lang, setLang, features, unlockedRewards, setUnlockedRewards } = useGlobalApp();
+  useDraggablePopups();
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+  const activeTab = getTabFromPath(location.pathname);
+
   const [navigationTarget, setNavigationTarget] = useState<any | null>(null);
   const [autoOpenScanner, setAutoOpenScanner] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [history, setHistory] = useState<AppTab[]>([AppTab.LANDING]);
   const [isWalletUnlocked, setIsWalletUnlocked] = useState(false);
-  const features = getAppFeatures();
-
-
-  useEffect(() => {
-    const loadUnlocked = async () => {
-      const { value } = await Preferences.get({ key: 'tuzla_unlocked' });
-      if (value) {
-        try {
-          setUnlockedRewards(JSON.parse(value));
-        } catch {
-          setUnlockedRewards(['mesa_selimovic']);
-        }
-      } else {
-        setUnlockedRewards(['mesa_selimovic']);
-      }
-    };
-    loadUnlocked();
-  }, []);
-
-  useEffect(() => {
-    Preferences.set({ key: 'tuzla_unlocked', value: JSON.stringify(unlockedRewards) });
-  }, [unlockedRewards]);
 
   const navigateToTab = (tab: AppTab, options?: { openScanner?: boolean }) => {
-    if (tab !== activeTab) {
-      setHistory(prev => [...prev, tab]);
-      setActiveTab(tab);
+    const path = getPathFromTab(tab);
+    if (location.pathname !== path) {
+      navigate(path);
     }
-    if (options?.openScanner) {
-      setAutoOpenScanner(true);
-    } else {
-      setAutoOpenScanner(false);
-    }
-
-    // Reset wallet unlock when leaving wallet tab (optional, depends on user preference)
-    // For now we keep it session based within the current app life
-    // But we could lock it if tab changes:
-    // if (activeTab === AppTab.WALLET && tab !== AppTab.WALLET) setIsWalletUnlocked(false);
-
+    setAutoOpenScanner(options?.openScanner || false);
     setIsDrawerOpen(false);
   };
 
@@ -100,14 +95,9 @@ const AppContent: React.FC = () => {
         return;
       }
 
-      if (history.length > 1) {
-        const newHistory = [...history];
-        newHistory.pop(); // Remove current
-        const previousTab = newHistory[newHistory.length - 1];
-        setHistory(newHistory);
-        setActiveTab(previousTab);
+      if (location.pathname !== '/') {
+        navigate(-1);
       } else {
-        // We are at the root (Landing Page)
         const confirmed = window.confirm(lang === 'bs' ? 'Da li želite izaći iz aplikacije?' : 'Would you like to exit app?');
         if (confirmed) {
           CapApp.exitApp();
@@ -122,85 +112,14 @@ const AppContent: React.FC = () => {
     return () => {
       registration.then(r => r.remove()).catch(() => { });
     };
-  }, [history, isDrawerOpen, lang]);
-
-
-
-  const renderContent = () => {
-    return (
-      <Suspense fallback={
-        <div className="h-full flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-50">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-blue-900 font-black uppercase text-xs tracking-widest animate-pulse">
-            {lang === 'en' ? 'Loading Tuzla...' : 'Učitavanje...'}
-          </p>
-        </div>
-      }>
-        {(() => {
-          switch (activeTab) {
-            case AppTab.LANDING: return <LandingPage lang={lang} onNavigate={navigateToTab} />;
-            case AppTab.CITY_GUIDE: return <CityGuide lang={lang} />;
-            case AppTab.HISTORY: return <History lang={lang} />;
-            case AppTab.MAP: return (
-              <MapView
-                lang={lang}
-                features={features}
-                unlockedRewards={unlockedRewards}
-              />
-            );
-            case AppTab.QUEST: return (
-              <MapQuestView
-                lang={lang}
-                features={features}
-                unlockedRewards={unlockedRewards}
-                onRewardFound={(id) =>
-                  setUnlockedRewards((prev) => (prev.includes(id) ? prev : [...prev, id]))
-                }
-                onToggleAR={() => setActiveTab(AppTab.AR)}
-                navigationTarget={navigationTarget}
-                onClearNavigation={() => setNavigationTarget(null)}
-                initialOpenScanner={autoOpenScanner}
-              />
-            );
-            case AppTab.WALLET: return (
-              <SecurityGuard
-                lang={lang}
-                isUnlocked={isWalletUnlocked}
-                onUnlock={() => setIsWalletUnlocked(true)}
-              >
-                <WalletShell lang={lang} />
-              </SecurityGuard>
-            );
-            case AppTab.TASK_MANAGER: return <TaskManager lang={lang} />;
-            case AppTab.FOOD: return <Food lang={lang} />;
-            case AppTab.ACCOMMODATION: return <Accommodation lang={lang} />;
-            case AppTab.AR: return (
-              <ARGuide
-                lang={lang}
-                features={features}
-                onNavigate={(poi) => {
-                  setNavigationTarget(poi);
-                  setActiveTab(AppTab.MAP);
-                }}
-              />
-            );
-            case AppTab.PARKING: return <Parking lang={lang} />;
-            default: return <LandingPage lang={lang} onNavigate={navigateToTab} />;
-          }
-        })()}
-      </Suspense>
-    );
-  };
+  }, [isDrawerOpen, lang, location.pathname, navigate]);
 
   return (
     <ImageProvider>
-
       <ReloadPrompt />
       <OfflineIndicator lang={lang} />
 
-      {/* Modern Top Bar */}
       <header className="fixed top-0 left-0 right-0 h-[88px] bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm">
-        {/* LEFT: Menu Button & Logo */}
         <div className="flex items-center z-10 w-20">
           <button
             onClick={() => setIsDrawerOpen(true)}
@@ -210,7 +129,6 @@ const AppContent: React.FC = () => {
           </button>
         </div>
 
-        {/* CENTER: App Title */}
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center z-0 w-[55%] sm:w-auto pointer-events-none">
           <h1 className="text-[4.5vw] sm:text-xl lg:text-2xl font-black tracking-tight leading-none uppercase flex flex-row flex-wrap sm:flex-nowrap justify-center items-center gap-1 sm:gap-1.5 text-center">
             <span className="text-blue-900">Tuzla</span>
@@ -219,13 +137,11 @@ const AppContent: React.FC = () => {
           </h1>
         </div>
 
-        {/* RIGHT: Utility controls */}
         <div className="flex items-center justify-end z-10 w-20">
           <LanguageSelector currentLang={lang} onSelect={setLang} />
         </div>
       </header>
 
-      {/* SVG Filter to remove black background from logos */}
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
         <filter id="remove-black-background" colorInterpolationFilters="sRGB">
           <feColorMatrix type="matrix" values="
@@ -238,7 +154,6 @@ const AppContent: React.FC = () => {
       </svg>
 
       <div className="relative min-h-screen bg-white flex overflow-hidden pt-[88px]">
-        {/* Main Sliding Drawer */}
         <Sidebar
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
@@ -254,16 +169,74 @@ const AppContent: React.FC = () => {
             transition: 'filter 0.3s ease',
           }}
         >
-          {/* Main Content */}
           <main className="flex-1 overflow-y-auto overflow-x-hidden">
             <ErrorBoundary>
-              {renderContent()}
+              <Suspense fallback={
+                <div className="h-full flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-50">
+                  <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
+                  <p className="text-blue-900 font-black uppercase text-xs tracking-widest animate-pulse">
+                    {lang === 'en' ? 'Loading Tuzla...' : 'Učitavanje...'}
+                  </p>
+                </div>
+              }>
+                <Routes>
+                  <Route path="/" element={<LandingPage lang={lang} onNavigate={navigateToTab} />} />
+                  <Route path="/city-guide" element={<CityGuide lang={lang} />} />
+                  <Route path="/history" element={<History lang={lang} />} />
+                  <Route path="/map" element={
+                    <MapView lang={lang} features={features} unlockedRewards={unlockedRewards} />
+                  } />
+                  <Route path="/quest" element={
+                    <MapQuestView
+                      lang={lang}
+                      features={features}
+                      unlockedRewards={unlockedRewards}
+                      onRewardFound={(id) => setUnlockedRewards((prev) => (prev.includes(id) ? prev : [...prev, id]))}
+                      onToggleAR={() => navigateToTab(AppTab.AR)}
+                      navigationTarget={navigationTarget}
+                      onClearNavigation={() => setNavigationTarget(null)}
+                      initialOpenScanner={autoOpenScanner}
+                    />
+                  } />
+                  <Route path="/wallet" element={
+                    <SecurityGuard lang={lang} isUnlocked={isWalletUnlocked} onUnlock={() => setIsWalletUnlocked(true)}>
+                      <WalletShell lang={lang} />
+                    </SecurityGuard>
+                  } />
+                  <Route path="/task-manager" element={<TaskManager lang={lang} />} />
+                  <Route path="/food" element={<Food lang={lang} />} />
+                  <Route path="/accommodation" element={<Accommodation lang={lang} />} />
+                  <Route path="/ar" element={
+                    <ARGuide
+                      lang={lang}
+                      features={features}
+                      onNavigate={(poi) => {
+                        setNavigationTarget(poi);
+                        navigateToTab(AppTab.MAP);
+                      }}
+                    />
+                  } />
+                  <Route path="/parking" element={<Parking lang={lang} />} />
+                </Routes>
+              </Suspense>
             </ErrorBoundary>
           </main>
         </div>
       </div>
       <FullScreenImageViewer />
     </ImageProvider>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <GlobalAppProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </GlobalAppProvider>
+    </QueryClientProvider>
   );
 };
 
