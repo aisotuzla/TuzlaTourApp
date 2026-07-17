@@ -95,9 +95,9 @@ const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
 
 export const QUEST_TARGETS = [
   { id: 'trg_slobode', name: { en: 'Freedom Square', bs: 'Trg slobode' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRTrgSlobode.png', Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp' },
-  { id: '3', name: { en: 'Salt Square', bs: 'Solni trg' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRsonitrg.png', Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp' },
-  { id: 'Palancinkara Bagi', name: { en: 'Pancake Bagi', bs: 'Palančikara Bagi' }, Html5Qrcode: '/assets/Gallery/Food/QuestQRLocations/QRpalacinkara.webp', Image: '/assets/Gallery/Food/bagi.webp' },
-  { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QR Banja.png', Image: '/assets/Gallery/Photos/tuzla24.webp' },
+  { id: 'salt_square', name: { en: 'Salt Square', bs: 'Solni trg' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRsonitrg.png', Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp' },
+  { id: 'palancinkara', name: { en: 'Pancake Bagi', bs: 'Palančikara Bagi' }, Html5Qrcode: '/assets/Gallery/Food/QuestQRLocations/QRpalacinkara.webp', Image: '/assets/Gallery/Food/bagi.webp' },
+  { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRBanja.png', Image: '/assets/Gallery/Photos/tuzla24.webp' },
   { id: 'frida', name: { en: 'Frida', bs: 'Frida' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRfrida.png', Image: '/assets/Gallery/QuestQRLocations/fridaslika.webp' },
   { id: 'panonika', name: { en: 'Pannonica Office', bs: 'Panonika Ured' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRPanonsko.png', Image: '/assets/Gallery/QuestQRLocations/tuzlaizugla.webp' },
   { id: 'neolit', name: { en: 'Neolithic Settlement', bs: 'Neolitsko sojeničko naselje' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRneolit.png', Image: '/assets/Gallery/QuestQRLocations/neolit2.webp' },
