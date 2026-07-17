@@ -23,7 +23,7 @@ const MapView = React.lazy(() => import('./components/MapView'));
 const MapQuestView = React.lazy(() => import('./components/MapQuestView'));
 const History = React.lazy(() => import('./components/History'));
 const CityGuide = React.lazy(() => import('./components/CityGuide'));
-const WalletShell = React.lazy(() => import('./components/WalletShell'));
+const WalletShell = React.lazy(() => import('./components/Wallet'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
@@ -69,7 +69,7 @@ const getPathFromTab = (tab: AppTab): string => {
 const AppContent: React.FC = () => {
   const { lang, setLang, features, unlockedRewards, setUnlockedRewards } = useGlobalApp();
   useDraggablePopups();
-  
+
   const navigate = useNavigate();
   const location = useLocation();
   const activeTab = getTabFromPath(location.pathname);
@@ -126,6 +126,7 @@ const AppContent: React.FC = () => {
             className="flex flex-col items-center justify-center p-1 bg-transparent border-none transition-all active:scale-95 group focus:outline-none"
           >
             <Menu className="w-8 h-8 text-blue-900 transition-transform group-hover:scale-110" />
+            <span className="text-[10px] uppercase font-bold text-blue-900 mt-1">Menu</span>
           </button>
         </div>
 

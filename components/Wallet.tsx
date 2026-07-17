@@ -117,7 +117,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
     useEffect(() => {
         return () => {
             if (scannerRef.current) {
-                scannerRef.current.stop().catch(() => {});
+                scannerRef.current.stop().catch(() => { });
             }
         }
     }, []);
@@ -192,20 +192,20 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                                 </div>
                                             </div>
                                             <div className="max-w-[160px] overflow-hidden">
-                                              <WalletMultiButton
-                                                  style={{
-                                                      background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
-                                                      borderRadius: '1rem',
-                                                      fontSize: '10px',
-                                                      fontWeight: 900,
-                                                      height: '36px',
-                                                      padding: '0 12px',
-                                                      maxWidth: '100%',
-                                                      overflow: 'hidden',
-                                                      textOverflow: 'ellipsis',
-                                                      whiteSpace: 'nowrap',
-                                                  }}
-                                              />
+                                                <WalletMultiButton
+                                                    style={{
+                                                        background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+                                                        borderRadius: '1rem',
+                                                        fontSize: '10px',
+                                                        fontWeight: 900,
+                                                        height: '36px',
+                                                        padding: '0 12px',
+                                                        maxWidth: '100%',
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap',
+                                                    }}
+                                                />
                                             </div>
                                         </div>
 
@@ -275,7 +275,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                                 </button>
                                             )}
                                         </div>
-                                        
+
                                         <AnimatePresence>
                                             {isScanning && (
                                                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
@@ -287,7 +287,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                                     </div>
                                                 </motion.div>
                                             )}
-                                            
+
                                             {scannedReward && (
                                                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="pt-4 border-t border-fuchsia-100 space-y-3">
                                                     <div className="p-4 bg-fuchsia-50 rounded-xl border border-fuchsia-100 text-center">
@@ -297,10 +297,9 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                                     <button
                                                         onClick={handleMint}
                                                         disabled={isMinting || !solConnected}
-                                                        className={`w-full py-3 rounded-xl font-black uppercase tracking-widest text-sm flex justify-center items-center gap-2 transition-all ${
-                                                            !solConnected ? 'bg-slate-100 text-slate-400 cursor-not-allowed' :
+                                                        className={`w-full py-3 rounded-xl font-black uppercase tracking-widest text-sm flex justify-center items-center gap-2 transition-all ${!solConnected ? 'bg-slate-100 text-slate-400 cursor-not-allowed' :
                                                             isMinting ? 'bg-fuchsia-300 text-fuchsia-700 animate-pulse' : 'bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white shadow-lg hover:shadow-xl active:scale-95'
-                                                        }`}
+                                                            }`}
                                                     >
                                                         {isMinting ? (lang === 'bs' ? 'Mintanje...' : 'Minting...') : (lang === 'bs' ? 'Mintaj na Solflare' : 'Mint to Solflare')}
                                                     </button>
@@ -384,28 +383,21 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
                                     </h2>
                                     <div className="space-y-4">
                                         <button
-                                            onClick={() => window.open('https://travelagency-icptuzla.wasmer.app/', '_blank')}
-                                            className="w-full h-16 bg-emerald-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
-                                        >
-                                            <Globe size={18} />
-                                            TRAVEL AGENCIES
-                                        </button>
-                                        <button
                                             onClick={() => window.open('https://dentist-tuzla.onhercules.app/dentist-tourism/', '_blank')}
-                                            className="w-full h-16 bg-white text-blue-600 border-2 border-blue-50 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
+                                            className="w-full h-16 bg-white text-blue-600 border-2 border-blue-500 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
                                         >
                                             <Stethoscope size={18} />
                                             DENTAL TOURISM
                                         </button>
                                         <button
                                             onClick={() => window.open('https://aiso-tuzla-ai.lovable.app/', '_blank')}
-                                            className="w-full h-16 bg-blue-600 text-yellow-400 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
+                                            className="w-full h-16 bg-blue-600 text-yellow-300 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
                                         >
                                             AISO TUZLA
                                         </button>
                                         <button
                                             onClick={() => window.open('https://bosnia-collection.vercel.app/', '_blank')}
-                                            className="w-full h-16 bg-gold-500 text-blue-700 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
+                                            className="w-full h-16 bg-gold-500 text-blue-700 border-2 border-blue-500 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
                                         >
                                             BOSNIA AND HERZEGOVINA DIGITAL ALBUM
                                         </button>

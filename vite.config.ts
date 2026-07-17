@@ -46,8 +46,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           enabled: false,
         },
         includeAssets: [
-          'favicon.ico',
-          'apple-touch-icon.png',
           // Critical landing page images precached for offline
           'assets/Gallery/QuestQRLocations/tuzla440.webp',
           'assets/Gallery/Ilovetuzla.webp',
@@ -102,7 +100,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         workbox: {
           // Precache the app shell: all built JS/CSS/HTML + icons
           globPatterns: mode === 'development' ? [] : ['**/*.{js,css,html,ico,svg}'],
-          globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
+          globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js', 'maps/tiles/**/*'],
           maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6MB limit for precached shell files
           cleanupOutdatedCaches: true,
           // SPA navigation fallback — serves index.html for all navigation requests when offline
@@ -218,9 +216,9 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
                 },
               },
             },
-            // 8. CDN scripts (A-Frame, model-viewer, Google Analytics)
+            // 8. CDN scripts (Google Analytics)
             {
-              urlPattern: /^https:\/\/(aframe\.io|ajax\.googleapis\.com|www\.googletagmanager\.com)\/.*/i,
+              urlPattern: /^https:\/\/(www\.googletagmanager\.com)\/.*/i,
               handler: 'StaleWhileRevalidate',
               options: {
                 cacheName: 'cdn-scripts-cache',

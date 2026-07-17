@@ -219,7 +219,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           type: 'fill-extrusion',
           minzoom: 14,
           paint: {
-            'fill-extrusion-color': '#d6dbe2ff',
+            'fill-extrusion-color': '#e7eaeeff',
             'fill-extrusion-height': [
               'interpolate', ['linear'], ['zoom'],
               14, 0,
@@ -1575,38 +1575,33 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                               }
                             }
                           }}
-                          className={`w-full rounded-2xl overflow-hidden relative flex items-center gap-4 p-3 border transition-all text-left ${
-                            isUnlocked
+                          className={`w-full rounded-2xl overflow-hidden relative flex items-center gap-4 p-3 border transition-all text-left ${isUnlocked
                               ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 active:scale-95 cursor-pointer'
                               : 'border-white/5 bg-white/3 opacity-60 cursor-default'
-                          }`}
+                            }`}
                         >
                           <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
                             <img
                               src={item.Image}
                               alt={item.name.en}
-                              className={`w-full h-full object-cover ${
-                                isUnlocked ? 'brightness-90' : 'grayscale brightness-40 blur-sm'
-                              }`}
+                              className={`w-full h-full object-cover ${isUnlocked ? 'brightness-90' : 'grayscale brightness-40 blur-sm'
+                                }`}
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <span className={`text-[9px] font-black uppercase tracking-widest block mb-0.5 ${
-                              isUnlocked ? 'text-amber-400' : 'text-slate-600'
-                            }`}>
+                            <span className={`text-[9px] font-black uppercase tracking-widest block mb-0.5 ${isUnlocked ? 'text-amber-400' : 'text-slate-600'
+                              }`}>
                               {isUnlocked ? (lang === 'bs' ? 'Otključano' : 'Unlocked') : (lang === 'bs' ? 'Zaključano' : 'Locked')}
                             </span>
-                            <h4 className={`font-extrabold text-sm leading-tight truncate ${
-                              isUnlocked ? 'text-white' : 'text-slate-600 italic'
-                            }`}>
+                            <h4 className={`font-extrabold text-sm leading-tight truncate ${isUnlocked ? 'text-white' : 'text-slate-600 italic'
+                              }`}>
                               {isUnlocked
                                 ? (lang === 'bs' ? item.name.bs : item.name.en)
                                 : '??? Secret Location'}
                             </h4>
                           </div>
-                          <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${
-                            isUnlocked ? 'bg-amber-500/20' : 'bg-white/5'
-                          }`}>
+                          <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${isUnlocked ? 'bg-amber-500/20' : 'bg-white/5'
+                            }`}>
                             {isUnlocked
                               ? <Trophy size={16} className="text-amber-400" />
                               : <Lock size={14} className="text-slate-600" />}

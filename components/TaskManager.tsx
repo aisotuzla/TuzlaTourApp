@@ -51,50 +51,50 @@ const threeDayPlanText = `Dan 1: Dolazak i Prvi Koraci
 🗺️ Upoznavanje grada:
 • Otvorite tab "Potraga" (Interactive Quest Map)
 • Pratite mapu do historijskih atrakcija (Freedom Square itd.)
-• Završite "igru" na lokacijama kako biste otključali digitalne popuste
-• Čuvajte popuste u svom TON novčaniku
+• Završite "Potragu" na lokacijama kako biste otključali digitalne popuste
+• Čuvajte popuste u svom novčaniku
 
 🌙 Večera: Povratak u hotelski restoran za večeru.
 
 Dan 2: Panonsko osvježenje i Stari Grad
 
 ☀️ Jutarnje osvježenje:
-• Otvorite "Mapa" i uputite se ka Panonskim jezerima
-• Savjet: Dođite rano dok je voda najčistija
+• Otvorite "Mapu" i uputite se ka Panonskim jezerima
+• Savjet: Dođite što ranije dok je voda najčistija 
+• Radno vrijeme: 8:00 - 20:00
 • Cijena cjelodnevne ulaznice: 7.50 KM
 • Besplatno obiđite Muzej i Neolitsko sojeničko naselje
 
-🍽️ Večera i Desert:
-• Večerajte u restoranu Panonski Lovac
-• Za desert idite na Palačinkaru Bagi
+🍽️ Ručak i Desert:
+• Ručajte u restoranu Panonski Lovac
+• Za Desert prošetajte do Palačinkare Bagi
 • Uključite navigaciju, skenirajte QR kod po dolasku
-• Ostvarite popust na porciju najboljih palačinaka na Balkanu
+• Ostvarite popust na porciju najboljih palačinaka u gradu!
 
 🏛️ Stari Grad:
-• Prošetajte do spomenika "Ismet i Meša"
+• Prošetajte do Trga Slobode i spomenika "Ismet i Meša"
 • Potražite QR kod na lokaciji za posebno iznenađenje u aplikaciji!
 
-🌙 Povratak: Hotel
+🌙 Večera: Povratak u hotelski restoran za večeru.
 
-Dan 3: Priroda, Parking i Shopping
+Dan 3: Priroda, Piknik i Shopping
 
 🌲 Priroda:
 • Otvorite tab "Mapa" i pokrenite navigaciju ka izletištu Ilinčica
 • Uživajte u adrenalinskom parku, šumi i hladovini
+• Preporuka za piknik: Ponesite hranu i piće sa sobom i uživajte u prirodi!
 
 🛍️ Shopping i Parking:
 • Otvorite tab "Parking" u aplikaciji
-• Pronađite najpovoljniju zonu za BCC (Bingo City Center)
+• Pronađite najpovoljniju parking zonu za BCC (Bingo City Center)
 • Izvršite plaćanje putem SMS-a (odaberite trajanje: sat ili dan)
-• U tržnom centru Bingo koristite svoju kameru
-• Pronađite AR guided 3D model lopte
-• Skenirajte ga za osvajanje nove nagrade u aplikaciji
+• Koristite navigaciju u aplikaciji do tržnog centra Bingo
+• U tržnom centru Bingo koristite kameru za uvid u 3D model lopte
+• Ili skenirajte QR kod na info pultu u prizemlju za osvajanje nagrade!
 
-⏰ Slobodno vrijeme:
-• Ostatak dana iskoristite za istraživanje grada po vašem izboru
-
-🏨 Hotel checkout
-• Pozovite Taxi ili potražite autobusku liniju u aplikaciji sa real time lokacijom koja vozi na aerodrom
+🌙 Polazak:
+• Pozovite Taxi ili potražite autobusku liniju "34" i "11" u aplikaciji klikom na red vožnje
+• Pronađite real-time lokaciju autobusa koji saobraća na relaciji Aerodrom - Centar i dočekajte ga na najbližem stajalištu.
 
 ━━━━━━━━━━━━━━━━━━━━━
 
