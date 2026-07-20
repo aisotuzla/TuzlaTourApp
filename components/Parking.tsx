@@ -222,13 +222,17 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
     useEffect(() => {
         if (map.current || !mapContainer.current) return;
 
+        // Offline tiles only cover zoom 16-17; lock viewport accordingly
+        const offlineMinZoom = 16;
+        const offlineMaxZoom = 17;
+
         map.current = new maplibregl.Map({
             container: mapContainer.current,
             style: isOnline ? ONLINE_STYLE : OFFLINE_STYLE,
             center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
-            zoom: 14.5,
-            minZoom: isOnline ? 0 : 14,
-            maxZoom: isOnline ? 20 : 16,
+            zoom: isOnline ? 14.5 : 16.0,
+            minZoom: isOnline ? 0 : offlineMinZoom,
+            maxZoom: isOnline ? 20 : offlineMaxZoom,
             pitch: 0
         });
 
@@ -299,8 +303,23 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
             }
         });
 
-        map.current.on('error', (e) => {
-            console.warn("Parking Map: Style error detected, attempting to signal loaded anyway...", e);
+        map.current.on('error', (e: any) => {
+            const msg = e?.error?.message || '';
+            console.warn("Parking Map: error detected", msg);
+
+            // If the online style fails (network issue, 403, etc.), fall back to offline tiles
+            if (isOnline && (msg.includes('style') || msg.includes('fetch') || msg.includes('403') || msg.includes('network'))) {
+                console.warn('Online style failed — switching to offline style with zoom 16-17');
+                try {
+                    map.current?.setStyle(OFFLINE_STYLE);
+                    map.current?.setMinZoom(16);
+                    map.current?.setMaxZoom(17);
+                    map.current?.setZoom(16);
+                } catch (fallbackErr) {
+                    console.error('Could not apply offline fallback style:', fallbackErr);
+                }
+            }
+
             // Even if style fails, we want to allow geolocation and markers to work on a blank map
             if (!isLoaded) {
                 setTimeout(() => setIsLoaded(true), 1000);
@@ -376,9 +395,26 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
         let watchId: number;
 
         const startTracking = () => {
+            // Restore last-known position from cache immediately (useful offline)
+            const cachedCoords = localStorage.getItem('parking_last_coords');
+            if (cachedCoords && !userMarker.current && map.current) {
+                try {
+                    const [lng, lat] = JSON.parse(cachedCoords) as [number, number];
+                    setUserCoords([lng, lat]);
+                    const el = document.createElement('div');
+                    el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.6);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
+                    userMarker.current = new maplibregl.Marker(el)
+                        .setLngLat([lng, lat])
+                        .addTo(map.current!);
+                } catch (_) { /* ignore parse errors */ }
+            }
+
             watchId = navigator.geolocation.watchPosition(
                 (pos) => {
                     const { latitude, longitude } = pos.coords;
+                    // Persist latest coords so they survive offline/reload
+                    localStorage.setItem('parking_last_coords', JSON.stringify([longitude, latitude]));
+
                     if (!userMarker.current) {
                         const el = document.createElement('div');
                         el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.6);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
@@ -386,7 +422,7 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                             .setLngLat([longitude, latitude])
                             .addTo(map.current!);
 
-                        map.current?.flyTo({ center: [longitude, latitude], zoom: 15 });
+                        map.current?.flyTo({ center: [longitude, latitude], zoom: isOnline ? 15 : 16.5 });
                     } else {
                         userMarker.current.setLngLat([longitude, latitude]);
                     }
@@ -394,16 +430,18 @@ const Parking: React.FC<{ lang: Language }> = ({ lang }) => {
                 },
                 (err) => {
                     console.error("Geolocation error:", err);
-                    // If high accuracy fails, try falling back to low accuracy
-                    if (err.code === 3 || err.code === 1) {
-                        navigator.geolocation.getCurrentPosition(
-                            (p) => setUserCoords([p.coords.longitude, p.coords.latitude]),
-                            (e) => console.error("Fallback geolocation error:", e),
-                            { enableHighAccuracy: false, timeout: 10000, maximumAge: 30000 }
-                        );
-                    }
+                    // Always fall back to low-accuracy GPS (works offline via cell/wifi cache)
+                    navigator.geolocation.getCurrentPosition(
+                        (p) => {
+                            const coords: [number, number] = [p.coords.longitude, p.coords.latitude];
+                            setUserCoords(coords);
+                            localStorage.setItem('parking_last_coords', JSON.stringify(coords));
+                        },
+                        (e) => console.error("Fallback geolocation also failed:", e),
+                        { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+                    );
                 },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
             );
         };
 

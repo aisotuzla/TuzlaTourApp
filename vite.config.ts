@@ -30,7 +30,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     plugins: [
       basicSsl(),
       react(),
-      tailwindcss(),
       nodePolyfills({
         include: ['buffer', 'process', 'crypto', 'stream', 'util', 'events', 'vm'],
         globals: {
@@ -39,6 +38,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           process: true,
         },
       }),
+      tailwindcss(),
+
       VitePWA({
         strategies: 'generateSW',
         registerType: 'autoUpdate',
@@ -279,7 +280,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         'html5-qrcode',
         '@tanstack/react-query',
       ],
-      exclude: ['rollup'],
+      exclude: ['rollup', 'vite-plugin-node-polyfills'],
     },
     resolve: {
       alias: {

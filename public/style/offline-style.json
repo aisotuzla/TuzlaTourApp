@@ -7,12 +7,10 @@
   "sources": {
     "local-raster": {
       "type": "raster",
-      "tiles": [
-        "/maps/tiles/{z}/{x}/{y}.png"
-      ],
+      "tiles": [],
       "tileSize": 256,
-      "minzoom": 14,
-      "maxzoom": 16,
+      "minzoom": 16,
+      "maxzoom": 17,
       "bounds": [
         18.55,
         44.50,
@@ -44,7 +42,7 @@
     {
       "id": "raster-tiles",
       "type": "raster",
-      "source": "local-raster",
+      "source": "/maps/tiles/{z}/{x}/{y}.png",
       "paint": {
         "raster-opacity": 1,
         "raster-saturation": -0.2,

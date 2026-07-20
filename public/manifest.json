@@ -3,8 +3,8 @@
   "short_name": "Tuzla Guide",
   "description": "Digital PWA App Tour Guide for Tuzla with interactive maps, quests, QR scanner, camera and GPS support, Augmented Reality and NFT Rewards.",
   "id": "/",
-  "start_url": "https://tuzlatourguide.netlify.app/",
-  "scope": "https://tuzlatourguide.netlify.app/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "display_override": [
     "window-controls-overlay",
