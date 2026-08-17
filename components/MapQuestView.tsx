@@ -167,24 +167,40 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
   const normalizeQrText = (value: string) => value
     .normalize('NFD')
-    .replace(/[-]/g, '')
+    .replace(/[ -_]/g, '')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]/gi, '')
     .toLowerCase();
 
   const findQuestTargetFromQr = (decodedText: string) => {
-    const normalized = normalizeQrText(decodedText);
+    if (!decodedText) return undefined;
+    const raw = decodedText.trim();
+    const normalized = normalizeQrText(raw);
+
+    // Also extract last segment if decodedText is a URL (e.g. https://.../QRTrgSlobode.png -> QRTrgSlobode)
+    const urlSegment = raw.includes('/') ? raw.split('/').filter(Boolean).pop()?.split('.')[0] : '';
+    const normalizedUrlSeg = urlSegment ? normalizeQrText(urlSegment) : '';
+
     return QUEST_TARGETS.find(target => {
+      // Build candidates from target ID, names, QR image paths/basenames, and constant location qrCodes
+      const constLocation = LOCATIONS.find(l => l.id === target.id || l.qrCode === target.id || normalizeQrText(l.name?.en || '') === normalizeQrText(target.name?.en || ''));
+      
       const candidates = [
         target.id,
         target.name?.en,
         target.name?.bs,
-      ].filter(Boolean).map(normalizeQrText);
+        target.Html5Qrcode,
+        target.Html5Qrcode ? target.Html5Qrcode.split('/').pop()?.split('.')[0] : '',
+        constLocation?.qrCode,
+        constLocation?.id,
+        constLocation?.name?.en,
+        constLocation?.name?.bs,
+      ].filter(Boolean).map(c => normalizeQrText(c as string));
 
       return candidates.some(candidate =>
         candidate === normalized ||
-        candidate.includes(normalized) ||
-        normalized.includes(candidate)
+        (normalizedUrlSeg && candidate === normalizedUrlSeg) ||
+        (candidate.length >= 3 && (candidate.includes(normalized) || normalized.includes(candidate)))
       );
     });
   };
@@ -1011,7 +1027,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       });
       html5QrCodeRef.current = html5QrCode;
 
-      const onScanSuccess = (decodedText: string) => {
+      const onScanSuccess = async (decodedText: string) => {
         const trimmedText = decodedText?.trim() ?? '';
         const target = findQuestTargetFromQr(trimmedText);
 
@@ -1023,6 +1039,29 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             type: 'error',
           });
           return;
+        }
+
+        // Haptic feedback on device if supported
+        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+          try { navigator.vibrate([100, 50, 100]); } catch (_) {}
+        }
+
+        // Record in local scan ledger for history tracking
+        try {
+          const { Preferences } = await import('@capacitor/preferences');
+          const { value } = await Preferences.get({ key: 'tuzla_scan_ledger' });
+          let ledger: any[] = [];
+          if (value) { try { ledger = JSON.parse(value); } catch (_) {} }
+          
+          if (!ledger.some(entry => entry.id === target.id)) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString(lang === 'bs' ? 'bs-BA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString(lang === 'bs' ? 'bs-BA' : 'en-US', { month: 'short', day: 'numeric' });
+            const updatedLedger = [{ id: target.id, timestamp: `${dateStr}, ${timeStr}` }, ...ledger];
+            await Preferences.set({ key: 'tuzla_scan_ledger', value: JSON.stringify(updatedLedger) });
+          }
+        } catch (e) {
+          console.warn('[MapQuest] Ledger update skipped:', e);
         }
 
         if (unlockedRewards.includes(target.id)) {
@@ -1048,10 +1087,16 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         setIsScanning(false);
       };
 
+      const qrConfig = {
+        fps: Math.max(scannerFps, 20),
+        qrbox: { width: Math.min(window.innerWidth * 0.7, 260), height: Math.min(window.innerWidth * 0.7, 260) },
+        disableFlip: false
+      };
+
       try {
         await html5QrCode.start(
           { facingMode: "environment" },
-          { fps: scannerFps, disableFlip: false },
+          qrConfig,
           onScanSuccess,
           () => { /* ignore */ }
         );
@@ -1062,7 +1107,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           if (devices && devices.length > 0) {
             await html5QrCode.start(
               devices[0].id,
-              { fps: scannerFps, disableFlip: false },
+              qrConfig,
               onScanSuccess,
               () => { /* ignore */ }
             );

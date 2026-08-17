@@ -125,24 +125,28 @@ const WalletContent: React.FC<{
     // QR Code matching helpers
     const normalizeQrText = (value: string) => value
         .normalize('NFD')
-        .replace(/[ - ]/g, '')
+        .replace(/[ -_]/g, '')
         .replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-z0-9]/gi, '')
         .toLowerCase();
 
     const findQuestTargetFromQr = (decodedText: string) => {
-        const normalized = normalizeQrText(decodedText);
+        if (!decodedText) return undefined;
+        const raw = decodedText.trim();
+        const normalized = normalizeQrText(raw);
+
         return QUEST_TARGETS.find(target => {
             const candidates = [
                 target.id,
                 target.name?.en,
                 target.name?.bs,
-            ].filter(Boolean).map(normalizeQrText);
+                (target as any).Html5Qrcode,
+                (target as any).Html5Qrcode ? (target as any).Html5Qrcode.split('/').pop()?.split('.')[0] : '',
+            ].filter(Boolean).map(c => normalizeQrText(c as string));
 
             return candidates.some(candidate =>
                 candidate === normalized ||
-                candidate.includes(normalized) ||
-                normalized.includes(candidate)
+                (candidate.length >= 3 && (candidate.includes(normalized) || normalized.includes(candidate)))
             );
         });
     };

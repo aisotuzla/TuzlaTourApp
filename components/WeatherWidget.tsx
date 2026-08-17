@@ -52,11 +52,11 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ className = 'top-6
 
   return (
     <div
-      className={`absolute ${className} z-[1000] pointer-events-auto bg-white/40 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 animate-in fade-in duration-500 overflow-hidden transition-all`}
+      className={`absolute ${className} z-[150] pointer-events-auto bg-white/40 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-lg border border-white/20 animate-in fade-in duration-500 overflow-hidden transition-all`}
     >
-      <div className="px-3 py-2 flex items-center gap-2">
-        {getWeatherIcon(weather.weathercode, "w-5 h-5 text-blue-600")}
-        <span className="font-black text-blue-950">{Math.round(weather.temperature)}°C</span>
+      <div className="px-2 py-1.5 sm:px-3 sm:py-2 flex items-center gap-1.5 sm:gap-2">
+        {getWeatherIcon(weather.weathercode, "w-3.5 h-3.5 sm:w-5 sm:h-5 text-blue-600")}
+        <span className="font-black text-blue-950 text-xs sm:text-sm">{Math.round(weather.temperature)}°C</span>
       </div>
     </div>
   );

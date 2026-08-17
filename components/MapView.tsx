@@ -541,9 +541,23 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
   return (
     <div className="h-full w-full relative group">
       <div ref={mapContainer} className="h-full w-full bg-slate-900" />
+      {/* Global style overrides: keep popups and panels above all map markers */}
+      <style>{`
+        .maplibregl-marker { z-index: 1 !important; }
+        .maplibregl-popup { z-index: 200 !important; }
+        .maplibregl-ctrl-bottom-right { z-index: 10 !important; }
+        .hotel-marker > div { padding: 5px !important; }
+        .hotel-marker > div svg { width: 14px !important; height: 14px !important; }
+        @media (max-width: 480px) {
+          .map-action-btn { width: 36px !important; height: 36px !important; border-radius: 12px !important; }
+          .map-action-btn svg { width: 16px !important; height: 16px !important; }
+          .hotel-marker > div { padding: 4px !important; border-radius: 8px !important; }
+          .hotel-marker > div svg { width: 11px !important; height: 11px !important; }
+        }
+      `}</style>
 
       {/* Search Overlay */}
-      <div className={`absolute top-6 inset-x-0 mx-auto z-20 w-[90%] max-w-lg transition-all duration-500 ${isSearchOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
+      <div className={`absolute top-3 sm:top-6 inset-x-0 mx-auto z-[300] w-[90%] max-w-lg transition-all duration-500 ${isSearchOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
         <form onSubmit={handleSearch} className="relative">
           <input
             type="text"
@@ -593,19 +607,22 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
         )}
       </div>
 
-      {/* Action Buttons */}
-      <div className="absolute top-6 left-6 flex flex-col gap-3 z-10">
+      {/* Action Buttons — Search (top-left) */}
+      <div className="absolute top-3 sm:top-6 left-3 sm:left-6 flex flex-col gap-2 sm:gap-3 z-[150]">
         <button
+          id="map-search-btn"
           onClick={() => setIsSearchOpen(true)}
-          className="w-14 h-14 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 flex items-center justify-center text-blue-600 hover:scale-110 active:scale-95 transition-all group"
+          className="map-action-btn w-10 h-10 sm:w-14 sm:h-14 bg-white/90 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-2xl border border-white/20 flex items-center justify-center text-blue-600 hover:scale-110 active:scale-95 transition-all group"
         >
-          <Search size={24} className="group-hover:rotate-12 transition-transform" />
+          <Search size={18} className="sm:hidden group-hover:rotate-12 transition-transform" />
+          <Search size={24} className="hidden sm:block group-hover:rotate-12 transition-transform" />
         </button>
       </div>
 
-      {/* Floating Navigation Button (Opposite to Search Button) */}
-      <div className="absolute top-6 right-6 flex flex-col gap-3 z-10">
+      {/* Floating Navigation Button (top-right) */}
+      <div className="absolute top-3 sm:top-6 right-3 sm:right-6 flex flex-col gap-2 sm:gap-3 z-[150]">
         <button
+          id="map-nav-btn"
           onClick={() => {
             if (isNavigating) {
               setIsNavigating(false);
@@ -617,26 +634,33 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
               setIsPresetModalOpen(true);
             }
           }}
-          className={`w-14 h-14 rounded-2xl shadow-2xl border flex items-center justify-center transition-all duration-300 ${isNavigating
-            ? 'bg-red-500 hover:bg-red-600 border-red-400 text-white hover:scale-110 active:scale-95 animate-pulse'
-            : 'bg-white/90 border-white/20 text-blue-600 hover:scale-110 active:scale-95'
-            }`}
+          className={`map-action-btn w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl shadow-2xl border flex items-center justify-center transition-all duration-300 ${
+            isNavigating
+              ? 'bg-red-500 hover:bg-red-600 border-red-400 text-white hover:scale-110 active:scale-95 animate-pulse'
+              : 'bg-white/90 border-white/20 text-blue-600 hover:scale-110 active:scale-95'
+          }`}
         >
           {isNavigating ? (
-            <X size={24} className="animate-in spin-in-90 duration-300" />
+            <>
+              <X size={16} className="sm:hidden animate-in spin-in-90 duration-300" />
+              <X size={24} className="hidden sm:block animate-in spin-in-90 duration-300" />
+            </>
           ) : (
-            <Route size={24} className="hover:rotate-12 transition-transform duration-300" />
+            <>
+              <Route size={16} className="sm:hidden" />
+              <Route size={24} className="hidden sm:block" />
+            </>
           )}
         </button>
       </div>
 
-      {/* Floating Weather */}
-      <WeatherWidget lang={lang} className="top-6 right-24" />
+      {/* Floating Weather — sits below the nav button on the right */}
+      <WeatherWidget lang={lang} className="top-[3.25rem] sm:top-24 right-3 sm:right-6" />
 
       {/* Destination Preset Selector Modal */}
       <AnimatePresence>
         {isPresetModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -829,12 +853,12 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
-            className="absolute inset-0 z-20 pointer-events-none flex items-end justify-center pb-28 px-4"
+            className="absolute inset-0 z-[250] pointer-events-none flex items-end justify-center pb-28 px-4"
           >
             <motion.div
               drag
               dragMomentum={false}
-              className="w-full max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950 border border-blue-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4"
+              className="w-full max-w-sm sm:max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950 border border-blue-500/30 rounded-3xl p-4 sm:p-5 shadow-2xl flex flex-col gap-3 sm:gap-4 mx-2"
             >
               {/* Header Info */}
               <div className="flex items-start justify-between">

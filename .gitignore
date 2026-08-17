@@ -24,7 +24,7 @@ android/keystore.properties
 android/**/*.jks
 *.aab
 *.apk
-
+.agent
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
