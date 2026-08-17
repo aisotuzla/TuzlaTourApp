@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CheckCircle2, Circle, CreditCard, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, CheckCircle2, Circle, CreditCard, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { Language } from '../types';
 import { Preferences } from '@capacitor/preferences';
+import { EventCalendarView } from './EventCalendarView';
 
-type Mode = 'expenses' | 'tasks' | 'itinerary' | 'threeDayPlan';
+type Mode = 'calendar' | 'expenses' | 'tasks' | 'itinerary' | 'threeDayPlan';
 
 type ExpenseItem = {
   id: number;
@@ -192,7 +193,7 @@ const readState = async (): Promise<{ expenses: ExpenseItem[]; tasks: TaskItem[]
 
 const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
   const t = copy[lang] ?? copy.en;
-  const [view, setView] = useState<Mode>('expenses');
+  const [view, setView] = useState<Mode>('calendar');
 
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -312,6 +313,13 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
 
           <div className="mt-6 flex flex-wrap gap-3">
             <button
+              onClick={() => setView('calendar')}
+              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'calendar' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
+            >
+              <CalendarIcon className="h-5 w-5" />
+              {lang === 'bs' ? 'Kalendar događaja' : 'Calendar of Events'}
+            </button>
+            <button
               onClick={() => setView('expenses')}
               className={`rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'expenses' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
             >
@@ -341,6 +349,10 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         {!isLoaded ? (
           <div className="flex justify-center items-center py-20 min-h-[300px]">
             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : view === 'calendar' ? (
+          <div className="p-6 sm:p-8">
+            <EventCalendarView lang={lang} />
           </div>
         ) : (
           <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_1fr]">
