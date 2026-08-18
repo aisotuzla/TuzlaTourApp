@@ -1,4 +1,4 @@
-import { ExtractedCandidateEvent, VerifiedEventCategory } from './events';
+import { ExtractedCandidateEvent, VerifiedEventCategory } from '../types/events';
 
 interface HTMLScrapedArticle {
   title: string;
