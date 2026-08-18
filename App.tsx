@@ -5,6 +5,8 @@ import { Capacitor } from '@capacitor/core';
 import { Menu } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+const queryClient = new QueryClient();
+
 import Sidebar from './components/Sidebar';
 import LandingPage from './components/LandingPage';
 import SecurityGuard from './components/SecurityGuard';

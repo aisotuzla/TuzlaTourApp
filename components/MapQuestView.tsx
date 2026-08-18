@@ -6,7 +6,7 @@ import { AppFeatures } from '../utils/platform';
 import { Language } from '../types';
 import { TUZLA_CENTER, LOCATIONS } from '../constants';
 import { tuzlaHotelData } from '../tuzlaHotelData';
-import { QrCode, Navigation, Gamepad2, CheckCircle2, Lock, Play, X, Trophy, Route, Compass, Landmark, Loader2, Clock, Footprints, Hotel as HotelIcon } from 'lucide-react';
+import { QrCode, Navigation, Gamepad2, CheckCircle2, Lock, Play, X, Trophy, Route, Compass, Landmark, Loader2, Clock, Footprints, Hotel as HotelIcon, Info } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNetwork } from '../hooks/useNetwork';
@@ -156,6 +156,24 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [routeTime, setRouteTime] = useState<number | null>(null);
   const [isRouteLoading, setIsRouteLoading] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState<'poi' | 'hotel' | 'rewards'>('poi');
+  const [showRules, setShowRules] = useState(false);
+  const rulesTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleTriggerRules = () => {
+    if (rulesTimerRef.current) clearTimeout(rulesTimerRef.current);
+    setShowRules(prev => !prev);
+  };
+
+  useEffect(() => {
+    if (showRules) {
+      rulesTimerRef.current = setTimeout(() => {
+        setShowRules(false);
+      }, 10000);
+    }
+    return () => {
+      if (rulesTimerRef.current) clearTimeout(rulesTimerRef.current);
+    };
+  }, [showRules]);
 
   const scannerContainerId = "map-quest-reader";
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
@@ -168,17 +186,19 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
   const setupBuildings = (mapInstance: maplibregl.Map) => {
     try {
-      if (!mapInstance.isStyleLoaded()) return;
-
       const layers = mapInstance.getStyle().layers ?? [];
-      const buildingLayer = layers.find((l: any) => l['source-layer'] === 'building' || l['source-layer'] === 'buildings');
-      if (!buildingLayer) return;
+      const buildingLayer = layers.find((l: any) => 
+        l.id === 'building' || 
+        l.id === 'buildings' || 
+        l['source-layer'] === 'building' || 
+        l['source-layer'] === 'buildings'
+      );
 
-      const source = (buildingLayer as any).source;
-      const sourceLayer = (buildingLayer as any)['source-layer'];
+      // Find building source & source-layer fallback
+      const source = (buildingLayer as any)?.source || 'geoapify' || 'openmaptiles';
+      const sourceLayer = (buildingLayer as any)?.['source-layer'] || 'building';
 
-      if (mapInstance.getLayer('building-outline')) mapInstance.removeLayer('building-outline');
-      if (mapInstance.getLayer('building')) mapInstance.removeLayer('building');
+      if (!source) return;
 
       let labelLayerId: string | undefined;
       for (const layer of layers) {
@@ -194,21 +214,26 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           source: source,
           'source-layer': sourceLayer,
           type: 'fill-extrusion',
-          minzoom: 14,
+          minzoom: 13,
           paint: {
-            'fill-extrusion-color': '#e7eaeeff',
+            'fill-extrusion-color': [
+              'interpolate', ['linear'], ['get', 'render_height'],
+              0, '#f1f5f9',
+              20, '#e2e8f0',
+              50, '#cbd5e1'
+            ],
             'fill-extrusion-height': [
               'interpolate', ['linear'], ['zoom'],
-              14, 0,
-              15, ['*', ['coalesce', ['get', 'render_height'], ['get', 'height'], 15], 1.6],
+              13, 0,
+              14.5, ['*', ['coalesce', ['get', 'render_height'], ['get', 'height'], ['get', 'building:levels'], 12], 1.5],
             ],
             'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
-            'fill-extrusion-opacity': 0.8,
+            'fill-extrusion-opacity': 0.85,
           },
         }, labelLayerId);
       }
     } catch (e) {
-      console.warn("MapQuest: Error setting up buildings", e);
+      console.warn("MapQuest: Error setting up 3d buildings", e);
     }
   };
 
@@ -430,117 +455,54 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       setIsLoaded(true);
       setupResources();
 
+      if (!map.current?.isStyleLoaded()) return;
+
+      // Apply custom Geoapify Map Styles
       try {
-        if (!map.current?.isStyleLoaded()) return;
-
-        // Apply custom Geoapify Map Styles
-        try {
-
-          if (map.current) {
-            map.current.setPaintProperty('background', 'background-color', '#e7efd8');
-            map.current.setPaintProperty('park', 'fill-color', '#ade674');
-            map.current.setPaintProperty('park_outline', 'line-color', '#c8e9a6');
-            map.current.setPaintProperty('landuse_residential', 'fill-color', 'rgba(244, 240, 245, 0.49)');
-            map.current.setPaintProperty('landcover_wood', 'fill-color', 'rgba(101,177,58,0.7)');
-            map.current.setPaintProperty('landcover_grass', 'fill-color', '#b2eb91');
-            map.current.setPaintProperty('landuse_hospital', 'fill-color', '#e9a5c7');
-            map.current.setPaintProperty('landuse_school', 'fill-color', '#ede1e8');
-            map.current.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-            map.current.setLayoutProperty('waterway_river', 'visibility', 'none');
-            map.current.setLayoutProperty('waterway_other', 'visibility', 'none');
-            map.current.setPaintProperty('water', 'fill-color', '#79a1f7');
-            map.current.setPaintProperty('road_area_pattern', 'fill-color', '#d4d0d0');
-            map.current.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#f58829');
-            map.current.setPaintProperty('road_path_pedestrian', 'line-color', '#afa1a1');
-            map.current.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.3999999999999999], [20, 4]] });
-            map.current.setPaintProperty('road_motorway_link', 'line-color', '#e7bd85');
-            map.current.setPaintProperty('road_service_track', 'line-color', '#f3f295');
-            map.current.setPaintProperty('road_link', 'line-color', '#e9d47d');
-            map.current.setPaintProperty('road_minor', 'line-color', '#ffffff');
-            map.current.setPaintProperty('road_secondary_tertiary', 'line-color', '#fde06c');
-            map.current.setPaintProperty('road_trunk_primary', 'line-color', '#f5bc53');
-            map.current.setPaintProperty('road_motorway', 'line-color', '#c08e4b');
-            map.current.setPaintProperty('building', 'fill-color', '#9cb0c4');
-            map.current.setPaintProperty('building-3d', 'fill-extrusion-color', '#d7dfe2');
-          }
-
-          // QUEST_TARGETS is defined at module scope
-          map.current.setPaintProperty('background', 'background-color', '#e1eed2');
-          map.current.setPaintProperty('landuse-residential', 'fill-color', 'rgba(201, 196, 190, 0.74)');
-          map.current.setPaintProperty('landuse-commercial', 'fill-color', 'rgba(191, 195, 235, 0.52)');
-          map.current.setPaintProperty('landuse-industrial', 'fill-color', 'rgba(182, 193, 215, 0.47)');
-          map.current.setPaintProperty('park', 'fill-color', '#c5e1a9');
-          map.current.setPaintProperty('park-outline', 'line-color', 'rgba(97,168,50,0.66)');
-          map.current.setPaintProperty('landuse-hospital', 'fill-color', '#ecc4d8');
-          map.current.setPaintProperty('landuse-school', 'fill-color', '#e0dae6');
-          map.current.setPaintProperty('landcover-wood', 'fill-color', '#549c30');
-          map.current.setPaintProperty('landcover-grass', 'fill-color', '#b3db8c');
-          map.current.setPaintProperty('landcover-grass-park', 'fill-color', '#c3f095');
-          map.current.setPaintProperty('waterway-river', 'line-color', '#85bcf2');
-          map.current.setLayoutProperty('water-offset', 'visibility', 'none');
-          map.current.setPaintProperty('water', 'fill-color', '#9ecaf6');
-          map.current.setPaintProperty('building', 'fill-color', '#f1f5f9');
-          map.current.setPaintProperty('building-top', 'fill-color', '#f8fafc');
-          map.current.setPaintProperty('aeroway-area', 'fill-color', '#e0dfe9');
-          map.current.setPaintProperty('aeroway-runway', 'line-color', '#c6c6ca');
-          map.current.setPaintProperty('highway-area', 'fill-color', 'rgba(204,200,200,0.56)');
-          map.current.setPaintProperty('highway-motorway-link-casing', 'line-color', '#bb671e');
-          map.current.setPaintProperty('highway-motorway-link-casing', 'line-width', { "base": 1.2, "stops": [[12, 1.0666666666666667], [13, 3.2], [14, 4.266666666666667], [20, 16]] });
-          map.current.setPaintProperty('highway-link-casing', 'line-color', '#b77a47');
-          map.current.setPaintProperty('highway-minor-casing', 'line-color', '#c7baba');
-          map.current.setPaintProperty('highway-minor-casing', 'line-width', { "base": 1.2, "stops": [[12, 0.30000000000000004], [13, 0.6000000000000001], [14, 2.4000000000000004], [20, 9]] });
-          map.current.setPaintProperty('highway-secondary-tertiary-casing', 'line-color', '#e79a55');
-          map.current.setPaintProperty('highway-primary-casing', 'line-color', '#924707');
-          map.current.setPaintProperty('highway-primary-casing', 'line-width', { "base": 1.2, "stops": [[7, 0], [8, 0.5454545454545454], [9, 1.3636363636363635], [20, 20]] });
-          map.current.setPaintProperty('highway-trunk-casing', 'line-color', '#d78945');
-          map.current.setPaintProperty('highway-motorway-casing', 'line-color', '#b2580a');
-          map.current.setPaintProperty('highway-path', 'line-color', '#f39c44');
-          map.current.setPaintProperty('highway-motorway-link', 'line-color', '#d7a35d');
-          map.current.setPaintProperty('highway-link', 'line-color', '#f8f8f6');
-          map.current.setPaintProperty('highway-minor', 'line-color', '#f1f1f1');
-          map.current.setPaintProperty('highway-minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 3.0434782608695645], [20, 14]] });
-          map.current.setPaintProperty('highway-secondary-tertiary', 'line-color', '#f6e17a');
-          map.current.setPaintProperty('highway-primary', 'line-color', '#ec9b40');
-          map.current.setPaintProperty('highway-primary', 'line-width', { "base": 1.2, "stops": [[8.5, 0], [9, 0.4166666666666666], [20, 15]] });
-          map.current.setPaintProperty('highway-trunk', 'line-color', '#ffefb1');
-          map.current.setPaintProperty('highway-motorway', 'line-color', '#c89550');
-          map.current.setPaintProperty('railway', 'line-color', '#999696');
-          map.current.setPaintProperty('waterway-name', 'text-color', '#3a87d5');
-          map.current.setPaintProperty('water-name-lakeline', 'text-color', '#4695e6');
-          map.current.setLayoutProperty('water-name-other', 'visibility', 'none');
-          map.current.setPaintProperty('poi-level-3', 'text-color', '#0f0e0e');
-          map.current.setPaintProperty('poi-level-2', 'text-color', '#615656');
-          map.current.setPaintProperty('poi-level-1', 'text-color', '#5b5252');
-          map.current.setPaintProperty('road_oneway', 'text-color', '#7e7a7a');
-          map.current.setPaintProperty('road_oneway_opposite', 'text-color', '#989494');
-          map.current.setPaintProperty('highway-name-path', 'text-color', '#b9834d');
-          map.current.setPaintProperty('highway-name-minor', 'text-color', '#61472c');
-          map.current.setPaintProperty('highway-name-major', 'text-color', '#7e5933');
-          map.current.setPaintProperty('highway-shield', 'text-color', '#1c1b1b');
-          map.current.setPaintProperty('place-other', 'text-color', '#471c1c');
-        } catch (paintErr) {
-          console.warn("Could not apply all Geoapify custom paint properties:", paintErr);
+        if (map.current) {
+          map.current.setPaintProperty('background', 'background-color', '#e7efd8');
+          map.current.setPaintProperty('park', 'fill-color', '#ade674');
+          map.current.setPaintProperty('park_outline', 'line-color', '#c8e9a6');
+          map.current.setPaintProperty('landuse_residential', 'fill-color', 'rgba(244, 240, 245, 0.49)');
+          map.current.setPaintProperty('landcover_wood', 'fill-color', 'rgba(101,177,58,0.7)');
+          map.current.setPaintProperty('landcover_grass', 'fill-color', '#b2eb91');
+          map.current.setPaintProperty('landuse_hospital', 'fill-color', '#e9a5c7');
+          map.current.setPaintProperty('landuse_school', 'fill-color', '#ede1e8');
+          map.current.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
+          map.current.setLayoutProperty('waterway_river', 'visibility', 'none');
+          map.current.setLayoutProperty('waterway_other', 'visibility', 'none');
+          map.current.setPaintProperty('water', 'fill-color', '#79a1f7');
+          map.current.setPaintProperty('road_area_pattern', 'fill-color', '#d4d0d0');
+          map.current.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#f58829');
+          map.current.setPaintProperty('road_path_pedestrian', 'line-color', '#afa1a1');
+          map.current.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.3999999999999999], [20, 4]] });
+          map.current.setPaintProperty('road_motorway_link', 'line-color', '#e7bd85');
+          map.current.setPaintProperty('road_service_track', 'line-color', '#f3f295');
+          map.current.setPaintProperty('road_link', 'line-color', '#e9d47d');
+          map.current.setPaintProperty('road_minor', 'line-color', '#ffffff');
+          map.current.setPaintProperty('road_secondary_tertiary', 'line-color', '#fde06c');
+          map.current.setPaintProperty('road_trunk_primary', 'line-color', '#f5bc53');
+          map.current.setPaintProperty('road_motorway', 'line-color', '#c08e4b');
+          map.current.setPaintProperty('building', 'fill-color', '#9cb0c4');
         }
-
-        // Advanced 3D Lighting for metallic effect
-        map.current?.setLight({
-          anchor: 'viewport',
-          color: '#ffffff',
-          intensity: 0.4,
-          position: [1.15, 210, 30]
-        });
-      } catch (e) {
-        console.warn("MapQuest: Error applying style refinements", e);
+      } catch (paintErr) {
+        console.warn("Could not apply all custom paint properties:", paintErr);
       }
 
-      if (isOnline && policy.mapFx.enable3dBuildings) {
-        setupBuildings(map.current!);
-      }
-      if (isOnline) {
-        setupHighlighters(map.current!);
-      }
+      // Advanced 3D Lighting for metallic effect
+      map.current?.setLight({
+        anchor: 'viewport',
+        color: '#ffffff',
+        intensity: 0.4,
+        position: [1.15, 210, 30]
+      });
 
-
+      if (map.current) {
+        setupBuildings(map.current);
+      }
+      if (isOnline && map.current) {
+        setupHighlighters(map.current);
+      }
     });
 
     // Special case: if offline mode kicks in via error handler, we might miss 'load'
@@ -1113,29 +1075,67 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
       {/* MAP VIEW */}
       <div ref={mapContainer} className="h-full w-full grayscale-[0.05] contrast-[1.05] brightness-[0.9]">
-        {/* RECENTER BUTTON */}
-        <button
-          onClick={() => {
-            if (userLocation && map.current) {
-              map.current.flyTo({ center: [userLocation[1], userLocation[0]], zoom: 17, pitch: 60 });
-            } else {
-              navigator.geolocation.getCurrentPosition(
-                (p) => {
-                  const coords: [number, number] = [p.coords.latitude, p.coords.longitude];
-                  setUserLocation(coords);
-                  map.current?.flyTo({ center: [coords[1], coords[0]], zoom: 17, pitch: 60 });
-                },
-                (e) => alert(lang === 'bs' ? 'GPS lokacija nije dostupna.' : 'GPS location not available.'),
-                { enableHighAccuracy: true, timeout: 10000 }
-              );
-            }
-          }}
-          className="absolute bottom-24 left-6 z-20 flex items-center gap-2 px-3 py-2.5 bg-gradient-to-r from-blue-600/90 to-cyan-500/90 backdrop-blur-xl border border-blue-400/30 rounded-2xl shadow-lg shadow-blue-500/25 text-white active:scale-95 transition-all"
-        >
-          <Navigation size={18} className="drop-shadow-sm" />
-          <span className="text-[10px] font-black uppercase tracking-wider">{lang === 'bs' ? 'Moja Lokacija' : lang === 'de' ? 'Mein Standort' : lang === 'tr' ? 'Konumum' : 'My Location'}</span>
-        </button>
+        {/* BOTTOM LEFT CONTROLS: ICON-ONLY LOCATION & INFO BUTTON */}
+        <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2">
+          {/* Location button - Icon only */}
+          <button
+            onClick={() => {
+              if (userLocation && map.current) {
+                map.current.flyTo({ center: [userLocation[1], userLocation[0]], zoom: 17, pitch: 60 });
+              } else {
+                navigator.geolocation.getCurrentPosition(
+                  (p) => {
+                    const coords: [number, number] = [p.coords.latitude, p.coords.longitude];
+                    setUserLocation(coords);
+                    map.current?.flyTo({ center: [coords[1], coords[0]], zoom: 17, pitch: 60 });
+                  },
+                  (e) => alert(lang === 'bs' ? 'GPS lokacija nije dostupna.' : 'GPS location not available.'),
+                  { enableHighAccuracy: true, timeout: 10000 }
+                );
+              }
+            }}
+            className="w-10 h-10 flex items-center justify-center bg-gradient-to-r from-blue-600/90 to-cyan-500/90 backdrop-blur-xl border border-blue-400/30 rounded-full shadow-lg shadow-blue-500/25 text-white active:scale-95 transition-all"
+            title={lang === 'bs' ? 'Moja Lokacija' : 'My Location'}
+          >
+            <Navigation size={18} className="drop-shadow-sm" />
+          </button>
 
+          {/* Info sign button to trigger rules */}
+          <button
+            onClick={handleTriggerRules}
+            className="w-10 h-10 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-blue-400/30 rounded-full shadow-lg shadow-blue-500/20 text-blue-400 hover:text-white active:scale-95 transition-all"
+            title={lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}
+          >
+            <Info size={18} />
+          </button>
+        </div>
+
+        {/* QUEST RULES OVERLAY OVER LOCATION BUTTON (AUTO-CLOSES IN 10 SECONDS) */}
+        <AnimatePresence>
+          {showRules && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="absolute bottom-16 left-4 z-30 max-w-[280px] p-3.5 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-blue-500/40 shadow-2xl text-xs text-slate-200"
+            >
+              <div className="flex items-center justify-between mb-1.5 pb-1 border-b border-white/10">
+                <span className="font-black text-amber-400 uppercase tracking-wide text-[10px]">
+                  {lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}
+                </span>
+                <button onClick={() => setShowRules(false)} className="text-white/60 hover:text-white">
+                  <X size={14} />
+                </button>
+              </div>
+              <p className="text-[11px] leading-relaxed text-slate-300">
+                {lang === 'bs'
+                  ? 'Pronađite označene lokacije po gradu i skenirajte QR kodove da otključate nagrade!'
+                  : 'Find the marked locations around the city and scan QR codes to unlock rewards!'}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </div>
 
@@ -1204,13 +1204,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           </div>
         </div>
       </div>
-      {/* 3D PITCH CONTROL */}
-      <div className={`absolute right-6 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-3 bg-white/5 ${isUtilityMode ? 'backdrop-blur-sm shadow-lg' : 'backdrop-blur-xl shadow-2xl'} p-3 rounded-full border border-white/10`}>
-        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-black text-white uppercase tracking-tighter">3D</div>
+      {/* 3D PITCH CONTROL (SLIMMER AND NARROWER) */}
+      <div className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-2 bg-slate-900/80 ${isUtilityMode ? 'backdrop-blur-sm shadow-lg' : 'backdrop-blur-xl shadow-2xl'} px-1.5 py-2.5 rounded-full border border-blue-500/20`}>
+        <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-[8px] font-black text-blue-400 uppercase tracking-tighter">3D</div>
         <input
           type="range" min="30" max={policy.mapFx.maxPitch.toString()} defaultValue={Math.min(75, policy.mapFx.maxPitch).toString()}
           onChange={(e) => map.current?.setPitch(Math.min(parseInt(e.target.value), policy.mapFx.maxPitch))}
-          className="bg-white/20 rounded-full h-32 w-2 focus:outline-none focus:ring-2 focus:ring-amber-500 [writing-mode:vertical-rl] [appearance:slider-vertical] [-webkit-appearance:slider-vertical]"
+          className="bg-white/20 rounded-full h-24 w-1 focus:outline-none focus:ring-1 focus:ring-amber-500 [writing-mode:vertical-rl] [appearance:slider-vertical] [-webkit-appearance:slider-vertical]"
         />
       </div>
 
