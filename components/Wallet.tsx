@@ -30,6 +30,7 @@ import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
 import { QUEST_TARGETS } from './MapQuestView';
+import { findQuestTargetFromQr } from '../utils/qrMatcher';
 import { Preferences } from '@capacitor/preferences';
 
 import '@solana/wallet-adapter-react-ui/styles.css';
@@ -121,35 +122,6 @@ const WalletContent: React.FC<{
     };
 
     const shortAddress = (addr: string) => `${addr.slice(0, 4)}...${addr.slice(-4)}`;
-
-    // QR Code matching helpers
-    const normalizeQrText = (value: string) => value
-        .normalize('NFD')
-        .replace(/[ -_]/g, '')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]/gi, '')
-        .toLowerCase();
-
-    const findQuestTargetFromQr = (decodedText: string) => {
-        if (!decodedText) return undefined;
-        const raw = decodedText.trim();
-        const normalized = normalizeQrText(raw);
-
-        return QUEST_TARGETS.find(target => {
-            const candidates = [
-                target.id,
-                target.name?.en,
-                target.name?.bs,
-                (target as any).Html5Qrcode,
-                (target as any).Html5Qrcode ? (target as any).Html5Qrcode.split('/').pop()?.split('.')[0] : '',
-            ].filter(Boolean).map(c => normalizeQrText(c as string));
-
-            return candidates.some(candidate =>
-                candidate === normalized ||
-                (candidate.length >= 3 && (candidate.includes(normalized) || normalized.includes(candidate)))
-            );
-        });
-    };
 
     const startScanner = async () => {
         setIsScanning(true);

@@ -13,6 +13,7 @@ import { useNetwork } from '../hooks/useNetwork';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { QuestQualityMode } from '../utils/questRuntimePolicy';
 import { getDistance } from '../utils/geoUtils';
+import { findQuestTargetFromQr } from '../utils/qrMatcher';
 
 interface RoutePoiPreset {
   name: Partial<Record<Language, string>> & { en: string; bs: string };
@@ -164,46 +165,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const isBalancedMode = policy.qualityLevel === 'balanced';
   const scannerFps = isUtilityMode ? 10 : (isBalancedMode ? 12 : 15);
   const scannerQrSize = isUtilityMode ? 220 : 250;
-
-  const normalizeQrText = (value: string) => value
-    .normalize('NFD')
-    .replace(/[ -_]/g, '')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]/gi, '')
-    .toLowerCase();
-
-  const findQuestTargetFromQr = (decodedText: string) => {
-    if (!decodedText) return undefined;
-    const raw = decodedText.trim();
-    const normalized = normalizeQrText(raw);
-
-    // Also extract last segment if decodedText is a URL (e.g. https://.../QRTrgSlobode.png -> QRTrgSlobode)
-    const urlSegment = raw.includes('/') ? raw.split('/').filter(Boolean).pop()?.split('.')[0] : '';
-    const normalizedUrlSeg = urlSegment ? normalizeQrText(urlSegment) : '';
-
-    return QUEST_TARGETS.find(target => {
-      // Build candidates from target ID, names, QR image paths/basenames, and constant location qrCodes
-      const constLocation = LOCATIONS.find(l => l.id === target.id || l.qrCode === target.id || normalizeQrText(l.name?.en || '') === normalizeQrText(target.name?.en || ''));
-      
-      const candidates = [
-        target.id,
-        target.name?.en,
-        target.name?.bs,
-        target.Html5Qrcode,
-        target.Html5Qrcode ? target.Html5Qrcode.split('/').pop()?.split('.')[0] : '',
-        constLocation?.qrCode,
-        constLocation?.id,
-        constLocation?.name?.en,
-        constLocation?.name?.bs,
-      ].filter(Boolean).map(c => normalizeQrText(c as string));
-
-      return candidates.some(candidate =>
-        candidate === normalized ||
-        (normalizedUrlSeg && candidate === normalizedUrlSeg) ||
-        (candidate.length >= 3 && (candidate.includes(normalized) || normalized.includes(candidate)))
-      );
-    });
-  };
 
   const setupBuildings = (mapInstance: maplibregl.Map) => {
     try {

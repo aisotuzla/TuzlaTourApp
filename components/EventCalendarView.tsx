@@ -41,10 +41,31 @@ const MONTH_NAMES_EN = [
 const DAYS_BS = ['Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub', 'Ned'];
 const DAYS_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+export const ALLOWED_YEARS = [2026, 2027];
+
+const getInitialCalendarState = () => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-indexed
+  
+  // Constrain initial year to allowed range if outside
+  const initialYear = ALLOWED_YEARS.includes(currentYear) 
+    ? currentYear 
+    : ALLOWED_YEARS[0];
+  
+  const monthStr = String(currentMonth + 1).padStart(2, '0');
+  const dayStr = String(now.getDate()).padStart(2, '0');
+  const initialDateStr = `${initialYear}-${monthStr}-${dayStr}`;
+
+  return { initialYear, initialMonth: currentMonth, initialDateStr };
+};
+
 export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
-  const [selectedYear, setSelectedYear] = useState<number>(2026);
-  const [selectedMonth, setSelectedMonth] = useState<number>(7); // 0-indexed (7 = August)
-  const [selectedDateStr, setSelectedDateStr] = useState<string | null>('2026-08-18');
+  const { initialYear, initialMonth, initialDateStr } = useMemo(() => getInitialCalendarState(), []);
+
+  const [selectedYear, setSelectedYear] = useState<number>(initialYear);
+  const [selectedMonth, setSelectedMonth] = useState<number>(initialMonth);
+  const [selectedDateStr, setSelectedDateStr] = useState<string | null>(initialDateStr);
   
   const [events, setEvents] = useState<CalendarEventItem[]>(INITIAL_CALENDAR_EVENTS);
   const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -164,8 +185,9 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   }, [events, selectedYear, selectedMonth, activeCategory, searchQuery]);
 
   const handlePrevMonth = () => {
+    const minYear = ALLOWED_YEARS[0];
     if (selectedMonth === 0) {
-      if (selectedYear > 2026) {
+      if (selectedYear > minYear) {
         setSelectedYear(selectedYear - 1);
         setSelectedMonth(11);
       }
@@ -175,8 +197,9 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   };
 
   const handleNextMonth = () => {
+    const maxYear = ALLOWED_YEARS[ALLOWED_YEARS.length - 1];
     if (selectedMonth === 11) {
-      if (selectedYear < 2027) {
+      if (selectedYear < maxYear) {
         setSelectedYear(selectedYear + 1);
         setSelectedMonth(0);
       }
@@ -228,34 +251,27 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
             </h2>
             <p className="text-xs font-semibold text-slate-500 sm:text-sm">
               {lang === 'bs'
-                ? 'Tuzla Tour Guide • Kalendar dešavanja 2026 / 2027'
-                : 'Tuzla Tour Guide • Event Calendar 2026 / 2027'}
+                ? `Tuzla Tour Guide • Kalendar dešavanja ${ALLOWED_YEARS[0]} / ${ALLOWED_YEARS[ALLOWED_YEARS.length - 1]}`
+                : `Tuzla Tour Guide • Event Calendar ${ALLOWED_YEARS[0]} / ${ALLOWED_YEARS[ALLOWED_YEARS.length - 1]}`}
             </p>
           </div>
         </div>
 
-        {/* Year Selector Buttons */}
+        {/* Dynamic Year Selector Buttons */}
         <div className="flex items-center gap-2 self-start sm:self-center">
-          <button
-            onClick={() => setSelectedYear(2026)}
-            className={`rounded-2xl px-5 py-2.5 text-sm font-black transition-all ${
-              selectedYear === 2026
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            2026
-          </button>
-          <button
-            onClick={() => setSelectedYear(2027)}
-            className={`rounded-2xl px-5 py-2.5 text-sm font-black transition-all ${
-              selectedYear === 2027
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            2027
-          </button>
+          {ALLOWED_YEARS.map((yr) => (
+            <button
+              key={yr}
+              onClick={() => setSelectedYear(yr)}
+              className={`rounded-2xl px-5 py-2.5 text-sm font-black transition-all ${
+                selectedYear === yr
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              {yr}
+            </button>
+          ))}
           
           <button
             onClick={() => setShowAiModal(true)}
@@ -272,7 +288,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
         <div className="flex items-center justify-between rounded-2xl border border-blue-100 bg-white p-3 shadow-xs">
           <button
             onClick={handlePrevMonth}
-            disabled={selectedYear === 2026 && selectedMonth === 0}
+            disabled={selectedYear === ALLOWED_YEARS[0] && selectedMonth === 0}
             className="rounded-xl border border-slate-100 p-2 text-slate-600 transition-colors hover:bg-slate-100 disabled:opacity-40"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -284,7 +300,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
 
           <button
             onClick={handleNextMonth}
-            disabled={selectedYear === 2027 && selectedMonth === 11}
+            disabled={selectedYear === ALLOWED_YEARS[ALLOWED_YEARS.length - 1] && selectedMonth === 11}
             className="rounded-xl border border-slate-100 p-2 text-slate-600 transition-colors hover:bg-slate-100 disabled:opacity-40"
           >
             <ChevronRight className="h-5 w-5" />
