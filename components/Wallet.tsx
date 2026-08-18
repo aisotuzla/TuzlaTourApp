@@ -598,12 +598,6 @@ const WalletContent: React.FC<{
                                 >
                                     AISO TUZLA
                                 </button>
-                                <button
-                                    onClick={() => window.open('https://bosnia-collection.vercel.app/', '_blank')}
-                                    className="w-full h-16 bg-amber-500 text-blue-900 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-amber-600"
-                                >
-                                    BOSNIA AND HERZEGOVINA DIGITAL ALBUM
-                                </button>
                             </div>
                         </div>
                     </div>

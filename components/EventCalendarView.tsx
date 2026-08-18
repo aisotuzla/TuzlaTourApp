@@ -3,30 +3,22 @@ import {
   Calendar as CalendarIcon, 
   ChevronLeft, 
   ChevronRight, 
-  Plus, 
   MapPin, 
   Clock, 
-  Tag, 
   Ticket, 
-  Radio, 
-  Sparkles, 
-  CheckCircle, 
-  XCircle, 
-  Globe, 
   Search, 
-  Filter,
-  Trash2
+  CheckCircle2,
+  ExternalLink,
+  ShieldCheck,
+  RefreshCw,
+  AlertCircle
 } from 'lucide-react';
 import { Language } from '../types';
-import { CalendarEventItem, EventExtractionResult } from '../types/events';
-import { INITIAL_CALENDAR_EVENTS, extractEventFromText } from '../utils/eventExtractor';
-import { Preferences } from '@capacitor/preferences';
+import { VerifiedEvent, VerifiedEventCategory } from '../types/events';
 
 interface CalendarViewProps {
   lang: Language;
 }
-
-const EVENTS_STORAGE_KEY = 'tuzla_events_calendar_v1';
 
 const MONTH_NAMES_BS = [
   'Januar', 'Februar', 'Mart', 'April', 'Maj', 'Juni', 
@@ -43,12 +35,13 @@ const DAYS_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export const ALLOWED_YEARS = [2026, 2027];
 
+const CATEGORIES: VerifiedEventCategory[] = ['Music', 'Culture', 'Movie', 'Theatre', 'Sport', 'Panonnica'];
+
 const getInitialCalendarState = () => {
   const now = new Date();
   const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth(); // 0-indexed
+  const currentMonth = now.getMonth();
   
-  // Constrain initial year to allowed range if outside
   const initialYear = ALLOWED_YEARS.includes(currentYear) 
     ? currentYear 
     : ALLOWED_YEARS[0];
@@ -67,65 +60,55 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   const [selectedMonth, setSelectedMonth] = useState<number>(initialMonth);
   const [selectedDateStr, setSelectedDateStr] = useState<string | null>(initialDateStr);
   
-  const [events, setEvents] = useState<CalendarEventItem[]>(INITIAL_CALENDAR_EVENTS);
+  const [events, setEvents] = useState<VerifiedEvent[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // AI Extraction Tool State
-  const [showAiModal, setShowAiModal] = useState<boolean>(false);
-  const [rawNewsInput, setRawNewsInput] = useState<string>('');
-  const [aiExtractionResult, setAiExtractionResult] = useState<EventExtractionResult | null>(null);
-  const [isExtracting, setIsExtracting] = useState<boolean>(false);
-
-  // Load persistent custom added events
-  useEffect(() => {
-    const loadStoredEvents = async () => {
-      try {
-        const { value } = await Preferences.get({ key: EVENTS_STORAGE_KEY });
-        if (value) {
-          const parsed: CalendarEventItem[] = JSON.parse(value);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setEvents(parsed);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to load calendar events', err);
-      }
-    };
-    loadStoredEvents();
-  }, []);
-
-  // Save to preferences when events change
-  const saveEvents = async (updatedEvents: CalendarEventItem[]) => {
-    setEvents(updatedEvents);
+  // Fetch verified events from API endpoint
+  const loadVerifiedEvents = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      await Preferences.set({ key: EVENTS_STORAGE_KEY, value: JSON.stringify(updatedEvents) });
+      const res = await fetch('/api/events');
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      const data: VerifiedEvent[] = await res.json();
+      setEvents(data);
     } catch (err) {
-      console.error('Failed to save calendar events', err);
+      console.warn('Failed to load live backend events, using empty verified state:', err);
+      // In production API fetch errors, we maintain zero unverified/mock content rule
+      setEvents([]);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadVerifiedEvents();
+  }, []);
 
   const months = lang === 'bs' ? MONTH_NAMES_BS : MONTH_NAMES_EN;
   const days = lang === 'bs' ? DAYS_BS : DAYS_EN;
 
-  // Calendar Grid Days Calculation
+  // Grid days calculation
   const calendarDays = useMemo(() => {
     const firstDayOfMonth = new Date(selectedYear, selectedMonth, 1);
     const lastDayOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
     
     const daysInMonth = lastDayOfMonth.getDate();
-    // Adjust JS day (0 is Sun) to European Monday-first (0 is Mon)
     let startDayOfWeek = firstDayOfMonth.getDay() - 1;
     if (startDayOfWeek === -1) startDayOfWeek = 6;
 
     const daysArray: { dateStr: string | null; dayNumber: number | null; isCurrentMonth: boolean }[] = [];
 
-    // Empty padding slots for days before 1st of month
     for (let i = 0; i < startDayOfWeek; i++) {
       daysArray.push({ dateStr: null, dayNumber: null, isCurrentMonth: false });
     }
 
-    // Days of current month
     for (let d = 1; d <= daysInMonth; d++) {
       const monthStr = String(selectedMonth + 1).padStart(2, '0');
       const dayStr = String(d).padStart(2, '0');
@@ -136,9 +119,9 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
     return daysArray;
   }, [selectedYear, selectedMonth]);
 
-  // Filter events for the selected day or overall filter
+  // Group verified events by date
   const eventsByDate = useMemo(() => {
-    const map: Record<string, CalendarEventItem[]> = {};
+    const map: Record<string, VerifiedEvent[]> = {};
     events.forEach((evt) => {
       if (!map[evt.start_date]) {
         map[evt.start_date] = [];
@@ -159,8 +142,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
       list = list.filter(
         (e) =>
           e.title.toLowerCase().includes(q) ||
-          e.venue_name.toLowerCase().includes(q) ||
-          e.description.toLowerCase().includes(q)
+          e.venue_name.toLowerCase().includes(q)
       );
     }
     return list;
@@ -177,8 +159,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
       list = list.filter(
         (e) =>
           e.title.toLowerCase().includes(q) ||
-          e.venue_name.toLowerCase().includes(q) ||
-          e.description.toLowerCase().includes(q)
+          e.venue_name.toLowerCase().includes(q)
       );
     }
     return list.sort((a, b) => a.start_date.localeCompare(b.start_date));
@@ -208,56 +189,33 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
     }
   };
 
-  const handleAiExtract = () => {
-    if (!rawNewsInput.trim()) return;
-    setIsExtracting(true);
-    setTimeout(() => {
-      const res = extractEventFromText(rawNewsInput, selectedYear);
-      setAiExtractionResult(res);
-      setIsExtracting(false);
-    }, 600);
-  };
-
-  const handleApproveAiEvent = () => {
-    if (!aiExtractionResult || !aiExtractionResult.event) return;
-    const newEvt: CalendarEventItem = {
-      ...aiExtractionResult.event,
-      id: `ai-evt-${Date.now()}`,
-      source_portal: 'RSS/Portal AI Extractor'
-    };
-    saveEvents([newEvt, ...events]);
-    setSelectedDateStr(newEvt.start_date);
-    setShowAiModal(false);
-    setRawNewsInput('');
-    setAiExtractionResult(null);
-  };
-
-  const handleDeleteEvent = (id: string) => {
-    const updated = events.filter((e) => e.id !== id);
-    saveEvents(updated);
-  };
-
   return (
     <div className="space-y-6">
-      {/* Calendar Top Controls & Year Switch */}
+      {/* Calendar Header Banner */}
       <div className="flex flex-col gap-4 rounded-3xl border border-blue-100 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-500/20">
             <CalendarIcon className="h-6 w-6" />
           </div>
           <div>
-            <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
-              {lang === 'bs' ? 'Događaji i Kalendar' : 'Events Calendar'}
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
+                {lang === 'bs' ? 'Verifikovani Događaji' : 'Verified Events Calendar'}
+              </h2>
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-black text-emerald-700 border border-emerald-200">
+                <ShieldCheck className="h-3 w-3" />
+                2+ Source Verified
+              </span>
+            </div>
             <p className="text-xs font-semibold text-slate-500 sm:text-sm">
               {lang === 'bs'
-                ? `Tuzla Tour Guide • Kalendar dešavanja ${ALLOWED_YEARS[0]} / ${ALLOWED_YEARS[ALLOWED_YEARS.length - 1]}`
-                : `Tuzla Tour Guide • Event Calendar ${ALLOWED_YEARS[0]} / ${ALLOWED_YEARS[ALLOWED_YEARS.length - 1]}`}
+                ? 'Tuzla Tour Guide • Zvanični kalendar provjerenih događaja u Tuzli'
+                : 'Tuzla Tour Guide • Official verified events calendar in Tuzla'}
             </p>
           </div>
         </div>
 
-        {/* Dynamic Year Selector Buttons */}
+        {/* Year Selector */}
         <div className="flex items-center gap-2 self-start sm:self-center">
           {ALLOWED_YEARS.map((yr) => (
             <button
@@ -274,11 +232,12 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
           ))}
           
           <button
-            onClick={() => setShowAiModal(true)}
-            className="ml-2 inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-4 py-2.5 text-xs font-black text-white shadow-md shadow-emerald-500/20 transition-all hover:bg-emerald-700"
+            onClick={loadVerifiedEvents}
+            disabled={loading}
+            className="ml-2 inline-flex items-center gap-1.5 rounded-2xl bg-slate-100 px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-200 transition-all disabled:opacity-50"
+            title="Refresh events"
           >
-            <Sparkles className="h-4 w-4" />
-            <span>{lang === 'bs' ? 'AI Event Extractor' : 'AI Event Extractor'}</span>
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
         </div>
       </div>
@@ -326,18 +285,14 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
             className="rounded-2xl border border-blue-100 bg-white px-3 py-2.5 text-xs font-black text-slate-700 outline-none focus:border-blue-500"
           >
             <option value="All">{lang === 'bs' ? 'Sve Kategorije' : 'All Categories'}</option>
-            <option value="Sports">Sports</option>
-            <option value="Concerts & Music">Concerts & Music</option>
-            <option value="Culture & Theatre">Culture & Theatre</option>
-            <option value="Nightlife">Nightlife</option>
-            <option value="Exhibitions & Art">Exhibitions & Art</option>
-            <option value="Community & Workshops">Community & Workshops</option>
-            <option value="Other">Other</option>
+            {CATEGORIES.map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
           </select>
         </div>
       </div>
 
-      {/* Main Grid Layout: Calendar Boxes vs Event Details */}
+      {/* Main Grid Layout: Calendar Box vs Event List */}
       <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
         {/* Calendar Grid Box */}
         <div className="overflow-hidden rounded-3xl border border-blue-100 bg-white p-4 shadow-sm sm:p-5">
@@ -374,7 +329,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                     isSelected
                       ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500/20'
                       : hasEvents
-                      ? 'border-blue-100 bg-white hover:border-blue-300 hover:bg-blue-50/30'
+                      ? 'border-emerald-200 bg-emerald-50/20 hover:border-emerald-300'
                       : 'border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50'
                   }`}
                 >
@@ -384,7 +339,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                         isSelected
                           ? 'bg-blue-600 text-white'
                           : hasEvents
-                          ? 'bg-blue-100 text-blue-900'
+                          ? 'bg-emerald-600 text-white'
                           : 'text-slate-700'
                       }`}
                     >
@@ -392,22 +347,22 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                     </span>
 
                     {hasEvents && (
-                      <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+                      <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="2+ Source Verified Events" />
                     )}
                   </div>
 
-                  {/* Badges for events inside box */}
+                  {/* Event pills inside box */}
                   <div className="mt-1 flex flex-col gap-1 overflow-hidden">
                     {dayEvents.slice(0, 2).map((evt) => (
                       <div
                         key={evt.id}
                         className={`truncate rounded-lg px-1.5 py-0.5 text-[9px] font-bold ${
-                          evt.category === 'Sports'
+                          evt.category === 'Sport'
                             ? 'bg-emerald-100 text-emerald-800'
-                            : evt.category === 'Concerts & Music'
+                            : evt.category === 'Music'
                             ? 'bg-purple-100 text-purple-800'
-                            : evt.category === 'Culture & Theatre'
-                            ? 'bg-amber-100 text-amber-800'
+                            : evt.category === 'Panonnica'
+                            ? 'bg-cyan-100 text-cyan-800'
                             : 'bg-blue-100 text-blue-800'
                         }`}
                       >
@@ -426,7 +381,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
           </div>
         </div>
 
-        {/* Sidebar: Details for Selected Day & Month Overview */}
+        {/* Sidebar: Selected Day & Month Overview */}
         <div className="space-y-4">
           <div className="rounded-3xl border border-blue-100 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -438,17 +393,24 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                   {selectedDateStr || (lang === 'bs' ? 'Odaberite datum' : 'Select a date')}
                 </h3>
               </div>
-              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700 border border-blue-100">
-                {filteredSelectedDayEvents.length} {lang === 'bs' ? 'Događaja' : 'Events'}
+              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700 border border-emerald-200">
+                {filteredSelectedDayEvents.length} {lang === 'bs' ? 'Verifikovan(a)' : 'Verified'}
               </span>
             </div>
 
             <div className="mt-4 space-y-3 max-h-[380px] overflow-y-auto pr-1">
-              {filteredSelectedDayEvents.length === 0 ? (
+              {loading ? (
+                <div className="py-12 text-center">
+                  <RefreshCw className="h-6 w-6 animate-spin text-blue-600 mx-auto" />
+                  <p className="mt-2 text-xs font-medium text-slate-500">
+                    {lang === 'bs' ? 'Učitavanje verifikovanih događaja...' : 'Loading verified events...'}
+                  </p>
+                </div>
+              ) : filteredSelectedDayEvents.length === 0 ? (
                 <div className="py-8 text-center text-xs font-medium text-slate-400">
                   {lang === 'bs'
-                    ? 'Nema zakazanih događaja za ovaj datum.'
-                    : 'No scheduled events for this date.'}
+                    ? 'Nema zvanično verifikovanih događaja za ovaj datum.'
+                    : 'No officially verified events for this date.'}
                 </div>
               ) : (
                 filteredSelectedDayEvents.map((evt) => (
@@ -460,13 +422,10 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                       <span className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-blue-800">
                         {evt.category}
                       </span>
-                      <button
-                        onClick={() => handleDeleteEvent(evt.id)}
-                        className="text-slate-400 hover:text-red-500 transition-colors"
-                        title="Delete event"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black text-emerald-800">
+                        <CheckCircle2 className="h-3 w-3" />
+                        Verified ({evt.verification_sources.length} sources)
+                      </span>
                     </div>
 
                     <h4 className="mt-2 text-base font-black text-slate-900 leading-snug">
@@ -484,16 +443,29 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                       </div>
                     </div>
 
-                    <p className="mt-2 text-xs leading-relaxed text-slate-600 line-clamp-3">
-                      {evt.description}
-                    </p>
-
-                    {evt.ticket_info && (
+                    {evt.price && (
                       <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-emerald-700">
                         <Ticket className="h-3.5 w-3.5 text-emerald-600" />
-                        <span>{evt.ticket_info}</span>
+                        <span>{evt.price}</span>
                       </div>
                     )}
+
+                    {/* Source URLs Verification Badges */}
+                    <div className="mt-3 border-t border-slate-200/60 pt-2 flex flex-wrap items-center gap-1.5">
+                      <span className="text-[9px] font-black text-slate-400 uppercase">Potvrđeno na:</span>
+                      {evt.verification_sources.map((src, i) => (
+                        <a
+                          key={i}
+                          href={evt.source_urls[i] || `https://${src}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-0.5 text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md hover:underline"
+                        >
+                          <span>{src}</span>
+                          <ExternalLink className="h-2.5 w-2.5" />
+                        </a>
+                      ))}
+                    </div>
                   </div>
                 ))
               )}
@@ -510,13 +482,13 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                 <div
                   key={e.id}
                   onClick={() => setSelectedDateStr(e.start_date)}
-                  className="flex items-center justify-between rounded-xl bg-white p-2.5 border border-slate-100 cursor-pointer hover:border-blue-300"
+                  className="flex items-center justify-between rounded-xl bg-white p-2.5 border border-slate-100 cursor-pointer hover:border-blue-300 transition-all"
                 >
                   <div className="truncate pr-2">
                     <div className="text-xs font-black text-slate-800 truncate">{e.title}</div>
                     <div className="text-[10px] text-slate-500">{e.venue_name}</div>
                   </div>
-                  <span className="shrink-0 rounded-lg bg-blue-50 px-2 py-1 text-[10px] font-black text-blue-700">
+                  <span className="shrink-0 rounded-lg bg-emerald-50 border border-emerald-100 px-2 py-1 text-[10px] font-black text-emerald-700">
                     {e.start_date.split('-').slice(1).join('/')}
                   </span>
                 </div>
@@ -525,118 +497,6 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
           </div>
         </div>
       </div>
-
-      {/* AI EVENT EXTRACTION AGENT MODAL */}
-      {showAiModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-blue-100 bg-white shadow-2xl animate-in fade-in zoom-in duration-200">
-            <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-md">
-                    <Sparkles className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-black">AI Event Extraction Agent</h3>
-                    <p className="text-xs text-blue-200">Tuzla Tour Guide • Portal & RSS Feed Parser</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowAiModal(false)}
-                  className="rounded-full bg-white/10 p-2 text-white/80 hover:bg-white/20"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-              <p className="text-xs font-semibold text-slate-600 leading-relaxed">
-                Nalijepite neobrađeni tekst sa tuzlanskih portala (npr. tuzlanski.ba, tip.ba, bkctuzla.ba) ili RSS feed-a. AI Agent će automatski izdvojiti datum, satnicu, lokaciju i kategoriju u validan JSON format te dodati događaj u kalendar!
-              </p>
-
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-500 mb-1.5">
-                  Neobrađeni tekst / Portal vijest:
-                </label>
-                <textarea
-                  rows={4}
-                  value={rawNewsInput}
-                  onChange={(e) => setRawNewsInput(e.target.value)}
-                  placeholder="Npr: Sutra od 19:00 sati na stadionu Tušanj u Tuzli igra se velika utakmica između FK Sloboda i FK Sarajevo. Ulaznice su u prodaji po cijeni od 5 KM..."
-                  className="w-full rounded-2xl border border-slate-200 p-4 text-xs font-medium text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
-                />
-              </div>
-
-              <button
-                onClick={handleAiExtract}
-                disabled={isExtracting || !rawNewsInput.trim()}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 py-3.5 text-xs font-black text-white shadow-lg shadow-blue-500/25 transition-transform hover:-translate-y-0.5 disabled:opacity-50"
-              >
-                {isExtracting ? (
-                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4" />
-                    <span>Analiziraj i Ekstraktuj (JSON Schema)</span>
-                  </>
-                )}
-              </button>
-
-              {/* Extraction Results */}
-              {aiExtractionResult && (
-                <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-600">
-                      Strukturirani JSON Rezultat
-                    </span>
-                    <div className="flex items-center gap-2">
-                      {aiExtractionResult.is_valid_event ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-black text-emerald-800">
-                          <CheckCircle className="h-3 w-3" /> Valid Event ({Math.round(aiExtractionResult.confidence_score * 100)}%)
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-[10px] font-black text-red-800">
-                          <XCircle className="h-3 w-3" /> Rejected
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {aiExtractionResult.is_valid_event && aiExtractionResult.event ? (
-                    <div className="space-y-2 text-xs font-medium text-slate-800">
-                      <div><strong className="text-slate-900">Naslov:</strong> {aiExtractionResult.event.title}</div>
-                      <div><strong className="text-slate-900">Kategorija:</strong> {aiExtractionResult.event.category}</div>
-                      <div><strong className="text-slate-900">Datum & Vrijeme:</strong> {aiExtractionResult.event.start_date} u {aiExtractionResult.event.start_time}</div>
-                      <div><strong className="text-slate-900">Lokacija:</strong> {aiExtractionResult.event.venue_name}, {aiExtractionResult.event.city}</div>
-                      <div><strong className="text-slate-900">Opis:</strong> {aiExtractionResult.event.description}</div>
-
-                      <button
-                        onClick={handleApproveAiEvent}
-                        className="mt-3 w-full rounded-xl bg-emerald-600 py-3 text-xs font-black text-white shadow-md shadow-emerald-500/20 hover:bg-emerald-700"
-                      >
-                        Odobri i Dodaj u Kalendar
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-xs text-red-600 font-semibold">
-                      Razlog odbijanja: {aiExtractionResult.rejection_reason}
-                    </div>
-                  )}
-
-                  {/* Raw JSON Preview */}
-                  <details className="mt-2 text-[10px] font-mono text-slate-600">
-                    <summary className="cursor-pointer font-bold text-slate-700">Prikaži sirovi JSON output</summary>
-                    <pre className="mt-2 p-3 rounded-xl bg-slate-900 text-green-400 overflow-x-auto">
-                      {JSON.stringify(aiExtractionResult, null, 2)}
-                    </pre>
-                  </details>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

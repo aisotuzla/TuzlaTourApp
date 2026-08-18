@@ -1,27 +1,44 @@
-export interface StructuredEvent {
+export type VerifiedEventCategory = 
+  | 'Music' 
+  | 'Culture' 
+  | 'Movie' 
+  | 'Theatre' 
+  | 'Sport' 
+  | 'Panonnica';
+
+export const ALLOWED_EVENT_CATEGORIES: VerifiedEventCategory[] = [
+  'Music',
+  'Culture',
+  'Movie',
+  'Theatre',
+  'Sport',
+  'Panonnica'
+];
+
+export interface VerifiedEvent {
+  id: string;
   title: string;
-  category: 'Sports' | 'Concerts & Music' | 'Culture & Theatre' | 'Nightlife' | 'Exhibitions & Art' | 'Community & Workshops' | 'Other';
+  category: VerifiedEventCategory;
   start_date: string; // YYYY-MM-DD
   start_time: string; // HH:mm
-  is_time_uncertain: boolean;
   venue_name: string;
-  address_or_area: string;
-  city: string;
-  description: string;
-  ticket_info: string | null;
-  organizer: string | null;
-  tags: string[];
-}
-
-export interface EventExtractionResult {
-  is_valid_event: boolean;
-  confidence_score: number;
-  rejection_reason: string | null;
-  event: StructuredEvent | null;
-}
-
-export interface CalendarEventItem extends StructuredEvent {
-  id: string;
+  city: string; // "Tuzla"
+  price: string | null;
+  source_urls: string[];
+  verification_sources: string[];
+  verified: boolean;
   created_at?: string;
-  source_portal?: string;
+  updated_at?: string;
+}
+
+export interface ExtractedCandidateEvent {
+  title: string;
+  category: VerifiedEventCategory;
+  start_date: string; // YYYY-MM-DD
+  start_time: string; // HH:mm
+  venue_name: string;
+  city: string; // "Tuzla"
+  price: string | null;
+  source_url: string;
+  source_domain: string;
 }
