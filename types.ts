@@ -24,15 +24,6 @@ export interface WifiSpot {
 }
 
 
-export interface ParkingLot {
-  id: string;
-  name: string;
-  area: string;
-  address: string;
-  coordinates: [number, number];
-  features: string[];
-}
-
 export interface Location {
 
   id: string;
@@ -88,23 +79,9 @@ export interface TranslationSet {
   enterBam: string;
   calculatedEur: string;
   conversionRate: string;
-  parking: string;
   pannonicaAlt: string;
   pannonicaTitle: string;
   pannonicaImage: string;
-  parkingTitle: string;
-  parkingActive: string;
-  parkingAutoDetect: string;
-  parkingLicensePlate: string;
-  parkingHourly: string;
-  parkingDaily: string;
-  parkingPaySms: string;
-  parkingDetectNoZone: string;
-  parkingPromptPlate: string;
-  parkingPaymentInactive: string;
-  parkingConfirm: string;
-  parkingCancel: string;
-  parkingDetected: string;
   trademarksDisclaimer: string;
   privacyNoticeTitle: string;
   privacyNoticeBody: string;
@@ -120,7 +97,6 @@ export interface TranslationSet {
   confirmPin: string;
   enterPin: string;
   dentalTourism: string;
-  parkingSearch: string;
   locationNotAvailable: string;
   zonesLabel: string;
   galleryCharmText: string;
@@ -137,6 +113,5 @@ export enum AppTab {
   WALLET = 'wallet',
   TASK_MANAGER = 'taskManager',
   AR = 'ar',
-  PARKING = 'parking',
   TRAVEL_AGENCIES = 'travelAgencies',
 }

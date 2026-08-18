@@ -85,13 +85,10 @@ Dan 3: Priroda, Piknik i Shopping
 • Uživajte u adrenalinskom parku, šumi i hladovini
 • Preporuka za piknik: Ponesite hranu i piće sa sobom i uživajte u prirodi!
 
-🛍️ Shopping i Parking:
-• Otvorite tab "Parking" u aplikaciji
-• Pronađite najpovoljniju parking zonu za BCC (Bingo City Center)
-• Izvršite plaćanje putem SMS-a (odaberite trajanje: sat ili dan)
-• Koristite navigaciju u aplikaciji do tržnog centra Bingo
-• U tržnom centru Bingo koristite kameru za uvid u 3D model lopte
-• Ili skenirajte QR kod na info pultu u prizemlju za osvajanje nagrade!
+🛍️ Shopping i Odmor:
+• Posjetite BCC (Bingo City Center) ili RK Tuzlanka
+• Opustite se uz kafu i obavite kupovinu lokalnih proizvoda
+• Skenirajte QR kodove na partner lokacijama za osvajanje nagrada!
 
 🌙 Polazak:
 • Pozovite Taxi ili potražite autobusku liniju "34" i "11" u aplikaciji klikom na red vožnje
@@ -313,13 +310,6 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
 
           <div className="mt-6 flex flex-wrap gap-3">
             <button
-              onClick={() => setView('calendar')}
-              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'calendar' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
-            >
-              <CalendarIcon className="h-5 w-5" />
-              {lang === 'bs' ? 'Kalendar događaja' : 'Calendar of Events'}
-            </button>
-            <button
               onClick={() => setView('expenses')}
               className={`rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'expenses' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
             >
@@ -336,6 +326,13 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               className={`rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'itinerary' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
             >
               {t.itinerary}
+            </button>
+            <button
+              onClick={() => setView('calendar')}
+              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'calendar' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
+            >
+              <CalendarIcon className="h-5 w-5" />
+              {lang === 'bs' ? 'Kalendar događaja' : 'Calendar of Events'}
             </button>
             <button
               onClick={() => setView('threeDayPlan')}

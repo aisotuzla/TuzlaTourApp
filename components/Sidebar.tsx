@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AppTab, Language } from '../types';
 import {
   Wallet,
-  ParkingCircle,
   CheckSquare,
   Search,
   Home,
@@ -76,12 +75,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
       icon: Gamepad2,
       label: { en: 'Quest', bs: 'Potraga', de: 'Quest', tr: 'Görev' },
       color: 'bg-blue-200 text-blue-800'
-    },
-    {
-      id: AppTab.PARKING,
-      icon: ParkingCircle,
-      label: { en: 'Parking', bs: 'Parking', de: 'Parken', tr: 'Otopark' },
-      color: 'bg-blue-300 text-blue-900'
     },
     {
       id: AppTab.TASK_MANAGER,

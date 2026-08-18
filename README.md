@@ -148,12 +148,7 @@ Kompletna lokalizacija na:
 - 🇩🇪 Njemački
 - 🇹🇷 Turski
 
-### 6. Parking SMS
-  Mapa sa parking zonama i lokalnim parkinzima.
-  Zona 0 - Zona 1 - Zona 2 na 1h i 24h.
-  Jednostavna uplata unosom tablica vozila, odabir zone i uplata.
-
-### 7. Ponuda
+### 6. Ponuda
   Restorani, hoteli, apartmani i stan na dan.
 
 ---

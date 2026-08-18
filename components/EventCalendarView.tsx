@@ -7,14 +7,13 @@ import {
   Clock, 
   Ticket, 
   Search, 
-  CheckCircle2,
-  ExternalLink,
-  ShieldCheck,
-  RefreshCw,
-  AlertCircle
+  Plus,
+  Check,
+  RefreshCw
 } from 'lucide-react';
 import { Language } from '../types';
 import { VerifiedEvent, VerifiedEventCategory } from '../types/events';
+import { addToItinerary } from '../utils/itineraryUtils';
 
 interface CalendarViewProps {
   lang: Language;
@@ -62,25 +61,22 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   
   const [events, setEvents] = useState<VerifiedEvent[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [addedEvents, setAddedEvents] = useState<string[]>([]);
 
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Fetch verified events from API endpoint
-  const loadVerifiedEvents = async () => {
+  const loadEvents = async () => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch('/api/events');
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
+      if (res.ok) {
+        const data: VerifiedEvent[] = await res.json();
+        setEvents(data);
+      } else {
+        setEvents([]);
       }
-      const data: VerifiedEvent[] = await res.json();
-      setEvents(data);
     } catch (err) {
-      console.warn('Failed to load live backend events, using empty verified state:', err);
-      // In production API fetch errors, we maintain zero unverified/mock content rule
       setEvents([]);
     } finally {
       setLoading(false);
@@ -88,13 +84,17 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   };
 
   useEffect(() => {
-    loadVerifiedEvents();
+    loadEvents();
   }, []);
+
+  const handleAddToItinerary = async (evt: VerifiedEvent) => {
+    const success = await addToItinerary(evt.title, `${evt.venue_name} (${evt.start_date} @ ${evt.start_time})`, 'Attraction');
+    setAddedEvents(prev => [...prev, evt.id]);
+  };
 
   const months = lang === 'bs' ? MONTH_NAMES_BS : MONTH_NAMES_EN;
   const days = lang === 'bs' ? DAYS_BS : DAYS_EN;
 
-  // Grid days calculation
   const calendarDays = useMemo(() => {
     const firstDayOfMonth = new Date(selectedYear, selectedMonth, 1);
     const lastDayOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
@@ -119,7 +119,6 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
     return daysArray;
   }, [selectedYear, selectedMonth]);
 
-  // Group verified events by date
   const eventsByDate = useMemo(() => {
     const map: Record<string, VerifiedEvent[]> = {};
     events.forEach((evt) => {
@@ -198,19 +197,13 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
             <CalendarIcon className="h-6 w-6" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
-                {lang === 'bs' ? 'Verifikovani Događaji' : 'Verified Events Calendar'}
-              </h2>
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-black text-emerald-700 border border-emerald-200">
-                <ShieldCheck className="h-3 w-3" />
-                2+ Source Verified
-              </span>
-            </div>
+            <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
+              {lang === 'bs' ? 'Kalendar Događaja' : 'Events Calendar'}
+            </h2>
             <p className="text-xs font-semibold text-slate-500 sm:text-sm">
               {lang === 'bs'
-                ? 'Tuzla Tour Guide • Zvanični kalendar provjerenih događaja u Tuzli'
-                : 'Tuzla Tour Guide • Official verified events calendar in Tuzla'}
+                ? 'Tuzla Tour Guide • Kalendar kulturnih i zabavnih dešavanja u Tuzli'
+                : 'Tuzla Tour Guide • Cultural and entertainment event calendar in Tuzla'}
             </p>
           </div>
         </div>
@@ -232,7 +225,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
           ))}
           
           <button
-            onClick={loadVerifiedEvents}
+            onClick={loadEvents}
             disabled={loading}
             className="ml-2 inline-flex items-center gap-1.5 rounded-2xl bg-slate-100 px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-200 transition-all disabled:opacity-50"
             title="Refresh events"
@@ -329,7 +322,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                     isSelected
                       ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500/20'
                       : hasEvents
-                      ? 'border-emerald-200 bg-emerald-50/20 hover:border-emerald-300'
+                      ? 'border-blue-200 bg-blue-50/30 hover:border-blue-300'
                       : 'border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50'
                   }`}
                 >
@@ -339,7 +332,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                         isSelected
                           ? 'bg-blue-600 text-white'
                           : hasEvents
-                          ? 'bg-emerald-600 text-white'
+                          ? 'bg-blue-600 text-white'
                           : 'text-slate-700'
                       }`}
                     >
@@ -347,7 +340,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                     </span>
 
                     {hasEvents && (
-                      <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="2+ Source Verified Events" />
+                      <span className="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
                     )}
                   </div>
 
@@ -393,8 +386,8 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                   {selectedDateStr || (lang === 'bs' ? 'Odaberite datum' : 'Select a date')}
                 </h3>
               </div>
-              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700 border border-emerald-200">
-                {filteredSelectedDayEvents.length} {lang === 'bs' ? 'Verifikovan(a)' : 'Verified'}
+              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700 border border-blue-200">
+                {filteredSelectedDayEvents.length} {lang === 'bs' ? 'događaja' : 'events'}
               </span>
             </div>
 
@@ -403,71 +396,75 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                 <div className="py-12 text-center">
                   <RefreshCw className="h-6 w-6 animate-spin text-blue-600 mx-auto" />
                   <p className="mt-2 text-xs font-medium text-slate-500">
-                    {lang === 'bs' ? 'Učitavanje verifikovanih događaja...' : 'Loading verified events...'}
+                    {lang === 'bs' ? 'Učitavanje događaja...' : 'Loading events...'}
                   </p>
                 </div>
               ) : filteredSelectedDayEvents.length === 0 ? (
                 <div className="py-8 text-center text-xs font-medium text-slate-400">
                   {lang === 'bs'
-                    ? 'Nema zvanično verifikovanih događaja za ovaj datum.'
-                    : 'No officially verified events for this date.'}
+                    ? 'Nema zakazanih događaja za ovaj datum.'
+                    : 'No scheduled events for this date.'}
                 </div>
               ) : (
-                filteredSelectedDayEvents.map((evt) => (
-                  <div
-                    key={evt.id}
-                    className="relative rounded-2xl border border-slate-100 bg-slate-50/60 p-4 transition-all hover:border-blue-200 hover:bg-white"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-blue-800">
-                        {evt.category}
-                      </span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black text-emerald-800">
-                        <CheckCircle2 className="h-3 w-3" />
-                        Verified ({evt.verification_sources.length} sources)
-                      </span>
-                    </div>
-
-                    <h4 className="mt-2 text-base font-black text-slate-900 leading-snug">
-                      {evt.title}
-                    </h4>
-
-                    <div className="mt-2 grid grid-cols-2 gap-2 text-xs font-semibold text-slate-600">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5 text-blue-500" />
-                        <span>{evt.start_time}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <MapPin className="h-3.5 w-3.5 text-red-500" />
-                        <span className="truncate">{evt.venue_name}</span>
-                      </div>
-                    </div>
-
-                    {evt.price && (
-                      <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-emerald-700">
-                        <Ticket className="h-3.5 w-3.5 text-emerald-600" />
-                        <span>{evt.price}</span>
-                      </div>
-                    )}
-
-                    {/* Source URLs Verification Badges */}
-                    <div className="mt-3 border-t border-slate-200/60 pt-2 flex flex-wrap items-center gap-1.5">
-                      <span className="text-[9px] font-black text-slate-400 uppercase">Potvrđeno na:</span>
-                      {evt.verification_sources.map((src, i) => (
-                        <a
-                          key={i}
-                          href={evt.source_urls[i] || `https://${src}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-0.5 text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md hover:underline"
+                filteredSelectedDayEvents.map((evt) => {
+                  const isAdded = addedEvents.includes(evt.id);
+                  return (
+                    <div
+                      key={evt.id}
+                      className="relative rounded-2xl border border-slate-100 bg-slate-50/60 p-4 transition-all hover:border-blue-200 hover:bg-white"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-blue-800">
+                          {evt.category}
+                        </span>
+                        
+                        <button
+                          onClick={() => handleAddToItinerary(evt)}
+                          disabled={isAdded}
+                          className={`inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all active:scale-95 ${
+                            isAdded 
+                              ? 'bg-emerald-100 text-emerald-800 cursor-default' 
+                              : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                          }`}
                         >
-                          <span>{src}</span>
-                          <ExternalLink className="h-2.5 w-2.5" />
-                        </a>
-                      ))}
+                          {isAdded ? (
+                            <>
+                              <Check className="h-3 w-3" />
+                              <span>{lang === 'bs' ? 'Dodano u Planer' : 'In Itinerary'}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="h-3 w-3" />
+                              <span>{lang === 'bs' ? 'Dodaj u Planer' : 'Add to Itinerary'}</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <h4 className="mt-2 text-base font-black text-slate-900 leading-snug">
+                        {evt.title}
+                      </h4>
+
+                      <div className="mt-2 grid grid-cols-2 gap-2 text-xs font-semibold text-slate-600">
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="h-3.5 w-3.5 text-blue-500" />
+                          <span>{evt.start_time}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <MapPin className="h-3.5 w-3.5 text-red-500" />
+                          <span className="truncate">{evt.venue_name}</span>
+                        </div>
+                      </div>
+
+                      {evt.price && (
+                        <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                          <Ticket className="h-3.5 w-3.5 text-emerald-600" />
+                          <span>{evt.price}</span>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
@@ -488,7 +485,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                     <div className="text-xs font-black text-slate-800 truncate">{e.title}</div>
                     <div className="text-[10px] text-slate-500">{e.venue_name}</div>
                   </div>
-                  <span className="shrink-0 rounded-lg bg-emerald-50 border border-emerald-100 px-2 py-1 text-[10px] font-black text-emerald-700">
+                  <span className="shrink-0 rounded-lg bg-blue-50 border border-blue-100 px-2 py-1 text-[10px] font-black text-blue-700">
                     {e.start_date.split('-').slice(1).join('/')}
                   </span>
                 </div>

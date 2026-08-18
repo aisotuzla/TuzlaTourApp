@@ -262,8 +262,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     }
 
     const questRules = lang === 'bs'
-      ? '<strong>Tuzla Quest Pravila:</strong> Posjetite lokacije na mapi. Skupite sve nagrade! Kada dođete na cilj, skenirajte QR kod na lokaciji kako biste otključali AR sadržaj.'
-      : '<strong>Tuzla Quest Rules:</strong> Visit map locations and collect rewards! Once there, scan the QR code to unlock the AR content.';
+      ? '<strong>Tuzla Quest Pravila:</strong> Posjetite lokacije na mapi i skupite sve nagrade! Kada dođete na cilj, skenirajte QR kod na lokaciji kako biste otključali nagrade.'
+      : lang === 'de'
+      ? '<strong>Tuzla Quest Regeln:</strong> Besuchen Sie die Standorte auf der Karte und sammeln Sie Belohnungen! Scannen Sie vor Ort den QR-Code, um Ihre Belohnungen freizuschalten.'
+      : lang === 'tr'
+      ? '<strong>Tuzla Quest Kuralları:</strong> Haritadaki konumları ziyaret edin ve ödülleri toplayın! Oraya vardığınızda, ödülleri açmak için QR kodunu tarayın.'
+      : '<strong>Tuzla Quest Rules:</strong> Visit map locations and collect rewards! Once there, scan the QR code to unlock your rewards.';
 
     const styleToUse = isOnline ? ONLINE_STYLE : OFFLINE_STYLE;
 
@@ -1115,7 +1119,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             if (userLocation && map.current) {
               map.current.flyTo({ center: [userLocation[1], userLocation[0]], zoom: 17, pitch: 60 });
             } else {
-              // Try to force a fresh GPS lock
               navigator.geolocation.getCurrentPosition(
                 (p) => {
                   const coords: [number, number] = [p.coords.latitude, p.coords.longitude];
@@ -1127,9 +1130,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
               );
             }
           }}
-          className="absolute bottom-24 left-6 z-20 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center text-blue-400 active:scale-95 transition-all"
+          className="absolute bottom-24 left-6 z-20 flex items-center gap-2 px-3 py-2.5 bg-gradient-to-r from-blue-600/90 to-cyan-500/90 backdrop-blur-xl border border-blue-400/30 rounded-2xl shadow-lg shadow-blue-500/25 text-white active:scale-95 transition-all"
         >
-          <Navigation size={20} />
+          <Navigation size={18} className="drop-shadow-sm" />
+          <span className="text-[10px] font-black uppercase tracking-wider">{lang === 'bs' ? 'Moja Lokacija' : lang === 'de' ? 'Mein Standort' : lang === 'tr' ? 'Konumum' : 'My Location'}</span>
         </button>
 
 
@@ -1151,25 +1155,26 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       </AnimatePresence>
 
       {/* TOP FLOATING HUB */}
-      <div className="absolute top-6 inset-x-0 mx-auto z-10 w-[95%] max-w-lg">
-        <div className={`bg-slate-900/40 ${isUtilityMode ? 'backdrop-blur-sm shadow-lg' : 'backdrop-blur-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]'} px-6 py-4 rounded-[2.5rem] border border-white/20 flex items-center justify-between`}>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40 rotate-3 transition-transform hover:rotate-0">
-              <Trophy className="w-6 h-6 text-slate-900" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-black text-amber-400 uppercase tracking-[0.2em] leading-none mb-1">Explorer Hub</span>
-              <span className="text-xl font-black text-white uppercase tracking-tight leading-none">Tuzla Quest</span>
-            </div>
+      <div className="absolute top-4 inset-x-0 mx-auto z-10 w-[92%] max-w-md">
+        <div className={`bg-gradient-to-br from-slate-900/95 via-blue-950/90 to-slate-900/95 ${isUtilityMode ? 'backdrop-blur-sm' : 'backdrop-blur-2xl'} px-4 py-3 rounded-[1.75rem] border border-blue-500/25 shadow-[0_12px_40px_-8px_rgba(30,64,175,0.4)] flex flex-col gap-2.5`}>
+          {/* Title */}
+          <div className="text-center">
+            <h2 className="text-lg font-black text-white uppercase tracking-wide leading-none">
+              {lang === 'bs' ? 'Potraga' : lang === 'de' ? 'Tuzla Suche' : lang === 'tr' ? 'Tuzla Görevi' : 'Tuzla Quest'}
+            </h2>
           </div>
 
-          <div className="flex gap-2">
+          {/* Action Buttons Row */}
+          <div className="flex gap-2 justify-center">
+            {/* QR Code Button */}
             <button
               onClick={() => setIsScanning(true)}
-              className="w-14 h-14 flex items-center justify-center bg-white/10 hover:bg-amber-500 text-white hover:text-slate-900 rounded-2xl transition-all active:scale-90 border border-white/10 group shadow-lg"
+              className="flex-1 flex flex-col items-center gap-1 py-2.5 bg-gradient-to-b from-amber-500/20 to-amber-600/10 hover:from-amber-500 hover:to-amber-600 text-amber-300 hover:text-slate-900 rounded-2xl transition-all active:scale-90 border border-amber-500/25 hover:border-amber-400 group shadow-md"
             >
-              <QrCode className="w-6 h-6 transition-transform group-hover:scale-110" />
+              <QrCode className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span className="text-[9px] font-black uppercase tracking-wider">QR Code</span>
             </button>
+            {/* GPS / Route Button */}
             <button
               onClick={() => {
                 if (isNavigating) {
@@ -1179,15 +1184,22 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                   setIsPresetModalOpen(true);
                 }
               }}
-              className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all active:scale-90 border shadow-lg ${isNavigating ? 'bg-red-500 border-red-400 text-white animate-pulse' : 'bg-white/10 border-white/10 text-white hover:bg-emerald-500'}`}
+              className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl transition-all active:scale-90 border shadow-md group ${
+                isNavigating
+                  ? 'bg-red-500 border-red-400 text-white animate-pulse'
+                  : 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/10 border-emerald-500/25 text-emerald-300 hover:from-emerald-500 hover:to-emerald-600 hover:text-white hover:border-emerald-400'
+              }`}
             >
-              {isNavigating ? <X className="w-6 h-6" /> : <Route className="w-6 h-6 transition-transform group-hover:scale-110" />}
+              {isNavigating ? <X className="w-5 h-5" /> : <Route className="w-5 h-5 transition-transform group-hover:scale-110" />}
+              <span className="text-[9px] font-black uppercase tracking-wider">GPS</span>
             </button>
+            {/* AR Guide Button */}
             <button
               onClick={onToggleAR}
-              className="w-14 h-14 flex items-center justify-center bg-white/10 hover:bg-blue-500 text-white rounded-2xl transition-all active:scale-90 border border-white/10 group shadow-lg"
+              className="flex-1 flex flex-col items-center gap-1 py-2.5 bg-gradient-to-b from-blue-500/20 to-blue-600/10 hover:from-blue-500 hover:to-blue-600 text-blue-300 hover:text-white rounded-2xl transition-all active:scale-90 border border-blue-500/25 hover:border-blue-400 group shadow-md"
             >
-              <Navigation className="w-6 h-6 rotate-45 transition-transform group-hover:scale-110" />
+              <Navigation className="w-5 h-5 rotate-45 transition-transform group-hover:scale-110" />
+              <span className="text-[9px] font-black uppercase tracking-wider">AR Guide</span>
             </button>
           </div>
         </div>

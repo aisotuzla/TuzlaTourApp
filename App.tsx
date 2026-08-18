@@ -28,10 +28,6 @@ const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
 const ARGuide = React.lazy(() => import('./components/ARGuide'));
-const Parking = React.lazy(() => import('./components/Parking'));
-
-const queryClient = new QueryClient();
-
 const getTabFromPath = (path: string): AppTab => {
   switch (path) {
     case '/': return AppTab.LANDING;
@@ -44,7 +40,6 @@ const getTabFromPath = (path: string): AppTab => {
     case '/food': return AppTab.FOOD;
     case '/accommodation': return AppTab.ACCOMMODATION;
     case '/ar': return AppTab.AR;
-    case '/parking': return AppTab.PARKING;
     default: return AppTab.LANDING;
   }
 };
@@ -61,7 +56,6 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.FOOD: return '/food';
     case AppTab.ACCOMMODATION: return '/accommodation';
     case AppTab.AR: return '/ar';
-    case AppTab.PARKING: return '/parking';
     default: return '/';
   }
 };
@@ -217,7 +211,6 @@ const AppContent: React.FC = () => {
                       }}
                     />
                   } />
-                  <Route path="/parking" element={<Parking lang={lang} />} />
                 </Routes>
               </Suspense>
             </ErrorBoundary>

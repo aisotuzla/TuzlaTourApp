@@ -1,4 +1,4 @@
-import { Language, TranslationSet, Location, LocationData, ParkingLot, WifiSpot } from "./types";
+import { Language, TranslationSet, Location, LocationData, WifiSpot } from "./types";
 
 export const TUZLA_CENTER: [number, number] = [44.5388, 18.6750];
 
@@ -378,23 +378,9 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     enterBam: 'Enter amount in BAM',
     calculatedEur: 'Equivalent in EUR',
     conversionRate: 'Rate: 1 BAM = 0.51 EUR (1:1.95583)',
-    parking: 'SMS Parking',
     pannonicaAlt: 'Pannonica Lakes - Salt Lakes in Tuzla',
     pannonicaTitle: 'Welcome to Pannonica',
     pannonicaImage: '/assets/Pannonica.webp',
-    parkingTitle: 'Parking',
-    parkingActive: 'Active Parking',
-    parkingAutoDetect: 'Auto Detect My Zone',
-    parkingLicensePlate: 'License Plate',
-    parkingHourly: 'Hourly',
-    parkingDaily: 'Daily',
-    parkingPaySms: 'Pay via SMS',
-    parkingDetectNoZone: 'No parking zone detected.',
-    parkingPromptPlate: 'Confirm zone and enter plate.',
-    parkingPaymentInactive: 'Parking payment not active at this time.',
-    parkingConfirm: 'Confirm',
-    parkingCancel: 'Cancel',
-    parkingDetected: 'Detected',
     trademarksDisclaimer: 'All logos and brand names are properties of their respective owners and are used here for informational/identification purposes only.',
     privacyNoticeTitle: 'Privacy & Camera Notice',
     privacyNoticeBody: 'This app uses your location solely for navigation to points of interest. The camera is activated only when you are within 10m of a destination to scan a QR code and trigger the AR guide. Your images and video feed are not stored or sent to any server; all processing occurs strictly on your device. By continuing, you consent to temporary access to these functions.',
@@ -410,7 +396,6 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     confirmPin: 'Confirm PIN',
     enterPin: 'Enter PIN to Unlock',
     dentalTourism: 'Dental Tourism',
-    parkingSearch: 'Search parking lots...',
     locationNotAvailable: 'Location not available.',
     zonesLabel: 'Zones',
     galleryCharmText: 'No photo can show you charm and beauty of this city, so come and visit us.',
@@ -456,23 +441,9 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     enterBam: 'Unesite iznos u BAM',
     calculatedEur: 'Iznos u EUR',
     conversionRate: 'Kurs: 1 BAM = 0.51 EUR (1:1.95583)',
-    parking: 'SMS Parking',
     pannonicaAlt: 'Panonska jezera - Slana jezera u Tuzli',
     pannonicaTitle: 'Dobrodošli na Panoniku',
     pannonicaImage: '/assets/PannonicaBA.webp',
-    parkingTitle: 'Parking',
-    parkingActive: 'Aktivni parking',
-    parkingAutoDetect: 'Automatski detektuj zonu',
-    parkingLicensePlate: 'Registarska oznaka',
-    parkingHourly: 'Satni',
-    parkingDaily: 'Dnevni',
-    parkingPaySms: 'Plati putem SMS-a',
-    parkingDetectNoZone: 'Parking zona nije detektovana.',
-    parkingPromptPlate: 'Potvrdite zonu i unesite registraciju.',
-    parkingPaymentInactive: 'Placanje parkinga trenutno nije aktivno.',
-    parkingConfirm: 'Potvrdi',
-    parkingCancel: 'Ponisti',
-    parkingDetected: 'Detektovano',
     trademarksDisclaimer: 'Svi logotipi i nazivi brendova su vlasnistvo njihovih vlasnika i koriste se ovdje iskljucivo u informativne svrhe.',
     privacyNoticeTitle: 'Obavjestenje o privatnosti i kameri',
     privacyNoticeBody: 'Ova aplikacija koristi vasu lokaciju iskljucivo za navigaciju do znamenitosti. Kamera se aktivira samo kada ste u neposrednoj blizini (10m) od cilja kako biste skenirali QR kod i pokrenuli AR vodic. Vasa slika i video zapis se ne pohranjuju niti salju na server; sva obrada se vrsi iskljucivo na vasem uredaju. Nastavkom koristenja pristajete na privremeni pristup ovim funkcijama.',
@@ -488,7 +459,6 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     confirmPin: 'Potvrdi PIN',
     enterPin: 'Unesi PIN za otključavanje',
     dentalTourism: 'Stomatološki turizam',
-    parkingSearch: 'Pretraži parkinge...',
     locationNotAvailable: 'Lokacija nije dostupna.',
     zonesLabel: 'Zone',
     galleryCharmText: ""
@@ -534,23 +504,9 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     enterBam: 'Betrag in BAM eingeben',
     calculatedEur: 'Gegenwert in EUR',
     conversionRate: 'Kurs: 1 BAM = 0.51 EUR (1:1.95583)',
-    parking: 'SMS Parking',
     pannonicaAlt: 'Panonische Seen - Salzseen in Tuzla',
     pannonicaTitle: 'Willkommen an der Panonica',
     pannonicaImage: '/assets/PannonicaDE.webp',
-    parkingTitle: 'Parken',
-    parkingActive: 'Aktives Parkticket',
-    parkingAutoDetect: 'Zone automatisch erkennen',
-    parkingLicensePlate: 'Kennzeichen',
-    parkingHourly: 'Stundlich',
-    parkingDaily: 'Tagesticket',
-    parkingPaySms: 'Per SMS bezahlen',
-    parkingDetectNoZone: 'Keine Parkzone erkannt.',
-    parkingPromptPlate: 'Zone bestatigen und Kennzeichen eingeben.',
-    parkingPaymentInactive: 'Parkgebuhren sind gerade nicht aktiv.',
-    parkingConfirm: 'Bestatigen',
-    parkingCancel: 'Abbrechen',
-    parkingDetected: 'Erkannt',
     trademarksDisclaimer: 'Alle Logos und Markennamen sind Eigentum ihrer jeweiligen Inhaber und werden hier nur zu Informations-/Identifikationszwecken verwendet.',
     privacyNoticeTitle: 'Datenschutz- und Kamerahinweis',
     privacyNoticeBody: 'Diese App verwendet Ihren Standort ausschliesslich zur Navigation zu Sehenswurdigkeiten. Die Kamera wird nur aktiviert, wenn Sie sich im Umkreis von 10m von einem Ziel befinden, um einen QR-Code zu scannen und den AR-Guide zu starten. Ihre Bilder und Video-Feeds werden weder gespeichert noch an Server gesendet; die gesamte Verarbeitung erfolgt ausschliesslich auf Ihrem Gerat. Mit der weiteren Nutzung stimmen Sie dem vorubergehenden Zugriff auf diese Funktionen zu.',
@@ -566,7 +522,6 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     confirmPin: 'PIN bestätigen',
     enterPin: 'PIN zum Entsperren eingeben',
     dentalTourism: 'Zahntourismus',
-    parkingSearch: 'Parkplätze suchen...',
     locationNotAvailable: 'Standort nicht verfügbar.',
     zonesLabel: 'Zonen',
     galleryCharmText: 'Kein Foto kann Ihnen den Charme und die Schönheit dieser Stadt zeigen, also kommen Sie und besuchen Sie uns.',
@@ -612,23 +567,9 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     enterBam: 'BAM miktarını girin',
     calculatedEur: 'EUR karşılığı',
     conversionRate: 'Kur: 1 BAM = 0.51 EUR (1:1.95583)',
-    parking: 'SMS Otopark',
     pannonicaAlt: 'Pannonica Gölleri - Tuzla\'daki Tuz Gölleri',
     pannonicaTitle: 'Pannonica\'ya Hoşgeldiniz',
     pannonicaImage: '/assets/Pannonica.webp',
-    parkingTitle: 'Otopark',
-    parkingActive: 'Aktif Otopark',
-    parkingAutoDetect: 'Bölgemi Otomatik Algıla',
-    parkingLicensePlate: 'Plaka',
-    parkingHourly: 'Saatlik',
-    parkingDaily: 'Günlük',
-    parkingPaySms: 'SMS ile Öde',
-    parkingDetectNoZone: 'Otopark bölgesi algılanmadı.',
-    parkingPromptPlate: 'Bölgeyi onaylayın ve plakayı girin.',
-    parkingPaymentInactive: 'Otopark ödemesi şu anda aktif değil.',
-    parkingConfirm: 'Onayla',
-    parkingCancel: 'İptal',
-    parkingDetected: 'Algılandı',
     trademarksDisclaimer: 'Tüm logolar ve marka isimleri ilgili sahiplerinin mülkiyetindedir ve burada yalnızca bilgi/tanımlama amacıyla kullanılmıştır.',
     privacyNoticeTitle: 'Gizlilik ve Kamera Bildirimi',
     privacyNoticeBody: 'Bu uygulama konumunuzu yalnızca önemli noktalara navigasyon için kullanır. Kamera yalnızca bir hedefe 10m yaklaştığınızda QR kodunu taramak ve AR rehberini başlatmak için etkinleştirilir. Resimleriniz ve video akışınız kaydedilmez veya herhangi bir sunucuya gönderilmez; tüm işlemler yalnızca cihazınızda gerçekleşir. Devam ederek, bu işlevlere geçici erişime izin vermiş olursunuz.',
@@ -644,7 +585,6 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     confirmPin: 'PIN\'i Onayla',
     enterPin: 'Kilidi Açmak İçin PIN Girin',
     dentalTourism: 'Diş Turizmi',
-    parkingSearch: 'Otopark ara...',
     locationNotAvailable: 'Konum mevcut değil.',
     zonesLabel: 'Bölgeler',
     galleryCharmText: 'Hiçbir fotoğraf size bu şehrin cazibesini ve güzelliğini gösteremez, bu yüzden gelin ve bizi ziyaret edin.',
@@ -1046,161 +986,6 @@ export const LOCATIONS = LOCATIONS_RAW;
 export const BINGO_STORE = BINGO_STORE_RAW;
 export const TRANSLATIONS: Record<Language, TranslationSet> = TRANSLATIONS_RAW;
 export const RESTAURANTS = RESTAURANTS_RAW;
-
-export const TUZLA_PARKING_DATA: ParkingLot[] = [
-  {
-    id: "bcc-main",
-    name: "Bingo City Center",
-    area: "Parking Centar",
-    address: "Mitra Trifunovića Uče 2",
-    coordinates: [18.653272, 44.532753],
-    features: ["Shopping mall access", "Surface parking"]
-  },
-  {
-    id: "bcc-garage",
-    name: "Bingo City Center - Parking Garaža",
-    area: "Zapad / Miladije",
-    address: "Mitra Trifunovića Uče 2",
-    coordinates: [18.650794, 44.532072],
-    features: ["Underground garage", "EV Charging (15 kW)", "First 2 hours free"]
-  },
-  {
-    id: "skver",
-    name: "Skver parking - Kojšino",
-    area: "Skver/Kojšino",
-    address: "Mije Keroševića Guje 24",
-    coordinates: [18.673362, 44.540963],
-    features: ["Open surface lot", "24/7 access"]
-  },
-  {
-    id: "omega-tuzlanka",
-    name: "Parking Omega (TC Tuzlanka)",
-    area: "Parking Omega",
-    address: "Univerzitetska",
-    coordinates: [18.663186, 44.538282],
-    features: ["No Charge", "Commercial surface lot", "Short-term validation"]
-  },
-  {
-    id: "slatina-main",
-    name: "Gradski Parking Slatina",
-    area: "Slatina",
-    address: "Alana Forda (Behind Health Center)",
-    coordinates: [18.667944, 44.540657],
-    features: ["Zone 1", "Public lot", "Close to Dom Zdravlja clinic"]
-  },
-  {
-    id: "slatina",
-    name: "SodaSo Parking Slatina",
-    area: "Slatina",
-    address: "Slatina, Tuzla",
-    coordinates: [18.665482, 44.540615],
-    features: ["Zone 1", "Public lot", "Parking Slatina"]
-  },
-  {
-    id: "gradski-kulina-bana",
-    name: "Gradski Parking Centar",
-    area: "Centar",
-    address: "Kulina bana 8",
-    coordinates: [18.675910, 44.539877],
-    features: ["Municipal managed", "Zone 0", "Near pedestrian walk"]
-  },
-  {
-    id: "turalibegova",
-    name: "Parking Turalibegova",
-    area: "Centar",
-    address: "Turalibegova 59",
-    coordinates: [18.6792208, 44.536256],
-    features: ["Automated ticketing", "High-turnover commercial area"]
-  },
-  {
-    id: "cipelici",
-    name: "Parking Čipelići",
-    area: "Centar / Čipelići",
-    address: "Junction of Turalibegova & Klosterska",
-    coordinates: [18.680749, 44.535120],
-    features: ["Zone 1 dynamic pricing", "Automated entry ramp"]
-  },
-  {
-    id: "pannonica-west",
-    name: "Parkiralište Jezero Zapad",
-    area: "Pannonica",
-    address: "Džindić mahala",
-    coordinates: [18.67687, 44.540775],
-    features: ["JKP Saobraćaj i komunikacije", "Direct lake gate entry"]
-  },
-  {
-    id: "kajmak-stanica",
-    name: "Parking Kajmak Stanica",
-    area: "Centar / Sjever",
-    address: "Kulina bana (Old bus station layout)",
-    coordinates: [18.681108, 44.538007],
-    features: ["Automated ramp gates", "High capacity (~200 spaces)"]
-  },
-  {
-    id: "pannonica-east",
-    name: "Parking Pannonica Istok",
-    area: "Pannonica",
-    address: "Ulica Džamala Bijedića area",
-    coordinates: [18.683013, 44.538279],
-    features: ["Large surface capacity", "Automated pay terminals"]
-  },
-  {
-    id: "gradina-hospital",
-    name: "Parking Gradina (UKC Tuzla)",
-    area: "Gradina",
-    address: "Put Gradina",
-    coordinates: [18.691902, 44.537556],
-    features: ["Independent medical campus tariff", "Incline surface terrain"]
-  },
-  {
-    id: "mellain-complex",
-    name: "Mellain Garaža",
-    area: "Centar / Istok",
-    address: "Aleja Alije Izetbegovića 3",
-    coordinates: [18.687208, 44.533881],
-    features: ["Multi-level underground", "24/7 security & video"]
-  },
-  {
-    id: "stupine-main",
-    name: "Parking Stupine",
-    area: "Stupine",
-    address: "Mehmedalije Maka Dizdara",
-    coordinates: [18.691612, 44.529851],
-    features: ["Zone 1 public parking", "Open-air surface spaces"]
-  },
-  {
-    id: "15-maja",
-    name: "Parking 15. maja",
-    area: "Brčanska Malta",
-    address: "15. maja 2",
-    coordinates: [18.697177, 44.530279],
-    features: ["Broad parking bays", "Low congestion area"]
-  },
-  {
-    id: "bulevar-BHTelecom",
-    name: "Parking BHTelecom",
-    area: "bhtelecom",
-    address: "Bulevar 2. korpusa",
-    coordinates: [18.691429, 44.533269],
-    features: ["zone 1 payment 1.00KM/h, 5.00KM/day"]
-  },
-  {
-    id: "sjenjak-fringes",
-    name: "Parking Sjenjak Zapad",
-    area: "Sjenjak",
-    address: "Ismeta Mujezinovica B-blok",
-    coordinates: [18.699787, 44.533239],
-    features: ["No Charge", "Open public bay", "Feeder lanes to high-rise zones"]
-  },
-  {
-    id: "sjenjak-main",
-    name: "Gradski Parking Sjenjak",
-    area: "Sjenjak",
-    address: "GMMX+3CH block",
-    coordinates: [18.699862, 44.532244],
-    features: ["No Charge", "Large neighborhood lot", "Easy connection to eastern bypass"]
-  }
-];
 
 export const TUZLA_WIFI_DATA: WifiSpot[] = [
   {
