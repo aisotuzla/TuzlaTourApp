@@ -38,6 +38,7 @@ android/**/*.jks
 pannellum-2.5.7/
 docs
 .env
+.env*.local
 # Local Gemini/Tooling files
 .gemini/
 tsc_output.txt

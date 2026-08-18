@@ -20,7 +20,7 @@ interface MapViewProps {
 }
 
 
-const ONLINE_STYLE = `https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_KEY || ''}`;
+const ONLINE_STYLE = `https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || '65090a03070e4e1898694f7a18ba415b'}`;
 
 interface RoutePoiPreset {
   name: Partial<Record<Language, string>> & { en: string; bs: string };
@@ -179,7 +179,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     setIsRouteLoading(true);
 
     try {
-      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_KEY || '';
+      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || '63e8b34f44974d71bc70aad63e5b56ba';
       const url = `https://api.geoapify.com/v1/routing?waypoints=${startLoc[1]},${startLoc[0]}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
 
       const res = await fetch(url);
@@ -323,7 +323,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
         try {
           let geoData;
           try {
-            const geoapifyKey = import.meta.env.VITE_GEOAPIFY_GEOCODING_API ?? '5c27539c29954a908aeba457beeffbea';
+            const geoapifyKey = import.meta.env.VITE_GEOAPIFY_GEOCODING_API ?? import.meta.env.VITE_GEOAPIFY_KEY;
             const geoRes = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&bias=proximity:18.67,44.53&filter=rect:18.5,44.4,18.8,44.7&apiKey=${geoapifyKey}`);
             if (!geoRes.ok) throw new Error("Primary API failed");
             geoData = await geoRes.json();
@@ -634,11 +634,10 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
               setIsPresetModalOpen(true);
             }
           }}
-          className={`map-action-btn w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl shadow-2xl border flex items-center justify-center transition-all duration-300 ${
-            isNavigating
+          className={`map-action-btn w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl shadow-2xl border flex items-center justify-center transition-all duration-300 ${isNavigating
               ? 'bg-red-500 hover:bg-red-600 border-red-400 text-white hover:scale-110 active:scale-95 animate-pulse'
               : 'bg-white/90 border-white/20 text-blue-600 hover:scale-110 active:scale-95'
-          }`}
+            }`}
         >
           {isNavigating ? (
             <>
@@ -801,36 +800,31 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
                             // Fly to location on map (approximate coords via LOCATIONS)
                             setIsPresetModalOpen(false);
                           }}
-                          className={`w-full rounded-2xl overflow-hidden relative flex items-center gap-4 p-3 border transition-all text-left ${
-                            isUnlocked
+                          className={`w-full rounded-2xl overflow-hidden relative flex items-center gap-4 p-3 border transition-all text-left ${isUnlocked
                               ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer'
                               : 'border-white/5 bg-white/3 opacity-60 cursor-default'
-                          }`}
+                            }`}
                         >
                           <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
                             <img
                               src={item.Image}
                               alt={item.name.en}
-                              className={`w-full h-full object-cover ${
-                                isUnlocked ? 'brightness-90' : 'grayscale brightness-40 blur-sm'
-                              }`}
+                              className={`w-full h-full object-cover ${isUnlocked ? 'brightness-90' : 'grayscale brightness-40 blur-sm'
+                                }`}
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <span className={`text-[9px] font-black uppercase tracking-widest block mb-0.5 ${
-                              isUnlocked ? 'text-amber-400' : 'text-slate-600'
-                            }`}>
+                            <span className={`text-[9px] font-black uppercase tracking-widest block mb-0.5 ${isUnlocked ? 'text-amber-400' : 'text-slate-600'
+                              }`}>
                               {isUnlocked ? (lang === 'bs' ? 'Otključano' : 'Unlocked') : (lang === 'bs' ? 'Zaključano' : 'Locked')}
                             </span>
-                            <h4 className={`font-extrabold text-sm leading-tight truncate ${
-                              isUnlocked ? 'text-white' : 'text-slate-600 italic'
-                            }`}>
+                            <h4 className={`font-extrabold text-sm leading-tight truncate ${isUnlocked ? 'text-white' : 'text-slate-600 italic'
+                              }`}>
                               {isUnlocked ? (lang === 'bs' ? item.name.bs : item.name.en) : '??? Secret Location'}
                             </h4>
                           </div>
-                          <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${
-                            isUnlocked ? 'bg-amber-500/20' : 'bg-white/5'
-                          }`}>
+                          <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${isUnlocked ? 'bg-amber-500/20' : 'bg-white/5'
+                            }`}>
                             {isUnlocked
                               ? <Trophy size={16} className="text-amber-400" />
                               : <Lock size={14} className="text-slate-600" />}
