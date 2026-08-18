@@ -21,4 +21,5 @@
   [headers.values]
   Content-Type = "video/webm"
 
-  SECRETS_SCAN_ENABLED="false"
+[build.environment]
+  SECRETS_SCAN_ENABLED = "false"

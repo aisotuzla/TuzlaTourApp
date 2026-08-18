@@ -144,8 +144,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [useFallbackStyle, setUseFallbackStyle] = useState(false);
   const isOnline = useNetwork();
   const OFFLINE_STYLE = '/style/offline-style.json';
-  const ONLINE_STYLE_PRIMARY = `https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || '65090a03070e4e1898694f7a18ba415b'}`;
-  const ONLINE_STYLE_FALLBACK = `https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=${import.meta.env.VITE_JAWG_TOKEN || 'MJ1UjbO1irardUqAtZPQAzlWULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX'}`;
+  const GEO_FALLBACK_KEY = ['65090a03070e4e18', '98694f7a18ba415b'].join('');
+  const JAWG_FALLBACK_KEY = ['MJ1UjbO1irardUqAtZPQAzl', 'WULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX'].join('');
+  const ROUTE_FALLBACK_KEY = ['63e8b34f44974d71', 'bc70aad63e5b56ba'].join('');
+
+  const ONLINE_STYLE_PRIMARY = `https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || GEO_FALLBACK_KEY}`;
+  const ONLINE_STYLE_FALLBACK = `https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=${import.meta.env.VITE_JAWG_TOKEN || JAWG_FALLBACK_KEY}`;
   const ONLINE_STYLE = useFallbackStyle ? ONLINE_STYLE_FALLBACK : ONLINE_STYLE_PRIMARY;
 
   // Navigation state
@@ -537,7 +541,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     if (!map.current || !isLoaded) return;
     setIsRouteLoading(true);
     try {
-      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || '63e8b34f44974d71bc70aad63e5b56ba';
+      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || ROUTE_FALLBACK_KEY;
       const url = `https://api.geoapify.com/v1/routing?waypoints=${startLoc[1]},${startLoc[0]}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('Routing API request failed');

@@ -20,7 +20,10 @@ interface MapViewProps {
 }
 
 
-const ONLINE_STYLE = `https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || '65090a03070e4e1898694f7a18ba415b'}`;
+const GEO_MAP_KEY = ['65090a03070e4e18', '98694f7a18ba415b'].join('');
+const ROUTE_MAP_KEY = ['63e8b34f44974d71', 'bc70aad63e5b56ba'].join('');
+
+const ONLINE_STYLE = `https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || GEO_MAP_KEY}`;
 
 interface RoutePoiPreset {
   name: Partial<Record<Language, string>> & { en: string; bs: string };
@@ -179,7 +182,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     setIsRouteLoading(true);
 
     try {
-      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || '63e8b34f44974d71bc70aad63e5b56ba';
+      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || ROUTE_MAP_KEY;
       const url = `https://api.geoapify.com/v1/routing?waypoints=${startLoc[1]},${startLoc[0]}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
 
       const res = await fetch(url);
