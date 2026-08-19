@@ -2,12 +2,6 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "crons": [
-    {
-      "path": "/api/cron/events",
-      "schedule": "0 */6 * * *"
-    }
-  ],
   "headers": [
     {
       "source": "/assets/(.*)\\.mp4",

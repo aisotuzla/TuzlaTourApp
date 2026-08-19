@@ -9,7 +9,14 @@ import {
   Search, 
   Plus,
   Check,
-  RefreshCw
+  RefreshCw,
+  Upload,
+  FileText,
+  Copy,
+  Trash2,
+  X,
+  Sparkles,
+  AlertCircle
 } from 'lucide-react';
 import { Language } from '../types';
 import { VerifiedEvent, VerifiedEventCategory } from '../types/events';
@@ -35,6 +42,19 @@ const DAYS_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 export const ALLOWED_YEARS = [2026, 2027];
 
 const CATEGORIES: VerifiedEventCategory[] = ['Music', 'Culture', 'Movie', 'Theatre', 'Sport', 'Panonnica'];
+
+const SAMPLE_JSON_PROMPT = `[
+  {
+    "title": "Koncert u Parku",
+    "category": "Music",
+    "start_date": "2026-08-25",
+    "start_time": "20:00",
+    "venue_name": "Soni Trg",
+    "price": "Besplatno"
+  }
+]`;
+
+const LOCAL_STORAGE_KEY = 'tuzla_manual_events_v1';
 
 const getInitialCalendarState = () => {
   const now = new Date();
@@ -66,21 +86,63 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  // Import Modal & Form states
+  const [showImportModal, setShowImportModal] = useState<boolean>(false);
+  const [importTab, setImportTab] = useState<'json' | 'form'>('json');
+  const [jsonInput, setJsonInput] = useState<string>('');
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importSuccess, setImportSuccess] = useState<string | null>(null);
+  const [copiedPrompt, setCopiedPrompt] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Manual Form State
+  const [formTitle, setFormTitle] = useState<string>('');
+  const [formCategory, setFormCategory] = useState<VerifiedEventCategory>('Culture');
+  const [formDate, setFormDate] = useState<string>(initialDateStr);
+  const [formTime, setFormTime] = useState<string>('20:00');
+  const [formVenue, setFormVenue] = useState<string>('Tuzla');
+  const [formPrice, setFormPrice] = useState<string>('Besplatno');
+
+  const getLocalStoredEvents = (): VerifiedEvent[] => {
+    try {
+      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch {
+      // ignore error
+    }
+    return [];
+  };
+
+  const saveLocalStoredEvents = (newEvents: VerifiedEvent[]) => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newEvents));
+    } catch {
+      // ignore
+    }
+  };
+
   const loadEvents = async () => {
     setLoading(true);
+    let serverEvents: VerifiedEvent[] = [];
     try {
       const res = await fetch('/api/events');
       if (res.ok) {
-        const data: VerifiedEvent[] = await res.json();
-        setEvents(data);
-      } else {
-        setEvents([]);
+        serverEvents = await res.json();
       }
     } catch (err) {
-      setEvents([]);
-    } finally {
-      setLoading(false);
+      console.warn('API events fetch fallback to local storage');
     }
+
+    // Merge server events with locally saved manual events
+    const localEvents = getLocalStoredEvents();
+    const map = new Map<string, VerifiedEvent>();
+
+    serverEvents.forEach(e => map.set(e.id, e));
+    localEvents.forEach(e => map.set(e.id, e));
+
+    const merged = Array.from(map.values());
+    setEvents(merged);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -88,8 +150,185 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   }, []);
 
   const handleAddToItinerary = async (evt: VerifiedEvent) => {
-    const success = await addToItinerary(evt.title, `${evt.venue_name} (${evt.start_date} @ ${evt.start_time})`, 'Attraction');
+    await addToItinerary(evt.title, `${evt.venue_name} (${evt.start_date} @ ${evt.start_time})`, 'Attraction');
     setAddedEvents(prev => [...prev, evt.id]);
+  };
+
+  const handleDeleteEvent = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm(lang === 'bs' ? 'Da li ste sigurni da želite obrisati ovaj događaj?' : 'Are you sure you want to delete this event?')) {
+      return;
+    }
+
+    // Update local state
+    const updated = events.filter(evt => evt.id !== id);
+    setEvents(updated);
+    saveLocalStoredEvents(updated);
+
+    // Call API if available
+    try {
+      await fetch(`/api/events?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+    } catch {
+      // Ignore API errors for client-only fallback
+    }
+  };
+
+  const processImportedEvents = async (rawList: any[]) => {
+    if (!Array.isArray(rawList) || rawList.length === 0) {
+      throw new Error(lang === 'bs' ? 'Nisu pronađeni validni podaci u JSON-u.' : 'No valid event items found in JSON.');
+    }
+
+    const normalized: VerifiedEvent[] = rawList
+      .filter(item => item && typeof item === 'object' && (item.title || item.name))
+      .map((item, idx) => {
+        const cleanTitle = String(item.title || item.name || '').trim();
+        const rawCat = String(item.category || '').trim();
+        
+        let category: VerifiedEventCategory = 'Culture';
+        if (CATEGORIES.includes(rawCat as any)) {
+          category = rawCat as VerifiedEventCategory;
+        } else if (cleanTitle.toLowerCase().includes('jazz') || cleanTitle.toLowerCase().includes('koncert') || cleanTitle.toLowerCase().includes('dj')) {
+          category = 'Music';
+        } else if (cleanTitle.toLowerCase().includes('film') || cleanTitle.toLowerCase().includes('kino')) {
+          category = 'Movie';
+        } else if (cleanTitle.toLowerCase().includes('teatar') || cleanTitle.toLowerCase().includes('predstava')) {
+          category = 'Theatre';
+        }
+
+        let startDate = String(item.start_date || '').trim();
+        let startTime = item.start_time ? String(item.start_time).trim() : '20:00';
+
+        if (item.date_time) {
+          const parts = String(item.date_time).trim().split(' ');
+          if (parts[0]) startDate = parts[0];
+          if (parts[1]) startTime = parts[1];
+        }
+
+        if (!startDate) {
+          startDate = new Date().toISOString().split('T')[0];
+        }
+
+        const venueName = item.venue_name || item.location ? String(item.venue_name || item.location).trim() : 'Tuzla';
+        const city = item.city ? String(item.city).trim() : 'Tuzla';
+        const price = item.price ? String(item.price).trim() : 'Besplatno';
+
+        const sourceUrl = item.link || item.source_url;
+        const sourceUrls = Array.isArray(item.source_urls) 
+          ? item.source_urls 
+          : (sourceUrl ? [sourceUrl] : []);
+
+        return {
+          id: item.id || `evt-${startDate}-${cleanTitle.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}-${idx}`,
+          title: cleanTitle,
+          category,
+          start_date: startDate,
+          start_time: startTime,
+          venue_name: venueName,
+          city,
+          price,
+          source_urls: sourceUrls,
+          verification_sources: ['Private AICrawler Import'],
+          verified: true,
+          updated_at: new Date().toISOString()
+        };
+      });
+
+    if (normalized.length === 0) {
+      throw new Error(lang === 'bs' ? 'Nisu pronađeni validni događaji u JSON-u.' : 'No valid events parsed from JSON.');
+    }
+
+    // Try saving to backend API
+    try {
+      await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(normalized)
+      });
+    } catch (err) {
+      console.warn('API post fallback to local storage');
+    }
+
+    // Update local state and localStorage
+    const currentLocal = getLocalStoredEvents();
+    const map = new Map<string, VerifiedEvent>();
+    events.forEach(e => map.set(e.id, e));
+    currentLocal.forEach(e => map.set(e.id, e));
+    normalized.forEach(e => map.set(e.id, e));
+
+    const merged = Array.from(map.values());
+    saveLocalStoredEvents(merged);
+    setEvents(merged);
+
+    return normalized.length;
+  };
+
+  const handleJsonImportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setImportError(null);
+    setImportSuccess(null);
+    setIsSubmitting(true);
+
+    try {
+      let parsed: any;
+      try {
+        parsed = JSON.parse(jsonInput);
+      } catch (err) {
+        throw new Error(lang === 'bs' ? 'Neispravan JSON format. Provjerite zagrade i navodnike.' : 'Invalid JSON format. Check brackets and quotes.');
+      }
+
+      const list = Array.isArray(parsed) ? parsed : [parsed];
+      const count = await processImportedEvents(list);
+
+      setImportSuccess(
+        lang === 'bs' 
+          ? `Uspješno uvezeno ${count} događaja sa vašeg AICrawler-a!` 
+          : `Successfully imported ${count} event(s) from your AICrawler!`
+      );
+      setJsonInput('');
+      setTimeout(() => setShowImportModal(false), 1500);
+    } catch (err: any) {
+      setImportError(err.message || 'Import failed');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleManualFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setImportError(null);
+    setImportSuccess(null);
+
+    if (!formTitle.trim() || !formDate.trim()) {
+      setImportError(lang === 'bs' ? 'Naziv i Datum su obavezni.' : 'Title and Date are required.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const singleEvent = {
+        title: formTitle,
+        category: formCategory,
+        start_date: formDate,
+        start_time: formTime,
+        venue_name: formVenue,
+        price: formPrice
+      };
+
+      await processImportedEvents([singleEvent]);
+      setImportSuccess(lang === 'bs' ? 'Događaj uspješno dodan!' : 'Event added successfully!');
+      setFormTitle('');
+      setTimeout(() => setShowImportModal(false), 1200);
+    } catch (err: any) {
+      setImportError(err.message || 'Add event failed');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCopyPromptSample = () => {
+    navigator.clipboard.writeText(SAMPLE_JSON_PROMPT);
+    setCopiedPrompt(true);
+    setTimeout(() => setCopiedPrompt(false), 2000);
   };
 
   const months = lang === 'bs' ? MONTH_NAMES_BS : MONTH_NAMES_EN;
@@ -208,13 +447,21 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
           </div>
         </div>
 
-        {/* Year Selector */}
-        <div className="flex items-center gap-2 self-start sm:self-center">
+        {/* AICrawler Import Button & Year Selector */}
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-xs font-black text-white shadow-md shadow-emerald-500/20 hover:from-emerald-700 hover:to-teal-700 transition-all active:scale-95"
+          >
+            <Upload className="h-4 w-4" />
+            <span>{lang === 'bs' ? 'Unos iz AICrawler-a' : 'AICrawler Import'}</span>
+          </button>
+
           {ALLOWED_YEARS.map((yr) => (
             <button
               key={yr}
               onClick={() => setSelectedYear(yr)}
-              className={`rounded-2xl px-5 py-2.5 text-sm font-black transition-all ${
+              className={`rounded-2xl px-4 py-2.5 text-xs font-black transition-all ${
                 selectedYear === yr
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -227,7 +474,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
           <button
             onClick={loadEvents}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 rounded-2xl bg-slate-100 px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-200 transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-2xl bg-slate-100 px-3 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-200 transition-all disabled:opacity-50"
             title="Refresh events"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
@@ -411,34 +658,44 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                   return (
                     <div
                       key={evt.id}
-                      className="relative rounded-2xl border border-slate-100 bg-slate-50/60 p-4 transition-all hover:border-blue-200 hover:bg-white"
+                      className="relative rounded-2xl border border-slate-100 bg-slate-50/60 p-4 transition-all hover:border-blue-200 hover:bg-white group"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <span className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-blue-800">
                           {evt.category}
                         </span>
                         
-                        <button
-                          onClick={() => handleAddToItinerary(evt)}
-                          disabled={isAdded}
-                          className={`inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all active:scale-95 ${
-                            isAdded 
-                              ? 'bg-emerald-100 text-emerald-800 cursor-default' 
-                              : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
-                          }`}
-                        >
-                          {isAdded ? (
-                            <>
-                              <Check className="h-3 w-3" />
-                              <span>{lang === 'bs' ? 'Dodano u Planer' : 'In Itinerary'}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Plus className="h-3 w-3" />
-                              <span>{lang === 'bs' ? 'Dodaj u Planer' : 'Add to Itinerary'}</span>
-                            </>
-                          )}
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => handleAddToItinerary(evt)}
+                            disabled={isAdded}
+                            className={`inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all active:scale-95 ${
+                              isAdded 
+                                ? 'bg-emerald-100 text-emerald-800 cursor-default' 
+                                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                            }`}
+                          >
+                            {isAdded ? (
+                              <>
+                                <Check className="h-3 w-3" />
+                                <span>{lang === 'bs' ? 'Dodano' : 'In Itinerary'}</span>
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="h-3 w-3" />
+                                <span>{lang === 'bs' ? 'Planer' : 'Itinerary'}</span>
+                              </>
+                            )}
+                          </button>
+
+                          <button
+                            onClick={(e) => handleDeleteEvent(evt.id, e)}
+                            className="p-1 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                            title={lang === 'bs' ? 'Obriši događaj' : 'Delete event'}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
 
                       <h4 className="mt-2 text-base font-black text-slate-900 leading-snug">
@@ -494,6 +751,223 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
           </div>
         </div>
       </div>
+
+      {/* AICrawler Event Import & Manual Insertion Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-fadeIn">
+          <div className="relative w-full max-w-2xl rounded-3xl border border-blue-100 bg-white p-6 shadow-2xl">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-500/20">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-slate-900">
+                    {lang === 'bs' ? 'Unos Rezultata iz AICrawler-a' : 'Import AICrawler Results'}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    {lang === 'bs'
+                      ? 'Jednostavno zalijepite JSON rezultate sa vašeg AICrawler-a svakih 3-5 dana'
+                      : 'Paste JSON results from your private AICrawler every 3-5 days'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowImportModal(false)}
+                className="rounded-2xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="mt-4 flex gap-2 border-b border-slate-100 pb-3">
+              <button
+                onClick={() => setImportTab('json')}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition-all ${
+                  importTab === 'json'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <FileText className="h-4 w-4" />
+                <span>{lang === 'bs' ? 'Zalijepi JSON (AICrawler)' : 'Paste JSON (AICrawler)'}</span>
+              </button>
+
+              <button
+                onClick={() => setImportTab('form')}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition-all ${
+                  importTab === 'form'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <Plus className="h-4 w-4" />
+                <span>{lang === 'bs' ? 'Ručni Brzi Unos' : 'Quick Form Entry'}</span>
+              </button>
+            </div>
+
+            {/* Error & Success Messages */}
+            {importError && (
+              <div className="mt-4 flex items-center gap-2 rounded-2xl bg-red-50 p-3 text-xs font-bold text-red-700 border border-red-200">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span>{importError}</span>
+              </div>
+            )}
+
+            {importSuccess && (
+              <div className="mt-4 flex items-center gap-2 rounded-2xl bg-emerald-50 p-3 text-xs font-bold text-emerald-700 border border-emerald-200">
+                <Check className="h-4 w-4 shrink-0" />
+                <span>{importSuccess}</span>
+              </div>
+            )}
+
+            {/* Tab 1: JSON Paste */}
+            {importTab === 'json' && (
+              <form onSubmit={handleJsonImportSubmit} className="mt-4 space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-black text-slate-700">
+                      {lang === 'bs' ? 'JSON Podaci (Niz ili Jedan Događaj):' : 'JSON Data (Array or Single Event):'}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleCopyPromptSample}
+                      className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
+                    >
+                      {copiedPrompt ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                      <span>{copiedPrompt ? (lang === 'bs' ? 'Kopirano!' : 'Copied!') : (lang === 'bs' ? 'Kopiraj Primjer JSON' : 'Copy Sample JSON')}</span>
+                    </button>
+                  </div>
+
+                  <textarea
+                    rows={8}
+                    value={jsonInput}
+                    onChange={(e) => setJsonInput(e.target.value)}
+                    placeholder={SAMPLE_JSON_PROMPT}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 font-mono text-xs text-slate-800 outline-none focus:border-emerald-500 focus:bg-white transition-all"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <p className="text-[11px] font-medium text-slate-400">
+                    {lang === 'bs' ? 'Polja: title, start_date (YYYY-MM-DD), start_time, venue_name, category, price' : 'Fields: title, start_date (YYYY-MM-DD), start_time, venue_name, category, price'}
+                  </p>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !jsonInput.trim()}
+                    className="flex items-center gap-2 rounded-2xl bg-emerald-600 px-6 py-2.5 text-xs font-black text-white shadow-md shadow-emerald-500/20 hover:bg-emerald-700 transition-all disabled:opacity-50 cursor-pointer"
+                  >
+                    {isSubmitting ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                    <span>{lang === 'bs' ? 'Uvezi Događaje' : 'Import Events'}</span>
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Tab 2: Manual Form Entry */}
+            {importTab === 'form' && (
+              <form onSubmit={handleManualFormSubmit} className="mt-4 space-y-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-black text-slate-700 mb-1">
+                      {lang === 'bs' ? 'Naziv Događaja *' : 'Event Title *'}
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formTitle}
+                      onChange={(e) => setFormTitle(e.target.value)}
+                      placeholder="npr. Koncert Ljetne Noći"
+                      className="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-medium text-slate-800 outline-none focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 mb-1">
+                      {lang === 'bs' ? 'Kategorija' : 'Category'}
+                    </label>
+                    <select
+                      value={formCategory}
+                      onChange={(e) => setFormCategory(e.target.value as VerifiedEventCategory)}
+                      className="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500"
+                    >
+                      {CATEGORIES.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 mb-1">
+                      {lang === 'bs' ? 'Datum (YYYY-MM-DD) *' : 'Date (YYYY-MM-DD) *'}
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={formDate}
+                      onChange={(e) => setFormDate(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 mb-1">
+                      {lang === 'bs' ? 'Vrijeme (HH:mm)' : 'Time (HH:mm)'}
+                    </label>
+                    <input
+                      type="text"
+                      value={formTime}
+                      onChange={(e) => setFormTime(e.target.value)}
+                      placeholder="20:00"
+                      className="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-medium text-slate-800 outline-none focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 mb-1">
+                      {lang === 'bs' ? 'Lokacija / Klub' : 'Venue Name'}
+                    </label>
+                    <input
+                      type="text"
+                      value={formVenue}
+                      onChange={(e) => setFormVenue(e.target.value)}
+                      placeholder="npr. BKC Tuzla"
+                      className="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-medium text-slate-800 outline-none focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-black text-slate-700 mb-1">
+                      {lang === 'bs' ? 'Cijena Ulaza' : 'Ticket Price'}
+                    </label>
+                    <input
+                      type="text"
+                      value={formPrice}
+                      onChange={(e) => setFormPrice(e.target.value)}
+                      placeholder="npr. Besplatno ili 10 KM"
+                      className="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-medium text-slate-800 outline-none focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !formTitle.trim()}
+                    className="flex items-center gap-2 rounded-2xl bg-blue-600 px-6 py-2.5 text-xs font-black text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-all disabled:opacity-50 cursor-pointer"
+                  >
+                    {isSubmitting ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                    <span>{lang === 'bs' ? 'Spremi Događaj' : 'Save Event'}</span>
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

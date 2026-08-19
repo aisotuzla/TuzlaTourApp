@@ -1,36 +1,13 @@
 import { put, list } from '@vercel/blob';
-import { kv } from '@vercel/kv';
 import postgres from 'postgres';
-import { VerifiedEvent } from './events';
+import { VerifiedEvent } from '../types/events';
 
 const BLOB_PATHNAME = 'verified_events.json';
 
 // In-memory runtime cache for serverless invocation lifecycle
 let memoryEventsCache: VerifiedEvent[] = [];
 
-// 1. Try Vercel KV Storage
-async function getEventsFromKV(): Promise<VerifiedEvent[] | null> {
-  try {
-    const data = await kv.get<VerifiedEvent[]>('verified_events');
-    if (data && Array.isArray(data)) {
-      return data;
-    }
-  } catch (err) {
-    // KV not connected or env missing, fallback silently to Vercel Blob / Postgres
-  }
-  return null;
-}
-
-async function saveEventsToKV(events: VerifiedEvent[]): Promise<boolean> {
-  try {
-    await kv.set('verified_events', events);
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
-
-// 2. Vercel Blob Storage Native Storage (No external DB needed)
+// 1. Vercel Blob Storage Native Storage
 async function getEventsFromVercelBlob(): Promise<VerifiedEvent[] | null> {
   try {
     const token = process.env.VERCEL_BLOB_READ_WRITE_TOKEN;
@@ -69,7 +46,7 @@ async function saveEventsToVercelBlob(events: VerifiedEvent[]): Promise<boolean>
   }
 }
 
-// 3. Fallback PostgreSQL (Vercel Postgres or Direct Postgres)
+// 2. PostgreSQL (Vercel Postgres or Direct Postgres)
 const postgresConnStr = process.env.POSTGRES_URL || process.env.DATABASE_URL;
 let sqlClient: any = null;
 
@@ -84,21 +61,14 @@ if (postgresConnStr) {
 export async function fetchPublicVerifiedEvents(): Promise<VerifiedEvent[]> {
   const todayStr = new Date().toISOString().split('T')[0];
 
-  // Strategy A: Vercel KV
-  const kvEvents = await getEventsFromKV();
-  if (kvEvents) {
-    memoryEventsCache = kvEvents;
-    return kvEvents.filter(e => e.verified && e.start_date >= todayStr);
-  }
-
-  // Strategy B: Vercel Blob (Built-in Vercel storage)
+  // Strategy A: Vercel Blob
   const blobEvents = await getEventsFromVercelBlob();
   if (blobEvents) {
     memoryEventsCache = blobEvents;
     return blobEvents.filter(e => e.verified && e.start_date >= todayStr);
   }
 
-  // Strategy C: Vercel Postgres
+  // Strategy B: Vercel Postgres
   if (sqlClient) {
     try {
       const rows = await sqlClient`
@@ -132,21 +102,94 @@ export async function fetchPublicVerifiedEvents(): Promise<VerifiedEvent[]> {
     }
   }
 
-  // Strategy D: Native In-Memory Runtime Cache (Pure serverless state)
+  // Strategy C: In-Memory Runtime Cache
   return memoryEventsCache.filter(e => e.verified && e.start_date >= todayStr);
+}
+
+export function normalizeImportedEvents(rawItems: any[]): VerifiedEvent[] {
+  if (!Array.isArray(rawItems)) return [];
+
+  const validCategories = ['Music', 'Culture', 'Movie', 'Theatre', 'Sport', 'Panonnica'];
+
+  return rawItems
+    .filter(item => item && typeof item === 'object' && (item.title || item.name))
+    .map((item, idx) => {
+      const cleanTitle = String(item.title || item.name || '').trim();
+      const rawCat = String(item.category || '').trim();
+      
+      let category: any = 'Culture';
+      if (validCategories.includes(rawCat)) {
+        category = rawCat;
+      } else if (cleanTitle.toLowerCase().includes('jazz') || cleanTitle.toLowerCase().includes('koncert') || cleanTitle.toLowerCase().includes('dj')) {
+        category = 'Music';
+      } else if (cleanTitle.toLowerCase().includes('film') || cleanTitle.toLowerCase().includes('kino')) {
+        category = 'Movie';
+      } else if (cleanTitle.toLowerCase().includes('teatar') || cleanTitle.toLowerCase().includes('predstava')) {
+        category = 'Theatre';
+      }
+
+      let startDate = String(item.start_date || '').trim();
+      let startTime = item.start_time ? String(item.start_time).trim() : '20:00';
+
+      if (item.date_time) {
+        const parts = String(item.date_time).trim().split(' ');
+        if (parts[0]) startDate = parts[0];
+        if (parts[1]) startTime = parts[1];
+      }
+
+      if (!startDate) {
+        startDate = new Date().toISOString().split('T')[0];
+      }
+
+      const venueName = item.venue_name || item.location ? String(item.venue_name || item.location).trim() : 'Tuzla';
+      const city = item.city ? String(item.city).trim() : 'Tuzla';
+      const price = item.price ? String(item.price).trim() : 'Besplatno';
+
+      const sourceUrl = item.link || item.source_url;
+      const sourceUrls = Array.isArray(item.source_urls) 
+        ? item.source_urls 
+        : (sourceUrl ? [sourceUrl] : []);
+
+      const id = item.id || `evt-${startDate}-${cleanTitle.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${idx}`;
+
+      return {
+        id,
+        title: cleanTitle,
+        category,
+        start_date: startDate,
+        start_time: startTime,
+        venue_name: venueName,
+        city,
+        price,
+        source_urls: sourceUrls,
+        verification_sources: ['AICrawler Private Import'],
+        verified: true,
+        updated_at: new Date().toISOString()
+      };
+    });
+}
+
+export async function deleteEventById(id: string): Promise<boolean> {
+  memoryEventsCache = memoryEventsCache.filter(e => e.id !== id);
+  await saveEventsToVercelBlob(memoryEventsCache);
+  if (sqlClient) {
+    try {
+      await sqlClient`DELETE FROM verified_events WHERE id = ${id};`;
+    } catch (e) {
+      console.error('Postgres delete error:', e);
+    }
+  }
+  return true;
 }
 
 export async function saveVerifiedEvents(newEvents: VerifiedEvent[]): Promise<{ inserted: number; updated: number }> {
   let inserted = 0;
   let updated = 0;
 
-  // Merge new events into memory cache with upsert deduplication
   const mergedMap = new Map<string, VerifiedEvent>();
   
-  // Existing events
   memoryEventsCache.forEach(e => mergedMap.set(e.id, e));
 
-  // Upsert new
   for (const evt of newEvents) {
     if (mergedMap.has(evt.id)) {
       updated++;
@@ -159,13 +202,8 @@ export async function saveVerifiedEvents(newEvents: VerifiedEvent[]): Promise<{ 
   const allMergedEvents = Array.from(mergedMap.values());
   memoryEventsCache = allMergedEvents;
 
-  // Save to Vercel KV if available
-  await saveEventsToKV(allMergedEvents);
-
-  // Save to Vercel Blob (Built-in Vercel storage)
   await saveEventsToVercelBlob(allMergedEvents);
 
-  // Save to Vercel Postgres if configured
   if (sqlClient) {
     try {
       await sqlClient`
@@ -190,7 +228,7 @@ export async function saveVerifiedEvents(newEvents: VerifiedEvent[]): Promise<{ 
           INSERT INTO verified_events (
             id, title, category, start_date, start_time, venue_name, city, price, source_urls, verification_sources, verified, updated_at
           ) VALUES (
-            ${evt.id}, ${evt.title}, ${evt.category}, ${evt.start_date}::date, ${evt.start_time}, ${evt.venue_name}, ${evt.city}, ${evt.price}, ${evt.source_urls}, ${evt.verification_sources}, ${evt.verified}, NOW()
+            ${evt.id}, ${evt.title}, ${evt.category}, ${evt.start_date}::date, ${evt.start_time}, ${evt.venue_name}, ${evt.city}, ${evt.price}, ${evt.source_urls || []}, ${evt.verification_sources || ['Private AICrawler']}, ${evt.verified}, NOW()
           )
           ON CONFLICT (id) DO UPDATE SET
             title = EXCLUDED.title,
