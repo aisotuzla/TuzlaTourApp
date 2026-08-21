@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { 
-    Wallet as WalletIcon, 
-    Lock, 
-    CheckCircle2, 
-    Globe, 
-    X, 
-    Copy, 
-    ExternalLink, 
-    Zap, 
-    QrCode, 
-    Award, 
-    ArrowLeftRight, 
-    BookOpen, 
-    Play, 
+import {
+    Wallet as WalletIcon,
+    Lock,
+    CheckCircle2,
+    Globe,
+    X,
+    Copy,
+    ExternalLink,
+    Zap,
+    QrCode,
+    Award,
+    ArrowLeftRight,
+    BookOpen,
+    Play,
     Trash2,
     AlertCircle,
     Stethoscope
@@ -64,7 +64,7 @@ const WalletContent: React.FC<{
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const isOnline = useNetwork();
     const t = TRANSLATIONS[lang];
-    
+
     const { unlockedRewards, setUnlockedRewards } = useGlobalApp();
 
     const convertedValue = bamValue
@@ -138,7 +138,7 @@ const WalletContent: React.FC<{
                     async (decodedText) => {
                         const trimmed = decodedText?.trim() ?? '';
                         const target = findQuestTargetFromQr(trimmed);
-                        
+
                         if (!target) {
                             setScannerFeedback({
                                 text: lang === 'bs'
@@ -164,7 +164,7 @@ const WalletContent: React.FC<{
                         // Check if already in ledger
                         const exists = ledger.some(item => item.id === target.id);
                         let newLedger = [...ledger];
-                        
+
                         if (exists) {
                             setScannerFeedback({
                                 text: lang === 'bs'
@@ -262,11 +262,11 @@ const WalletContent: React.FC<{
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* ── Left Column: Solana + Scanner + Converter (7 cols on lg) ── */}
                     <div className="lg:col-span-7 space-y-6">
-                        
+
                         {/* Solana Card (Solflare Integration Only) */}
                         <div className="p-4 sm:p-6 bg-white border border-purple-100 rounded-[2rem] shadow-xl space-y-4 overflow-hidden relative">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
-                            
+
                             {/* Network Switcher & Header */}
                             <div className="flex justify-between items-center flex-wrap gap-3 pb-4 border-b border-purple-100">
                                 <div className="flex items-center gap-3">
@@ -278,7 +278,7 @@ const WalletContent: React.FC<{
                                         <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">Solana Connection</h3>
                                     </div>
                                 </div>
-                                
+
                                 {/* Network Switcher */}
                                 <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
                                     <button
@@ -368,7 +368,7 @@ const WalletContent: React.FC<{
                                             <ExternalLink size={14} />
                                             {lang === 'bs' ? 'Pregledaj na Solana Exploreru' : 'View on Solana Explorer'}
                                         </button>
-                                        
+
                                         <p className="text-[9px] text-slate-400 font-mono break-all text-center">
                                             {publicKey.toBase58()}
                                         </p>
@@ -467,11 +467,11 @@ const WalletContent: React.FC<{
 
                     {/* ── Right Column: Scan History Ledger + Partner Links (5 cols on lg) ── */}
                     <div className="lg:col-span-5 space-y-6">
-                        
+
                         {/* Scan History Ledger */}
                         <div className="p-4 sm:p-6 bg-white border border-emerald-100 rounded-[2rem] shadow-xl space-y-4 flex flex-col relative min-h-[380px]">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-                            
+
                             <div className="flex justify-between items-center pb-3 border-b border-slate-100 shrink-0">
                                 <div className="flex items-center gap-2">
                                     <BookOpen className="w-5 h-5 text-emerald-600" />
@@ -496,8 +496,8 @@ const WalletContent: React.FC<{
                                                 {lang === 'bs' ? 'Knjiga je prazna' : 'Ledger is empty'}
                                             </p>
                                             <p className="text-[11px] text-slate-400 mt-1 max-w-[200px] mx-auto leading-relaxed">
-                                                {lang === 'bs' 
-                                                    ? 'Skenirajte lokacije širom grada za popunjavanje istorije.' 
+                                                {lang === 'bs'
+                                                    ? 'Skenirajte lokacije širom grada za popunjavanje istorije.'
                                                     : 'Scan location QR codes around the city to build your history.'}
                                             </p>
                                         </div>
@@ -507,14 +507,14 @@ const WalletContent: React.FC<{
                                         const target = QUEST_TARGETS.find(q => q.id === entry.id);
                                         if (!target) return null;
                                         return (
-                                            <div 
-                                                key={entry.id} 
+                                            <div
+                                                key={entry.id}
                                                 className="p-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-100 rounded-2xl flex items-center gap-3 transition-colors group relative"
                                             >
                                                 <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 border border-slate-200">
-                                                    <img 
-                                                        src={target.Image} 
-                                                        alt={target.name[lang] || target.name.en} 
+                                                    <img
+                                                        src={target.Image}
+                                                        alt={target.name[lang] || target.name.en}
                                                         className="w-full h-full object-cover"
                                                     />
                                                 </div>
@@ -526,7 +526,7 @@ const WalletContent: React.FC<{
                                                         {entry.timestamp}
                                                     </span>
                                                 </div>
-                                                
+
                                                 {/* Play Reward Video Button */}
                                                 {(target as any).video && (
                                                     <button
@@ -552,13 +552,13 @@ const WalletContent: React.FC<{
                                             <span className="text-[10px] font-bold text-red-700 uppercase flex-grow">
                                                 {lang === 'bs' ? 'Jeste li sigurni?' : 'Are you sure?'}
                                             </span>
-                                            <button 
+                                            <button
                                                 onClick={handleClearLedger}
                                                 className="px-2.5 py-1 bg-red-600 text-white rounded-lg text-[9px] font-black uppercase tracking-wider"
                                             >
                                                 {lang === 'bs' ? 'Da, obriši' : 'Yes, delete'}
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => setShowClearConfirm(false)}
                                                 className="px-2.5 py-1 bg-slate-200 text-slate-700 rounded-lg text-[9px] font-black uppercase tracking-wider"
                                             >
@@ -566,7 +566,7 @@ const WalletContent: React.FC<{
                                             </button>
                                         </div>
                                     ) : (
-                                        <button 
+                                        <button
                                             onClick={() => setShowClearConfirm(true)}
                                             className="w-full py-2.5 bg-slate-50 border border-slate-100 hover:bg-red-50 hover:text-red-600 hover:border-red-100 text-slate-400 font-black text-[10px] uppercase tracking-wider rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all"
                                         >
@@ -593,7 +593,7 @@ const WalletContent: React.FC<{
                                     DENTAL TOURISM
                                 </button>
                                 <button
-                                    onClick={() => window.open('https://aiso-tuzla-ai.lovable.app/', '_blank')}
+                                    onClick={() => window.open('https://aiso-tuzla.lovable.app/', '_blank')}
                                     className="w-full h-16 bg-blue-600 text-yellow-300 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-blue-700"
                                 >
                                     AISO TUZLA
@@ -658,11 +658,11 @@ const WalletContent: React.FC<{
                                     <X size={20} />
                                 </button>
                             </div>
-                            
+
                             {/* Camera Viewport */}
                             <div className="relative w-full aspect-square bg-black rounded-3xl overflow-hidden border-2 border-purple-500/30">
                                 <div id="wallet-reader" className="w-full h-full"></div>
-                                
+
                                 {/* Overlay Scanning Guide */}
                                 <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                                     <div className="w-48 h-48 border-2 border-dashed border-purple-500/40 rounded-2xl relative">
@@ -671,13 +671,13 @@ const WalletContent: React.FC<{
                                         <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-purple-400 translate-x-1 -translate-y-1 rounded-tr-md"></div>
                                         <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-purple-400 -translate-x-1 translate-y-1 rounded-bl-md"></div>
                                         <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-purple-400 translate-x-1 translate-y-1 rounded-br-md"></div>
-                                        
+
                                         {/* Laser line animation */}
                                         <div className="absolute left-0 right-0 h-1 bg-purple-400/80 animate-scanner-laser top-[10%]"></div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {/* Hint */}
                             <p className="text-[10px] text-purple-400 font-bold uppercase tracking-widest mt-6 animate-pulse">
                                 {lang === 'bs' ? 'Pozicionirajte kod unutar okvira' : 'Position code within the frame'}
@@ -729,7 +729,7 @@ const WalletContent: React.FC<{
 // Main Export Component wrapping contents in Solana Providers
 const Wallet: React.FC<WalletProps> = ({ lang }) => {
     const [network, setNetwork] = useState<'mainnet-beta' | 'devnet'>('devnet');
-    
+
     const endpoint = useMemo(() => {
         if (network === 'mainnet-beta') {
             return 'https://api.mainnet-beta.solana.com';

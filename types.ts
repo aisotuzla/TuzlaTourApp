@@ -100,6 +100,48 @@ export interface TranslationSet {
   locationNotAvailable: string;
   zonesLabel: string;
   galleryCharmText: string;
+  // Wallet translations
+  digitalWalletTitle: string;
+  solanaConnection: string;
+  walletAddress: string;
+  statusNotConnected: string;
+  viewOnSolanaExplorer: string;
+  explorationTitle: string;
+  qrLocationScannerTitle: string;
+  startScanner: string;
+  qrScannerDesc: string;
+  currencyConverterTitle: string;
+  enterBamLabel: string;
+  enterEurLabel: string;
+  estimatedEurLabel: string;
+  estimatedBamLabel: string;
+  conversionRateText: string;
+  scanHistoryLedgerTitle: string;
+  ledgerEmptyTitle: string;
+  ledgerEmptyDesc: string;
+  clearScanHistory: string;
+  clearHistoryConfirm: string;
+  yesDelete: string;
+  cancel: string;
+  partnerAgenciesTitle: string;
+  scanLocationToUnlock: string;
+  positionCodeInFrame: string;
+  success: string;
+  error: string;
+  alreadyInLedger: string;
+  unlockedLocation: string;
+  unknownQrCode: string;
+  couldNotStartCamera: string;
+  privacyDisclaimerText: string;
+  privacyKeyPointsTitle: string;
+  zeroCustodyTitle: string;
+  zeroCustodyText: string;
+  privacyByDesignTitle: string;
+  privacyByDesignText: string;
+  noDataStorageTitle: string;
+  noDataStorageText: string;
+  onDeviceProcessingTitle: string;
+  onDeviceProcessingText: string;
 }
 
 export enum AppTab {
