@@ -1,15 +1,39 @@
 {
   "skills": [
     {
+      "source": "caoliao/qrcode-skills",
+      "skills": [
+        "qrcode-skills"
+      ]
+    },
+    {
+      "source": "endo-ly/harmonic-orbit",
+      "skills": [
+        "ui-ux-design-patterns"
+      ]
+    },
+    {
       "source": "obra/superpowers",
       "skills": [
         "brainstorming"
       ]
     },
     {
+      "source": "omer-metin/skills-for-antigravity",
+      "skills": [
+        "vr-ar-development"
+      ]
+    },
+    {
       "source": "supabase/agent-skills",
       "skills": [
         "supabase-postgres-best-practices"
+      ]
+    },
+    {
+      "source": "travisjneuman/.claude",
+      "skills": [
+        "ar-vr-xr"
       ]
     },
     {

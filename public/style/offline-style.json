@@ -7,16 +7,15 @@
   "sources": {
     "local-raster": {
       "type": "raster",
-      "tiles": [],
+      "tiles": [
+        "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        "https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+      ],
       "tileSize": 256,
-      "minzoom": 16,
-      "maxzoom": 17,
-      "bounds": [
-        18.55,
-        44.50,
-        18.75,
-        44.58
-      ]
+      "minzoom": 0,
+      "maxzoom": 19
     },
     "app-buildings": {
       "type": "geojson",
@@ -42,12 +41,9 @@
     {
       "id": "raster-tiles",
       "type": "raster",
-      "source": "/maps/tiles/{z}/{x}/{y}.png",
+      "source": "local-raster",
       "paint": {
-        "raster-opacity": 1,
-        "raster-saturation": -0.2,
-        "raster-brightness-max": 0.95,
-        "raster-contrast": 0.1
+        "raster-opacity": 1
       }
     },
     {

@@ -29,7 +29,7 @@ import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-r
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
-import { QUEST_TARGETS } from './MapQuestView';
+import { QUEST_TARGETS } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
 import { Preferences } from '@capacitor/preferences';
 
@@ -246,7 +246,7 @@ const WalletContent: React.FC<{
                     <div className="mb-8 flex items-center gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-2xl animate-pulse">
                         <span className="text-amber-500">📡</span>
                         <p className="text-xs font-bold text-amber-700 uppercase tracking-wide">
-                            {lang === 'bs' ? 'Blockchain zahtijeva internet vezu' : 'Blockchain requires internet'}
+                            {t.blockchainOffline}
                         </p>
                     </div>
                 )}
@@ -254,7 +254,7 @@ const WalletContent: React.FC<{
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-black text-blue-950 uppercase tracking-tight flex items-center justify-center gap-3">
                         <WalletIcon className="w-10 h-10 text-blue-600" />
-                        {lang === 'bs' ? 'Digitalni' : 'Digital'} <span className="text-blue-600">{lang === 'bs' ? 'Novčanik' : 'Wallet'}</span>
+                        {t.digitalWalletTitle}
                     </h1>
                     <div className="h-1 w-24 bg-blue-600 mx-auto rounded-full mt-2" />
                 </div>
@@ -275,7 +275,7 @@ const WalletContent: React.FC<{
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Solflare Wallet</p>
-                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">Solana Connection</h3>
+                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t.solanaConnection}</h3>
                                     </div>
                                 </div>
 
@@ -301,13 +301,13 @@ const WalletContent: React.FC<{
                                 <div>
                                     {solConnected && publicKey ? (
                                         <div>
-                                            <p className="text-xs text-slate-400 font-bold uppercase">{lang === 'bs' ? 'Adresa Novčanika' : 'Wallet Address'}</p>
+                                            <p className="text-xs text-slate-400 font-bold uppercase">{t.walletAddress}</p>
                                             <p className="text-base font-black text-purple-950 font-mono mt-0.5">{shortAddress(publicKey.toBase58())}</p>
                                         </div>
                                     ) : (
                                         <div>
-                                            <p className="text-xs text-slate-400 font-bold uppercase">{lang === 'bs' ? 'Status' : 'Status'}</p>
-                                            <p className="text-base font-black text-slate-400 mt-0.5">{lang === 'bs' ? 'Nije spojeno' : 'Not connected'}</p>
+                                            <p className="text-xs text-slate-400 font-bold uppercase">Status</p>
+                                            <p className="text-base font-black text-slate-400 mt-0.5">{t.statusNotConnected}</p>
                                         </div>
                                     )}
                                 </div>
@@ -341,7 +341,7 @@ const WalletContent: React.FC<{
                                     >
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase">SOL Balance</p>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase">{t.solBalance}</p>
                                                 <p className="text-2xl font-black text-purple-700 mt-0.5">
                                                     {solBalance !== null ? `◎ ${solBalance.toFixed(4)}` : '—'}
                                                 </p>
@@ -366,7 +366,7 @@ const WalletContent: React.FC<{
                                             className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow hover:shadow-lg active:scale-95 transition-all"
                                         >
                                             <ExternalLink size={14} />
-                                            {lang === 'bs' ? 'Pregledaj na Solana Exploreru' : 'View on Solana Explorer'}
+                                            {t.viewOnSolanaExplorer}
                                         </button>
 
                                         <p className="text-[9px] text-slate-400 font-mono break-all text-center">
@@ -381,27 +381,20 @@ const WalletContent: React.FC<{
                         <div className="p-4 sm:p-6 bg-white border border-blue-100 rounded-[2rem] shadow-xl space-y-4 overflow-hidden relative">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
                             <div className="flex justify-between items-center">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                                        <QrCode size={18} className="text-white" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">{lang === 'bs' ? 'Istraživanje' : 'Exploration'}</p>
-                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{lang === 'bs' ? 'QR Skeniranje Lokacija' : 'QR Location Scanner'}</h3>
-                                    </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">{t.explorationTitle}</p>
+                                    <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t.qrLocationScannerTitle}</h3>
                                 </div>
                                 <button
                                     onClick={startScanner}
                                     className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 flex items-center gap-2 active:scale-95 transition-all"
                                 >
                                     <QrCode size={14} />
-                                    {lang === 'bs' ? 'Pokreni' : 'Scan QR'}
+                                    {t.startScanner}
                                 </button>
                             </div>
                             <p className="text-xs text-slate-500 leading-relaxed">
-                                {lang === 'bs'
-                                    ? 'Pronađite i skenirajte QR kodove na istorijskim znamenitostima širom Tuzle kako biste otključali nagrade u svom vodiču i upisali ih u knjigu.'
-                                    : 'Find and scan QR codes at historical locations around Tuzla to unlock guide rewards and record them in your scan ledger.'}
+                                {t.qrScannerDesc}
                             </p>
                         </div>
 
@@ -410,7 +403,7 @@ const WalletContent: React.FC<{
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <ArrowLeftRight size={16} className="text-blue-600" />
-                                    <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest">{lang === 'bs' ? 'Konvertor Valuta' : 'Currency Converter'}</h3>
+                                    <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest">{t.currencyConverterTitle}</h3>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -426,7 +419,7 @@ const WalletContent: React.FC<{
                             <div className="space-y-3">
                                 <div>
                                     <label className="text-[10px] font-bold text-blue-300 uppercase block mb-1">
-                                        {conversionMode === 'BAM_TO_EUR' ? (lang === 'bs' ? 'Unesite Konvertibilne Marke (KM)' : 'Enter BAM (KM)') : 'Enter EUR (€)'}
+                                        {conversionMode === 'BAM_TO_EUR' ? t.enterBamLabel : t.enterEurLabel}
                                     </label>
                                     <input
                                         type="number"
@@ -438,30 +431,16 @@ const WalletContent: React.FC<{
                                 </div>
                                 <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100/50">
                                     <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">
-                                        {conversionMode === 'BAM_TO_EUR' ? 'Estimated EUR' : 'Estimated BAM'}
+                                        {conversionMode === 'BAM_TO_EUR' ? t.estimatedEurLabel : t.estimatedBamLabel}
                                     </p>
                                     <p className="text-3xl font-black text-blue-600">
                                         {conversionMode === 'BAM_TO_EUR' ? `€ ${convertedValue}` : `KM ${convertedValue}`}
                                     </p>
                                     <p className="text-[10px] text-blue-300 mt-1">
-                                        Rate: 1 EUR = 1.95583 BAM
+                                        {t.conversionRateText}
                                     </p>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Privacy Disclaimer */}
-                        <div className="px-2 text-[11px] text-slate-500 font-light italic leading-relaxed space-y-3 pb-4">
-                            <p>
-                                This application functions as a non-custodial, self-sovereign interface. We provide the tools for you to interact with information and blockchain services, but you maintain absolute ownership and control of your digital assets and identity.
-                            </p>
-                            <p className="font-medium text-slate-600 not-italic">Key Privacy &amp; Data Security Points</p>
-                            <ul className="list-disc pl-4 space-y-2">
-                                <li><span className="font-medium not-italic text-slate-600">Zero Custody of Assets:</span> We do not hold your private keys, seed phrases, or digital assets. You have sole, exclusive control over your wallet. We cannot access, recover, or move your funds.</li>
-                                <li><span className="font-medium not-italic text-slate-600">Privacy-by-Design:</span> In compliance with the new Law on Personal Data Protection of Bosnia and Herzegovina (Official Gazette of BiH, No. 12/25, aligned with GDPR), this app is built to collect zero personal identifying information (PII).</li>
-                                <li><span className="font-medium not-italic text-slate-600">No Data Storage:</span> We do not store your personal history, location logs, or behavioral data on our servers. Any interaction—including AI queries or image analysis for landmark identification—is processed anonymously.</li>
-                                <li><span className="font-medium not-italic text-slate-600">On-Device Processing:</span> Wherever possible, data processing is handled locally on your own device to ensure your information never leaves your possession.</li>
-                            </ul>
                         </div>
                     </div>
 
@@ -476,7 +455,7 @@ const WalletContent: React.FC<{
                                 <div className="flex items-center gap-2">
                                     <BookOpen className="w-5 h-5 text-emerald-600" />
                                     <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">
-                                        {lang === 'bs' ? 'Knjiga Skeniranja' : 'Scan History Ledger'}
+                                        {t.scanHistoryLedgerTitle}
                                     </h3>
                                 </div>
                                 <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
@@ -493,12 +472,10 @@ const WalletContent: React.FC<{
                                         </div>
                                         <div>
                                             <p className="text-xs font-black text-slate-700 uppercase">
-                                                {lang === 'bs' ? 'Knjiga je prazna' : 'Ledger is empty'}
+                                                {t.ledgerEmptyTitle}
                                             </p>
                                             <p className="text-[11px] text-slate-400 mt-1 max-w-[200px] mx-auto leading-relaxed">
-                                                {lang === 'bs'
-                                                    ? 'Skenirajte lokacije širom grada za popunjavanje istorije.'
-                                                    : 'Scan location QR codes around the city to build your history.'}
+                                                {t.ledgerEmptyDesc}
                                             </p>
                                         </div>
                                     </div>
@@ -506,6 +483,7 @@ const WalletContent: React.FC<{
                                     ledger.map((entry) => {
                                         const target = QUEST_TARGETS.find(q => q.id === entry.id);
                                         if (!target) return null;
+                                        const targetName = target.name[lang] || target.name.en || target.name.bs;
                                         return (
                                             <div
                                                 key={entry.id}
@@ -514,13 +492,13 @@ const WalletContent: React.FC<{
                                                 <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 border border-slate-200">
                                                     <img
                                                         src={target.Image}
-                                                        alt={target.name[lang] || target.name.en}
+                                                        alt={targetName}
                                                         className="w-full h-full object-cover"
                                                     />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight truncate">
-                                                        {lang === 'bs' ? target.name.bs : target.name.en}
+                                                        {targetName}
                                                     </h4>
                                                     <span className="text-[9px] text-slate-400 font-bold block mt-0.5">
                                                         {entry.timestamp}
@@ -532,7 +510,7 @@ const WalletContent: React.FC<{
                                                     <button
                                                         onClick={() => setPlayingVideo((target as any).video)}
                                                         className="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl transition-all shrink-0 active:scale-90"
-                                                        title={lang === 'bs' ? 'Pogledaj cinematic' : 'Watch cinematic'}
+                                                        title={t.watchCinematic}
                                                     >
                                                         <Play size={14} className="fill-emerald-600" />
                                                     </button>
@@ -550,19 +528,19 @@ const WalletContent: React.FC<{
                                         <div className="flex items-center gap-2 bg-red-50 p-2 border border-red-100 rounded-2xl">
                                             <AlertCircle size={16} className="text-red-500 shrink-0" />
                                             <span className="text-[10px] font-bold text-red-700 uppercase flex-grow">
-                                                {lang === 'bs' ? 'Jeste li sigurni?' : 'Are you sure?'}
+                                                {t.clearHistoryConfirm}
                                             </span>
                                             <button
                                                 onClick={handleClearLedger}
                                                 className="px-2.5 py-1 bg-red-600 text-white rounded-lg text-[9px] font-black uppercase tracking-wider"
                                             >
-                                                {lang === 'bs' ? 'Da, obriši' : 'Yes, delete'}
+                                                {t.yesDelete}
                                             </button>
                                             <button
                                                 onClick={() => setShowClearConfirm(false)}
                                                 className="px-2.5 py-1 bg-slate-200 text-slate-700 rounded-lg text-[9px] font-black uppercase tracking-wider"
                                             >
-                                                {lang === 'bs' ? 'Otkaz' : 'Cancel'}
+                                                {t.cancel}
                                             </button>
                                         </div>
                                     ) : (
@@ -571,7 +549,7 @@ const WalletContent: React.FC<{
                                             className="w-full py-2.5 bg-slate-50 border border-slate-100 hover:bg-red-50 hover:text-red-600 hover:border-red-100 text-slate-400 font-black text-[10px] uppercase tracking-wider rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all"
                                         >
                                             <Trash2 size={12} />
-                                            {lang === 'bs' ? 'Očisti Knjigu Skeniranja' : 'Clear Scan History'}
+                                            {t.clearScanHistory}
                                         </button>
                                     )}
                                 </div>
@@ -582,7 +560,7 @@ const WalletContent: React.FC<{
                         <div className="p-4 sm:p-8 bg-white border border-emerald-100 rounded-[2rem] shadow-xl space-y-6 overflow-hidden">
                             <h2 className="text-xl font-black text-emerald-950 uppercase tracking-tight flex items-center gap-2">
                                 <Globe size={20} className="text-emerald-600" />
-                                Partner Agencies
+                                {t.partnerAgenciesTitle}
                             </h2>
                             <div className="space-y-4">
                                 <button
@@ -590,7 +568,7 @@ const WalletContent: React.FC<{
                                     className="w-full h-16 bg-white text-blue-600 border-2 border-blue-500 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-slate-50"
                                 >
                                     <Stethoscope size={18} />
-                                    DENTAL TOURISM
+                                    {t.dentalTourism}
                                 </button>
                                 <button
                                     onClick={() => window.open('https://aiso-tuzla.lovable.app/', '_blank')}
@@ -601,6 +579,28 @@ const WalletContent: React.FC<{
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Privacy Disclaimer (Placed at the bottom of the Wallet page) */}
+                <div className="mt-12 p-6 sm:p-8 bg-white border border-slate-200/80 rounded-[2rem] shadow-sm text-xs text-slate-500 leading-relaxed space-y-4">
+                    <p className="font-light italic text-slate-500 leading-relaxed">
+                        {t.privacyDisclaimerText}
+                    </p>
+                    <p className="font-bold text-slate-700 uppercase tracking-tight text-xs">{t.privacyKeyPointsTitle}</p>
+                    <ul className="list-disc pl-5 space-y-2.5">
+                        <li>
+                            <span className="font-bold text-slate-700">{t.zeroCustodyTitle}</span> {t.zeroCustodyText}
+                        </li>
+                        <li>
+                            <span className="font-bold text-slate-700">{t.privacyByDesignTitle}</span> {t.privacyByDesignText}
+                        </li>
+                        <li>
+                            <span className="font-bold text-slate-700">{t.noDataStorageTitle}</span> {t.noDataStorageText}
+                        </li>
+                        <li>
+                            <span className="font-bold text-slate-700">{t.onDeviceProcessingTitle}</span> {t.onDeviceProcessingText}
+                        </li>
+                    </ul>
                 </div>
             </div>
 
@@ -624,12 +624,12 @@ const WalletContent: React.FC<{
                         </div>
 
                         <div className="h-48 flex flex-col items-center justify-center gap-6">
-                            <h2 className="text-white font-black text-2xl uppercase tracking-tighter text-center">Cinematic Playback</h2>
+                            <h2 className="text-white font-black text-2xl uppercase tracking-tighter text-center">{t.watchCinematic}</h2>
                             <button
                                 onClick={() => setPlayingVideo(null)}
                                 className="px-12 py-5 bg-white text-slate-950 rounded-2xl font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all"
                             >
-                                Close Video
+                                {t.closeVideo}
                             </button>
                         </div>
                     </motion.div>
@@ -645,10 +645,10 @@ const WalletContent: React.FC<{
                             <div className="w-full flex justify-between items-center mb-6">
                                 <div>
                                     <h3 className="text-lg font-black text-white uppercase tracking-wider">
-                                        {lang === 'bs' ? 'Skeniraj QR Kod' : 'Scan QR Code'}
+                                        {t.qrLocationScannerTitle}
                                     </h3>
                                     <p className="text-xs text-slate-400 font-medium mt-0.5">
-                                        {lang === 'bs' ? 'Skenirajte kod lokacije za otključavanje' : 'Scan location QR code to unlock'}
+                                        {t.scanLocationToUnlock}
                                     </p>
                                 </div>
                                 <button
@@ -680,7 +680,7 @@ const WalletContent: React.FC<{
 
                             {/* Hint */}
                             <p className="text-[10px] text-purple-400 font-bold uppercase tracking-widest mt-6 animate-pulse">
-                                {lang === 'bs' ? 'Pozicionirajte kod unutar okvira' : 'Position code within the frame'}
+                                {t.positionCodeInFrame}
                             </p>
                         </div>
                     </div>

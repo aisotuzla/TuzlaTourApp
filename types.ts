@@ -89,9 +89,9 @@ export interface TranslationSet {
   busStation: string;
   batteryWarning: string;
   selectNetwork: string;
-  tonWallet: string;
+  solWallet: string;
   switchNetwork: string;
-  connectedToTon: string;
+  connectedToSol: string;
   walletLocked: string;
   setWalletPin: string;
   confirmPin: string;
@@ -142,6 +142,10 @@ export interface TranslationSet {
   noDataStorageText: string;
   onDeviceProcessingTitle: string;
   onDeviceProcessingText: string;
+  blockchainOffline: string;
+  watchCinematic: string;
+  closeVideo: string;
+  solBalance: string;
 }
 
 export enum AppTab {

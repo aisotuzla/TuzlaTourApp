@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+.agents
 dist-ssr
 *.local
 android/.gradle/
@@ -25,6 +26,11 @@ android/**/*.jks
 *.aab
 *.apk
 .agent
+.agents
+.superpowers
+.vscode
+
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

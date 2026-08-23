@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "ar-vr-xr": {
+      "source": "travisjneuman/.claude",
+      "sourceType": "github",
+      "skillPath": "skills/ar-vr-xr/SKILL.md",
+      "computedHash": "9f0d5bdd90f4effdc0979bedfe0921e95e0b0205df9855a12c631401db3acbd5"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+    },
+    "mapbox-maplibre-migration": {
+      "source": "mapbox/mapbox-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/mapbox-maplibre-migration/SKILL.md",
+      "computedHash": "54d432c1c775cdb550c7778cae9eed401bd27efcd267809b7e8debd192c028ff"
+    },
+    "qrcode-skills": {
+      "source": "caoliao/qrcode-skills",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "c119a395e5138e910389ec50713a874364b47bb191352fdfe1101e47f90f8bfc"
+    },
+    "ui-ux-design-patterns": {
+      "source": "endo-ly/harmonic-orbit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-design-patterns/SKILL.md",
+      "computedHash": "f03df96f8b5676020cacc669d277f84493c578f752413ecae16065657fe2a255"
+    },
+    "vr-ar-development": {
+      "source": "omer-metin/skills-for-antigravity",
+      "sourceType": "github",
+      "skillPath": "skills/vr-ar-development/SKILL.md",
+      "computedHash": "6c442c765bee0e13acb954cfec03611c0a8135cd8501b58c6fb09a6002735469"
+    }
+  }
+}
