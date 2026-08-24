@@ -270,8 +270,8 @@ const WalletContent: React.FC<{
                             {/* Network Switcher & Header */}
                             <div className="flex justify-between items-center flex-wrap gap-3 pb-4 border-b border-purple-100">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                                        <Zap size={18} className="text-white" />
+                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+                                        <img src="/assets/Gallery/QuestQRLocations/sologo.png" alt="Solflare" className="w-10 h-10 object-contain" />
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Solflare Wallet</p>

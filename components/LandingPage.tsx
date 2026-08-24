@@ -107,7 +107,7 @@ const externalLinks = [
   { name: 'TZTZ', url: 'https://tztz.ba', logo: '/assets/Gallery/QuestQRLocations/tztzlogo.webp' },
   { name: 'Grad Tuzla', url: 'https://grad.tuzla.ba', logo: '/assets/Gallery/QuestQRLocations/Zastava_tuzle.webp' },
   { name: 'WizzAir', url: 'https://wizzair.com', logo: '/assets/Gallery/QuestQRLocations/wizzurl.webp' },
-  { name: 'Ilincica', url: 'https://ilincica.ba', logo: '/assets/Gallery/QuestQRLocations/ilincicaba.webp' },
+  { name: 'Airbnb', url: 'https://www.airbnb.ba/tuzla-bosnia-and-herzegovina/stays', logo: '/assets/Gallery/QuestQRLocations/airbnbng.webp' },
 ];
 
 const previewImages = Array.from({ length: 25 }, (_, i) => `/assets/Gallery/Photos/tuzla${i + 1}.webp`)

@@ -1,15 +1,13 @@
-export type VerifiedEventCategory = 
-  | 'Music' 
-  | 'Culture' 
-  | 'Movie' 
-  | 'Theatre' 
-  | 'Sport' 
+export type VerifiedEventCategory =
+  | 'Music'
+  | 'Culture'
+  | 'Theatre'
+  | 'Sport'
   | 'Panonnica';
 
 export const ALLOWED_EVENT_CATEGORIES: VerifiedEventCategory[] = [
   'Music',
   'Culture',
-  'Movie',
   'Theatre',
   'Sport',
   'Panonnica'

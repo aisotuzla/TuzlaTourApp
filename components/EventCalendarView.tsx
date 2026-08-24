@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  Calendar as CalendarIcon, 
-  ChevronLeft, 
-  ChevronRight, 
-  MapPin, 
-  Clock, 
-  Ticket, 
-  Search, 
+import {
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Clock,
+  Ticket,
+  Search,
   Plus,
   Check,
   RefreshCw,
@@ -27,12 +27,12 @@ interface CalendarViewProps {
 }
 
 const MONTH_NAMES_BS = [
-  'Januar', 'Februar', 'Mart', 'April', 'Maj', 'Juni', 
+  'Januar', 'Februar', 'Mart', 'April', 'Maj', 'Juni',
   'Juli', 'August', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'
 ];
 
 const MONTH_NAMES_EN = [
-  'January', 'February', 'March', 'April', 'May', 'June', 
+  'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
@@ -41,7 +41,7 @@ const DAYS_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export const ALLOWED_YEARS = [2026, 2027];
 
-const CATEGORIES: VerifiedEventCategory[] = ['Music', 'Culture', 'Movie', 'Theatre', 'Sport', 'Panonnica'];
+const CATEGORIES: VerifiedEventCategory[] = ['Music', 'Culture', 'Theatre', 'Sport', 'Panonnica'];
 
 const SAMPLE_JSON_PROMPT = `[
   {
@@ -60,11 +60,11 @@ const getInitialCalendarState = () => {
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
-  
-  const initialYear = ALLOWED_YEARS.includes(currentYear) 
-    ? currentYear 
+
+  const initialYear = ALLOWED_YEARS.includes(currentYear)
+    ? currentYear
     : ALLOWED_YEARS[0];
-  
+
   const monthStr = String(currentMonth + 1).padStart(2, '0');
   const dayStr = String(now.getDate()).padStart(2, '0');
   const initialDateStr = `${initialYear}-${monthStr}-${dayStr}`;
@@ -78,7 +78,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   const [selectedYear, setSelectedYear] = useState<number>(initialYear);
   const [selectedMonth, setSelectedMonth] = useState<number>(initialMonth);
   const [selectedDateStr, setSelectedDateStr] = useState<string | null>(initialDateStr);
-  
+
   const [events, setEvents] = useState<VerifiedEvent[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [addedEvents, setAddedEvents] = useState<string[]>([]);
@@ -183,14 +183,14 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
       .map((item, idx) => {
         const cleanTitle = String(item.title || item.name || '').trim();
         const rawCat = String(item.category || '').trim();
-        
+
         let category: VerifiedEventCategory = 'Culture';
         if (CATEGORIES.includes(rawCat as any)) {
           category = rawCat as VerifiedEventCategory;
         } else if (cleanTitle.toLowerCase().includes('jazz') || cleanTitle.toLowerCase().includes('koncert') || cleanTitle.toLowerCase().includes('dj')) {
           category = 'Music';
-        } else if (cleanTitle.toLowerCase().includes('film') || cleanTitle.toLowerCase().includes('kino')) {
-          category = 'Movie';
+        } else if (cleanTitle.toLowerCase().includes('film') || cleanTitle.toLowerCase().includes('kino') || cleanTitle.toLowerCase().includes('izložba')) {
+          category = 'Culture';
         } else if (cleanTitle.toLowerCase().includes('teatar') || cleanTitle.toLowerCase().includes('predstava')) {
           category = 'Theatre';
         }
@@ -213,8 +213,8 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
         const price = item.price ? String(item.price).trim() : 'Besplatno';
 
         const sourceUrl = item.link || item.source_url;
-        const sourceUrls = Array.isArray(item.source_urls) 
-          ? item.source_urls 
+        const sourceUrls = Array.isArray(item.source_urls)
+          ? item.source_urls
           : (sourceUrl ? [sourceUrl] : []);
 
         return {
@@ -280,8 +280,8 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
       const count = await processImportedEvents(list);
 
       setImportSuccess(
-        lang === 'bs' 
-          ? `Uspješno uvezeno ${count} događaja sa vašeg AICrawler-a!` 
+        lang === 'bs'
+          ? `Uspješno uvezeno ${count} događaja sa vašeg AICrawler-a!`
           : `Successfully imported ${count} event(s) from your AICrawler!`
       );
       setJsonInput('');
@@ -337,7 +337,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   const calendarDays = useMemo(() => {
     const firstDayOfMonth = new Date(selectedYear, selectedMonth, 1);
     const lastDayOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
-    
+
     const daysInMonth = lastDayOfMonth.getDate();
     let startDayOfWeek = firstDayOfMonth.getDay() - 1;
     if (startDayOfWeek === -1) startDayOfWeek = 6;
@@ -461,16 +461,15 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
             <button
               key={yr}
               onClick={() => setSelectedYear(yr)}
-              className={`rounded-2xl px-4 py-2.5 text-xs font-black transition-all ${
-                selectedYear === yr
+              className={`rounded-2xl px-4 py-2.5 text-xs font-black transition-all ${selectedYear === yr
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
+                }`}
             >
               {yr}
             </button>
           ))}
-          
+
           <button
             onClick={loadEvents}
             disabled={loading}
@@ -565,23 +564,21 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                 <div
                   key={index}
                   onClick={() => setSelectedDateStr(item.dateStr)}
-                  className={`group relative flex min-h-[75px] sm:min-h-[95px] flex-col justify-between rounded-2xl border p-2 text-left transition-all cursor-pointer ${
-                    isSelected
+                  className={`group relative flex min-h-[75px] sm:min-h-[95px] flex-col justify-between rounded-2xl border p-2 text-left transition-all cursor-pointer ${isSelected
                       ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500/20'
                       : hasEvents
-                      ? 'border-blue-200 bg-blue-50/30 hover:border-blue-300'
-                      : 'border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50'
-                  }`}
+                        ? 'border-blue-200 bg-blue-50/30 hover:border-blue-300'
+                        : 'border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50'
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <span
-                      className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-black ${
-                        isSelected
+                      className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-black ${isSelected
                           ? 'bg-blue-600 text-white'
                           : hasEvents
-                          ? 'bg-blue-600 text-white'
-                          : 'text-slate-700'
-                      }`}
+                            ? 'bg-blue-600 text-white'
+                            : 'text-slate-700'
+                        }`}
                     >
                       {item.dayNumber}
                     </span>
@@ -596,15 +593,14 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                     {dayEvents.slice(0, 2).map((evt) => (
                       <div
                         key={evt.id}
-                        className={`truncate rounded-lg px-1.5 py-0.5 text-[9px] font-bold ${
-                          evt.category === 'Sport'
+                        className={`truncate rounded-lg px-1.5 py-0.5 text-[9px] font-bold ${evt.category === 'Sport'
                             ? 'bg-emerald-100 text-emerald-800'
                             : evt.category === 'Music'
-                            ? 'bg-purple-100 text-purple-800'
-                            : evt.category === 'Panonnica'
-                            ? 'bg-cyan-100 text-cyan-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}
+                              ? 'bg-purple-100 text-purple-800'
+                              : evt.category === 'Panonnica'
+                                ? 'bg-cyan-100 text-cyan-800'
+                                : 'bg-blue-100 text-blue-800'
+                          }`}
                       >
                         {evt.title}
                       </div>
@@ -664,16 +660,15 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                         <span className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-blue-800">
                           {evt.category}
                         </span>
-                        
+
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => handleAddToItinerary(evt)}
                             disabled={isAdded}
-                            className={`inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all active:scale-95 ${
-                              isAdded 
-                                ? 'bg-emerald-100 text-emerald-800 cursor-default' 
+                            className={`inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all active:scale-95 ${isAdded
+                                ? 'bg-emerald-100 text-emerald-800 cursor-default'
                                 : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
-                            }`}
+                              }`}
                           >
                             {isAdded ? (
                               <>
