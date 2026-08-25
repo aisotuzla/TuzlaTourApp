@@ -9,7 +9,7 @@ import { WeatherWidget } from './WeatherWidget';
 import { useNetwork } from '../hooks/useNetwork';
 import { tuzlaHotelData } from '../tuzlaHotelData';
 import { Hotel as HotelIcon } from 'lucide-react';
-import { QUEST_TARGETS } from './MapQuestView';
+import { QUEST_TARGETS } from '../constants/questData';
 import { motion, AnimatePresence } from 'framer-motion';
 
 
@@ -24,7 +24,7 @@ const GEO_MAP_KEY = ['65090a03070e4e18', '98694f7a18ba415b'].join('');
 const ROUTE_MAP_KEY = ['63e8b34f44974d71', 'bc70aad63e5b56ba'].join('');
 
 const ONLINE_STYLE = `https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || GEO_MAP_KEY}`;
-
+const ONLINE_TUZLATOUR = `https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || GEO_MAP_KEY}`;
 interface RoutePoiPreset {
   name: Partial<Record<Language, string>> & { en: string; bs: string };
   lat: number;
@@ -638,8 +638,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
             }
           }}
           className={`map-action-btn w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl shadow-2xl border flex items-center justify-center transition-all duration-300 ${isNavigating
-              ? 'bg-red-500 hover:bg-red-600 border-red-400 text-white hover:scale-110 active:scale-95 animate-pulse'
-              : 'bg-white/90 border-white/20 text-blue-600 hover:scale-110 active:scale-95'
+            ? 'bg-red-500 hover:bg-red-600 border-red-400 text-white hover:scale-110 active:scale-95 animate-pulse'
+            : 'bg-white/90 border-white/20 text-blue-600 hover:scale-110 active:scale-95'
             }`}
         >
           {isNavigating ? (
@@ -804,8 +804,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
                             setIsPresetModalOpen(false);
                           }}
                           className={`w-full rounded-2xl overflow-hidden relative flex items-center gap-4 p-3 border transition-all text-left ${isUnlocked
-                              ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer'
-                              : 'border-white/5 bg-white/3 opacity-60 cursor-default'
+                            ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer'
+                            : 'border-white/5 bg-white/3 opacity-60 cursor-default'
                             }`}
                         >
                           <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">

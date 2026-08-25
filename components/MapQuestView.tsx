@@ -1,116 +1,42 @@
 import React, { useState, useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import * as pmtiles from 'pmtiles';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  QrCode,
+  Navigation,
+  Camera as CameraIcon,
+  Route,
+  Info,
+  X,
+  Compass,
+  Landmark,
+  Hotel as HotelIcon,
+  Trophy,
+  Lock,
+  Layers,
+  Check,
+} from 'lucide-react';
 
 import { AppFeatures } from '../utils/platform';
 import { Language } from '../types';
 import { TUZLA_CENTER, LOCATIONS } from '../constants';
-import { tuzlaHotelData } from '../tuzlaHotelData';
-import { QrCode, Navigation, Gamepad2, CheckCircle2, Lock, Play, X, Trophy, Route, Compass, Landmark, Loader2, Clock, Footprints, Hotel as HotelIcon, Info } from 'lucide-react';
-import { Html5Qrcode } from 'html5-qrcode';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useNetwork } from '../hooks/useNetwork';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
-import { QuestQualityMode } from '../utils/questRuntimePolicy';
 import { getDistance } from '../utils/geoUtils';
-import { findQuestTargetFromQr } from '../utils/qrMatcher';
+import {
+  QUEST_TARGETS,
+  POI_COLORS,
+  NFT_REWARD_IDS,
+  ROUTE_POI_PRESETS,
+} from '../constants/questData';
 
-interface RoutePoiPreset {
-  name: Partial<Record<Language, string>> & { en: string; bs: string };
-  lat: number;
-  lon: number;
-  category: string;
-  entryFee?: string;
-}
+import { NavigationHud } from './NavigationHud';
+import { QrScannerModal } from './QrScannerModal';
+import { POICameraModal } from './POICameraModal';
 
-const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
-  {
-    name: { bs: 'Panonska Jezera', en: 'Pannonian Lakes' },
-    lat: 44.53888255374366,
-    lon: 18.680032450849325,
-    category: 'nature',
-    entryFee: 'Paid 7.5 KM - 9 KM for entire day',
-  },
-  {
-    name: { bs: 'Slana Banja Park', en: 'Slana Banja Park' },
-    lat: 44.53846734540082,
-    lon: 18.685620782683003,
-    category: 'nature',
-  },
-
-  {
-    name: { bs: 'Trg Slobode', en: 'Freedom Square' },
-    lat: 44.53954253369571,
-    lon: 18.67508475352372,
-    category: 'culture',
-  },
-  {
-    name: { bs: 'Spomenik Kralju Tvrtku (I)', en: 'King Tvrtko Monument' },
-    lat: 44.53812247668793,
-    lon: 18.678359094003866,
-    category: 'history',
-  },
-  {
-    name: { bs: 'Spomenik Meši Selimoviću', en: 'Mesa Selimovic Monument' },
-    lat: 44.53710706292608,
-    lon: 18.67822758905615,
-    category: 'culture',
-  },
-  {
-    name: { bs: 'Džamija Šarena (Atik)', en: 'Atik Mosque' },
-    lat: 44.54001556181191,
-    lon: 18.673365480509432,
-    category: 'religion',
-  },
-  {
-    name: { bs: 'Saborna Crkva', en: 'Orthodox Cathedral' },
-    lat: 44.53800051276164,
-    lon: 18.679763716121386,
-    category: 'religion',
-  },
-  {
-    name: { bs: 'Tržni centar Bingo (BCC)', en: 'Bingo Shopping Center' },
-    lat: 44.53188635183338,
-    lon: 18.652020274686947,
-    category: 'shopping',
-  },
-  {
-    name: { bs: 'TC Robot', en: 'Robot Shopping Center' },
-    lat: 44.53454365316736,
-    lon: 18.682516897004632,
-    category: 'shopping',
-  },
-  {
-    name: { bs: 'TC Mercator', en: 'Mercator Shopping Center' },
-    lat: 44.5327311385098,
-    lon: 18.68292815613492,
-    category: 'shopping',
-  },
-  {
-    name: { bs: 'TC Tuzlanka', en: 'Tuzlanka Shopping Center' },
-    lat: 44.538634727509304,
-    lon: 18.664878503738578,
-    category: 'shopping',
-  },
-];
-
-export const QUEST_TARGETS = [
-  { id: 'trg_slobode', name: { en: 'Freedom Square', bs: 'Trg slobode' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRTrgSlobode.png', Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp' },
-  { id: 'salt_square', name: { en: 'Salt Square', bs: 'Solni trg' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRsonitrg.png', Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp' },
-  { id: 'palancinkara', name: { en: 'Pancake Bagi', bs: 'Palančikara Bagi' }, Html5Qrcode: '/assets/Gallery/Food/QuestQRLocations/QRpalacinkara.webp', Image: '/assets/Gallery/Food/bagi.webp' },
-  { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRBanja.png', Image: '/assets/Gallery/Photos/tuzla24.webp' },
-  { id: 'frida', name: { en: 'Frida', bs: 'Frida' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRfrida.png', Image: '/assets/Gallery/QuestQRLocations/fridaslika.webp' },
-  { id: 'panonika', name: { en: 'Pannonica Office', bs: 'Panonika Ured' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRPanonsko.png', Image: '/assets/Gallery/QuestQRLocations/tuzlaizugla.webp' },
-  { id: 'neolit', name: { en: 'Neolithic Settlement', bs: 'Neolitsko sojeničko naselje' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRneolit.png', Image: '/assets/Gallery/QuestQRLocations/neolit2.webp' },
-  { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRslapovi.png', Image: '/assets/Gallery/QuestQRLocations/tzslapovi.webp' },
-  { id: 'ismet', name: { en: 'Ismet Mujezinovic', bs: 'Ismet Mujezinović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRIsmet.webp', Image: '/assets/Gallery/QuestQRLocations/Ismet.webp' },
-  { id: 'atelje_ismet', name: { en: 'Atelje Ismet Mujezinovic', bs: 'Atelje Ismet Mujezinović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRAtelje.png', Image: '/assets/Gallery/QuestQRLocations/atelje.webp' },
-  { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRBingoCityCenter.png', Image: '/assets/Bingo-supermarket.webp', website: 'https://tuzla.bingocitycenter.ba/' },
-  { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRMesaStatue.png', Image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4' },
-  { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRtvrtko.png', Image: '/assets/Gallery/Photos/tuzla12.webp' },
-];
-
-interface MapQuestViewProps {
+export interface MapQuestViewProps {
   lang: Language;
   features: AppFeatures;
   unlockedRewards: string[];
@@ -121,6 +47,41 @@ interface MapQuestViewProps {
   initialOpenScanner?: boolean;
 }
 
+// Map target IDs to accurate coordinates in Tuzla
+const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
+  trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
+  salt_square: { lat: 44.5382182, lon: 18.6759398 },
+  palancinkara: { lat: 44.5383762, lon: 18.6775339 },
+  slana_banja: { lat: 44.5378167, lon: 18.6875664 },
+  panonika: { lat: 44.5385, lon: 18.6767 },
+  slapovi: { lat: 44.5404243, lon: 18.6819408 },
+  ismet: { lat: 44.5375, lon: 18.6805 },
+  atelje_ismet: { lat: 44.5371465, lon: 18.6810454 },
+  bingo_city_centar: { lat: 44.532177, lon: 18.651743 },
+  mesa_selimovic: { lat: 44.5370993, lon: 18.6781216 },
+  tvrtko_park: { lat: 44.5380826, lon: 18.6783327 },
+};
+
+// Hotel presets (Matching MapView.tsx)
+const TUZLA_HOTELS = [
+  { name: 'Hotel Mellain', latitude: 44.537521, longitude: 18.683412, rating: '5.0', priceRange: '120-220 KM' },
+  { name: 'Grand Hotel Tuzla', latitude: 44.532912, longitude: 18.676389, rating: '4.8', priceRange: '90-160 KM' },
+  { name: 'Hotel Salis', latitude: 44.536102, longitude: 18.665241, rating: '4.7', priceRange: '80-140 KM' },
+  { name: 'Hotel Heartland', latitude: 44.539120, longitude: 18.676912, rating: '4.6', priceRange: '70-120 KM' },
+  { name: 'Hotel Tehnograd', latitude: 44.541230, longitude: 18.705120, rating: '60-100 KM' },
+];
+
+// Map Styles Configuration
+export const CARTO_VOYAGER_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
+export const CARTO_DARK_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+export const OFFLINE_STYLE = '/maps/tiles/offline-vector-style.json';
+
+const MAP_LAYER_OPTIONS = [
+  { id: 'voyager', name: { bs: 'CARTO Voyager (Detaljna)', en: 'CARTO Voyager (Detailed)' }, url: CARTO_VOYAGER_STYLE },
+  { id: 'dark', name: { bs: 'CARTO Dark (Tamna)', en: 'CARTO Dark (Dark)' }, url: CARTO_DARK_STYLE },
+  { id: 'offline', name: { bs: 'Lokalna PMTiles (Offline)', en: 'Local PMTiles (Offline)' }, url: OFFLINE_STYLE },
+];
+
 const MapQuestView: React.FC<MapQuestViewProps> = ({
   lang,
   features,
@@ -129,82 +90,138 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   onToggleAR,
   navigationTarget,
   onClearNavigation,
-  initialOpenScanner = false
+  initialOpenScanner = false,
 }) => {
-  const { policy, mode, setMode } = useQuestRuntimePolicy(features);
+  const { policy } = useQuestRuntimePolicy(features);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
+
+  // Core Map State
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
+  const [activeStyle, setActiveStyle] = useState<string>(CARTO_VOYAGER_STYLE);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const userLocationRef = useRef<[number, number] | null>(null);
-  const [isScanning, setIsScanning] = useState(false);
-  const [scannerFeedback, setScannerFeedback] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
-  const [isOfflineMode, setIsOfflineMode] = useState(false);
-  const [useFallbackStyle, setUseFallbackStyle] = useState(false);
-  const isOnline = useNetwork();
-  const OFFLINE_STYLE = '/style/offline-style.json';
-  const GEO_FALLBACK_KEY = ['65090a03070e4e18', '98694f7a18ba415b'].join('');
-  const JAWG_FALLBACK_KEY = ['MJ1UjbO1irardUqAtZPQAzl', 'WULZIZAFIsQdTrqkdC9bA34vgAGVMi20z7kP9ZRWX'].join('');
-  const ROUTE_FALLBACK_KEY = ['63e8b34f44974d71', 'bc70aad63e5b56ba'].join('');
 
-  const ONLINE_STYLE_PRIMARY = `https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || GEO_FALLBACK_KEY}`;
-  const ONLINE_STYLE_FALLBACK = `https://api.jawg.io/styles/845b87e6-2431-4d4c-ae2c-a3d1e8095a01.json?access-token=${import.meta.env.VITE_JAWG_TOKEN || JAWG_FALLBACK_KEY}`;
-  const ONLINE_STYLE = useFallbackStyle ? ONLINE_STYLE_FALLBACK : ONLINE_STYLE_PRIMARY;
-
-  // Navigation state
-  const [selectedNavTarget, setSelectedNavTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
+  // Modals & Navigation State
+  const [isScannerOpen, setIsScannerOpen] = useState(initialOpenScanner);
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
+  const [cameraModalPoi, setCameraModalPoi] = useState<{ id: string; name: string }>({
+    id: 'trg_slobode',
+    name: 'Trg Slobode',
+  });
+  const [selectedNavTarget, setSelectedNavTarget] = useState<{
+    name: string;
+    lat: number;
+    lon: number;
+  } | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
+  const [activeModalTab, setActiveModalTab] = useState<'quest' | 'poi' | 'hotel'>('quest');
+  const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [routeDistance, setRouteDistance] = useState<number | null>(null);
   const [routeTime, setRouteTime] = useState<number | null>(null);
   const [isRouteLoading, setIsRouteLoading] = useState(false);
-  const [activeModalTab, setActiveModalTab] = useState<'poi' | 'hotel' | 'rewards'>('poi');
   const [showRules, setShowRules] = useState(false);
-  const rulesTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleTriggerRules = () => {
-    if (rulesTimerRef.current) clearTimeout(rulesTimerRef.current);
-    setShowRules(prev => !prev);
-  };
+  const isOnline = useNetwork();
+  const markersRef = useRef<{ [key: string]: maplibregl.Marker }>({});
+  const userMarkerRef = useRef<maplibregl.Marker | null>(null);
 
+  // Register Global Popup Navigation Handler
   useEffect(() => {
-    if (showRules) {
-      rulesTimerRef.current = setTimeout(() => {
-        setShowRules(false);
-      }, 10000);
-    }
-    return () => {
-      if (rulesTimerRef.current) clearTimeout(rulesTimerRef.current);
+    (window as any).startNavigationFromPopup = (name: string, lat: number, lon: number) => {
+      setSelectedNavTarget({ name, lat, lon });
+      setIsNavigating(true);
     };
-  }, [showRules]);
 
-  const scannerContainerId = "map-quest-reader";
-  const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
-  const markers = useRef<{ [key: string]: maplibregl.Marker }>({});
-  const userMarker = useRef<maplibregl.Marker | null>(null);
-  const isUtilityMode = policy.qualityLevel === 'utility';
-  const isBalancedMode = policy.qualityLevel === 'balanced';
-  const scannerFps = isUtilityMode ? 10 : (isBalancedMode ? 12 : 15);
-  const scannerQrSize = isUtilityMode ? 220 : 250;
+    return () => {
+      delete (window as any).startNavigationFromPopup;
+    };
+  }, []);
 
-  const setupBuildings = (mapInstance: maplibregl.Map) => {
-    try {
-      const layers = mapInstance.getStyle().layers ?? [];
-      const buildingLayer = layers.find((l: any) => 
-        l.id === 'building' || 
-        l.id === 'buildings' || 
-        l['source-layer'] === 'building' || 
-        l['source-layer'] === 'buildings'
+  // Register PMTiles Protocol for offline vector map fallback
+  useEffect(() => {
+    const protocol = new pmtiles.Protocol();
+    maplibregl.addProtocol('pmtiles', protocol.tile);
+
+    return () => {
+      try {
+        maplibregl.removeProtocol('pmtiles');
+      } catch (e) {
+        // Safeguard
+      }
+    };
+  }, []);
+
+  // 1. Initialize MapLibre Instance with CARTO Voyager Primary Basemap
+  useEffect(() => {
+    if (!mapContainer.current || map.current) return;
+
+    const initialStyle = navigator.onLine ? CARTO_VOYAGER_STYLE : OFFLINE_STYLE;
+
+    const mapInstance = new maplibregl.Map({
+      container: mapContainer.current,
+      style: initialStyle,
+      center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
+      zoom: 15.5,
+      pitch: 55,
+      bearing: -15,
+      attributionControl: false,
+    });
+
+    map.current = mapInstance;
+
+    mapInstance.on('load', () => {
+      setIsLoaded(true);
+
+      // Add navigation controls
+      mapInstance.addControl(
+        new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }),
+        'bottom-right'
       );
 
-      // Find building source & source-layer fallback
-      const source = (buildingLayer as any)?.source || 'geoapify' || 'openmaptiles';
-      const sourceLayer = (buildingLayer as any)?.['source-layer'] || 'building';
+      // 3D Buildings Extrusion setup
+      setupBuildingExtrusions(mapInstance);
+    });
 
-      if (!source) return;
+    mapInstance.on('styledata', () => {
+      if (map.current) {
+        setupBuildingExtrusions(map.current);
+      }
+    });
 
+    mapInstance.on('error', (e) => {
+      console.warn('🗺️ MapQuest CARTO Style event error:', e.error?.message);
+      if (!navigator.onLine && !isOfflineMode) {
+        console.log('🔌 Offline detected, switching to Tuzla.pmtiles style...');
+        setIsOfflineMode(true);
+        setActiveStyle(OFFLINE_STYLE);
+        mapInstance.setStyle(OFFLINE_STYLE);
+      }
+    });
+
+    return () => {
+      mapInstance.remove();
+      map.current = null;
+    };
+  }, []);
+
+  // Switch Layer / Map Style Handler
+  const handleSwitchLayer = (styleUrl: string) => {
+    if (map.current) {
+      setActiveStyle(styleUrl);
+      map.current.setStyle(styleUrl);
+      setShowLayerMenu(false);
+    }
+  };
+
+  // 2-Way 3D building extrusions helper (CARTO vector silvery layer + GeoJSON custom layer)
+  const setupBuildingExtrusions = (mapInstance: maplibregl.Map) => {
+    try {
+      const layers = mapInstance.getStyle().layers || [];
       let labelLayerId: string | undefined;
+
       for (const layer of layers) {
         if (layer.type === 'symbol' && (layer as any).layout?.['text-field']) {
           labelLayerId = layer.id;
@@ -212,317 +229,171 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         }
       }
 
-      if (!mapInstance.getLayer('3d-buildings')) {
-        mapInstance.addLayer({
-          id: '3d-buildings',
-          source: source,
-          'source-layer': sourceLayer,
-          type: 'fill-extrusion',
-          minzoom: 13,
-          paint: {
-            'fill-extrusion-color': [
-              'interpolate', ['linear'], ['get', 'render_height'],
-              0, '#f1f5f9',
-              20, '#e2e8f0',
-              50, '#cbd5e1'
-            ],
-            'fill-extrusion-height': [
-              'interpolate', ['linear'], ['zoom'],
-              13, 0,
-              14.5, ['*', ['coalesce', ['get', 'render_height'], ['get', 'height'], ['get', 'building:levels'], 12], 1.5],
-            ],
-            'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
-            'fill-extrusion-opacity': 0.85,
+      // Check if CARTO vector building layer exists in style
+      const cartoBuildingLayer = layers.find(
+        (l: any) => l.source === 'carto' || l['source-layer'] === 'building' || l.id.includes('building')
+      );
+
+      // WAY 1: CARTO Vector 3D Buildings (Silvery gradient finish)
+      if (cartoBuildingLayer && !mapInstance.getLayer('3d-buildings-silvery')) {
+        const sourceId = (cartoBuildingLayer as any).source || 'carto';
+        const sourceLayer = (cartoBuildingLayer as any)['source-layer'] || 'building';
+
+        mapInstance.addLayer(
+          {
+            id: '3d-buildings-silvery',
+            source: sourceId,
+            'source-layer': sourceLayer,
+            type: 'fill-extrusion',
+            minzoom: 13,
+            paint: {
+              'fill-extrusion-color': [
+                'interpolate',
+                ['linear'],
+                ['coalesce', ['get', 'render_height'], ['get', 'height'], 10],
+                0,
+                '#d1d5db',
+                25,
+                '#9ca3af',
+                60,
+                '#64748b',
+              ],
+              'fill-extrusion-height': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                13,
+                0,
+                15.5,
+                ['coalesce', ['get', 'render_height'], ['get', 'height'], 12],
+              ],
+              'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
+              'fill-extrusion-opacity': 0.9,
+              'fill-extrusion-vertical-gradient': true,
+            },
           },
-        }, labelLayerId);
-      }
-    } catch (e) {
-      console.warn("MapQuest: Error setting up 3d buildings", e);
-    }
-  };
-
-  const setupHighlighters = (mapInstance: maplibregl.Map) => {
-    if (mapInstance.getLayer('m4-glow-outer')) return;
-
-    // Find the correct source ID used by the map style
-    const sources = mapInstance.getStyle().sources || {};
-    const sourceId = Object.keys(sources).find(id => id.includes('geoapify') || id.includes('osm') || id.includes('streets')) || 'geoapify';
-
-    mapInstance.addLayer({
-      id: 'm4-glow-outer',
-      type: 'line',
-      source: sourceId,
-      'source-layer': 'road',
-      filter: ['all',
-        ['any', ['==', 'class', 'primary'], ['==', 'class', 'motorway'], ['==', 'type', 'primary'], ['==', 'type', 'motorway'], ['==', 'highway', 'primary']],
-        ['any', ['==', 'name', 'Obala Zmaja od Bosne'], ['==', 'ref', 'M-4'], ['==', 'ref', 'M 4']]
-      ],
-      paint: {
-        'line-color': '#facc15',
-        'line-width': 12,
-        'line-blur': 8,
-        'line-opacity': 0.5
-      }
-    }, '3d-buildings');
-
-    mapInstance.addLayer({
-      id: 'm4-glow-inner',
-      type: 'line',
-      source: sourceId,
-      'source-layer': 'road',
-      filter: ['all',
-        ['any', ['==', 'class', 'primary'], ['==', 'class', 'motorway'], ['==', 'type', 'primary'], ['==', 'type', 'motorway'], ['==', 'highway', 'primary']],
-        ['any', ['==', 'name', 'Obala Zmaja od Bosne'], ['==', 'ref', 'M-4'], ['==', 'ref', 'M 4']]
-      ],
-      paint: {
-        'line-color': '#fef08a',
-        'line-width': 4,
-        'line-opacity': 0.6
-      }
-    }, '3d-buildings');
-  };
-
-  // Initialize Map
-  useEffect(() => {
-    if (map.current || !mapContainer.current) return;
-
-    if (initialOpenScanner) {
-      setIsScanning(true);
-    }
-
-    const questRules = lang === 'bs'
-      ? '<strong>Tuzla Quest Pravila:</strong> Posjetite lokacije na mapi i skupite sve nagrade! Kada dođete na cilj, skenirajte QR kod na lokaciji kako biste otključali nagrade.'
-      : lang === 'de'
-      ? '<strong>Tuzla Quest Regeln:</strong> Besuchen Sie die Standorte auf der Karte und sammeln Sie Belohnungen! Scannen Sie vor Ort den QR-Code, um Ihre Belohnungen freizuschalten.'
-      : lang === 'tr'
-      ? '<strong>Tuzla Quest Kuralları:</strong> Haritadaki konumları ziyaret edin ve ödülleri toplayın! Oraya vardığınızda, ödülleri açmak için QR kodunu tarayın.'
-      : '<strong>Tuzla Quest Rules:</strong> Visit map locations and collect rewards! Once there, scan the QR code to unlock your rewards.';
-
-    const styleToUse = isOnline ? ONLINE_STYLE : OFFLINE_STYLE;
-
-    map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      style: styleToUse,
-      center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
-      zoom: 15,
-      minZoom: (isOnline && !isOfflineMode) ? 0 : 14,
-      maxZoom: (isOnline && !isOfflineMode) ? 20 : 16,
-      pitch: 75,
-      bearing: -15,
-      attributionControl: false,
-    });
-
-    // FAIL-SAFE: If primary style fails, try fallback (osm-bright), then offline
-    map.current.on('error', (e) => {
-      console.warn("🗺️ MapQuest: Style error detected, attempting fallback...", e.error?.message);
-      if (isOnline && (e.error?.message?.includes('401') || e.error?.message?.includes('403') || e.error?.message?.includes('Failed to fetch') || e.error?.message?.includes('NetworkError'))) {
-        if (!useFallbackStyle) {
-          // First fallback: try secondary osm-bright style
-          console.warn("🗺️ MapQuest: Primary style (osm-bright) failed, trying fallback (osm-liberty)...");
-          setUseFallbackStyle(true);
-          map.current?.setStyle(ONLINE_STYLE_FALLBACK);
-        } else {
-          // Second fallback: go fully offline
-          console.warn("🗺️ MapQuest: Fallback style also failed, switching to offline mode.");
-          setIsOfflineMode(true);
-          map.current?.setStyle(OFFLINE_STYLE);
-          map.current?.setMinZoom(14);
-          map.current?.setMaxZoom(16);
-        }
-        // Ensure we signal loaded so markers can appear
-        setTimeout(() => setIsLoaded(true), 1000);
-      }
-    });
-
-    map.current.addControl(new maplibregl.AttributionControl({
-      customAttribution: questRules
-    }));
-
-    // 1. Initial Resources Setup
-    const setupResources = () => {
-      if (!map.current) return;
-
-      // Add source for navigation line
-      if (!map.current.getSource('nav-line')) {
-        map.current?.addSource('nav-line', {
-          type: 'geojson',
-          data: { type: 'FeatureCollection', features: [] }
-        });
-
-        map.current?.addLayer({
-          id: 'nav-line-layer',
-          type: 'line',
-          source: 'nav-line',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: {
-            'line-color': '#3b82f6',
-            'line-width': 5,
-            'line-opacity': 0.9
-          }
-        });
+          labelLayerId
+        );
       }
 
-      // Simple connect path
-      if (!map.current.getSource('connect-path')) {
-        map.current?.addSource('connect-path', {
-          type: 'geojson',
-          data: {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates: LOCATIONS.map(l => [l.coordinates[1], l.coordinates[0]])
-            }
-          }
-        });
-
-        map.current?.addLayer({
-          id: 'connect-path-layer',
-          type: 'line',
-          source: 'connect-path',
-          paint: {
-            'line-color': '#f59e0b',
-            'line-width': 2,
-            'line-opacity': 0.2,
-            'line-dasharray': [5, 10]
-          }
-        });
-      }
-    };
-
-    // 2. Attach global functions IMMEDIATELY so buttons work even if style is loading
-    (window as any).playQuestRewardVideo = (videoUrl: string) => {
-      setPlayingVideo(videoUrl);
-    };
-
-    (window as any).mintNFTReward = (ipfsUrl: string) => {
-      // Open the IPFS NFT card in a new tab so user can preview
-      window.open(ipfsUrl, '_blank', 'noopener,noreferrer');
-      // Dispatch a custom event so App.tsx can navigate to Wallet for minting
-      window.dispatchEvent(new CustomEvent('tuzla:mintNFT', { detail: { ipfsUrl } }));
-    };
-
-
-    (window as any).setGlobalMapNavTarget = async (locId: string) => {
-      console.log("🚀 Navigating to:", locId);
-      let coords: [number, number] | null = null;
-      const tgt = LOCATIONS.find(l => l.id === locId);
-
-      if (tgt) {
-        coords = [tgt.coordinates[1], tgt.coordinates[0]];
-      } else if (locId.startsWith('hotel-')) {
-        const idx = parseInt(locId.split('-')[1]);
-        const hotelTarget = tuzlaHotelData[idx];
-        if (hotelTarget) coords = [hotelTarget.longitude, hotelTarget.latitude];
-      }
-
-      if (coords && map.current) {
-        map.current.flyTo({ center: coords, zoom: 18, pitch: Math.min(60, policy.mapFx.maxPitch) });
-
-        // Ensure sources exist before setting data
-        setupResources();
-
-        const navLineSource = map.current.getSource('nav-line') as maplibregl.GeoJSONSource;
-        if (navLineSource && (window as any).currentUserLngLat) {
-          const [lng, lat] = (window as any).currentUserLngLat;
-
-          if (isOnline) {
-            try {
-              const routingApiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API;
-              // Geoapify waypoints are lat,lon
-              const routingUrl = `https://api.geoapify.com/v1/routing?waypoints=${lat},${lng}|${coords[1]},${coords[0]}&mode=walk&apiKey=${routingApiKey}`;
-              const res = await fetch(routingUrl);
-              const data = await res.json();
-
-              if (data.features && data.features.length > 0) {
-                navLineSource.setData(data.features[0]);
-                return; // Success!
-              }
-            } catch (err) {
-              console.warn("🧭 MapQuest: Routing API failed, falling back to direct line.", err);
-            }
-          }
-
-          // Fallback: Straight Line (or for offline mode)
-          navLineSource.setData({
-            type: 'Feature',
-            properties: {},
-            geometry: { type: 'LineString', coordinates: [[lng, lat], coords] }
+      // WAY 2: Custom GeoJSON 3D Buildings (TuzlaTourGuide.geojson)
+      if (!mapInstance.getLayer('3d-buildings-geojson')) {
+        const geojsonSourceId = 'my-custom-buildings';
+        if (!mapInstance.getSource(geojsonSourceId)) {
+          mapInstance.addSource(geojsonSourceId, {
+            type: 'geojson',
+            data: '/maps/TuzlaTourGuide.geojson',
           });
         }
-      } else {
-        console.warn("❌ Could not navigate: Coords or Map missing", { coords, map: !!map.current });
+
+        mapInstance.addLayer(
+          {
+            id: '3d-buildings-geojson',
+            source: geojsonSourceId,
+            type: 'fill-extrusion',
+            minzoom: 13,
+            paint: {
+              'fill-extrusion-color': [
+                'interpolate',
+                ['linear'],
+                ['coalesce', ['get', 'height'], 10],
+                0,
+                '#e2e8f0',
+                30,
+                '#94a3b8',
+              ],
+              'fill-extrusion-height': ['coalesce', ['get', 'height'], 15],
+              'fill-extrusion-base': ['coalesce', ['get', 'min_height'], 0],
+              'fill-extrusion-opacity': 0.9,
+              'fill-extrusion-vertical-gradient': true,
+            },
+          },
+          labelLayerId
+        );
       }
-    };
+    } catch (err) {
+      console.warn('Could not setup 3D extrusions:', err);
+    }
+  };
 
-    map.current.on('load', () => {
-      setIsLoaded(true);
-      setupResources();
+  // Render POI Quest Target markers with popups
+  useEffect(() => {
+    if (!map.current || !isLoaded) return;
 
-      if (!map.current?.isStyleLoaded()) return;
+    Object.values(markersRef.current).forEach((m) => m.remove());
+    markersRef.current = {};
 
-      // Apply custom Geoapify Map Styles
-      try {
-        if (map.current) {
-          map.current.setPaintProperty('background', 'background-color', '#e7efd8');
-          map.current.setPaintProperty('park', 'fill-color', '#ade674');
-          map.current.setPaintProperty('park_outline', 'line-color', '#c8e9a6');
-          map.current.setPaintProperty('landuse_residential', 'fill-color', 'rgba(244, 240, 245, 0.49)');
-          map.current.setPaintProperty('landcover_wood', 'fill-color', 'rgba(101,177,58,0.7)');
-          map.current.setPaintProperty('landcover_grass', 'fill-color', '#b2eb91');
-          map.current.setPaintProperty('landuse_hospital', 'fill-color', '#e9a5c7');
-          map.current.setPaintProperty('landuse_school', 'fill-color', '#ede1e8');
-          map.current.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-          map.current.setLayoutProperty('waterway_river', 'visibility', 'none');
-          map.current.setLayoutProperty('waterway_other', 'visibility', 'none');
-          map.current.setPaintProperty('water', 'fill-color', '#79a1f7');
-          map.current.setPaintProperty('road_area_pattern', 'fill-color', '#d4d0d0');
-          map.current.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#f58829');
-          map.current.setPaintProperty('road_path_pedestrian', 'line-color', '#afa1a1');
-          map.current.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.3999999999999999], [20, 4]] });
-          map.current.setPaintProperty('road_motorway_link', 'line-color', '#e7bd85');
-          map.current.setPaintProperty('road_service_track', 'line-color', '#f3f295');
-          map.current.setPaintProperty('road_link', 'line-color', '#e9d47d');
-          map.current.setPaintProperty('road_minor', 'line-color', '#ffffff');
-          map.current.setPaintProperty('road_secondary_tertiary', 'line-color', '#fde06c');
-          map.current.setPaintProperty('road_trunk_primary', 'line-color', '#f5bc53');
-          map.current.setPaintProperty('road_motorway', 'line-color', '#c08e4b');
-          map.current.setPaintProperty('building', 'fill-color', '#9cb0c4');
-        }
-      } catch (paintErr) {
-        console.warn("Could not apply all custom paint properties:", paintErr);
-      }
+    QUEST_TARGETS.forEach((target) => {
+      const isUnlocked = unlockedRewards.includes(target.id);
 
-      // Advanced 3D Lighting for metallic effect
-      map.current?.setLight({
-        anchor: 'viewport',
-        color: '#ffffff',
-        intensity: 0.4,
-        position: [1.15, 210, 30]
-      });
+      const matchedLoc = LOCATIONS.find(
+        (l) =>
+          l.id === target.id ||
+          l.id.toLowerCase() === target.id.toLowerCase() ||
+          l.name.bs.toLowerCase().includes(target.name.bs.toLowerCase()) ||
+          l.name.en.toLowerCase().includes(target.name.en.toLowerCase())
+      );
 
-      if (map.current) {
-        setupBuildings(map.current);
-      }
-      if (isOnline && map.current) {
-        setupHighlighters(map.current);
-      }
-    });
+      const coords = QUEST_TARGET_COORDS[target.id] ||
+        (matchedLoc ? { lat: matchedLoc.coordinates[0], lon: matchedLoc.coordinates[1] } : null);
 
-    // Special case: if offline mode kicks in via error handler, we might miss 'load'
-    map.current.on('styledata', () => {
-      if (map.current?.isStyleLoaded()) {
-        setupResources();
-      }
+      if (!coords) return;
+
+      const title = target.name[lang] || target.name.bs;
+      const imageUrl = target.Image || matchedLoc?.image || '/assets/Gallery/QuestQRLocations/trgslobode.webp';
+      const description = matchedLoc?.description?.[lang] ||
+        matchedLoc?.description?.bs ||
+        matchedLoc?.description?.en ||
+        (lang === 'bs' ? 'Kulturna i historijska znamenitost grada Tuzle.' : 'Cultural and historical landmark of Tuzla.');
+
+      const el = document.createElement('div');
+      el.className = 'quest-target-marker';
+      el.innerHTML = `
+        <div class="relative flex items-center justify-center cursor-pointer group transition-transform duration-200 hover:scale-125" title="${title}">
+          <div class="w-9 h-9 rounded-2xl ${isUnlocked ? 'bg-amber-500 border-2 border-amber-200 text-slate-950 shadow-amber-500/50' : 'bg-slate-900 border-2 border-blue-400 text-blue-400 shadow-blue-500/30'} flex items-center justify-center shadow-2xl transition-all">
+            <span class="text-xs font-black">${isUnlocked ? '★' : '📍'}</span>
+          </div>
+          <div class="absolute -bottom-1 w-2 h-2 bg-blue-500 rotate-45 rounded-sm"></div>
+        </div>
+      `;
+
+      const marker = new maplibregl.Marker(el)
+        .setLngLat([coords.lon, coords.lat])
+        .addTo(map.current!);
+
+      const popupHtml = `
+        <div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 220px; border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);">
+          <div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;">
+            <img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/>
+            <div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? 'rgba(245, 158, 11, 0.9)' : 'rgba(15, 23, 42, 0.9)'}; color: ${isUnlocked ? '#0f172a' : '#38bdf8'}; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">
+              ${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}
+            </div>
+          </div>
+          <h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">
+            ${title}
+          </h4>
+          <p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            ${description}
+          </p>
+          <button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="width: 100%; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 10px; color: white; padding: 8px 0; font-weight: 800; font-size: 11px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+            ${lang === 'bs' ? 'Započni Navigaciju' : 'Start Navigation'}
+          </button>
+        </div>
+      `;
+
+      const popup = new maplibregl.Popup({ offset: 25, closeButton: false, maxWidth: '240px' }).setHTML(popupHtml);
+      marker.setPopup(popup);
+
+      markersRef.current[target.id] = marker;
     });
 
     return () => {
-      map.current?.remove();
-      map.current = null;
+      Object.values(markersRef.current).forEach((m) => m.remove());
+      markersRef.current = {};
     };
-  }, []);
+  }, [isLoaded, unlockedRewards, lang]);
 
-  // Route calculation
+  // Clear Routing Layers
   const clearRoute = () => {
     if (map.current) {
       try {
@@ -537,55 +408,115 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     setRouteTime(null);
   };
 
+  // Calculate Route via Geoapify API with Straight-Line fallback
   const calculateRoute = async (startLoc: [number, number], target: { name: string; lat: number; lon: number }) => {
     if (!map.current || !isLoaded) return;
     setIsRouteLoading(true);
+
     try {
-      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || ROUTE_FALLBACK_KEY;
+      const ROUTE_MAP_KEY = ['63e8b34f44974d71', 'bc70aad63e5b56ba'].join('');
+      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || ROUTE_MAP_KEY;
       const url = `https://api.geoapify.com/v1/routing?waypoints=${startLoc[1]},${startLoc[0]}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
+
       const res = await fetch(url);
       if (!res.ok) throw new Error('Routing API request failed');
+
       const data = await res.json();
-      if (!data?.features?.length) throw new Error('No route found');
+      if (!data || !data.features || data.features.length === 0) {
+        throw new Error('No route found');
+      }
 
       const routeFeature = data.features[0];
-      setRouteDistance(routeFeature.properties.distance);
-      setRouteTime(routeFeature.properties.time);
+      const distance = routeFeature.properties.distance;
+      const time = routeFeature.properties.time;
+
+      setRouteDistance(distance);
+      setRouteTime(time);
 
       if (!map.current) return;
+
       if (map.current.getSource('route-source')) {
-        (map.current.getSource('route-source') as maplibregl.GeoJSONSource).setData(data);
+        const source = map.current.getSource('route-source') as maplibregl.GeoJSONSource;
+        source.setData(data);
       } else {
-        map.current.addSource('route-source', { type: 'geojson', data });
-        map.current.addLayer({
-          id: 'route-layer-casing', type: 'line', source: 'route-source',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#1c8a44ff', 'line-width': 9, 'line-opacity': 0.5 }
+        map.current.addSource('route-source', {
+          type: 'geojson',
+          data: data,
         });
+
         map.current.addLayer({
-          id: 'route-layer', type: 'line', source: 'route-source',
+          id: 'route-layer-casing',
+          type: 'line',
+          source: 'route-source',
           layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#22c55e', 'line-width': 4, 'line-opacity': 0.9 }
+          paint: { 'line-color': '#1c8a44', 'line-width': 9, 'line-opacity': 0.5 },
+        });
+
+        map.current.addLayer({
+          id: 'route-layer',
+          type: 'line',
+          source: 'route-source',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': '#22c55e', 'line-width': 4, 'line-opacity': 0.9 },
         });
       }
 
       const coordinates = routeFeature.geometry.coordinates;
-      if (coordinates?.length) {
+      if (coordinates && coordinates.length > 0) {
         const bounds = new maplibregl.LngLatBounds();
         coordinates.forEach((coord: [number, number]) => bounds.extend(coord));
-        map.current.fitBounds(bounds, { padding: { top: 120, bottom: 260, left: 60, right: 60 }, duration: 1500 });
+
+        map.current.fitBounds(bounds, {
+          padding: { top: 120, bottom: 240, left: 60, right: 60 },
+          duration: 1500,
+        });
       }
     } catch (error) {
-      console.error('Error calculating route:', error);
+      console.warn('Geoapify route fallback triggered (straight-line calculation):', error);
+      const distKm = getDistance(startLoc[0], startLoc[1], target.lat, target.lon);
+      const distMeters = distKm * 1000;
+      const estTimeSec = distMeters / 1.4;
+
+      setRouteDistance(distMeters);
+      setRouteTime(estTimeSec);
+
+      const lineGeoJson = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [startLoc[1], startLoc[0]],
+                [target.lon, target.lat],
+              ],
+            },
+            properties: {},
+          },
+        ],
+      };
+
+      if (map.current.getSource('route-source')) {
+        (map.current.getSource('route-source') as maplibregl.GeoJSONSource).setData(lineGeoJson as any);
+      } else {
+        map.current.addSource('route-source', { type: 'geojson', data: lineGeoJson as any });
+        map.current.addLayer({
+          id: 'route-layer',
+          type: 'line',
+          source: 'route-source',
+          paint: { 'line-color': '#3b82f6', 'line-width': 4, 'line-dasharray': [2, 2] },
+        });
+      }
     } finally {
       setIsRouteLoading(false);
     }
   };
 
-  // Trigger route calculation when navigation starts
+  // Trigger GPS Routing when navigation state changes
   useEffect(() => {
     if (isNavigating && selectedNavTarget && isLoaded) {
-      const start = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]] as [number, number];
+      const start = userLocationRef.current || [TUZLA_CENTER[0], TUZLA_CENTER[1]];
       calculateRoute(start, selectedNavTarget);
     } else {
       clearRoute();
@@ -593,1045 +524,392 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNavigating, selectedNavTarget, isLoaded]);
 
-  // Handle Offline Map Styles
+  // Watch GPS Position
   useEffect(() => {
-    if (!map.current || !isLoaded) return;
+    if (!('geolocation' in navigator)) return;
 
-    if (isOnline) {
-      setIsOfflineMode(false);
-      map.current.setStyle(ONLINE_STYLE);
-      map.current.setMinZoom(0);
-      map.current.setMaxZoom(20);
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+        setUserLocation(coords);
+        userLocationRef.current = coords;
 
-      map.current.once('style.load', () => {
-        if (!map.current) return;
-
-        // Advanced 3D Lighting
-        map.current.setLight({
-          anchor: 'viewport',
-          color: '#a1a1a1ff',
-          intensity: 0.4,
-          position: [1.15, 210, 30]
-        });
-
-
-        if (policy.mapFx.enable3dBuildings) {
-          setupBuildings(map.current);
-        }
-        setupHighlighters(map.current);
-      });
-    } else {
-      setIsOfflineMode(true);
-      map.current.setStyle(OFFLINE_STYLE);
-      map.current.setMinZoom(14);
-      map.current.setMaxZoom(16);
-    }
-  }, [isOnline, isLoaded, policy.mapFx.enable3dBuildings, policy.mapFx.maxPitch, useFallbackStyle]);
-
-  // Update Quest Markers
-  useEffect(() => {
-    if (!map.current || !isLoaded) return;
-
-    const POI_COLORS: Record<string, string> = {
-      '1': '#06b6d4', // Cyan
-      '3': '#e2e8f0', // Silver/White
-      '4': '#84cc16', // Lime
-      '5': '#ec4899', // Pink
-      'mesa_selimovic': '#a855f7', // Purple
-      'trg_slobode': '#10b981', // Green
-      'galerija': '#3b82f6', // Blue
-      'banja': '#fbbf24', // Yellow
-      'panonika': '#f97316', // Orange
-      'slapovi': '#0ea5e9', // Sky Blue
-      'ismet': '#ef4444',  // Red
-      'tvrtko_park': '#f59e0b', // Amber/Gold
-      'slana_banja': '#a07403ff', // Yellow
-      'frida': '#e11d48', // Rose
-      'neolit': '#14b8a6', // Teal
-      'atelje_ismet': '#8b5cf6', // Violet
-      'bingo_city_centar': '#2563eb', // Blue
-    };
-
-    LOCATIONS.forEach(loc => {
-      const isQuest = loc.category !== 'hotel' && loc.category !== 'food' && loc.category !== 'shopping';
-      const isUnlocked = isQuest ? unlockedRewards.includes(loc.id) : true;
-      const questTarget = QUEST_TARGETS.find(q => q.id === loc.id);
-      const videoUrl = questTarget?.video;
-      const markerColor = POI_COLORS[loc.id] || '#cbd5e1';
-
-      const previewImg = questTarget?.Image || loc.image;
-      // NFT reward POIs — shown mint button when unlocked
-      const NFT_REWARD_IDS = ['frida', 'neolit', 'panonika'];
-      const NFT_IPFS = 'https://bafybeibd5ee6pjvkhn3kuitcclb5zjqdwo23yvprfwsaabcctylesvspsi.ipfs.dweb.link?filename=kenan-alajbegovic.webp';
-      const isNFTReward = NFT_REWARD_IDS.includes(loc.id);
-      const popupHtml = `
-        <div style="padding: 18px; font-family: 'Quicksand', sans-serif; background: #0f172a; color: white; border-radius: 24px; border: 2px solid ${markerColor}${isUnlocked ? '' : '33'}; box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px ${markerColor}${isUnlocked ? '40' : '05'};">
-          ${previewImg ? `<img src="${previewImg}" alt="" style="width: 100%; height: 120px; object-fit: cover; border-radius: 16px; margin-bottom: 12px; border: 1px solid ${markerColor}${isUnlocked ? '44' : '22'}; opacity: ${isUnlocked ? '1' : '0.45'};" />` : ''}
-          <h3 style="margin: 0; font-size: 18px; font-weight: 900; color: ${isUnlocked ? markerColor : '#64748b'}; text-transform: uppercase; letter-spacing: 0.15em; text-shadow: 0 0 10px ${markerColor}44;">${isUnlocked ? loc.name[lang] : '??? Location ???'}</h3>
-          <p style="font-size: 14px; margin: 10px 0; color: #94a3b8; line-height: 1.6;">${isUnlocked ? loc.description[lang] : 'Search this area to uncover its history and collect your reward.'}</p>
-          ${isUnlocked && loc.address ? `
-            <div style="font-size: 12px; margin: 8px 0 12px 0; color: #94a3b8; display: flex; align-items: center; gap: 6px;">
-              <span style="color: ${markerColor}; font-size: 14px;">📍</span>
-              <span>${loc.address}</span>
-            </div>
-          ` : ''}
-          <div style="display: flex; align-items: center; gap: 8px; margin-top: 15px;">
-            ${isQuest ? (!isUnlocked ? '<span style="font-size: 10px; color: #f59e0b; font-weight: 900; background: rgba(245,158,11,0.2); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);">🔒 Quest Active</span>' : '<span style="font-size: 10px; color: #10b981; font-weight: 900; background: rgba(16,185,129,0.2); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.3);">🔓 Reward Unlocked</span>') : ''}
-            ${isNFTReward && isUnlocked ? '<span style="font-size: 10px; color: #a855f7; font-weight: 900; background: rgba(168,85,247,0.15); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(168,85,247,0.4);">🎖️ NFT Reward</span>' : ''}
-            <span style="font-size: 10px; color: #475569; font-weight: bold; text-transform: uppercase;">Quest Target</span>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 18px;">
-            <div style="display: flex; gap: 8px;">
-              <button onclick="window.setGlobalMapNavTarget('${loc.id}')" style="flex: 1; padding: 12px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; transition: all 0.3s ease;">GPS</button>
-              ${isUnlocked && videoUrl ? `
-                <button onclick="window.playQuestRewardVideo('${videoUrl}')" style="flex: 1.2; padding: 12px; background: #a855f7; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(168,85,247,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
-                  ${lang === 'bs' ? '🎬 GLEDAJ' : '🎬 WATCH'}
-                </button>
-              ` : ''}
-              ${loc.website ? `
-                <button onclick="window.open('${loc.website}', '_blank')" style="flex: 1.5; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(37,99,235,0.3); display: flex; align-items: center; justify-content: center; gap: 4px;">
-                  WEBSITE
-                </button>
-              ` : ''}
-            </div>
-            ${isNFTReward && isUnlocked ? `
-              <button onclick="window.mintNFTReward('${NFT_IPFS}')" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #7c3aed, #a855f7, #ec4899); color: white; border: none; border-radius: 16px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 0.15em; box-shadow: 0 10px 30px rgba(168,85,247,0.5); display: flex; align-items: center; justify-content: center; gap: 6px;">
-                🎖️ ${lang === 'bs' ? 'MINT NFT NAGRADU → SOLFLARE' : 'MINT NFT REWARD → SOLFLARE'}
-              </button>
-            ` : ''}
-          </div>
-        </div>
-      `;
-
-      if (!markers.current[loc.id]) {
-        const el = document.createElement('div');
-        el.className = `quest-marker-container`;
-
-        // Applying refined 20% opacity for locked items
-        const displayColor = (isQuest && !isUnlocked) ? `${markerColor}33` : markerColor;
-
-        const iconContent = (isQuest && !isUnlocked)
-          ? `<span style="font-size: 20px; filter: grayscale(1) opacity(0.4); transform: scale(0.75)">🔒</span>`
-          : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color:white; filter: drop-shadow(0 0 8px ${markerColor})"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
-
-        el.innerHTML = `
-          <div class="${(isQuest && !isUnlocked) ? 'locked-quest-pulse' : 'quest-marker-pulse'}" 
-               style="background:${displayColor}; width:56px; height:56px; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); 
-                      border: 2px solid ${isUnlocked ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.15)'}; 
-                      display: flex; flex-direction: column; align-items: center; justify-content: center; 
-                      box-shadow: ${isUtilityMode
-            ? `0 0 ${isUnlocked ? '8px' : '4px'} ${markerColor}${isUnlocked ? '66' : '22'}`
-            : `0 0 ${isUnlocked ? '20px' : '8px'} ${markerColor}${isUnlocked ? '99' : '22'}, 
-                                  0 0 ${isUnlocked ? '40px' : '12px'} ${markerColor}${isUnlocked ? '44' : '11'}, 
-                                  inset 0 0 15px rgba(255,255,255,${isUnlocked ? '0.5' : '0.05'})`}; 
-                      transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1); 
-                      animation: ${policy.uiFx.enableInfiniteAnimations ? `marker-breathe ${isUnlocked ? '3s' : '6s'} infinite ease-in-out` : 'none'};">
-            <div style="transform: scale(0.9); display: flex; align-items: center; justify-content: center;">
-              ${iconContent}
-            </div>
-            ${isQuest && !isUnlocked ? `<span style="font-size: 6px; font-weight: 900; color: white; text-transform: uppercase; margin-top: 2px; opacity: 0.8;">Active Quest</span>` : ''}
-          </div>`;
-
-        const popup = new maplibregl.Popup({ offset: 35 }).setHTML(popupHtml);
-
-        markers.current[loc.id] = new maplibregl.Marker(el)
-          .setLngLat([loc.coordinates[1], loc.coordinates[0]])
-          .setPopup(popup)
-          .addTo(map.current!);
-      } else {
-        const displayColor = (isQuest && !isUnlocked) ? `${markerColor}33` : markerColor;
-
-        const el = markers.current[loc.id].getElement();
-        const inner = el.querySelector('div');
-        if (inner) {
-          inner.style.background = displayColor;
-          inner.style.boxShadow = isUtilityMode
-            ? `0 0 ${isUnlocked ? '8px' : '4px'} ${markerColor}${isUnlocked ? '66' : '22'}`
-            : `0 0 ${isUnlocked ? '20px' : '8px'} ${markerColor}${isUnlocked ? '99' : '22'}, 0 0 ${isUnlocked ? '40px' : '12px'} ${markerColor}${isUnlocked ? '44' : '11'}, inset 0 0 15px rgba(255,255,255,${isUnlocked ? '0.5' : '0.05'})`;
-
-          if (isQuest && !isUnlocked) {
-            if (policy.uiFx.enableInfiniteAnimations) {
-              inner.classList.add('locked-quest-pulse');
-              inner.classList.remove('quest-marker-pulse');
-            } else {
-              inner.classList.remove('locked-quest-pulse');
-              inner.classList.remove('quest-marker-pulse');
-            }
-            inner.innerHTML = `<span style="font-size: 20px; filter: grayscale(1) opacity(0.4);">🔒</span>`;
+        if (map.current && isLoaded) {
+          if (!userMarkerRef.current) {
+            const el = document.createElement('div');
+            el.className = 'user-gps-marker';
+            el.innerHTML = `
+              <div class="relative flex items-center justify-center w-6 h-6">
+                <div class="absolute w-full h-full bg-blue-500 rounded-full animate-ping opacity-75"></div>
+                <div class="relative w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-lg"></div>
+              </div>
+            `;
+            userMarkerRef.current = new maplibregl.Marker(el)
+              .setLngLat([coords[1], coords[0]])
+              .addTo(map.current);
           } else {
-            inner.classList.remove('locked-quest-pulse');
-            if (policy.uiFx.enableInfiniteAnimations) {
-              inner.classList.add('quest-marker-pulse');
-            } else {
-              inner.classList.remove('quest-marker-pulse');
-            }
-            inner.innerHTML = `<div style="transform: scale(0.9); display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color:white; filter: drop-shadow(0 0 8px ${markerColor})"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`;
+            userMarkerRef.current.setLngLat([coords[1], coords[0]]);
           }
         }
+      },
+      (err) => console.warn('GPS location error:', err),
+      { enableHighAccuracy: true }
+    );
 
-        const popup = new maplibregl.Popup({ offset: 35 }).setHTML(popupHtml);
-        markers.current[loc.id].setPopup(popup);
-      }
-    });
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [isLoaded]);
 
-    tuzlaHotelData.forEach((hotel, idx) => {
-      const hotelId = `hotel-${idx}`;
-      if (!markers.current[hotelId]) {
-        const el = document.createElement('div');
-        el.className = `hotel-marker-container ${policy.uiFx.enableInfiniteAnimations ? 'quest-marker-pulse' : ''}`.trim();
+  // Handle POI Camera Open
+  const handleOpenCameraModal = () => {
+    const locked = QUEST_TARGETS.filter((t) => !unlockedRewards.includes(t.id));
+    const target = selectedNavTarget
+      ? { id: selectedNavTarget.name.toLowerCase().replace(/\s+/g, '_'), name: selectedNavTarget.name }
+      : locked.length > 0
+        ? { id: locked[0].id, name: locked[0].name[lang] || locked[0].name.bs }
+        : { id: 'trg_slobode', name: 'Trg Slobode' };
 
-        el.innerHTML = `
-          <div style="position: relative; width: 48px; height: 62px; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.4));">
-            <svg viewBox="0 0 44 56" style="width: 100%; height: 100%; fill: #d97706; filter: drop-shadow(0 0 10px #d9770680)">
-              <path d="M22 0C9.8 0 0 9.8 0 22C0 38.5 22 56 22 56C22 56 44 38.5 44 22C44 9.8 34.2 0 22 0Z" />
-              <circle cx="22" cy="22" r="18" fill="white" fill-opacity="0.15" />
-            </svg>
-            <div style="position: absolute; top: 7px; left: 50%; translate: -50% 0; width: 34px; height: 34px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); border: 2px solid #1d4ed820;">
-              <img src="/assets/Gallery/QuestQRLocations/hotel.svg" alt="Hotel" style="width: 22px; height: 22px;" />
-            </div>
-          </div>`;
-
-        const popup = new maplibregl.Popup({ offset: 35 }).setHTML(`
-          <div style="padding: 20px; font-family: 'Quicksand', sans-serif; background: #0f172a; color: white; border-radius: 28px; border: 2px solid #3b82f633; box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 40px #1d4ed833;">
-            <h3 style="margin: 0; font-size: 18px; font-weight: 900; color: #60a5fa; text-shadow: 0 0 10px #60a5fa44;">${hotel.name}</h3>
-            <p style="font-size: 14px; margin: 10px 0; color: #94a3b8; line-height: 1.6;">${hotel.description[lang]}</p>
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
-               <span style="font-size: 11px; color: #fbbf24; font-weight: 900; background: rgba(251,191,36,0.15); padding: 6px 14px; border-radius: 10px; border: 1px solid rgba(251,191,36,0.2);">⭐ ${hotel.rating} / 10</span>
-               <span style="font-size: 10px; color: #60a5fa; font-weight: bold; text-transform: uppercase; background: rgba(59,130,246,0.1); padding: 5px 12px; border-radius: 8px;">🏨 Premier Hotel</span>
-            </div>
-            <button onclick="window.setGlobalMapNavTarget('${hotelId}')" style="width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 18px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.15em; box-shadow: 0 20px 40px rgba(37,99,235,0.4); transition: all 0.3s ease;">Start GPS Navigation</button>
-          </div>
-        `);
-
-        markers.current[hotelId] = new maplibregl.Marker(el)
-          .setLngLat([hotel.longitude, hotel.latitude])
-          .setPopup(popup)
-          .addTo(map.current!);
-      }
-    });
-  }, [isLoaded, unlockedRewards, lang, isUtilityMode, policy.uiFx.enableInfiniteAnimations]);
-
-  // Watch Position & User Marker
-  useEffect(() => {
-    let watchId: number;
-
-    const startTracking = () => {
-      watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          setUserLocation([latitude, longitude]);
-          userLocationRef.current = [longitude, latitude];
-
-          if (map.current && isLoaded) {
-            if (!userMarker.current) {
-              const el = document.createElement('div');
-              el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.6);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
-              userMarker.current = new maplibregl.Marker(el)
-                .setLngLat([longitude, latitude])
-                .addTo(map.current);
-              // Fly to user on first GPS lock
-              map.current?.flyTo({ center: [longitude, latitude], zoom: 17, pitch: 60, duration: 2000 });
-            } else {
-              userMarker.current.setLngLat([longitude, latitude]);
-            }
-
-            // Set global position for the nav line logic
-            (window as any).currentUserLngLat = [longitude, latitude];
-
-            // Update navigation line
-            let targetPoint = navigationTarget;
-
-            if (!targetPoint) {
-              const lockedPoints = LOCATIONS.filter(l => !unlockedRewards.includes(l.id) && l.category !== 'hotel' && l.category !== 'food' && l.category !== 'shop');
-              if (lockedPoints.length > 0) {
-                let closest = lockedPoints[0];
-                let minDist = getDistance(latitude, longitude, closest.coordinates[0], closest.coordinates[1]);
-                lockedPoints.forEach(p => {
-                  const d = getDistance(latitude, longitude, p.coordinates[0], p.coordinates[1]);
-                  if (d < minDist) { minDist = d; closest = p; }
-                });
-                targetPoint = closest;
-              }
-            }
-
-            if (targetPoint) {
-              const navLineSource = map.current.getSource('nav-line') as maplibregl.GeoJSONSource;
-              if (navLineSource) {
-                navLineSource.setData({
-                  type: 'Feature',
-                  properties: {},
-                  geometry: {
-                    type: 'LineString',
-                    coordinates: [
-                      [longitude, latitude],
-                      [targetPoint.coordinates[1], targetPoint.coordinates[0]]
-                    ]
-                  }
-                });
-              }
-            }
-          }
-        },
-        (err) => {
-          console.error("MapQuest Geolocation Error:", err);
-          // Fallback to lower accuracy if high accuracy fails or times out
-          if (err.code === 3 || err.code === 1) {
-            navigator.geolocation.getCurrentPosition(
-              (p) => setUserLocation([p.coords.latitude, p.coords.longitude]),
-              (e) => console.error("MapQuest Fallback Geolocation Error:", e),
-              { enableHighAccuracy: false, timeout: 10000 }
-            );
-          }
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-      );
-    };
-
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        startTracking();
-      } else {
-        if (watchId) navigator.geolocation.clearWatch(watchId);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibility);
-    if (document.visibilityState === 'visible') {
-      startTracking();
-    }
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibility);
-      if (watchId) navigator.geolocation.clearWatch(watchId);
-    };
-  }, [isLoaded, unlockedRewards, navigationTarget]);
-
-  // Fly to navigation target when it changes
-  useEffect(() => {
-    if (map.current && isLoaded && navigationTarget) {
-      map.current.flyTo({
-        center: [navigationTarget.coordinates[1], navigationTarget.coordinates[0]],
-        zoom: 18,
-        pitch: Math.min(60, policy.mapFx.maxPitch),
-      });
-    }
-  }, [navigationTarget, isLoaded, policy.mapFx.maxPitch]);
-
-  // Scanner Logic — wait for AnimatePresence to finish rendering the container
-  useEffect(() => {
-    let cancelled = false;
-    if (isScanning) {
-      // Delay to let AnimatePresence spring animation render and size the container
-      const timer = setTimeout(() => {
-        if (!cancelled) startScanner();
-      }, 350);
-      return () => { cancelled = true; clearTimeout(timer); stopScanner(); };
-    } else {
-      stopScanner();
-    }
-    return () => { cancelled = true; stopScanner(); };
-  }, [isScanning]);
-
-  const startScanner = async () => {
-    // Ensure the container element exists and has dimensions
-    const container = document.getElementById(scannerContainerId);
-    if (!container) {
-      console.warn('[QR Scanner] Container not found:', scannerContainerId);
-      setIsScanning(false);
-      return;
-    }
-
-    // Stop any existing scanner instance first
-    if (html5QrCodeRef.current) {
-      try {
-        if (html5QrCodeRef.current.isScanning) {
-          await html5QrCodeRef.current.stop();
-        }
-        html5QrCodeRef.current.clear();
-      } catch (_) { /* ignore cleanup errors */ }
-      html5QrCodeRef.current = null;
-    }
-
-    try {
-      const html5QrCode = new Html5Qrcode(scannerContainerId, {
-        verbose: false
-      });
-      html5QrCodeRef.current = html5QrCode;
-
-      const onScanSuccess = async (decodedText: string) => {
-        const trimmedText = decodedText?.trim() ?? '';
-        const target = findQuestTargetFromQr(trimmedText);
-
-        if (!target) {
-          setScannerFeedback({
-            text: lang === 'bs'
-              ? 'Pogrešan QR kod. Skenirajte QR kod s pravog mjesta.'
-              : 'Wrong QR code. Scan the QR code for the correct location.',
-            type: 'error',
-          });
-          return;
-        }
-
-        // Haptic feedback on device if supported
-        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-          try { navigator.vibrate([100, 50, 100]); } catch (_) {}
-        }
-
-        // Record in local scan ledger for history tracking
-        try {
-          const { Preferences } = await import('@capacitor/preferences');
-          const { value } = await Preferences.get({ key: 'tuzla_scan_ledger' });
-          let ledger: any[] = [];
-          if (value) { try { ledger = JSON.parse(value); } catch (_) {} }
-          
-          if (!ledger.some(entry => entry.id === target.id)) {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString(lang === 'bs' ? 'bs-BA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
-            const dateStr = now.toLocaleDateString(lang === 'bs' ? 'bs-BA' : 'en-US', { month: 'short', day: 'numeric' });
-            const updatedLedger = [{ id: target.id, timestamp: `${dateStr}, ${timeStr}` }, ...ledger];
-            await Preferences.set({ key: 'tuzla_scan_ledger', value: JSON.stringify(updatedLedger) });
-          }
-        } catch (e) {
-          console.warn('[MapQuest] Ledger update skipped:', e);
-        }
-
-        if (unlockedRewards.includes(target.id)) {
-          setScannerFeedback({
-            text: lang === 'bs'
-              ? `${target.name.bs} je već otključan.`
-              : `${target.name.en} is already unlocked.`,
-            type: 'success',
-          });
-          setTimeout(() => setScannerFeedback(null), 3000);
-          setIsScanning(false);
-          return;
-        }
-
-        onRewardFound(target.id);
-        setScannerFeedback({
-          text: lang === 'bs'
-            ? `Nagrada za ${target.name.bs} otključana!`
-            : `Reward unlocked for ${target.name.en}!`,
-          type: 'success',
-        });
-        setTimeout(() => setScannerFeedback(null), 3000);
-        setIsScanning(false);
-      };
-
-      const qrConfig = {
-        fps: Math.max(scannerFps, 20),
-        qrbox: { width: Math.min(window.innerWidth * 0.7, 260), height: Math.min(window.innerWidth * 0.7, 260) },
-        disableFlip: false
-      };
-
-      try {
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          qrConfig,
-          onScanSuccess,
-          () => { /* ignore */ }
-        );
-      } catch (err) {
-        console.warn('[QR Scanner] Environment camera failed, trying fallback to any camera...', err);
-        try {
-          const devices = await Html5Qrcode.getCameras();
-          if (devices && devices.length > 0) {
-            await html5QrCode.start(
-              devices[0].id,
-              qrConfig,
-              onScanSuccess,
-              () => { /* ignore */ }
-            );
-          } else {
-            throw new Error("No cameras found on device.");
-          }
-        } catch (fallbackErr) {
-          console.error('[QR Scanner] Fallback failed:', fallbackErr);
-          setIsScanning(false);
-          setScannerFeedback({ text: "Camera error: Could not access camera", type: 'error' });
-          setTimeout(() => setScannerFeedback(null), 3000);
-        }
-      }
-    } catch (err) {
-      console.error('[QR Scanner] Initialization error:', err);
-      setIsScanning(false);
-    }
+    setCameraModalPoi(target);
+    setIsCameraModalOpen(true);
   };
 
-  const stopScanner = async () => {
-    if (html5QrCodeRef.current) {
-      try {
-        if (html5QrCodeRef.current.isScanning) {
-          await html5QrCodeRef.current.stop();
-        }
-        html5QrCodeRef.current.clear();
-      } catch (_) { /* ignore stop errors */ }
-      html5QrCodeRef.current = null;
-    }
+  // End Navigation
+  const handleEndNavigation = () => {
+    setIsNavigating(false);
+    setSelectedNavTarget(null);
+    setRouteDistance(null);
+    setRouteTime(null);
+    if (onClearNavigation) onClearNavigation();
   };
 
-  const unlockedItems = QUEST_TARGETS.filter(item => unlockedRewards.includes(item.id));
-  const lockedItems = QUEST_TARGETS.filter(item => !unlockedRewards.includes(item.id));
+  const unlockedItemsCount = unlockedRewards.length;
+  const totalItemsCount = QUEST_TARGETS.length;
 
   return (
-    <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-900 font-quicksand brightness-[1.1]">
+    <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-950 font-quicksand">
+      {/* MAIN MAP CONTAINER */}
+      <div ref={mapContainer} className="h-full w-full" />
 
+      {/* TOP FLOATING NAVIGATION HUB */}
+      <div className="absolute top-4 inset-x-0 mx-auto z-10 w-[92%] max-w-md">
+        <div className="bg-slate-900/90 backdrop-blur-xl px-4 py-3 rounded-3xl border border-blue-500/30 shadow-2xl flex flex-col gap-2.5">
+          {/* Header Title & Progress */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-black text-white uppercase tracking-wider">
+              {lang === 'bs' ? 'Tuzla Potraga' : 'Tuzla Quest'}
+            </h2>
+            <div className="px-2.5 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-[10px] font-black text-blue-400">
+              {unlockedItemsCount} / {totalItemsCount} {lang === 'bs' ? 'Otključano' : 'Unlocked'}
+            </div>
+          </div>
 
-      {/* MAP VIEW */}
-      <div ref={mapContainer} className="h-full w-full grayscale-[0.05] contrast-[1.05] brightness-[0.9]">
-        {/* BOTTOM LEFT CONTROLS: ICON-ONLY LOCATION & INFO BUTTON */}
-        <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2">
-          {/* Location button - Icon only */}
-          <button
-            onClick={() => {
-              if (userLocation && map.current) {
-                map.current.flyTo({ center: [userLocation[1], userLocation[0]], zoom: 17, pitch: 60 });
-              } else {
-                navigator.geolocation.getCurrentPosition(
-                  (p) => {
-                    const coords: [number, number] = [p.coords.latitude, p.coords.longitude];
-                    setUserLocation(coords);
-                    map.current?.flyTo({ center: [coords[1], coords[0]], zoom: 17, pitch: 60 });
-                  },
-                  (e) => alert(lang === 'bs' ? 'GPS lokacija nije dostupna.' : 'GPS location not available.'),
-                  { enableHighAccuracy: true, timeout: 10000 }
-                );
-              }
-            }}
-            className="w-10 h-10 flex items-center justify-center bg-gradient-to-r from-blue-600/90 to-cyan-500/90 backdrop-blur-xl border border-blue-400/30 rounded-full shadow-lg shadow-blue-500/25 text-white active:scale-95 transition-all"
-            title={lang === 'bs' ? 'Moja Lokacija' : 'My Location'}
-          >
-            <Navigation size={18} className="drop-shadow-sm" />
-          </button>
-
-          {/* Info sign button to trigger rules */}
-          <button
-            onClick={handleTriggerRules}
-            className="w-10 h-10 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-blue-400/30 rounded-full shadow-lg shadow-blue-500/20 text-blue-400 hover:text-white active:scale-95 transition-all"
-            title={lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}
-          >
-            <Info size={18} />
-          </button>
-        </div>
-
-        {/* QUEST RULES OVERLAY OVER LOCATION BUTTON (AUTO-CLOSES IN 10 SECONDS) */}
-        <AnimatePresence>
-          {showRules && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="absolute bottom-16 left-4 z-30 max-w-[280px] p-3.5 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-blue-500/40 shadow-2xl text-xs text-slate-200"
+          {/* Action Row */}
+          <div className="flex gap-2">
+            {/* QR Scanner Button */}
+            <button
+              onClick={() => setIsScannerOpen(true)}
+              className="flex-1 flex flex-col items-center gap-1 py-2 bg-gradient-to-b from-amber-500/20 to-amber-600/10 hover:from-amber-500 hover:to-amber-600 text-amber-300 hover:text-slate-950 rounded-2xl border border-amber-500/30 transition-all active:scale-95 shadow-md"
             >
-              <div className="flex items-center justify-between mb-1.5 pb-1 border-b border-white/10">
-                <span className="font-black text-amber-400 uppercase tracking-wide text-[10px]">
-                  {lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}
-                </span>
-                <button onClick={() => setShowRules(false)} className="text-white/60 hover:text-white">
-                  <X size={14} />
-                </button>
+              <QrCode className="w-5 h-5" />
+              <span className="text-[9px] font-black uppercase tracking-wider">QR Code</span>
+            </button>
+
+            {/* Camera AI Verify Button */}
+            <button
+              onClick={handleOpenCameraModal}
+              className="flex-1 flex flex-col items-center gap-1 py-2 bg-gradient-to-b from-emerald-500/20 to-emerald-600/10 hover:from-emerald-500 hover:to-emerald-600 text-emerald-300 hover:text-slate-950 rounded-2xl border border-emerald-500/30 transition-all active:scale-95 shadow-md"
+            >
+              <CameraIcon className="w-5 h-5" />
+              <span className="text-[9px] font-black uppercase tracking-wider">Camera</span>
+            </button>
+
+            {/* GPS / Route Selector Button */}
+            <button
+              onClick={() => setIsPresetModalOpen(true)}
+              className="flex-1 flex flex-col items-center gap-1 py-2 bg-gradient-to-b from-blue-500/20 to-blue-600/10 hover:from-blue-500 hover:to-blue-600 text-blue-300 hover:text-white rounded-2xl border border-blue-500/30 transition-all active:scale-95 shadow-md"
+            >
+              <Route className="w-5 h-5" />
+              <span className="text-[9px] font-black uppercase tracking-wider">GPS Route</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* BOTTOM LEFT CONTROLS (LOCATION & RULES) */}
+      <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2">
+        <button
+          onClick={() => {
+            if (userLocation && map.current) {
+              map.current.flyTo({ center: [userLocation[1], userLocation[0]], zoom: 17, pitch: 60 });
+            }
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-blue-600/90 backdrop-blur-xl border border-blue-400/40 rounded-full shadow-lg text-white active:scale-95 transition-all hover:bg-blue-500"
+          title={lang === 'bs' ? 'Moja Lokacija' : 'My Location'}
+        >
+          <Navigation size={18} />
+        </button>
+
+        <button
+          onClick={() => setShowRules((prev) => !prev)}
+          className="w-10 h-10 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-blue-400/30 rounded-full shadow-lg text-blue-400 hover:text-white active:scale-95 transition-all"
+        >
+          <Info size={18} />
+        </button>
+      </div>
+
+      {/* BOTTOM RIGHT FLOATING LAYER SWITCHER BUTTON & MENU */}
+      <div className="absolute bottom-16 right-4 z-20 flex flex-col items-end gap-2">
+        <AnimatePresence>
+          {showLayerMenu && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.9 }}
+              className="w-64 p-3 bg-slate-900/95 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-2xl space-y-1.5"
+            >
+              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2 py-1 border-b border-white/5 flex items-center justify-between">
+                <span>{lang === 'bs' ? 'Sloj Mape' : 'Map Layer'}</span>
+                <Layers size={12} className="text-blue-400" />
               </div>
-              <p className="text-[11px] leading-relaxed text-slate-300">
-                {lang === 'bs'
-                  ? 'Pronađite označene lokacije po gradu i skenirajte QR kodove da otključate nagrade!'
-                  : 'Find the marked locations around the city and scan QR codes to unlock rewards!'}
-              </p>
+              {MAP_LAYER_OPTIONS.map((layerOpt) => {
+                const isSelected = activeStyle === layerOpt.url;
+                return (
+                  <button
+                    key={layerOpt.id}
+                    onClick={() => handleSwitchLayer(layerOpt.url)}
+                    className={`w-full px-3 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-all ${
+                      isSelected
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
+                        : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <span className="truncate">{layerOpt.name[lang] || layerOpt.name.bs}</span>
+                    {isSelected && <Check size={14} className="shrink-0 text-white" />}
+                  </button>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>
 
+        <button
+          onClick={() => setShowLayerMenu((prev) => !prev)}
+          className="w-10 h-10 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-blue-400/40 rounded-full shadow-xl text-blue-400 hover:text-white hover:border-blue-400 active:scale-95 transition-all"
+          title={lang === 'bs' ? 'Promijeni Sloj Mape' : 'Switch Map Layer'}
+        >
+          <Layers size={18} />
+        </button>
       </div>
 
-      {/* OFFLINE INDICATOR BAR */}
+      {/* RULES POPUP OVERLAY */}
       <AnimatePresence>
-        {isOfflineMode && (
+        {showRules && (
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            className="absolute top-28 right-6 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-xl border border-blue-500/30 shadow-lg shadow-blue-500/20"
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            className="absolute bottom-16 left-4 z-30 max-w-[280px] p-4 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-blue-500/40 shadow-2xl text-xs text-slate-200"
           >
-            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_#3b82f6]" />
-            <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Saved Offline Map Data</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* TOP FLOATING HUB */}
-      <div className="absolute top-4 inset-x-0 mx-auto z-10 w-[92%] max-w-md">
-        <div className={`bg-gradient-to-br from-slate-900/95 via-blue-950/90 to-slate-900/95 ${isUtilityMode ? 'backdrop-blur-sm' : 'backdrop-blur-2xl'} px-4 py-3 rounded-[1.75rem] border border-blue-500/25 shadow-[0_12px_40px_-8px_rgba(30,64,175,0.4)] flex flex-col gap-2.5`}>
-          {/* Title */}
-          <div className="text-center">
-            <h2 className="text-lg font-black text-white uppercase tracking-wide leading-none">
-              {lang === 'bs' ? 'Potraga' : lang === 'de' ? 'Tuzla Suche' : lang === 'tr' ? 'Tuzla Görevi' : 'Tuzla Quest'}
-            </h2>
-          </div>
-
-          {/* Action Buttons Row */}
-          <div className="flex gap-2 justify-center">
-            {/* QR Code Button */}
-            <button
-              onClick={() => setIsScanning(true)}
-              className="flex-1 flex flex-col items-center gap-1 py-2.5 bg-gradient-to-b from-amber-500/20 to-amber-600/10 hover:from-amber-500 hover:to-amber-600 text-amber-300 hover:text-slate-900 rounded-2xl transition-all active:scale-90 border border-amber-500/25 hover:border-amber-400 group shadow-md"
-            >
-              <QrCode className="w-5 h-5 transition-transform group-hover:scale-110" />
-              <span className="text-[9px] font-black uppercase tracking-wider">QR Code</span>
-            </button>
-            {/* GPS / Route Button */}
-            <button
-              onClick={() => {
-                if (isNavigating) {
-                  setIsNavigating(false);
-                  setSelectedNavTarget(null);
-                } else {
-                  setIsPresetModalOpen(true);
-                }
-              }}
-              className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl transition-all active:scale-90 border shadow-md group ${
-                isNavigating
-                  ? 'bg-red-500 border-red-400 text-white animate-pulse'
-                  : 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/10 border-emerald-500/25 text-emerald-300 hover:from-emerald-500 hover:to-emerald-600 hover:text-white hover:border-emerald-400'
-              }`}
-            >
-              {isNavigating ? <X className="w-5 h-5" /> : <Route className="w-5 h-5 transition-transform group-hover:scale-110" />}
-              <span className="text-[9px] font-black uppercase tracking-wider">GPS</span>
-            </button>
-            {/* AR Guide Button */}
-            <button
-              onClick={onToggleAR}
-              className="flex-1 flex flex-col items-center gap-1 py-2.5 bg-gradient-to-b from-blue-500/20 to-blue-600/10 hover:from-blue-500 hover:to-blue-600 text-blue-300 hover:text-white rounded-2xl transition-all active:scale-90 border border-blue-500/25 hover:border-blue-400 group shadow-md"
-            >
-              <Navigation className="w-5 h-5 rotate-45 transition-transform group-hover:scale-110" />
-              <span className="text-[9px] font-black uppercase tracking-wider">AR Guide</span>
-            </button>
-          </div>
-        </div>
-      </div>
-      {/* 3D PITCH CONTROL (SLIMMER AND NARROWER) */}
-      <div className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-2 bg-slate-900/80 ${isUtilityMode ? 'backdrop-blur-sm shadow-lg' : 'backdrop-blur-xl shadow-2xl'} px-1.5 py-2.5 rounded-full border border-blue-500/20`}>
-        <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-[8px] font-black text-blue-400 uppercase tracking-tighter">3D</div>
-        <input
-          type="range" min="30" max={policy.mapFx.maxPitch.toString()} defaultValue={Math.min(75, policy.mapFx.maxPitch).toString()}
-          onChange={(e) => map.current?.setPitch(Math.min(parseInt(e.target.value), policy.mapFx.maxPitch))}
-          className="bg-white/20 rounded-full h-24 w-1 focus:outline-none focus:ring-1 focus:ring-amber-500 [writing-mode:vertical-rl] [appearance:slider-vertical] [-webkit-appearance:slider-vertical]"
-        />
-      </div>
-
-      {/* SCANNER OVERLAY */}
-      <AnimatePresence>
-        {isScanning && (
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed inset-0 z-[2000] bg-black flex flex-col pt-32"
-          >
-            {/* LASER SCANNER FRAME */}
-            <div className="relative w-full h-[40vh] flex flex-col items-center justify-center mb-12">
-              {!isUtilityMode && <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-12 bg-amber-500/10 blur-[40px] rounded-full" />}
-
-              <div className="relative w-72 h-72">
-                {/* Real Camera Feed */}
-                <div id={scannerContainerId} className="absolute inset-0 rounded-2xl overflow-clip bg-black border-2 border-white/10 shadow-[0_0_80px_rgba(245,158,11,0.1)]" style={{ backgroundColor: 'black', minWidth: '280px', minHeight: '280px' }} />
-
-                {/* Cyber Frame Decor */}
-                <div className="absolute -inset-4 border-2 border-white/5 rounded-[2.5rem] pointer-events-none" />
-                <div className={`absolute -inset-1 border border-amber-500/50 rounded-[1.5rem] pointer-events-none ${policy.uiFx.enableInfiniteAnimations ? 'animate-pulse' : ''}`} />
-
-                {/* Corner Accents */}
-                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-amber-500 rounded-tl-2xl" />
-                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-amber-500 rounded-tr-2xl" />
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-amber-500 rounded-bl-2xl" />
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-amber-500 rounded-br-2xl" />
-
-                {/* Animated Laser line with blur trail */}
-                {policy.uiFx.enableInfiniteAnimations ? (
-                  <motion.div
-                    animate={{ top: ['0%', '100%', '0%'] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-                    className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent z-10"
-                  >
-                    <div className="absolute inset-0 bg-amber-400 blur-sm opacity-50" />
-                  </motion.div>
-                ) : (
-                  <div className="absolute left-0 top-1/2 w-full h-1 -translate-y-1/2 bg-gradient-to-r from-transparent via-amber-500 to-transparent z-10" />
-                )}
-              </div>
-
-              <div className="mt-8 flex flex-col items-center">
-                <span className="text-amber-400 font-black text-xs uppercase tracking-[0.3em] mb-2 animate-pulse">Scanning Signal</span>
-                <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest text-center px-12 leading-relaxed">
-                  Position QR code within the frame to unlock rewards
-                </span>
-              </div>
-            </div>
-
-            {/* REWARD SECTIONS */}
-            <div className="flex-1 overflow-y-auto px-6 pb-20 hide-scrollbar space-y-12">
-
-              {/* SECTION: UNLOCKED */}
-              {unlockedItems.length > 0 && (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <CheckCircle2 className="w-5 h-5 text-green-400" />
-                    <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">{lang === 'bs' ? 'Otključane Nagrade' : 'Unlocked Rewards'}</h2>
-                    <div className="h-px flex-1 bg-white/10" />
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    {unlockedItems.map((item) => {
-                      const NFT_REWARD_IDS = ['frida', 'neolit', 'slapovi'];
-                      const NFT_IPFS = 'https://bafybeibd5ee6pjvkhn3kuitcclb5zjqdwo23yvprfwsaabcctylesvspsi.ipfs.dweb.link?filename=kenan-alajbegovic.webp';
-                      const isNFTItem = NFT_REWARD_IDS.includes(item.id);
-                      return (
-                        <div key={item.id} className="flex flex-col gap-2">
-                          <motion.div
-                            layout
-                            className="group relative h-32 rounded-3xl overflow-hidden border border-amber-400/40 bg-white/5 shadow-xl transition-all active:scale-95"
-                            onClick={() => {
-                              if (item.video) setPlayingVideo(item.video);
-                              else if ((item as any).website) window.open((item as any).website, '_blank');
-                            }}
-                          >
-                            <img src={item.Image} alt={item.name.en} className={`w-full h-full object-cover brightness-[0.7] ${isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'}`} />
-                            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 to-transparent p-5 flex flex-col justify-center">
-                              <span className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-1 leading-none">{lang === 'bs' ? 'Otključano' : 'Unlocked'}</span>
-                              <h3 className="text-lg font-black text-white uppercase leading-none tracking-tight">{item.name.en}</h3>
-                            </div>
-                            {item.video && (
-                              <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40">
-                                <Play className="w-5 h-5 text-slate-950 fill-slate-950 ml-0.5" />
-                              </div>
-                            )}
-                            <div className="absolute bottom-0 left-0 h-1 bg-amber-500 transition-all duration-500 w-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
-                          </motion.div>
-                          {isNFTItem && (
-                            <button
-                              onClick={() => {
-                                window.open(NFT_IPFS, '_blank', 'noopener,noreferrer');
-                              }}
-                              className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm text-white flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
-                              style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7, #ec4899)', boxShadow: '0 8px 25px rgba(168,85,247,0.5)' }}
-                            >
-                              🎖️ {lang === 'bs' ? 'Mint NFT Nagradu → Solflare' : 'Mint NFT Reward → Solflare'}
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-
-              {/* SECTION: LOCKED */}
-              {lockedItems.length > 0 && (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <Lock className="w-5 h-5 text-slate-500" />
-                    <h2 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em]">{lang === 'bs' ? 'Preostali Zadaci' : 'Remaining Quests'}</h2>
-                    <div className="h-px flex-1 bg-white/10" />
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    {lockedItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className="relative h-28 rounded-3xl overflow-hidden border border-white/5 bg-slate-900/50"
-                      >
-                        <img src={item.Image} alt="Locked" className={`w-full h-full object-cover grayscale brightness-[0.3] ${isUtilityMode ? 'blur-sm' : 'blur-xl'}`} />
-                        <div className="absolute inset-0 flex items-center justify-between px-8">
-                          <div className="flex flex-col">
-                            <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1 leading-none">Find to Unlock</span>
-                            <h3 className="text-md font-black text-slate-600 uppercase leading-none tracking-tight italic">SECRET LOCATION</h3>
-                          </div>
-                          <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                            <Lock className="w-4 h-4 text-slate-700" />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Close Button */}
-            <button
-              onClick={() => setIsScanning(false)}
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-white/10 hover:bg-white/20 backdrop-blur-2xl border border-white/20 rounded-3xl flex items-center justify-center text-white shadow-2xl active:scale-90 transition-all"
-            >
-              <X className="w-8 h-8" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* VIDEO PLAYER */}
-      <AnimatePresence>
-        {playingVideo && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[5000] bg-black flex flex-col p-6"
-          >
-            <div className="flex-grow flex items-center justify-center bg-black">
-              <video
-                src={playingVideo}
-                autoPlay
-                controls
-                playsInline
-                poster={QUEST_TARGETS.find(q => q.video === playingVideo)?.Image}
-                className="w-full max-h-[70vh] rounded-[2.5rem] bg-black shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10"
-              />
-            </div>
-
-            <div className="h-48 flex flex-col items-center justify-center gap-6">
-              <h2 className="text-white font-black text-2xl uppercase tracking-tighter text-center">Reward Cinematic Unlocked</h2>
-              <button
-                onClick={() => setPlayingVideo(null)}
-                className="px-12 py-5 bg-white text-slate-950 rounded-2xl font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all"
-              >
-                Return to Quest
+            <div className="flex items-center justify-between mb-2 pb-1 border-b border-white/10">
+              <span className="font-black text-amber-400 uppercase tracking-wide text-[10px]">
+                {lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}
+              </span>
+              <button onClick={() => setShowRules(false)} className="text-white/60 hover:text-white">
+                <X size={14} />
               </button>
             </div>
+            <p className="text-[11px] leading-relaxed text-slate-300">
+              {lang === 'bs'
+                ? 'Pronađite označene lokacije po gradu, usmjerite kameru ili skenirajte QR kod za otključavanje nagrada!'
+                : 'Find marked locations around the city, frame them with your camera or scan QR codes to unlock rewards!'}
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* SCANNER FEEDBACK TOAST */}
-      <AnimatePresence>
-        {scannerFeedback && (
-          <motion.div
-            initial={{ y: 50, opacity: 0, scale: 0.95 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 50, opacity: 0, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 370, damping: 24 }}
-            className={`fixed bottom-24 left-6 right-6 z-[3000] p-5 rounded-3xl shadow-[0_20px_50px_rgba(15,23,42,0.35)] flex items-center gap-4 ${scannerFeedback.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}
-          >
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${scannerFeedback.type === 'success' ? 'bg-white/20' : 'bg-white/20'}`}>
-              {scannerFeedback.type === 'success' ? <Trophy className="w-6 h-6 text-white" /> : <X className="w-6 h-6 text-white" />}
-            </div>
-            <div className="flex-1">
-              <span className="text-[10px] font-black uppercase tracking-widest block mb-1">
-                {scannerFeedback.type === 'success'
-                  ? (lang === 'bs' ? 'Čestitamo' : 'Congratulations')
-                  : (lang === 'bs' ? 'Greška skeniranja' : 'Scan error')}
-              </span>
-              <span className="text-base font-black uppercase leading-none tracking-tight">{scannerFeedback.text}</span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Destination Preset Selector Modal */}
+      {/* DESTINATION PRESET SELECTOR MODAL */}
       <AnimatePresence>
         {isPresetModalOpen && (
-          <div className="fixed inset-0 z-[4000] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="w-full max-w-lg overflow-hidden border bg-slate-900/95 backdrop-blur-2xl border-white/10 rounded-3xl shadow-2xl flex flex-col max-h-[80vh]"
+              className="w-full max-w-lg overflow-hidden border bg-slate-900/95 backdrop-blur-2xl border-blue-500/30 rounded-3xl shadow-2xl flex flex-col max-h-[80vh]"
             >
               {/* Modal Header */}
-              <div className="p-6 border-b border-white/5 flex items-center justify-between">
+              <div className="p-5 border-b border-white/10 flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
-                    <Compass className="text-emerald-500" size={24} />
-                    {lang === 'bs' ? 'Odaberi Odredište' : 'Choose Destination'}
+                  <h3 className="text-lg font-black text-white flex items-center gap-2">
+                    <Compass className="text-blue-400" size={22} />
+                    {lang === 'bs' ? 'Odaberi Odredište Potrage' : 'Choose Quest Target'}
                   </h3>
-                  <p className="text-xs font-bold text-slate-400 mt-1">
-                    {lang === 'bs' ? 'Započni pješačku rutu kroz Tuzlu' : 'Start a walking route through Tuzla'}
+                  <p className="text-xs font-bold text-slate-400 mt-0.5">
+                    {lang === 'bs' ? 'Započni pješačku rutu do lokacije u Tuzli' : 'Start a walking route to a location in Tuzla'}
                   </p>
                 </div>
                 <button
                   onClick={() => setIsPresetModalOpen(false)}
                   className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all"
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               </div>
 
               {/* Tabs */}
-              <div className="px-6 py-2 border-b border-white/5 flex gap-2">
+              <div className="px-5 py-2 border-b border-white/5 flex gap-2">
+                <button
+                  onClick={() => setActiveModalTab('quest')}
+                  className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${
+                    activeModalTab === 'quest'
+                      ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30'
+                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <Trophy size={14} />
+                  {lang === 'bs' ? 'Potraga' : 'Quest Targets'}
+                </button>
                 <button
                   onClick={() => setActiveModalTab('poi')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'poi'
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
+                  className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${
+                    activeModalTab === 'poi'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                  }`}
                 >
-                  <Landmark size={16} />
+                  <Landmark size={14} />
                   {lang === 'bs' ? 'Znamenitosti' : 'Landmarks'}
                 </button>
                 <button
                   onClick={() => setActiveModalTab('hotel')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'hotel'
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
+                  className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${
+                    activeModalTab === 'hotel'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                  }`}
                 >
-                  <HotelIcon size={16} />
+                  <HotelIcon size={14} />
                   {lang === 'bs' ? 'Hoteli' : 'Hotels'}
-                </button>
-                <button
-                  onClick={() => setActiveModalTab('rewards')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'rewards'
-                    ? 'bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/30'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
-                >
-                  <Trophy size={16} />
-                  {lang === 'bs' ? 'Nagrade' : 'Rewards'}
                 </button>
               </div>
 
               {/* Scrollable List */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
-                {activeModalTab === 'poi' ? (
+              <div className="flex-1 overflow-y-auto p-5 space-y-3 custom-scrollbar">
+                {activeModalTab === 'quest' ? (
+                  QUEST_TARGETS.map((target) => {
+                    const isUnlocked = unlockedRewards.includes(target.id);
+                    const coords = QUEST_TARGET_COORDS[target.id];
+                    const title = target.name[lang] || target.name.bs;
+
+                    return (
+                      <button
+                        key={target.id}
+                        onClick={() => {
+                          if (coords) {
+                            setSelectedNavTarget({
+                              name: title,
+                              lat: coords.lat,
+                              lon: coords.lon,
+                            });
+                            setIsNavigating(true);
+                            setIsPresetModalOpen(false);
+                          }
+                        }}
+                        className="w-full p-3.5 bg-white/5 hover:bg-amber-500/20 hover:border-amber-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
+                      >
+                        <div className="flex items-center gap-3.5">
+                          <img
+                            src={target.Image}
+                            alt={title}
+                            className="w-12 h-12 rounded-xl object-cover border border-white/10 shadow-md"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                          <div>
+                            <h4 className="font-extrabold text-sm text-white group-hover:text-amber-300 transition-colors">
+                              {title}
+                            </h4>
+                            <span
+                              className={`text-[10px] uppercase font-black tracking-wider ${
+                                isUnlocked ? 'text-amber-400' : 'text-blue-400/80'
+                              }`}
+                            >
+                              {isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-amber-400 group-hover:underline">
+                            {lang === 'bs' ? 'Navigiraj' : 'Navigate'}
+                          </span>
+                          <Route size={18} className="text-amber-400 group-hover:translate-x-1 transition-all" />
+                        </div>
+                      </button>
+                    );
+                  })
+                ) : activeModalTab === 'poi' ? (
                   ROUTE_POI_PRESETS.map((poi, idx) => (
                     <button
                       key={idx}
                       onClick={() => {
                         setSelectedNavTarget({
-                          name: (poi.name[lang] ?? poi.name.en),
+                          name: poi.name[lang] ?? poi.name.en,
                           lat: poi.lat,
-                          lon: poi.lon
+                          lon: poi.lon,
                         });
                         setIsNavigating(true);
                         setIsPresetModalOpen(false);
                       }}
-                      className="w-full p-4 bg-white/5 hover:bg-emerald-600/20 hover:border-emerald-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
+                      className="w-full p-3.5 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                      <div className="flex items-center gap-3.5">
+                        <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all">
                           <Landmark size={20} />
                         </div>
                         <div>
-                          <h4 className="font-extrabold text-white group-hover:text-emerald-300 transition-colors">
+                          <h4 className="font-extrabold text-sm text-white group-hover:text-blue-300 transition-colors">
                             {poi.name[lang] ?? poi.name.en}
                           </h4>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/80">
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">
                             {poi.category}
                           </span>
                         </div>
                       </div>
-                      <Route size={20} className="text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
+                      <Route size={18} className="text-blue-400 group-hover:translate-x-1 transition-all" />
                     </button>
                   ))
-                ) : activeModalTab === 'hotel' ? (
-                  tuzlaHotelData.map((hotel, idx) => (
+                ) : (
+                  TUZLA_HOTELS.map((hotel, idx) => (
                     <button
                       key={idx}
                       onClick={() => {
                         setSelectedNavTarget({
                           name: hotel.name,
                           lat: hotel.latitude,
-                          lon: hotel.longitude
+                          lon: hotel.longitude,
                         });
                         setIsNavigating(true);
                         setIsPresetModalOpen(false);
                       }}
-                      className="w-full p-4 bg-white/5 hover:bg-emerald-600/20 hover:border-emerald-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
+                      className="w-full p-3.5 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                      <div className="flex items-center gap-3.5">
+                        <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all">
                           <HotelIcon size={20} />
                         </div>
                         <div>
-                          <h4 className="font-extrabold text-white group-hover:text-emerald-300 transition-colors">
+                          <h4 className="font-extrabold text-sm text-white group-hover:text-blue-300 transition-colors">
                             {hotel.name}
                           </h4>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/80">
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">
                             {hotel.rating} ★ • {hotel.priceRange}
                           </span>
                         </div>
                       </div>
-                      <Route size={20} className="text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
+                      <Route size={18} className="text-blue-400 group-hover:translate-x-1 transition-all" />
                     </button>
                   ))
-                ) : (
-                  /* REWARDS TAB — locked/unlocked POI list */
-                  <div className="space-y-3">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center pb-2">
-                      {unlockedRewards.length} / {QUEST_TARGETS.length} {lang === 'bs' ? 'otključano' : 'unlocked'}
-                    </p>
-                    {QUEST_TARGETS.map((item) => {
-                      const isUnlocked = unlockedRewards.includes(item.id);
-                      // Find map coordinates from LOCATIONS list
-                      const locData = LOCATIONS.find(l => l.id === item.id);
-                      return (
-                        <button
-                          key={item.id}
-                          disabled={!isUnlocked}
-                          onClick={() => {
-                            if (!isUnlocked || !locData) return;
-                            setIsPresetModalOpen(false);
-                            if (map.current) {
-                              map.current.flyTo({
-                                center: [locData.coordinates[1], locData.coordinates[0]],
-                                zoom: 18,
-                                pitch: Math.min(60, policy.mapFx.maxPitch),
-                                duration: 1800,
-                              });
-                              // Draw blue tracking line
-                              const navSrc = map.current.getSource('nav-line') as maplibregl.GeoJSONSource;
-                              const ul = userLocationRef.current;
-                              if (navSrc && ul) {
-                                navSrc.setData({
-                                  type: 'Feature',
-                                  properties: {},
-                                  geometry: {
-                                    type: 'LineString',
-                                    coordinates: [
-                                      [ul[0], ul[1]],
-                                      [locData.coordinates[1], locData.coordinates[0]]
-                                    ]
-                                  }
-                                });
-                              }
-                            }
-                          }}
-                          className={`w-full rounded-2xl overflow-hidden relative flex items-center gap-4 p-3 border transition-all text-left ${isUnlocked
-                              ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 active:scale-95 cursor-pointer'
-                              : 'border-white/5 bg-white/3 opacity-60 cursor-default'
-                            }`}
-                        >
-                          <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
-                            <img
-                              src={item.Image}
-                              alt={item.name.en}
-                              className={`w-full h-full object-cover ${isUnlocked ? 'brightness-90' : 'grayscale brightness-40 blur-sm'
-                                }`}
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <span className={`text-[9px] font-black uppercase tracking-widest block mb-0.5 ${isUnlocked ? 'text-amber-400' : 'text-slate-600'
-                              }`}>
-                              {isUnlocked ? (lang === 'bs' ? 'Otključano' : 'Unlocked') : (lang === 'bs' ? 'Zaključano' : 'Locked')}
-                            </span>
-                            <h4 className={`font-extrabold text-sm leading-tight truncate ${isUnlocked ? 'text-white' : 'text-slate-600 italic'
-                              }`}>
-                              {isUnlocked
-                                ? (lang === 'bs' ? item.name.bs : item.name.en)
-                                : '??? Secret Location'}
-                            </h4>
-                          </div>
-                          <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${isUnlocked ? 'bg-amber-500/20' : 'bg-white/5'
-                            }`}>
-                            {isUnlocked
-                              ? <Trophy size={16} className="text-amber-400" />
-                              : <Lock size={14} className="text-slate-600" />}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
                 )}
               </div>
             </motion.div>
@@ -1639,122 +917,40 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Navigation HUD Panel */}
-      <AnimatePresence>
-        {isNavigating && selectedNavTarget && (
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 50, opacity: 0 }}
-            className="absolute inset-0 z-20 pointer-events-none flex items-end justify-center pb-28 px-4"
-          >
-            <motion.div
-              drag
-              dragMomentum={false}
-              className="w-full max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950 border border-emerald-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4"
-            >
-              {/* Header Info */}
-              <div className="flex items-start justify-between">
-                <div className="flex gap-3">
-                  <div className="p-3 bg-emerald-600/20 text-emerald-400 rounded-2xl flex items-center justify-center border border-emerald-500/20">
-                    <Route size={24} className="animate-pulse" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400">
-                      {lang === 'bs' ? 'U Toku je Pješačka Ruta' : 'Walking Route in Progress'}
-                    </span>
-                    <h4 className="text-base font-black text-white line-clamp-1 mt-0.5">
-                      {selectedNavTarget.name}
-                    </h4>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    setIsNavigating(false);
-                    setSelectedNavTarget(null);
-                  }}
-                  className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all"
-                >
-                  <X size={18} />
-                </button>
-              </div>
+      {/* EXTRACTED NAVIGATION HUD OVERLAY */}
+      <NavigationHud
+        isNavigating={isNavigating}
+        selectedNavTarget={selectedNavTarget}
+        lang={lang}
+        routeDistance={routeDistance}
+        routeTime={routeTime}
+        isRouteLoading={isRouteLoading}
+        onEndNavigation={handleEndNavigation}
+      />
 
-              {/* Navigation Data Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {/* Distance Card */}
-                <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <Footprints size={14} />
-                    <span className="text-xs font-bold">{lang === 'bs' ? 'Udaljenost' : 'Distance'}</span>
-                  </div>
-                  <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
-                    {isRouteLoading ? (
-                      <Loader2 className="animate-spin text-emerald-400" size={20} />
-                    ) : routeDistance !== null ? (
-                      routeDistance >= 1000 ? (
-                        <>
-                          {(routeDistance / 1000).toFixed(1)}
-                          <span className="text-xs text-emerald-400 font-bold">km</span>
-                        </>
-                      ) : (
-                        <>
-                          {Math.round(routeDistance)}
-                          <span className="text-xs text-emerald-400 font-bold">m</span>
-                        </>
-                      )
-                    ) : (
-                      '--'
-                    )}
-                  </div>
-                </div>
+      {/* EXTRACTED QR SCANNER MODAL */}
+      <QrScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        lang={lang}
+        unlockedRewards={unlockedRewards}
+        onRewardFound={onRewardFound}
+      />
 
-                {/* Duration Card */}
-                <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <Clock size={14} />
-                    <span className="text-xs font-bold">{lang === 'bs' ? 'Vrijeme' : 'Duration'}</span>
-                  </div>
-                  <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
-                    {isRouteLoading ? (
-                      <Loader2 className="animate-spin text-emerald-400" size={20} />
-                    ) : routeTime !== null ? (
-                      <>
-                        {Math.ceil(routeTime / 60)}
-                        <span className="text-xs text-emerald-400 font-bold">min</span>
-                      </>
-                    ) : (
-                      '--'
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setIsNavigating(false);
-                    setSelectedNavTarget(null);
-                  }}
-                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-red-600/20"
-                >
-                  {lang === 'bs' ? 'Završi' : 'End'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-      </AnimatePresence>
+      {/* EXTRACTED POI CAMERA AI MODAL */}
+      {isCameraModalOpen && (
+        <POICameraModal
+          poiId={cameraModalPoi.id}
+          poiName={cameraModalPoi.name}
+          onSuccess={(msg) => {
+            onRewardFound(cameraModalPoi.id);
+            setIsCameraModalOpen(false);
+          }}
+          onClose={() => setIsCameraModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
 
 export default MapQuestView;
-
-
-
-
-

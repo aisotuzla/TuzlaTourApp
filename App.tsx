@@ -15,14 +15,13 @@ import FullScreenImageViewer from './components/FullScreenImageViewer';
 import ErrorBoundary from './components/ErrorBoundary';
 import ReloadPrompt from './components/ReloadPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
-
+import MapQuestView from "./components/MapQuestView";
 import { AppTab } from './types';
 import { ImageProvider } from './hooks/ImageContext';
 import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
 import { useDraggablePopups } from './hooks/useDraggablePopups';
 
 const MapView = React.lazy(() => import('./components/MapView'));
-const MapQuestView = React.lazy(() => import('./components/MapQuestView'));
 const History = React.lazy(() => import('./components/History'));
 const CityGuide = React.lazy(() => import('./components/CityGuide'));
 const WalletShell = React.lazy(() => import('./components/Wallet'));

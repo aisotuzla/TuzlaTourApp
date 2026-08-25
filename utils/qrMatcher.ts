@@ -1,4 +1,4 @@
-import { QUEST_TARGETS } from '../components/MapQuestView';
+import { QUEST_TARGETS } from '../constants/questData';
 import { LOCATIONS } from '../constants';
 
 export const normalizeQrText = (value: string): string =>

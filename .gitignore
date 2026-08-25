@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+./public/maps/tiles/*
 .agents
 dist-ssr
 *.local

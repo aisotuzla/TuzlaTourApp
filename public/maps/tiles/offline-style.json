@@ -1,0 +1,126 @@
+{
+  "version": 8,
+  "name": "Tuzla Vector & PMTiles Offline Style",
+  "metadata": {
+    "maputnik:renderer": "mlgljs"
+  },
+  "sources": {
+    "tuzla-pmtiles": {
+      "type": "vector",
+      "url": "pmtiles:///maps/tiles/tuzla.pmtiles"
+    },
+    "app-buildings": {
+      "type": "geojson",
+      "data": "/maps/tiles/TuzlaTourGuide.geojson"
+    },
+    "tour-data": {
+      "type": "geojson",
+      "data": "/maps/tour-data.geojson"
+    },
+    "app-pois": {
+      "type": "geojson",
+      "data": "/maps/tiles/poi.geojson"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#0f172a"
+      }
+    },
+    {
+      "id": "pmtiles-landuse",
+      "type": "fill",
+      "source": "tuzla-pmtiles",
+      "source-layer": "landuse",
+      "paint": {
+        "fill-color": "#1e293b",
+        "fill-opacity": 0.6
+      }
+    },
+    {
+      "id": "pmtiles-water",
+      "type": "fill",
+      "source": "tuzla-pmtiles",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": "#0284c7",
+        "fill-opacity": 0.8
+      }
+    },
+    {
+      "id": "pmtiles-roads",
+      "type": "line",
+      "source": "tuzla-pmtiles",
+      "source-layer": "transportation",
+      "paint": {
+        "line-color": "#334155",
+        "line-width": 2
+      }
+    },
+    {
+      "id": "pmtiles-buildings",
+      "type": "fill-extrusion",
+      "source": "tuzla-pmtiles",
+      "source-layer": "building",
+      "minzoom": 13,
+      "paint": {
+        "fill-extrusion-color": "#334155",
+        "fill-extrusion-height": ["coalesce", ["get", "render_height"], ["get", "height"], 12],
+        "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], ["get", "min_height"], 0],
+        "fill-extrusion-opacity": 0.85
+      }
+    },
+    {
+      "id": "app-buildings-3d",
+      "type": "fill-extrusion",
+      "source": "app-buildings",
+      "minzoom": 13,
+      "paint": {
+        "fill-extrusion-color": [
+          "interpolate",
+          ["linear"],
+          ["coalesce", ["get", "height"], 14],
+          0, "#3b82f6",
+          15, "#1d4ed8",
+          30, "#1e40af"
+        ],
+        "fill-extrusion-height": [
+          "coalesce",
+          ["get", "height"],
+          14
+        ],
+        "fill-extrusion-base": [
+          "coalesce",
+          ["get", "min_height"],
+          0
+        ],
+        "fill-extrusion-opacity": 0.75
+      }
+    },
+    {
+      "id": "tour-route-line",
+      "type": "line",
+      "source": "tour-data",
+      "filter": ["==", "$type", "LineString"],
+      "paint": {
+        "line-color": "#3b82f6",
+        "line-width": 4,
+        "line-opacity": 0.8
+      }
+    },
+    {
+      "id": "poi-icons",
+      "type": "circle",
+      "source": "app-pois",
+      "paint": {
+        "circle-radius": 8,
+        "circle-color": "#3b82f6",
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#ffffff"
+      }
+    }
+  ]
+}
