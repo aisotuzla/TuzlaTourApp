@@ -73,13 +73,14 @@ const TUZLA_HOTELS = [
 ];
 
 // Map Styles Configuration
+const GEOAPIFY_API_KEY = '765d67152f78438bacd2c66f73665a91';
+export const GEOAPIFY_MAPTILER_3D = `https://maps.geoapify.com/v1/styles/maptiler-3d/style.json?apiKey=${GEOAPIFY_API_KEY}`;
 export const CARTO_VOYAGER_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
-export const CARTO_DARK_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 export const OFFLINE_STYLE = '/maps/tiles/offline-vector-style.json';
 
 const MAP_LAYER_OPTIONS = [
-  { id: 'voyager', name: { bs: 'CARTO Voyager (Detaljna)', en: 'CARTO Voyager (Detailed)' }, url: CARTO_VOYAGER_STYLE },
-  { id: 'dark', name: { bs: 'CARTO Dark (Tamna)', en: 'CARTO Dark (Dark)' }, url: CARTO_DARK_STYLE },
+  { id: 'geoapify', name: { bs: 'Geoapify 3D (Primarna)', en: 'Geoapify 3D (Primary)' }, url: GEOAPIFY_MAPTILER_3D },
+  { id: 'voyager', name: { bs: 'CARTO Voyager (Rezervna)', en: 'CARTO Voyager (Fallback)' }, url: CARTO_VOYAGER_STYLE },
   { id: 'offline', name: { bs: 'Lokalna PMTiles (Offline)', en: 'Local PMTiles (Offline)' }, url: OFFLINE_STYLE },
 ];
 
@@ -100,7 +101,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   // Core Map State
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
-  const [activeStyle, setActiveStyle] = useState<string>(CARTO_VOYAGER_STYLE);
+  const [activeStyle, setActiveStyle] = useState<string>(GEOAPIFY_MAPTILER_3D);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const userLocationRef = useRef<[number, number] | null>(null);
 
@@ -156,11 +157,32 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     };
   }, []);
 
+  // Helper: apply Geoapify MapTiler 3D custom paint overrides
+  const applyGeoapifyPaintOverrides = (mapInstance: maplibregl.Map) => {
+    const safeSet = (layerId: string, prop: string, value: any) => {
+      try {
+        if (mapInstance.getLayer(layerId)) {
+          mapInstance.setPaintProperty(layerId, prop, value);
+        }
+      } catch (_) {}
+    };
+    safeSet('background', 'background-color', '#eff1e3');
+    safeSet('landuse-residential', 'fill-color', '#e0d9ce');
+    safeSet('landcover_grass', 'fill-color', '#c5f179');
+    safeSet('park', 'fill-color', 'rgba(175,214,108,0.53)');
+    safeSet('landcover_wood', 'fill-color', '#bcda89');
+    safeSet('road_path', 'line-color', '#adadad');
+    safeSet('road_minor', 'line-color', '#ffffff');
+    safeSet('road_trunk_primary', 'line-color', '#f7dcb2');
+    safeSet('road_secondary_tertiary', 'line-color', '#fff299');
+    safeSet('building-3d', 'fill-extrusion-color', '#b8b9c6');
+  };
+
   // 1. Initialize MapLibre Instance with CARTO Voyager Primary Basemap
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    const initialStyle = navigator.onLine ? CARTO_VOYAGER_STYLE : OFFLINE_STYLE;
+    const initialStyle = navigator.onLine ? GEOAPIFY_MAPTILER_3D : OFFLINE_STYLE;
 
     const mapInstance = new maplibregl.Map({
       container: mapContainer.current,
@@ -177,6 +199,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     mapInstance.on('load', () => {
       setIsLoaded(true);
 
+      // Apply Geoapify paint overrides when primary style loads
+      if (mapInstance.getStyle().name?.toLowerCase().includes('maptiler') ||
+          (mapInstance as any)._requestedStyleURL?.includes('geoapify')) {
+        applyGeoapifyPaintOverrides(mapInstance);
+      }
+
       // Add navigation controls
       mapInstance.addControl(
         new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }),
@@ -190,16 +218,27 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     mapInstance.on('styledata', () => {
       if (map.current) {
         setupBuildingExtrusions(map.current);
+        // Re-apply Geoapify paint overrides after any style switch back to MapTiler 3D
+        if (activeStyle === GEOAPIFY_MAPTILER_3D) {
+          applyGeoapifyPaintOverrides(map.current);
+        }
       }
     });
 
+    // Error handler: Geoapify fails → fallback to CARTO Voyager; offline → PMTiles
     mapInstance.on('error', (e) => {
-      console.warn('🗺️ MapQuest CARTO Style event error:', e.error?.message);
+      const msg = e.error?.message || '';
+      console.warn('🗺️ Map style error:', msg);
+
       if (!navigator.onLine && !isOfflineMode) {
-        console.log('🔌 Offline detected, switching to Tuzla.pmtiles style...');
+        console.log('🔌 Offline detected → switching to PMTiles offline style');
         setIsOfflineMode(true);
         setActiveStyle(OFFLINE_STYLE);
         mapInstance.setStyle(OFFLINE_STYLE);
+      } else if (navigator.onLine) {
+        console.warn('⚠️ Geoapify style failed → falling back to CARTO Voyager');
+        setActiveStyle(CARTO_VOYAGER_STYLE);
+        mapInstance.setStyle(CARTO_VOYAGER_STYLE);
       }
     });
 
