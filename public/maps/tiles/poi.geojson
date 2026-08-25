@@ -118,7 +118,7 @@
                 "name_bs": "Meša Selimović",
                 "category": "culture",
                 "marker-color": "rgba(2, 1, 49, 1)",
-                "marker-size": "small"
+                "marker-size": "medium"
             }
         },
         {
@@ -175,68 +175,35 @@
         },
         {
             "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    18.677621,
-                    44.538452
-                ]
-            },
             "properties": {
                 "name": "Panckaces House \"Bagi\"",
                 "name_bs": "Palančinkara \"Bagi\"",
                 "category": "dining",
                 "marker-color": "rgba(114, 61, 160, 1)",
                 "marker-size": "medium"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    18.677621,
+                    44.538452
+                ]
             }
         },
         {
             "type": "Feature",
+            "properties": {
+                "name": "King Tvrtko I",
+                "name_bs": "Kralj Tvrtko",
+                "category": "culture",
+                "marker-color": "rgba(242, 242, 255, 1)",
+                "marker-size": "large"
+            },
             "geometry": {
                 "type": "Point",
                 "coordinates": [
                     18.678361,
                     44.538075
-                ]
-            },
-            "properties": {
-                "name": "King Tvrtko II",
-                "name_bs": "Kralj Tvrtko",
-                "category": "culture",
-                "marker-color": "rgba(225, 225, 237, 1)",
-                "marker-size": "small"
-            }
-        },
-        {
-            "type": "Feature",
-            "properties": {
-                "marker-color": "rgba(1, 0, 11, 1)",
-                "marker-size": "small",
-                "name": "Gate",
-                "name_bs": "kapija",
-                "category": "culture"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    18.676856,
-                    44.538547
-                ]
-            }
-        },
-        {
-            "type": "Feature",
-            "properties": {
-                "name": "Ismet (Statue)",
-                "name_bs": "Ismet Mujezinovic",
-                "marker-color": "rgba(228, 19, 19, 1)",
-                "marker-size": "small"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    18.678205,
-                    44.537079
                 ]
             }
         }
