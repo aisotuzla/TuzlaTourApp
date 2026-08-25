@@ -32,11 +32,11 @@ const POI_DATABASE = {
         lng: 18.6875664,
         prompt: 'Is this an image showing Slana Banja memorial park or walking promenade in Tuzla? Answer only YES or NO.'
     },
-    'panonika': {
-        name: 'Panonika Lakes',
-        lat: 44.5385,
-        lng: 18.6767,
-        prompt: 'Is this an image showing the Pannonian salt lakes (Panonska jezera) in Tuzla? Answer only YES or NO.'
+    'kapija': {
+        name: 'Kapija',
+        lat: 44.5388,
+        lng: 18.6762,
+        prompt: 'Is this an image showing the Kapija gate area or pedestrian entrance in Tuzla old town? Answer only YES or NO.'
     },
     'slapovi': {
         name: 'Panonika Waterfalls',

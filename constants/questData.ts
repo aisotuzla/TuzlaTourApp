@@ -20,19 +20,17 @@ export interface RoutePoiPreset {
 }
 
 export const QUEST_TARGETS: QuestTarget[] = [
-  { id: "trg_slobode", name: { en: "Freedom Square", bs: "Trg slobode" }, Html5Qrcode: "/assets/Gallery/QuestQRLocations/QRTrgSlobode.png", Image: "/assets/Gallery/QuestQRLocations/trgslobode.webp" },
-  { id: "salt_square", name: { en: "Salt Square", bs: "Solni trg" }, Html5Qrcode: "/assets/Gallery/QuestQRLocations/QRsonitrg.png", Image: "/assets/Gallery/QuestQRLocations/sonitrg.webp" },
-  { id: "palancinkara", name: { en: "Pancake Bagi", bs: "Palančikara Bagi" }, Html5Qrcode: "/assets/Gallery/Food/QuestQRLocations/QRpalacinkara.webp", Image: "/assets/Gallery/Food/bagi.webp" },
-  { id: "slana_banja", name: { en: "Slana Banja", bs: "Slana Banja" }, Html5Qrcode: "/assets/Gallery/QuestQRLocations/QRBanja.png", Image: "/assets/Gallery/Photos/tuzla24.webp" },
-
-  { id: "panonika", name: { en: "Pannonica Office", bs: "Panonika Ured" }, Html5Qrcode: "/assets/Gallery/QuestQRLocations/QRPanonsko.png", Image: "/assets/Gallery/QuestQRLocations/tuzlaizugla.webp" },
-
-  { id: "slapovi", name: { en: "Waterfalls", bs: "Slapovi" }, Html5Qrcode: "/assets/Gallery/QuestQRLocations/QRslapovi.png", Image: "/assets/Gallery/QuestQRLocations/tzslapovi.webp" },
-  { id: "ismet", name: { en: "Ismet Mujezinovic", bs: "Ismet Mujezinović" }, Html5Qrcode: "/assets/Gallery/QuestQRLocations/QRIsmet.webp", Image: "/assets/Gallery/QuestQRLocations/Ismet.webp" },
-  { id: "atelje_ismet", name: { en: "Atelje Ismet Mujezinovic", bs: "Atelje Ismet Mujezinović" }, Html5Qrcode: "/assets/Gallery/QuestQRLocations/QRAtelje.png", Image: "/assets/Gallery/QuestQRLocations/atelje.webp" },
-  { id: "bingo_city_centar", name: { en: "Bingo City Center", bs: "Bingo City Centar" }, Html5Qrcode: "/assets/Gallery/QuestQRLocations/QRBingoCityCenter.png", Image: "/assets/Bingo-supermarket.webp", website: "https://tuzla.bingocitycenter.ba/" },
-  { id: "mesa_selimovic", name: { en: "Mesa Selimovic", bs: "Meša Selimović" }, Html5Qrcode: "/assets/Gallery/QuestQRLocations/QRMesaStatue.png", Image: "/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp", video: "/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4" },
-  { id: "tvrtko_park", name: { en: "King Tvrtko Park", bs: "Park Kralja Tvrtka I" }, Html5Qrcode: "/assets/Gallery/QuestQRLocations/QRtvrtko.png", Image: "/assets/Gallery/Photos/tuzla12.webp" }
+  { id: 'trg_slobode', name: { en: 'Freedom Square', bs: 'Trg slobode' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRTrgSlobode.png', Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp' },
+  { id: 'salt_square', name: { en: 'Salt Square', bs: 'Solni trg' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRsonitrg.png', Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp' },
+  { id: 'palancinkara', name: { en: 'Pancake Bagi', bs: 'Palančikara Bagi' }, Html5Qrcode: '/assets/Gallery/Food/QuestQRLocations/QRpalacinkara.webp', Image: '/assets/Gallery/Food/bagi.webp' },
+  { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRBanja.png', Image: '/assets/Gallery/Photos/tuzla24.webp' },
+  { id: 'kapija', name: { en: 'Kapija', bs: 'Kapija' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRkapija.png', Image: '/assets/Gallery/QuestQRLocations/kapija.webp' },
+  { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRslapovi.png', Image: '/assets/Gallery/QuestQRLocations/tzslapovi.webp' },
+  { id: 'ismet', name: { en: 'Ismet Mujezinovic', bs: 'Ismet Mujezinović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRIsmet.webp', Image: '/assets/Gallery/QuestQRLocations/Ismet.webp' },
+  { id: 'atelje_ismet', name: { en: 'Atelje Ismet Mujezinovic', bs: 'Atelje Ismet Mujezinović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRAtelje.png', Image: '/assets/Gallery/QuestQRLocations/atelje.webp' },
+  { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRBingoCityCenter.png', Image: '/assets/Bingo-supermarket.webp', website: 'https://tuzla.bingocitycenter.ba/' },
+  { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRMesaStatue.png', Image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4' },
+  { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRtvrtko.png', Image: '/assets/Gallery/Photos/tuzla12.webp' },
 ];
 
 export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [

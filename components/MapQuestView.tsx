@@ -36,6 +36,7 @@ import { NavigationHud } from './NavigationHud';
 import { QrScannerModal } from './QrScannerModal';
 import { POICameraModal } from './POICameraModal';
 
+
 export interface MapQuestViewProps {
   lang: Language;
   features: AppFeatures;
@@ -123,6 +124,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [routeTime, setRouteTime] = useState<number | null>(null);
   const [isRouteLoading, setIsRouteLoading] = useState(false);
   const [showRules, setShowRules] = useState(false);
+
 
   const isOnline = useNetwork();
   const markersRef = useRef<{ [key: string]: maplibregl.Marker }>({});
@@ -241,39 +243,53 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
         mapInstance.addLayer(
           {
-            id: '3d-buildings-silvery',
-            source: sourceId,
-            'source-layer': sourceLayer,
-            type: 'fill-extrusion',
-            minzoom: 13,
-            paint: {
-              'fill-extrusion-color': [
-                'interpolate',
-                ['linear'],
-                ['coalesce', ['get', 'render_height'], ['get', 'height'], 10],
-                0,
-                '#d1d5db',
-                25,
-                '#9ca3af',
-                60,
-                '#64748b',
-              ],
-              'fill-extrusion-height': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                13,
-                0,
-                15.5,
-                ['coalesce', ['get', 'render_height'], ['get', 'height'], 12],
-              ],
-              'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
-              'fill-extrusion-opacity': 0.9,
-              'fill-extrusion-vertical-gradient': true,
+            'id': '3d-buildings',
+            'source': 'composite',
+            'source-layer': 'building',
+            'filter': ['==', 'extrude', 'true'],
+            'type': 'fill-extrusion',
+            'minzoom': 15,
+            'paint': {
+              'fill-extrusion-color': '#a8a3a3ff',
+              'fill-extrusion-height': ['get', 'height'],
+              'fill-extrusion-base': ['get', 'min_height'],
+              'fill-extrusion-opacity': 0.9
+            }
+          }); mapInstance.addLayer(
+            {
+              id: '3d-buildings-silvery',
+              source: sourceId,
+              'source-layer': sourceLayer,
+              type: 'fill-extrusion',
+              minzoom: 13,
+              paint: {
+                'fill-extrusion-color': [
+                  'interpolate',
+                  ['linear'],
+                  ['coalesce', ['get', 'render_height'], ['get', 'height'], 10],
+                  0,
+                  '#d1d5db',
+                  25,
+                  '#9ca3af',
+                  60,
+                  '#64748b',
+                ],
+                'fill-extrusion-height': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  13,
+                  0,
+                  15.5,
+                  ['coalesce', ['get', 'render_height'], ['get', 'height'], 12],
+                ],
+                'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
+                'fill-extrusion-opacity': 0.9,
+                'fill-extrusion-vertical-gradient': true,
+              },
             },
-          },
-          labelLayerId
-        );
+            labelLayerId
+          );
       }
 
       // WAY 2: Custom GeoJSON 3D Buildings (TuzlaTourGuide.geojson)
@@ -375,9 +391,11 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           <p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
             ${description}
           </p>
-          <button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="width: 100%; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 10px; color: white; padding: 8px 0; font-weight: 800; font-size: 11px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
-            ${lang === 'bs' ? 'Započni Navigaciju' : 'Start Navigation'}
-          </button>
+          <div style="display: flex; gap: 6px;">
+            <button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="width: 100%; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 10px; color: white; padding: 7px 0; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+              ${lang === 'bs' ? '🧭 Navigiraj' : '🧭 Navigate'}
+            </button>
+          </div>
         </div>
       `;
 
@@ -676,11 +694,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                   <button
                     key={layerOpt.id}
                     onClick={() => handleSwitchLayer(layerOpt.url)}
-                    className={`w-full px-3 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-all ${
-                      isSelected
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
-                        : 'text-slate-300 hover:bg-white/5 hover:text-white'
-                    }`}
+                    className={`w-full px-3 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-all ${isSelected
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
+                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                      }`}
                   >
                     <span className="truncate">{layerOpt.name[lang] || layerOpt.name.bs}</span>
                     {isSelected && <Check size={14} className="shrink-0 text-white" />}
@@ -760,33 +777,30 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
               <div className="px-5 py-2 border-b border-white/5 flex gap-2">
                 <button
                   onClick={() => setActiveModalTab('quest')}
-                  className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${
-                    activeModalTab === 'quest'
-                      ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                  }`}
+                  className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${activeModalTab === 'quest'
+                    ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    }`}
                 >
                   <Trophy size={14} />
                   {lang === 'bs' ? 'Potraga' : 'Quest Targets'}
                 </button>
                 <button
                   onClick={() => setActiveModalTab('poi')}
-                  className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${
-                    activeModalTab === 'poi'
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                  }`}
+                  className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${activeModalTab === 'poi'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    }`}
                 >
                   <Landmark size={14} />
                   {lang === 'bs' ? 'Znamenitosti' : 'Landmarks'}
                 </button>
                 <button
                   onClick={() => setActiveModalTab('hotel')}
-                  className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${
-                    activeModalTab === 'hotel'
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                  }`}
+                  className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${activeModalTab === 'hotel'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    }`}
                 >
                   <HotelIcon size={14} />
                   {lang === 'bs' ? 'Hoteli' : 'Hotels'}
@@ -831,9 +845,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
                               {title}
                             </h4>
                             <span
-                              className={`text-[10px] uppercase font-black tracking-wider ${
-                                isUnlocked ? 'text-amber-400' : 'text-blue-400/80'
-                              }`}
+                              className={`text-[10px] uppercase font-black tracking-wider ${isUnlocked ? 'text-amber-400' : 'text-blue-400/80'
+                                }`}
                             >
                               {isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}
                             </span>
@@ -949,6 +962,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           onClose={() => setIsCameraModalOpen(false)}
         />
       )}
+
     </div>
   );
 };
