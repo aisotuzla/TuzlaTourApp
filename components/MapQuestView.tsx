@@ -19,22 +19,22 @@ import {
   Check,
 } from 'lucide-react';
 
-import { AppFeatures } from '../utils/platform';
-import { Language } from '../types';
-import { TUZLA_CENTER, LOCATIONS } from '../constants';
-import { useNetwork } from '../hooks/useNetwork';
-import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
-import { getDistance } from '../utils/geoUtils';
+import { AppFeatures } from '../utils/platform.ts';
+import { Language } from '../types.ts';
+import { TUZLA_CENTER, LOCATIONS } from '../constants.tsx';
+import { useNetwork } from '../hooks/useNetwork.ts';
+import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
+import { getDistance } from '../utils/geoUtils.ts';
 import {
   QUEST_TARGETS,
   POI_COLORS,
   NFT_REWARD_IDS,
   ROUTE_POI_PRESETS,
-} from '../constants/questData';
+} from '../constants/questData.ts';
 
-import { NavigationHud } from './NavigationHud';
-import { QrScannerModal } from './QrScannerModal';
-import { POICameraModal } from './POICameraModal';
+import { NavigationHud } from './NavigationHud.tsx';
+import { QrScannerModal } from './QrScannerModal.tsx';
+import { POICameraModal } from './POICameraModal.tsx';
 
 
 export interface MapQuestViewProps {
@@ -177,7 +177,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     safeSet('road_trunk_primary', 'line-color', '#f7dcb2');
     safeSet('road_secondary_tertiary', 'line-color', '#fff299');
     // Using layer paint overrides for different color than MapView
-    safeSet('building-3d', 'fill-extrusion-color', '#64748b');
+    safeSet('building-3d', 'fill-extrusion-color', '#95a6c0ff');
   };
 
   // 1. Initialize MapLibre Instance with CARTO Voyager Primary Basemap
@@ -259,74 +259,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     }
   };
 
-  // 2-Way 3D building extrusions helper (CARTO vector silvery layer + GeoJSON custom layer)
   const setupBuildingExtrusions = (mapInstance: maplibregl.Map) => {
-    try {
-      const layers = mapInstance.getStyle().layers || [];
-      let labelLayerId: string | undefined;
-
-      for (const layer of layers) {
-        if (layer.type === 'symbol' && (layer as any).layout?.['text-field']) {
-          labelLayerId = layer.id;
-          break;
-        }
-      }
-
-      // Check if CARTO vector building layer exists in style
-      const cartoBuildingLayer = layers.find(
-        (l: any) => l.source === 'carto' || l['source-layer'] === 'building' || l.id.includes('building')
-      );
-
-      // WAY 1: CARTO Vector 3D Buildings (Silvery gradient finish)
-      if (cartoBuildingLayer && !mapInstance.getLayer('3d-buildings')) {
-        const sourceId = (cartoBuildingLayer as any).source || 'carto';
-        const sourceLayer = (cartoBuildingLayer as any)['source-layer'] || 'building';
-
-        // Add silvery gradient layer, optionally below the label layer if it exists
-        const silveryLayer = {
-          id: '3d-buildings',
-          source: sourceId,
-          'source-layer': sourceLayer,
-          type: 'fill-extrusion',
-          minzoom: 13,
-          paint: {
-            'fill-extrusion-color': [
-              'interpolate',
-              ['linear'],
-              ['coalesce', ['get', 'render_height'], ['get', 'height'], 10],
-              0,
-              '#d1d5db',
-              25,
-              '#9ca3af',
-              60,
-              '#64748b',
-            ],
-            'fill-extrusion-height': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              13,
-              0,
-              15.5,
-              ['coalesce', ['get', 'render_height'], ['get', 'height'], 12],
-            ],
-            'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
-            'fill-extrusion-opacity': 0.9,
-            'fill-extrusion-vertical-gradient': true,
-          },
-        };
-        if (labelLayerId) {
-          mapInstance.addLayer(silveryLayer, labelLayerId);
-        } else {
-          mapInstance.addLayer(silveryLayer);
-        }
-      }
-
-
-      // GeoJSON buildings (TuzlaTourGuide.geojson) removed as requested.
-    } catch (err) {
-      console.warn('Could not setup 3D extrusions:', err);
-    }
+    // 3D extrusions are natively provided by Geoapify maptiler-3d style and CARTO Voyager
   };
 
   // Render POI Quest Target markers with popups
@@ -390,7 +324,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           </p>
           <div style="display: flex; gap: 6px;">
             <button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="width: 100%; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 10px; color: white; padding: 7px 0; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
-              ${lang === 'bs' ? '🧭 Navigiraj' : '🧭 Navigate'}
+              ${lang === 'bs' ? '🧭 GPS' : '🧭 Navigate'}
             </button>
           </div>
         </div>
@@ -539,40 +473,94 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNavigating, selectedNavTarget, isLoaded]);
 
-  // Watch GPS Position
+
+  // Watch Position & User Marker
   useEffect(() => {
-    if (!('geolocation' in navigator)) return;
+    let watchId: number;
 
-    const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
-        setUserLocation(coords);
-        userLocationRef.current = coords;
+    const startTracking = () => {
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setUserLocation([latitude, longitude]);
+          userLocationRef.current = [longitude, latitude];
 
-        if (map.current && isLoaded) {
-          if (!userMarkerRef.current) {
-            const el = document.createElement('div');
-            el.className = 'user-gps-marker';
-            el.innerHTML = `
+          if (map.current && isLoaded) {
+            if (!userMarkerRef.current) {
+              const el = document.createElement('div');
+              el.className = 'user-gps-marker';
+              el.innerHTML = `
               <div class="relative flex items-center justify-center w-6 h-6">
                 <div class="absolute w-full h-full bg-blue-500 rounded-full animate-ping opacity-75"></div>
                 <div class="relative w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-lg"></div>
               </div>
             `;
-            userMarkerRef.current = new maplibregl.Marker(el)
-              .setLngLat([coords[1], coords[0]])
-              .addTo(map.current);
-          } else {
-            userMarkerRef.current.setLngLat([coords[1], coords[0]]);
-          }
-        }
-      },
-      (err) => console.warn('GPS location error:', err),
-      { enableHighAccuracy: true }
-    );
+              userMarkerRef.current = new maplibregl.Marker(el)
+                .setLngLat([longitude, latitude])
+                .addTo(map.current);
+              // Fly to user on first GPS lock
+              map.current?.flyTo({ center: [longitude, latitude], zoom: 17, pitch: 60, duration: 2000 });
+            } else {
+              userMarkerRef.current.setLngLat([longitude, latitude]);
+            }
 
-    return () => navigator.geolocation.clearWatch(watchId);
-  }, [isLoaded]);
+            // Set global position for the nav line logic
+            (window as any).currentUserLngLat = [longitude, latitude];
+
+            // Update navigation line
+            let targetPoint = navigationTarget;
+
+            if (!targetPoint) {
+              const lockedPoints = LOCATIONS.filter(l => !unlockedRewards.includes(l.id) && l.category !== 'hotel' && l.category !== 'food' && l.category !== 'shop');
+              if (lockedPoints.length > 0) {
+                let closest = lockedPoints[0];
+                let minDist = getDistance(latitude, longitude, closest.coordinates[0], closest.coordinates[1]);
+                lockedPoints.forEach(p => {
+                  const d = getDistance(latitude, longitude, p.coordinates[0], p.coordinates[1]);
+                  if (d < minDist) { minDist = d; closest = p; }
+                });
+                targetPoint = closest;
+              }
+            }
+
+            if (targetPoint) {
+              const navLineSource = map.current.getSource('nav-line') as maplibregl.GeoJSONSource;
+              if (navLineSource) {
+                navLineSource.setData({
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'LineString',
+                    coordinates: [
+                      [longitude, latitude],
+                      [targetPoint.coordinates[1], targetPoint.coordinates[0]]
+                    ]
+                  }
+                });
+              }
+            }
+          }
+        },
+        (err) => {
+          console.error("MapQuest Geolocation Error:", err);
+          if (err.code === 3 || err.code === 1) {
+            navigator.geolocation.getCurrentPosition(
+              (p) => setUserLocation([p.coords.latitude, p.coords.longitude]),
+              (e) => console.error("MapQuest Fallback Geolocation Error:", e),
+              { enableHighAccuracy: false, timeout: 10000 }
+            );
+          }
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
+      );
+    };
+
+    startTracking();
+
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+    };
+  }, [isLoaded, navigationTarget, unlockedRewards]);
 
   // Handle POI Camera Open
   const handleOpenCameraModal = () => {
