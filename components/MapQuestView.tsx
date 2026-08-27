@@ -74,9 +74,9 @@ const TUZLA_HOTELS = [
 
 // Map Styles Configuration
 const GEOAPIFY_API_KEY = '765d67152f78438bacd2c66f73665a91';
-const CARTO_API_KEY = '85aa5d679ad499b70391d51a18591d8300d21b91';
+const VITE_PROTOMAPS_CARTO_API = '78417d24f3c5d515';
 export const GEOAPIFY_MAPTILER_3D = `https://maps.geoapify.com/v1/styles/maptiler-3d/style.json?apiKey=${GEOAPIFY_API_KEY}`;
-export const CARTO_VOYAGER_STYLE = `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?apiKey=${CARTO_API_KEY}`;
+export const CARTO_VOYAGER_STYLE = `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?apiKey=${VITE_PROTOMAPS_CARTO_API}`;
 export const OFFLINE_STYLE = '/maps/tiles/offline-vector-style.json';
 
 const MAP_LAYER_OPTIONS = [
