@@ -74,8 +74,9 @@ const TUZLA_HOTELS = [
 
 // Map Styles Configuration
 const GEOAPIFY_API_KEY = '765d67152f78438bacd2c66f73665a91';
+const CARTO_API_KEY = '85aa5d679ad499b70391d51a18591d8300d21b91';
 export const GEOAPIFY_MAPTILER_3D = `https://maps.geoapify.com/v1/styles/maptiler-3d/style.json?apiKey=${GEOAPIFY_API_KEY}`;
-export const CARTO_VOYAGER_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
+export const CARTO_VOYAGER_STYLE = `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?apiKey=${CARTO_API_KEY}`;
 export const OFFLINE_STYLE = '/maps/tiles/offline-vector-style.json';
 
 const MAP_LAYER_OPTIONS = [
@@ -164,7 +165,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         if (mapInstance.getLayer(layerId)) {
           mapInstance.setPaintProperty(layerId, prop, value);
         }
-      } catch (_) {}
+      } catch (_) { }
     };
     safeSet('background', 'background-color', '#eff1e3');
     safeSet('landuse-residential', 'fill-color', '#e0d9ce');
@@ -175,7 +176,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     safeSet('road_minor', 'line-color', '#ffffff');
     safeSet('road_trunk_primary', 'line-color', '#f7dcb2');
     safeSet('road_secondary_tertiary', 'line-color', '#fff299');
-    safeSet('building-3d', 'fill-extrusion-color', '#b8b9c6');
+    // Using layer paint overrides for different color than MapView
+    safeSet('building-3d', 'fill-extrusion-color', '#64748b');
   };
 
   // 1. Initialize MapLibre Instance with CARTO Voyager Primary Basemap
@@ -201,7 +203,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
       // Apply Geoapify paint overrides when primary style loads
       if (mapInstance.getStyle().name?.toLowerCase().includes('maptiler') ||
-          (mapInstance as any)._requestedStyleURL?.includes('geoapify')) {
+        (mapInstance as any)._requestedStyleURL?.includes('geoapify')) {
         applyGeoapifyPaintOverrides(mapInstance);
       }
 
@@ -276,96 +278,52 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       );
 
       // WAY 1: CARTO Vector 3D Buildings (Silvery gradient finish)
-      if (cartoBuildingLayer && !mapInstance.getLayer('3d-buildings-silvery')) {
+      if (cartoBuildingLayer && !mapInstance.getLayer('3d-buildings')) {
         const sourceId = (cartoBuildingLayer as any).source || 'carto';
         const sourceLayer = (cartoBuildingLayer as any)['source-layer'] || 'building';
 
-        mapInstance.addLayer(
-          {
-            'id': '3d-buildings',
-            'source': 'composite',
-            'source-layer': 'building',
-            'filter': ['==', 'extrude', 'true'],
-            'type': 'fill-extrusion',
-            'minzoom': 15,
-            'paint': {
-              'fill-extrusion-color': '#a8a3a3ff',
-              'fill-extrusion-height': ['get', 'height'],
-              'fill-extrusion-base': ['get', 'min_height'],
-              'fill-extrusion-opacity': 0.9
-            }
-          }); mapInstance.addLayer(
-            {
-              id: '3d-buildings-silvery',
-              source: sourceId,
-              'source-layer': sourceLayer,
-              type: 'fill-extrusion',
-              minzoom: 13,
-              paint: {
-                'fill-extrusion-color': [
-                  'interpolate',
-                  ['linear'],
-                  ['coalesce', ['get', 'render_height'], ['get', 'height'], 10],
-                  0,
-                  '#d1d5db',
-                  25,
-                  '#9ca3af',
-                  60,
-                  '#64748b',
-                ],
-                'fill-extrusion-height': [
-                  'interpolate',
-                  ['linear'],
-                  ['zoom'],
-                  13,
-                  0,
-                  15.5,
-                  ['coalesce', ['get', 'render_height'], ['get', 'height'], 12],
-                ],
-                'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
-                'fill-extrusion-opacity': 0.9,
-                'fill-extrusion-vertical-gradient': true,
-              },
-            },
-            labelLayerId
-          );
-      }
-
-      // WAY 2: Custom GeoJSON 3D Buildings (TuzlaTourGuide.geojson)
-      if (!mapInstance.getLayer('3d-buildings-geojson')) {
-        const geojsonSourceId = 'my-custom-buildings';
-        if (!mapInstance.getSource(geojsonSourceId)) {
-          mapInstance.addSource(geojsonSourceId, {
-            type: 'geojson',
-            data: '/maps/TuzlaTourGuide.geojson',
-          });
-        }
-
-        mapInstance.addLayer(
-          {
-            id: '3d-buildings-geojson',
-            source: geojsonSourceId,
-            type: 'fill-extrusion',
-            minzoom: 13,
-            paint: {
-              'fill-extrusion-color': [
-                'interpolate',
-                ['linear'],
-                ['coalesce', ['get', 'height'], 10],
-                0,
-                '#e2e8f0',
-                30,
-                '#94a3b8',
-              ],
-              'fill-extrusion-height': ['coalesce', ['get', 'height'], 15],
-              'fill-extrusion-base': ['coalesce', ['get', 'min_height'], 0],
-              'fill-extrusion-opacity': 0.9,
-              'fill-extrusion-vertical-gradient': true,
-            },
+        // Add silvery gradient layer, optionally below the label layer if it exists
+        const silveryLayer = {
+          id: '3d-buildings',
+          source: sourceId,
+          'source-layer': sourceLayer,
+          type: 'fill-extrusion',
+          minzoom: 13,
+          paint: {
+            'fill-extrusion-color': [
+              'interpolate',
+              ['linear'],
+              ['coalesce', ['get', 'render_height'], ['get', 'height'], 10],
+              0,
+              '#d1d5db',
+              25,
+              '#9ca3af',
+              60,
+              '#64748b',
+            ],
+            'fill-extrusion-height': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              13,
+              0,
+              15.5,
+              ['coalesce', ['get', 'render_height'], ['get', 'height'], 12],
+            ],
+            'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
+            'fill-extrusion-opacity': 0.9,
+            'fill-extrusion-vertical-gradient': true,
           },
-          labelLayerId
-        );
+        };
+        if (labelLayerId) {
+          mapInstance.addLayer(silveryLayer, labelLayerId);
+        } else {
+          mapInstance.addLayer(silveryLayer);
+        }
       }
+
+
+      // GeoJSON buildings (TuzlaTourGuide.geojson) removed as requested.
     } catch (err) {
       console.warn('Could not setup 3D extrusions:', err);
     }

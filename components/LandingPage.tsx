@@ -336,10 +336,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex flex-col items-center justify-center hover:scale-105 transition-transform duration-300 active:scale-95"
+                className="group flex flex-col items-center justify-center p-4 rounded-3xl hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:scale-[1.02] transition-all duration-500 active:scale-95 bg-white/0 hover:bg-white/50"
               >
-                <div className="h-20 w-full flex items-center justify-center">
-                  <img src={link.logo} alt={link.name} className="h-full w-auto object-contain drop-shadow-sm group-hover:scale-110 transition-transform" />
+                <div className="h-16 md:h-20 w-full flex items-center justify-center">
+                  <img src={link.logo} alt={link.name} className="h-full w-auto object-contain drop-shadow-sm group-hover:scale-110 transition-transform duration-500" />
                 </div>
               </a>
             ))}
