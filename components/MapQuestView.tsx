@@ -34,7 +34,7 @@ import {
 
 import { NavigationHud } from './NavigationHud.tsx';
 import { QrScannerModal } from './QrScannerModal.tsx';
-import { POICameraModal } from './POICameraModal.tsx';
+import ARGuide from './ARGuide.tsx';
 
 
 export interface MapQuestViewProps {
@@ -56,7 +56,7 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   slana_banja: { lat: 44.5378167, lon: 18.6875664 },
   panonika: { lat: 44.5385, lon: 18.6767 },
   slapovi: { lat: 44.5404243, lon: 18.6819408 },
-  ismet: { lat: 44.5375, lon: 18.6805 },
+  kapija: { lat: 44.53863, lon: 18.676805 },
   atelje_ismet: { lat: 44.5371465, lon: 18.6810454 },
   bingo_city_centar: { lat: 44.532177, lon: 18.651743 },
   mesa_selimovic: { lat: 44.5370993, lon: 18.6781216 },
@@ -98,6 +98,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const { policy } = useQuestRuntimePolicy(features);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
+  // 3D tilt (pitch) and bearing (rotation) state
+  const [pitch, setPitch] = useState<number>(55);
+  const [bearing, setBearing] = useState<number>(-15);
+
 
   // Core Map State
   const [isLoaded, setIsLoaded] = useState(false);
@@ -108,11 +112,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
 
   // Modals & Navigation State
   const [isScannerOpen, setIsScannerOpen] = useState(initialOpenScanner);
-  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
-  const [cameraModalPoi, setCameraModalPoi] = useState<{ id: string; name: string }>({
-    id: 'trg_slobode',
-    name: 'Trg Slobode',
-  });
+  const [showARGuide, setShowARGuide] = useState(false);
   const [selectedNavTarget, setSelectedNavTarget] = useState<{
     name: string;
     lat: number;
@@ -181,6 +181,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   };
 
   // 1. Initialize MapLibre Instance with CARTO Voyager Primary Basemap
+  // Sync map pitch & bearing when state changes
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
@@ -191,8 +192,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       style: initialStyle,
       center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
       zoom: 15.5,
-      pitch: 55,
-      bearing: -15,
+      pitch,
+      bearing,
       attributionControl: false,
     });
 
@@ -249,6 +250,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       map.current = null;
     };
   }, []);
+
+  // Sync map pitch & bearing when state changes
+  useEffect(() => {
+    if (map.current) {
+      map.current.easeTo({ pitch, bearing, duration: 300 });
+    }
+  }, [pitch, bearing]);
 
   // Switch Layer / Map Style Handler
   const handleSwitchLayer = (styleUrl: string) => {
@@ -562,19 +570,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     };
   }, [isLoaded, navigationTarget, unlockedRewards]);
 
-  // Handle POI Camera Open
-  const handleOpenCameraModal = () => {
-    const locked = QUEST_TARGETS.filter((t) => !unlockedRewards.includes(t.id));
-    const target = selectedNavTarget
-      ? { id: selectedNavTarget.name.toLowerCase().replace(/\s+/g, '_'), name: selectedNavTarget.name }
-      : locked.length > 0
-        ? { id: locked[0].id, name: locked[0].name[lang] || locked[0].name.bs }
-        : { id: 'trg_slobode', name: 'Trg Slobode' };
-
-    setCameraModalPoi(target);
-    setIsCameraModalOpen(true);
-  };
-
   // End Navigation
   const handleEndNavigation = () => {
     setIsNavigating(false);
@@ -591,7 +586,37 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-950 font-quicksand">
       {/* MAIN MAP CONTAINER */}
       <div ref={mapContainer} className="h-full w-full" />
-
+      {/* 3D Tilt Slider */}
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 bg-black/40 backdrop-blur-md p-2 rounded-xl">
+        <input
+          type="range"
+          min="0"
+          max="80"
+          step="1"
+          value={pitch}
+          onChange={e => setPitch(Number(e.target.value))}
+          className="w-2 h-40 transform rotate-180"
+        />
+        <span className="text-xs text-white">{pitch}°</span>
+      </div>
+      {/* Compass Direction Buttons */}
+      <div className="absolute left-4 bottom-20 flex flex-col gap-1 bg-black/40 backdrop-blur-md p-2 rounded-xl">
+        <button onClick={() => setBearing(0)} className="text-xs text-white hover:text-amber-300">N</button>
+        <button onClick={() => setBearing(90)} className="text-xs text-white hover:text-amber-300">E</button>
+        <button onClick={() => setBearing(180)} className="text-xs text-white hover:text-amber-300">S</button>
+        <button onClick={() => setBearing(270)} className="text-xs text-white hover:text-amber-300">W</button>
+      </div>
+      {/* AR Guide Overlay */}
+      {showARGuide && (
+        <ARGuide
+          lang={lang}
+          features={features}
+          onNavigate={poi => {
+            setShowARGuide(false);
+            setSelectedNavTarget({ name: poi.name[lang] || poi.name.bs, lat: poi.coordinates[0], lon: poi.coordinates[1] });
+          }}
+        />
+      )}
       {/* TOP FLOATING NAVIGATION HUB */}
       <div className="absolute top-4 inset-x-0 mx-auto z-10 w-[92%] max-w-md">
         <div className="bg-slate-900/90 backdrop-blur-xl px-4 py-3 rounded-3xl border border-blue-500/30 shadow-2xl flex flex-col gap-2.5">
@@ -615,14 +640,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
               <QrCode className="w-5 h-5" />
               <span className="text-[9px] font-black uppercase tracking-wider">QR Code</span>
             </button>
-
-            {/* Camera AI Verify Button */}
+            {/* AR Guide Button */}
             <button
-              onClick={handleOpenCameraModal}
-              className="flex-1 flex flex-col items-center gap-1 py-2 bg-gradient-to-b from-emerald-500/20 to-emerald-600/10 hover:from-emerald-500 hover:to-emerald-600 text-emerald-300 hover:text-slate-950 rounded-2xl border border-emerald-500/30 transition-all active:scale-95 shadow-md"
+              onClick={() => setShowARGuide((prev) => !prev)}
+              className="flex-1 flex flex-col items-center gap-1 py-2 bg-gradient-to-b from-purple-500/20 to-purple-600/10 hover:from-purple-500 hover:to-purple-600 text-purple-300 hover:text-slate-950 rounded-2xl border border-purple-500/30 transition-all active:scale-95 shadow-md"
             >
-              <CameraIcon className="w-5 h-5" />
-              <span className="text-[9px] font-black uppercase tracking-wider">Camera</span>
+              <Compass className="w-5 h-5" />
+              <span className="text-[9px] font-black uppercase tracking-wider">AR Guide</span>
             </button>
 
             {/* GPS / Route Selector Button */}
@@ -934,19 +958,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         unlockedRewards={unlockedRewards}
         onRewardFound={onRewardFound}
       />
-
-      {/* EXTRACTED POI CAMERA AI MODAL */}
-      {isCameraModalOpen && (
-        <POICameraModal
-          poiId={cameraModalPoi.id}
-          poiName={cameraModalPoi.name}
-          onSuccess={(msg) => {
-            onRewardFound(cameraModalPoi.id);
-            setIsCameraModalOpen(false);
-          }}
-          onClose={() => setIsCameraModalOpen(false)}
-        />
-      )}
 
     </div>
   );

@@ -61,6 +61,24 @@ export const ROUTE_POI_PRESETS = [
         category: 'shopping',
     },
     {
+        id: "kapija",
+        name: {
+            en: "Kapija Memorial",
+            bs: "Spomen-obilježje Kapija",
+            tr: "Kapija Anıtı"
+        },
+        description: {
+            en: "A memorial at the site of the Kapija massacre, commemorating the 71 young people killed on 25 May 1995.",
+            bs: "Spomen-obilježje na mjestu zločina na Kapiji, posvećeno 71 mladoj osobi ubijenoj 25. maja 1995. godine.",
+            tr: "25 Mayıs 1995'te Kapija'da hayatını kaybeden 71 genç insanı anan anıt."
+        },
+        latitude: 44.53863,
+        longitude: 18.676805,
+        radius: 25,
+        image: "/assets/quests/kapija.jpg",
+        type: "memorial"
+    },
+    {
         name: { bs: 'TC Tuzlanka', en: 'Tuzlanka Shopping Center' },
         lat: 44.538634727509304,
         lon: 18.664878503738578,

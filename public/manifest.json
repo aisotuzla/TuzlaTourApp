@@ -29,8 +29,8 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/resources/TuzlaTourAppLogo350x350.png",
-      "sizes": "350x350",
+      "src": "/assets/resources/TuzlaTourAppLogo512x512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }

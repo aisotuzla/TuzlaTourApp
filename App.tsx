@@ -21,6 +21,8 @@ import { ImageProvider } from './hooks/ImageContext';
 import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
 import { useDraggablePopups } from './hooks/useDraggablePopups';
 
+import ARGuide from './components/ARGuide';
+
 const MapView = React.lazy(() => import('./components/MapView'));
 const History = React.lazy(() => import('./components/History'));
 const CityGuide = React.lazy(() => import('./components/CityGuide'));
@@ -28,7 +30,6 @@ const WalletShell = React.lazy(() => import('./components/Wallet'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
-const ARGuide = React.lazy(() => import('./components/ARGuide'));
 const getTabFromPath = (path: string): AppTab => {
   switch (path) {
     case '/': return AppTab.LANDING;

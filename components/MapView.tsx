@@ -5,7 +5,7 @@ import { Language } from '../types';
 import { TUZLA_CENTER } from '../constants';
 import { AppFeatures } from '../utils/platform';
 import { Search, X, Loader2, Navigation, Landmark, Compass, Route, Clock, Footprints, Trophy, Lock, QrCode } from 'lucide-react';
-import { WeatherWidget } from './WeatherWidget';
+
 import { useNetwork } from '../hooks/useNetwork';
 import { tuzlaHotelData } from '../tuzlaHotelData';
 import { Hotel as HotelIcon } from 'lucide-react';
@@ -657,7 +657,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
       </div>
 
       {/* Floating Weather — sits below the nav button on the right */}
-      <WeatherWidget lang={lang} className="top-[3.25rem] sm:top-24 right-3 sm:right-6" />
+      
 
       {/* Destination Preset Selector Modal */}
       <AnimatePresence>

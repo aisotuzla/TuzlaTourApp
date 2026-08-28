@@ -5,6 +5,7 @@ import { CheckCircle2, Lock, Play, X, Trophy } from 'lucide-react';
 import { Language } from '../types';
 import { QUEST_TARGETS, NFT_REWARD_IDS } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
+import { Preferences } from '@capacitor/preferences';
 
 export interface QrScannerModalProps {
   isOpen: boolean;
@@ -104,7 +105,6 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
         // Record in local scan ledger for history tracking
         try {
-          const { Preferences } = await import('@capacitor/preferences');
           const { value } = await Preferences.get({ key: 'tuzla_scan_ledger' });
           let ledger: any[] = [];
           if (value) {

@@ -27,7 +27,7 @@
     "@deck.gl/layers": "^9.3.10",
     "@deck.gl/react": "^9.3.10",
     "@emotion/is-prop-valid": "^1.4.0",
-    "@google/genai": "^2.18.0",
+    "@google/genai": "^2.19.0",
     "@ionic/react": "^8.8.2",
     "@maplibre/geojson-vt": "^6.1.1",
     "@solana/kit": "^7.0.0",
@@ -96,7 +96,7 @@
     "tiny-secp256k1@1.1.7": true,
     "usb@2.18.0": true,
     "node": true,
-    "esbuild@0.27.0": true,
-    "@google/genai@2.18.0": true
+    "@google/genai@2.19.0": true,
+    "esbuild@0.25.12": true
   }
 }
