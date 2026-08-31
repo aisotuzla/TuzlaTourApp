@@ -30,6 +30,10 @@ import {
   POI_COLORS,
   NFT_REWARD_IDS,
   ROUTE_POI_PRESETS,
+  PHASE_1_POIS,
+  PHASE_2_POIS,
+  PHASE_3_POIS,
+  GRAND_FINALE_POIS,
 } from '../constants/questData.ts';
 
 import { NavigationHud } from './NavigationHud.tsx';
@@ -102,7 +106,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [pitch, setPitch] = useState<number>(55);
   const [bearing, setBearing] = useState<number>(-15);
 
-
   // Core Map State
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
@@ -127,6 +130,35 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
   const [isRouteLoading, setIsRouteLoading] = useState(false);
   const [showRules, setShowRules] = useState(false);
 
+  // Phase Completion Celebration Modals state
+  const [activeVictoryModal, setActiveVictoryModal] = useState<'phase1' | 'phase2' | 'phase3' | 'finale' | null>(null);
+  const [dismissedModals, setDismissedModals] = useState<string[]>([]);
+
+  // Phase Calculations
+  const isPhase1Done = PHASE_1_POIS.every(id => unlockedRewards.includes(id));
+  const isPhase2Done = isPhase1Done && PHASE_2_POIS.every(id => unlockedRewards.includes(id));
+  const isPhase3Done = isPhase2Done && PHASE_3_POIS.every(id => unlockedRewards.includes(id));
+  const isGrandFinaleDone = isPhase3Done && GRAND_FINALE_POIS.every(id => unlockedRewards.includes(id));
+
+  const currentPhase = !isPhase1Done ? 1 : !isPhase2Done ? 2 : !isPhase3Done ? 3 : 4;
+
+  // Trigger Victory Celebrations on phase completions
+  useEffect(() => {
+    if (isGrandFinaleDone && !dismissedModals.includes('finale')) {
+      setActiveVictoryModal('finale');
+    } else if (isPhase3Done && !dismissedModals.includes('phase3')) {
+      setActiveVictoryModal('phase3');
+    } else if (isPhase2Done && !dismissedModals.includes('phase2')) {
+      setActiveVictoryModal('phase2');
+    } else if (isPhase1Done && !dismissedModals.includes('phase1')) {
+      setActiveVictoryModal('phase1');
+    }
+  }, [isPhase1Done, isPhase2Done, isPhase3Done, isGrandFinaleDone, dismissedModals]);
+
+  const handleCloseVictoryModal = (modalKey: 'phase1' | 'phase2' | 'phase3' | 'finale') => {
+    setDismissedModals(prev => [...prev, modalKey]);
+    setActiveVictoryModal(null);
+  };
 
   const isOnline = useNetwork();
   const markersRef = useRef<{ [key: string]: maplibregl.Marker }>({});
@@ -176,12 +208,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     safeSet('road_minor', 'line-color', '#ffffff');
     safeSet('road_trunk_primary', 'line-color', '#f7dcb2');
     safeSet('road_secondary_tertiary', 'line-color', '#fff299');
-    // Using layer paint overrides for different color than MapView
     safeSet('building-3d', 'fill-extrusion-color', '#95a6c0ff');
   };
 
-  // 1. Initialize MapLibre Instance with CARTO Voyager Primary Basemap
-  // Sync map pitch & bearing when state changes
+  // 1. Initialize MapLibre Instance with full native touch tilt & right-click angle controls
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
@@ -192,8 +222,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       style: initialStyle,
       center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
       zoom: 15.5,
-      pitch,
-      bearing,
+      pitch: 55,
+      bearing: -15,
+      dragRotate: true,
+      pitchWithRotate: true,
+      touchPitch: true,
+      touchZoomRotate: true,
       attributionControl: false,
     });
 
@@ -202,7 +236,11 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     mapInstance.on('load', () => {
       setIsLoaded(true);
 
-      // Listen to pitch and rotate events to keep state in sync with gestures
+      mapInstance.dragRotate.enable();
+      mapInstance.touchPitch.enable();
+      mapInstance.touchZoomRotate.enable();
+
+      // Listen to pitch and rotate events to keep state in sync
       mapInstance.on('pitch', () => {
         setPitch(Math.round(mapInstance.getPitch()));
       });
@@ -210,44 +248,32 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         setBearing(Math.round(mapInstance.getBearing()));
       });
 
-      // Apply Geoapify paint overrides when primary style loads
       if (mapInstance.getStyle().name?.toLowerCase().includes('maptiler') ||
         (mapInstance as any)._requestedStyleURL?.includes('geoapify')) {
         applyGeoapifyPaintOverrides(mapInstance);
       }
 
-      // Add navigation controls
       mapInstance.addControl(
         new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }),
         'bottom-right'
       );
-
-      // 3D Buildings Extrusion setup
-      setupBuildingExtrusions(mapInstance);
     });
 
     mapInstance.on('styledata', () => {
-      if (map.current) {
-        setupBuildingExtrusions(map.current);
-        // Re-apply Geoapify paint overrides after any style switch back to MapTiler 3D
-        if (activeStyle === GEOAPIFY_MAPTILER_3D) {
-          applyGeoapifyPaintOverrides(map.current);
-        }
+      if (map.current && activeStyle === GEOAPIFY_MAPTILER_3D) {
+        applyGeoapifyPaintOverrides(map.current);
       }
     });
 
-    // Error handler: Geoapify fails → fallback to CARTO Voyager; offline → PMTiles
     mapInstance.on('error', (e) => {
       const msg = e.error?.message || '';
       console.warn('🗺️ Map style error:', msg);
 
       if (!navigator.onLine && !isOfflineMode) {
-        console.log('🔌 Offline detected → switching to PMTiles offline style');
         setIsOfflineMode(true);
         setActiveStyle(OFFLINE_STYLE);
         mapInstance.setStyle(OFFLINE_STYLE);
       } else if (navigator.onLine) {
-        console.warn('⚠️ Geoapify style failed → falling back to CARTO Voyager');
         setActiveStyle(CARTO_VOYAGER_STYLE);
         mapInstance.setStyle(CARTO_VOYAGER_STYLE);
       }
@@ -259,13 +285,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     };
   }, []);
 
-  // Sync map pitch & bearing when state changes
-  useEffect(() => {
-    if (map.current) {
-      map.current.easeTo({ pitch, bearing, duration: 300 });
-    }
-  }, [pitch, bearing]);
-
   // Switch Layer / Map Style Handler
   const handleSwitchLayer = (styleUrl: string) => {
     if (map.current) {
@@ -275,19 +294,32 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     }
   };
 
-  const setupBuildingExtrusions = (mapInstance: maplibregl.Map) => {
-    // 3D extrusions are natively provided by Geoapify maptiler-3d style and CARTO Voyager
-  };
-
-  // Render POI Quest Target markers with popups
+  // Render POI Quest Target markers filtered by active Game Phase
   useEffect(() => {
     if (!map.current || !isLoaded) return;
 
     Object.values(markersRef.current).forEach((m) => m.remove());
     markersRef.current = {};
 
-    QUEST_TARGETS.forEach((target) => {
+    // Filter visible targets based on game phase progression
+    const visibleTargets = QUEST_TARGETS.filter((target) => {
+      if (currentPhase === 1) {
+        return PHASE_1_POIS.includes(target.id);
+      } else if (currentPhase === 2) {
+        return PHASE_1_POIS.includes(target.id) || PHASE_2_POIS.includes(target.id);
+      } else if (currentPhase === 3) {
+        return PHASE_1_POIS.includes(target.id) || PHASE_2_POIS.includes(target.id) || PHASE_3_POIS.includes(target.id);
+      }
+      return true; // Phase 4 / Grand Finale: All targets visible
+    });
+
+    visibleTargets.forEach((target) => {
       const isUnlocked = unlockedRewards.includes(target.id);
+      const isCompletedFromPreviousPhase = (
+        (currentPhase >= 2 && PHASE_1_POIS.includes(target.id)) ||
+        (currentPhase >= 3 && PHASE_2_POIS.includes(target.id)) ||
+        (currentPhase >= 4 && PHASE_3_POIS.includes(target.id))
+      );
 
       const matchedLoc = LOCATIONS.find(
         (l) =>
@@ -309,14 +341,18 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         matchedLoc?.description?.en ||
         (lang === 'bs' ? 'Kulturna i historijska znamenitost grada Tuzle.' : 'Cultural and historical landmark of Tuzla.');
 
+      const customPoiColor = POI_COLORS[target.id] || '#3b82f6';
+
       const el = document.createElement('div');
-      el.className = 'quest-target-marker';
+      el.className = `quest-target-marker transition-all duration-300 ${
+        isCompletedFromPreviousPhase ? 'opacity-40 grayscale blur-[0.5px] scale-90' : 'opacity-100 hover:scale-125'
+      }`;
       el.innerHTML = `
-        <div class="relative flex items-center justify-center cursor-pointer group transition-transform duration-200 hover:scale-125" title="${title}">
-          <div class="w-9 h-9 rounded-2xl ${isUnlocked ? 'bg-amber-500 border-2 border-amber-200 text-slate-950 shadow-amber-500/50' : 'bg-slate-900 border-2 border-blue-400 text-blue-400 shadow-blue-500/30'} flex items-center justify-center shadow-2xl transition-all">
-            <span class="text-xs font-black">${isUnlocked ? '★' : '📍'}</span>
+        <div class="relative flex items-center justify-center cursor-pointer group" title="${title}">
+          <div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-2xl transition-all border-2" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 15px ${customPoiColor};">
+            <span class="text-xs font-black text-white">${isUnlocked ? '★' : '📍'}</span>
           </div>
-          <div class="absolute -bottom-1 w-2 h-2 bg-blue-500 rotate-45 rounded-sm"></div>
+          <div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm" style="background-color: ${customPoiColor};"></div>
         </div>
       `;
 
@@ -325,10 +361,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         .addTo(map.current!);
 
       const popupHtml = `
-        <div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 220px; border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);">
+        <div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 220px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);">
           <div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;">
             <img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/>
-            <div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? 'rgba(245, 158, 11, 0.9)' : 'rgba(15, 23, 42, 0.9)'}; color: ${isUnlocked ? '#0f172a' : '#38bdf8'}; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">
+            <div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">
               ${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}
             </div>
           </div>
@@ -339,8 +375,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             ${description}
           </p>
           <div style="display: flex; gap: 6px;">
-            <button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="width: 100%; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 10px; color: white; padding: 7px 0; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
-              ${lang === 'bs' ? '🧭 GPS' : '🧭 Navigate'}
+            <button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="width: 100%; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 0; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66;">
+              ${lang === 'bs' ? '🧭 GPS Navigacija' : '🧭 Navigate'}
             </button>
           </div>
         </div>
@@ -356,7 +392,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       Object.values(markersRef.current).forEach((m) => m.remove());
       markersRef.current = {};
     };
-  }, [isLoaded, unlockedRewards, lang]);
+  }, [isLoaded, unlockedRewards, lang, currentPhase]);
 
   // Clear Routing Layers
   const clearRoute = () => {
@@ -587,52 +623,205 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     if (onClearNavigation) onClearNavigation();
   };
 
+  // Trigger map resize when showARGuide toggles so top 40% canvas resizes instantly
+  useEffect(() => {
+    if (map.current) {
+      const timer = setTimeout(() => {
+        map.current?.resize();
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [showARGuide]);
+
   const unlockedItemsCount = unlockedRewards.length;
   const totalItemsCount = QUEST_TARGETS.length;
 
   return (
     <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-950 font-quicksand">
-      {/* MAIN MAP CONTAINER */}
-      <div ref={mapContainer} className="h-full w-full" />
-      {/* 3D Tilt Slider */}
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 bg-slate-900/90 backdrop-blur-xl p-2.5 rounded-2xl border border-blue-500/30 shadow-2xl z-20">
-        <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">3D</span>
-        <input
-          type="range"
-          min="15"
-          max="85"
-          step="1"
-          value={pitch}
-          onChange={(e) => {
-            const val = Number(e.target.value);
-            setPitch(val);
-            if (map.current) {
-              map.current.setPitch(val);
-            }
-          }}
-          onInput={(e) => {
-            const val = Number((e.target as HTMLInputElement).value);
-            setPitch(val);
-            if (map.current) {
-              map.current.setPitch(val);
-            }
-          }}
-          className="w-2 h-36 accent-blue-500 cursor-pointer [writing-mode:vertical-lr] [direction:rtl]"
-        />
-        <span className="text-[10px] font-bold text-white bg-blue-600/40 px-1.5 py-0.5 rounded-md border border-blue-400/30">{pitch}°</span>
-      </div>
+      {/* TOP 40% OR 100% CONTAINER: INTERACTIVE 3D MAPQUESTVIEW MAP */}
+      <div
+        ref={mapContainer}
+        className={`w-full transition-all duration-300 ${
+          showARGuide
+            ? 'h-[40%] flex-shrink-0 border-b-2 border-amber-500/50 shadow-2xl'
+            : 'h-full flex-1'
+        }`}
+      />
 
-      {/* AR Guide Overlay */}
+      {/* BOTTOM 60% CONTAINER: AR GUIDE LOGIC PANEL */}
       {showARGuide && (
-        <ARGuide
-          lang={lang}
-          features={features}
-          onNavigate={poi => {
-            setShowARGuide(false);
-            setSelectedNavTarget({ name: poi.name[lang] || poi.name.bs, lat: poi.coordinates[0], lon: poi.coordinates[1] });
-          }}
-        />
+        <div className="h-[60%] w-full flex-1 relative flex flex-col bg-slate-950 border-t-2 border-amber-500/50 shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+          {/* Header Bar */}
+          <div className="p-2.5 bg-slate-900/95 border-b border-amber-500/30 flex justify-between items-center z-50 shrink-0 px-4">
+            <span className="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <CameraIcon className="w-4 h-4 text-amber-400 animate-pulse" />
+              {lang === 'bs' ? 'AR Vodič & Navigacija (60% Ekran)' : 'AR Guide & Navigation (60% Screen)'}
+            </span>
+            <button
+              onClick={() => setShowARGuide(false)}
+              className="p-1 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all flex items-center gap-1 px-2.5 text-[10px] font-bold active:scale-95"
+            >
+              <X className="w-4 h-4" />
+              {lang === 'bs' ? 'Zatvori AR' : 'Close AR'}
+            </button>
+          </div>
+          {/* AR Guide Logic Component */}
+          <div className="flex-1 relative overflow-hidden">
+            <ARGuide
+              lang={lang}
+              features={features}
+              onNavigate={poi => {
+                setShowARGuide(false);
+                setSelectedNavTarget({ name: poi.name[lang] || poi.name.bs, lat: poi.coordinates[0], lon: poi.coordinates[1] });
+              }}
+            />
+          </div>
+        </div>
       )}
+
+      {/* GAMIFIED PHASE VICTORY MODALS */}
+      <AnimatePresence>
+        {activeVictoryModal === 'phase1' && (
+          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="w-full max-w-md bg-gradient-to-b from-slate-900 via-slate-900 to-emerald-950 border-2 border-emerald-500/50 rounded-3xl p-6 shadow-2xl text-center flex flex-col items-center space-y-4"
+            >
+              <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center animate-bounce">
+                <Trophy className="w-9 h-9 text-emerald-400" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-400/30">
+                FAZA 1 ZAVRŠENA! / PHASE 1 COMPLETE!
+              </span>
+              <h3 className="text-2xl font-black text-white">
+                Otključana Faza 2! 🚀
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                Čestitamo! Uspješno ste otključali <b>Trg Slobode</b>, <b>Kapiju</b> i <b>Mešu Selimovića</b>.
+                Sada su otključane lokacije Faze 2: Park Kralja Tvrtka, Palančikara i Solni Trg!
+              </p>
+              <button
+                onClick={() => handleCloseVictoryModal('phase1')}
+                className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95"
+              >
+                Kreni na Fazu 2 🎉
+              </button>
+            </motion.div>
+          </div>
+        )}
+
+        {activeVictoryModal === 'phase2' && (
+          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="w-full max-w-md bg-gradient-to-b from-slate-900 via-purple-950 to-slate-900 border-2 border-purple-500/50 rounded-3xl p-6 shadow-2xl text-center flex flex-col items-center space-y-4"
+            >
+              <div className="w-16 h-16 rounded-full bg-purple-500/20 border-2 border-purple-400 flex items-center justify-center animate-pulse">
+                <Trophy className="w-9 h-9 text-purple-300" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-purple-300 bg-purple-500/20 px-3 py-1 rounded-full border border-purple-400/30">
+                FAZA 2 ZAVRŠENA • SOLANA NFT REWARD! ⚽
+              </span>
+              <h3 className="text-2xl font-black text-white">
+                Osvojili ste NFT Karticu!
+              </h3>
+              
+              {/* Bosnia Football Squad NFT Card Preview */}
+              <div className="w-full bg-slate-950/80 border border-purple-400/40 rounded-2xl p-4 flex flex-col items-center space-y-2 relative overflow-hidden shadow-inner">
+                <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-purple-600/80 text-[8px] font-black text-white uppercase">
+                  Solana Devnet
+                </div>
+                <img
+                  src="/assets/Gallery/Photos/tuzla12.webp"
+                  alt="Bosnia Football Squad NFT"
+                  className="w-24 h-24 rounded-xl object-cover border-2 border-purple-400 shadow-md"
+                />
+                <h4 className="font-extrabold text-sm text-purple-200">Bosnia Football Squad Collectible</h4>
+                <p className="text-[10px] text-purple-300 font-mono">Sent to Solflare Wallet (Solana Devnet)</p>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                Čestitamo! Otključali ste Park Kralja Tvrtka, Palančikara Bagi i Solni Trg. Vaša nagradna NFT kartica reprezentacije je pripremljena za Solflare novčanik.
+              </p>
+
+              <button
+                onClick={() => handleCloseVictoryModal('phase2')}
+                className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95"
+              >
+                Preuzmi & Nastavi na Fazu 3 🚀
+              </button>
+            </motion.div>
+          </div>
+        )}
+
+        {activeVictoryModal === 'phase3' && (
+          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="w-full max-w-md bg-gradient-to-b from-slate-900 via-rose-950 to-slate-900 border-2 border-rose-500/50 rounded-3xl p-6 shadow-2xl text-center flex flex-col items-center space-y-4 relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-rose-500/20 via-transparent to-transparent animate-pulse pointer-events-none" />
+              
+              <div className="w-20 h-20 rounded-full bg-rose-500/20 border-2 border-rose-400 flex items-center justify-center animate-bounce shadow-2xl">
+                <span className="text-4xl">❤️</span>
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-rose-300 bg-rose-500/20 px-3 py-1 rounded-full border border-rose-400/30">
+                FAZA 3 GRANDIOZNA POBJEDA! 🎆
+              </span>
+              <h3 className="text-2xl font-black text-white">
+                SRCE TUZLE! ❤️
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                Fantastično! Otključali ste <b>Panoniku</b>, <b>Slapove</b>, <b>Slanu Banju</b> i <b>Atelje Ismet Mujezinović</b>. Osvojili ste trofej "Srce Tuzle"!
+              </p>
+              <button
+                onClick={() => handleCloseVictoryModal('phase3')}
+                className="w-full py-3.5 bg-gradient-to-r from-rose-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95"
+              >
+                Otvori Veliko Finale (Bingo City Centar) 🏆
+              </button>
+            </motion.div>
+          </div>
+        )}
+
+        {activeVictoryModal === 'finale' && (
+          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="w-full max-w-md bg-gradient-to-b from-slate-900 via-amber-950 to-slate-900 border-2 border-amber-400/60 rounded-3xl p-6 shadow-2xl text-center flex flex-col items-center space-y-4"
+            >
+              <div className="w-20 h-20 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center animate-spin-slow shadow-2xl">
+                <Trophy className="w-10 h-10 text-amber-300" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-amber-300 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-400/30">
+                VELIKO FINALE ZAVRŠENO • ZLATNI PARTNER! 🌟
+              </span>
+              <h3 className="text-2xl font-black text-white">
+                Bingo City Centar Nagrada!
+              </h3>
+              <div className="w-full bg-amber-500/10 border border-amber-400/40 rounded-2xl p-4 text-center space-y-1">
+                <span className="text-xs font-black text-amber-300 uppercase tracking-widest">Kupon Popusta Trgovine</span>
+                <p className="text-2xl font-black text-white tracking-widest font-mono">BCC-GOLDEN-TUZLA-2026</p>
+                <p className="text-[10px] text-amber-200/80">Predočite kod za posebni popust u Bingo City Centru!</p>
+              </div>
+              <button
+                onClick={() => handleCloseVictoryModal('finale')}
+                className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95"
+              >
+                Preuzmi Nagradu & Završi 👑
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* TOP FLOATING NAVIGATION HUB */}
       <div className="absolute top-4 inset-x-0 mx-auto z-10 w-[92%] max-w-md">

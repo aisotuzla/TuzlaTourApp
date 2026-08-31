@@ -100,10 +100,6 @@ export const QUEST_TARGETS = [
 ];
 
 export const POI_COLORS: Record<string, string> = {
-    '1': '#06b6d4',
-    '3': '#e2e8f0',
-    '4': '#84cc16',
-    '5': '#ec4899',
     'mesa_selimovic': '#4d068fff',
     'trg_slobode': '#10b981',
     'galerija': '#afcbf8ff',
@@ -114,4 +110,6 @@ export const POI_COLORS: Record<string, string> = {
     'slana_banja': '#cf0404ff',
     'atelje_ismet': '#8b5cf6',
     'bingo_city_centar': '#145a03ff',
+    'salt_square': '#f59e0b',
+    'palancinkara': '#ec4899',
 };

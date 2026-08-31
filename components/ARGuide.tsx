@@ -25,6 +25,7 @@ import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { useGeoapifyRoute } from '../hooks/useGeoapifyRoute';
 import { ARPolylineCanvas } from './ARPolylineCanvas';
 import { QrScannerModal } from './QrScannerModal';
+import { POI_COLORS } from './Route_POI_QUEST_TARGET';
 
 interface ARGuideProps {
   lang: Language;
@@ -187,9 +188,8 @@ const ARMarker: React.FC<{
   return (
     <div
       ref={domRef}
-      className={`absolute pointer-events-auto transition-all duration-150 will-change-transform [display:none] ${
-        isOtherDimmed ? 'opacity-20 blur-[2px] pointer-events-none scale-75' : 'opacity-100'
-      }`}
+      className={`absolute pointer-events-auto transition-all duration-150 will-change-transform [display:none] ${isOtherDimmed ? 'opacity-20 blur-[2px] pointer-events-none scale-75' : 'opacity-100'
+        }`}
     >
       <button
         onClick={() => onSelect(location, currentDistState.current)}
@@ -197,9 +197,8 @@ const ARMarker: React.FC<{
       >
         <div className="relative">
           <div
-            className={`absolute inset-0 ${colors[0]} rounded-full blur-md ${
-              isFocusedTarget ? 'animate-ping opacity-90' : 'animate-pulse opacity-60'
-            }`}
+            className={`absolute inset-0 ${colors[0]} rounded-full blur-md ${isFocusedTarget ? 'animate-ping opacity-90' : 'animate-pulse opacity-60'
+              }`}
           />
           <div
             className={`relative w-14 h-14 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center border-4 ${colors[1]} shadow-2xl group-hover:scale-110 transition-transform`}
@@ -212,9 +211,8 @@ const ARMarker: React.FC<{
           </div>
         </div>
         <div
-          className={`mt-2 px-4 py-1.5 ${
-            isFocusedTarget ? 'bg-amber-950/90 border-amber-400' : 'bg-slate-950/85 border-white/30'
-          } backdrop-blur-md rounded-full border shadow-xl flex items-center gap-1.5`}
+          className={`mt-2 px-4 py-1.5 ${isFocusedTarget ? 'bg-amber-950/90 border-amber-400' : 'bg-slate-950/85 border-white/30'
+            } backdrop-blur-md rounded-full border shadow-xl flex items-center gap-1.5`}
         >
           <span className="text-white text-xs font-black whitespace-nowrap tracking-wide">
             {location.name[lang] || location.name.en}
@@ -300,7 +298,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
         try {
           navigator.vibrate([100, 50, 100]);
-        } catch (_) {}
+        } catch (_) { }
       }
       setIsQrModalOpen(true);
     },
@@ -565,240 +563,325 @@ export const ARGuide: React.FC<ARGuideProps> = ({
     targetRelativeBearing !== null && Math.abs(targetRelativeBearing) <= 15;
 
   return (
-    <div className="relative w-full h-[calc(100vh-88px)] bg-slate-950 overflow-hidden select-none">
-      {/* 1. CAMERA & PASS-THROUGH VIEWPORT */}
-      {cameraActive ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
-        />
-      ) : (
-        <div className="absolute inset-0 w-full h-full bg-slate-950">
-          <iframe
-            src="/assets/Gallery/QuestQRLocations/Tvrko%20pannellum/pannellum/pannellum.htm?panorama=../tz.jpg&autoLoad=true"
-            className="w-full h-full border-none pointer-events-auto opacity-80"
-            title="Tuzla 360 Panorama"
-            allow="gyroscope; accelerometer"
-            allowFullScreen
+    <div className="relative w-full h-[calc(100vh-88px)] bg-slate-950 overflow-hidden select-none flex flex-col font-quicksand">
+      {/* TOP 40% - AR VIEWPORT & CAMERA */}
+      <div className="relative w-full h-[40%] flex-shrink-0 bg-slate-950 overflow-hidden border-b border-amber-500/40 shadow-xl">
+        {/* 1. CAMERA & PASS-THROUGH VIEWPORT */}
+        {cameraActive ? (
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
-        </div>
-      )}
+        ) : (
+          <div className="absolute inset-0 w-full h-full bg-slate-950">
+            <iframe
+              src="/assets/Gallery/QuestQRLocations/Tvrko%20pannellum/pannellum/pannellum.htm?panorama=../tz.jpg&autoLoad=true"
+              className="w-full h-full border-none pointer-events-auto opacity-80"
+              title="Tuzla 360 Panorama"
+              allow="gyroscope; accelerometer"
+              allowFullScreen
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
+          </div>
+        )}
 
-      {/* 2. REAL-TIME 3D CANVAS PATH POLYLINE LAYER */}
-      {permissionGranted && (
-        <ARPolylineCanvas
-          polyline={fullPolyline}
-          userLocation={userLocationState}
-          orientation={orientationState}
-          maxHorizonMeters={40}
-          isActive={viewMode === 'AR' && isForeground}
-        />
-      )}
+        {/* 2. REAL-TIME 3D CANVAS PATH POLYLINE LAYER */}
+        {permissionGranted && (
+          <ARPolylineCanvas
+            polyline={fullPolyline}
+            userLocation={userLocationState}
+            orientation={orientationState}
+            maxHorizonMeters={40}
+            isActive={viewMode === 'AR' && isForeground}
+          />
+        )}
 
-      {/* 3. DYNAMIC 3D AR POI MARKERS */}
-      {permissionGranted && (
-        <div
-          className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${
-            viewMode === 'AR' ? 'opacity-100' : 'opacity-20'
-          }`}
-        >
-          {LOCATIONS.map((loc) => {
-            if (!markerRefs.current[loc.id]) {
-              markerRefs.current[loc.id] = { dom: null, dist: null, currentDist: Infinity };
-            }
-            const refs = markerRefs.current[loc.id];
-            const isFocused = targetPoi?.id === loc.id;
-            const isDimmed = !!targetPoi && targetPoi.id !== loc.id;
+        {/* 3. DYNAMIC 3D AR POI MARKERS */}
+        {permissionGranted && (
+          <div
+            className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${viewMode === 'AR' ? 'opacity-100' : 'opacity-20'
+              }`}
+          >
+            {LOCATIONS.map((loc) => {
+              if (!markerRefs.current[loc.id]) {
+                markerRefs.current[loc.id] = { dom: null, dist: null, currentDist: Infinity };
+              }
+              const refs = markerRefs.current[loc.id];
+              const isFocused = targetPoi?.id === loc.id;
+              const isDimmed = !!targetPoi && targetPoi.id !== loc.id;
 
-            return (
-              <ARMarker
-                key={loc.id}
-                location={loc}
-                lang={lang}
-                isFocusedTarget={isFocused}
-                isOtherDimmed={isDimmed}
-                onSelect={(l, d) => setSelectedLocation({ loc: l, dist: d })}
-                domRef={{
-                  get current() {
-                    return refs.dom;
-                  },
-                  set current(v) {
-                    refs.dom = v;
-                  },
-                }}
-                distRef={{
-                  get current() {
-                    return refs.dist;
-                  },
-                  set current(v) {
-                    refs.dist = v;
-                  },
-                }}
-                currentDistState={{
-                  get current() {
-                    return refs.currentDist;
-                  },
-                  set current(v) {
-                    refs.currentDist = v;
-                  },
-                }}
-              />
-            );
-          })}
-        </div>
-      )}
+              return (
+                <ARMarker
+                  key={loc.id}
+                  location={loc}
+                  lang={lang}
+                  isFocusedTarget={isFocused}
+                  isOtherDimmed={isDimmed}
+                  onSelect={(l, d) => setSelectedLocation({ loc: l, dist: d })}
+                  domRef={{
+                    get current() {
+                      return refs.dom;
+                    },
+                    set current(v) {
+                      refs.dom = v;
+                    },
+                  }}
+                  distRef={{
+                    get current() {
+                      return refs.dist;
+                    },
+                    set current(v) {
+                      refs.dist = v;
+                    },
+                  }}
+                  currentDistState={{
+                    get current() {
+                      return refs.currentDist;
+                    },
+                    set current(v) {
+                      refs.currentDist = v;
+                    },
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
 
-      {/* 4. QUEST FOCUS MODE: CENTER VISION TARGET RETICLE (±15°) */}
-      {permissionGranted && targetPoi && isTargetInCenterVision && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
-          <div className="relative flex flex-col items-center justify-center animate-in zoom-in-95 duration-200">
-            {/* Pulsing Target Ring */}
-            <div className="absolute w-44 h-44 rounded-full border-2 border-amber-400/60 animate-ping" />
-            <div className="w-36 h-36 rounded-full border-4 border-dashed border-amber-400 flex items-center justify-center animate-spin-slow bg-amber-500/10 backdrop-blur-[2px] shadow-[0_0_50px_rgba(245,158,11,0.5)]">
-              <div className="w-16 h-16 rounded-full border-2 border-white flex items-center justify-center">
-                <Target className="w-8 h-8 text-amber-300 animate-pulse" />
+        {/* 4. QUEST FOCUS MODE: CENTER VISION TARGET RETICLE (±15°) */}
+        {permissionGranted && targetPoi && isTargetInCenterVision && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
+            <div className="relative flex flex-col items-center justify-center animate-in zoom-in-95 duration-200">
+              <div className="absolute w-32 h-32 rounded-full border-2 border-amber-400/60 animate-ping" />
+              <div className="w-24 h-24 rounded-full border-4 border-dashed border-amber-400 flex items-center justify-center animate-spin-slow bg-amber-500/10 backdrop-blur-[2px] shadow-[0_0_30px_rgba(245,158,11,0.5)]">
+                <div className="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center">
+                  <Target className="w-6 h-6 text-amber-300 animate-pulse" />
+                </div>
+              </div>
+              <div className="mt-2 px-3 py-1 bg-amber-950/90 border border-amber-400 rounded-full shadow-2xl flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                <span className="text-amber-300 text-[10px] font-black uppercase tracking-widest">
+                  {t.targetLocked} • {targetDistance ? `${Math.round(targetDistance)}m` : ''}
+                </span>
               </div>
             </div>
-            {/* Target Lock Badge */}
-            <div className="mt-4 px-4 py-1.5 bg-amber-950/90 border border-amber-400 rounded-full shadow-2xl flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span className="text-amber-300 text-xs font-black uppercase tracking-widest">
-                {t.targetLocked} • {targetDistance ? `${Math.round(targetDistance)}m` : ''}
+          </div>
+        )}
+
+        {/* 5. SIDE HUD DIRECTIONAL GUIDANCE CHEVRONS (>15°) */}
+        {permissionGranted && (targetPoi || activeStep) && (
+          <>
+            <div
+              className={`absolute left-3 top-1/2 -translate-y-1/2 z-40 pointer-events-none transition-all duration-300 ${isTargetOffscreenLeft ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'
+                }`}
+            >
+              <div className="flex items-center gap-1.5 bg-amber-950/90 border border-amber-400/80 px-3 py-2 rounded-2xl backdrop-blur-md shadow-2xl animate-pulse">
+                <ChevronLeft className="w-6 h-6 text-amber-400 animate-bounce" />
+                <div className="flex flex-col">
+                  <span className="text-amber-400 font-black text-[10px] uppercase tracking-widest">
+                    {targetRelativeBearing !== null
+                      ? t.turnLeft(Math.round(Math.abs(targetRelativeBearing)))
+                      : 'LEFT'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className={`absolute right-3 top-1/2 -translate-y-1/2 z-40 pointer-events-none transition-all duration-300 ${isTargetOffscreenRight ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6'
+                }`}
+            >
+              <div className="flex items-center gap-1.5 bg-amber-950/90 border border-amber-400/80 px-3 py-2 rounded-2xl backdrop-blur-md shadow-2xl animate-pulse">
+                <div className="flex flex-col text-right">
+                  <span className="text-amber-400 font-black text-[10px] uppercase tracking-widest">
+                    {targetRelativeBearing !== null
+                      ? t.turnRight(Math.round(targetRelativeBearing))
+                      : 'RIGHT'}
+                  </span>
+                </div>
+                <ChevronRight className="w-6 h-6 text-amber-400 animate-bounce" />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* TOP CONTROLS BADGE */}
+        <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-30 pointer-events-none">
+          {!targetPoi && (
+            <div className="pointer-events-auto bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-2 shadow-lg">
+              <div className={`w-2 h-2 rounded-full animate-pulse ${cameraActive ? 'bg-emerald-400' : 'bg-blue-400'}`} />
+              <span className="text-white text-[10px] font-black uppercase tracking-widest">
+                {cameraActive ? t.cameraActive : t.compassMode}
               </span>
             </div>
+          )}
+
+          <div className="flex gap-2 pointer-events-auto ml-auto">
+            <button
+              onClick={() => setViewMode(viewMode === 'AR' ? 'HORIZON' : 'AR')}
+              className="bg-blue-600/90 hover:bg-blue-600 p-2 rounded-xl border border-white/20 text-white shadow-xl backdrop-blur-md transition-all active:scale-95 flex items-center gap-1 px-2.5"
+            >
+              {viewMode === 'AR' ? <Compass className="w-4 h-4" /> : <Camera className="w-4 h-4" />}
+              <span className="text-[10px] font-bold uppercase tracking-wider">{viewMode}</span>
+            </button>
+            <button
+              onClick={() => setShowHelp(!showHelp)}
+              className="bg-slate-900/80 hover:bg-slate-800 p-2 rounded-xl border border-white/20 text-white shadow-xl backdrop-blur-md transition-all active:scale-95"
+            >
+              <Info className="w-4 h-4" />
+            </button>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* 5. SIDE HUD DIRECTIONAL GUIDANCE CHEVRONS (>15°) */}
-      {permissionGranted && (targetPoi || activeStep) && (
-        <>
-          {/* LEFT CHEVRON */}
-          <div
-            className={`absolute left-4 top-1/2 -translate-y-1/2 z-40 pointer-events-none transition-all duration-300 ${
-              isTargetOffscreenLeft ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'
-            }`}
-          >
-            <div className="flex items-center gap-2 bg-amber-950/90 border border-amber-400/80 px-4 py-3 rounded-3xl backdrop-blur-md shadow-2xl animate-pulse">
-              <ChevronLeft className="w-8 h-8 text-amber-400 animate-bounce" />
-              <div className="flex flex-col">
-                <span className="text-amber-400 font-black text-xs uppercase tracking-widest">
-                  {targetRelativeBearing !== null
-                    ? t.turnLeft(Math.round(Math.abs(targetRelativeBearing)))
-                    : 'LEFT'}
-                </span>
-                <span className="text-white text-[11px] font-bold truncate max-w-[120px]">
-                  {targetPoi ? targetPoi.name[lang] || targetPoi.name.en : activeStep?.text}
-                </span>
-              </div>
-            </div>
+      {/* BOTTOM 60% - AR GUIDE SCREEN DASHBOARD */}
+      <div className="relative w-full h-[60%] flex-1 bg-slate-900/95 backdrop-blur-2xl overflow-y-auto p-4 space-y-4 border-t border-amber-500/40 rounded-t-[2.5rem] shadow-2xl flex flex-col">
+        {/* COMPASS CALIBRATION BADGE */}
+        {headingAccuracy !== null && headingAccuracy > 20 && (
+          <div className="w-full bg-amber-500/90 text-slate-950 px-4 py-2 rounded-2xl text-xs font-black uppercase text-center animate-pulse shadow-md border border-amber-300">
+            ⚠️ {t.calibrationNeeded}
           </div>
+        )}
 
-          {/* RIGHT CHEVRON */}
-          <div
-            className={`absolute right-4 top-1/2 -translate-y-1/2 z-40 pointer-events-none transition-all duration-300 ${
-              isTargetOffscreenRight ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6'
-            }`}
-          >
-            <div className="flex items-center gap-2 bg-amber-950/90 border border-amber-400/80 px-4 py-3 rounded-3xl backdrop-blur-md shadow-2xl animate-pulse">
-              <div className="flex flex-col text-right">
-                <span className="text-amber-400 font-black text-xs uppercase tracking-widest">
-                  {targetRelativeBearing !== null
-                    ? t.turnRight(Math.round(targetRelativeBearing))
-                    : 'RIGHT'}
-                </span>
-                <span className="text-white text-[11px] font-bold truncate max-w-[120px]">
-                  {targetPoi ? targetPoi.name[lang] || targetPoi.name.en : activeStep?.text}
-                </span>
-              </div>
-              <ChevronRight className="w-8 h-8 text-amber-400 animate-bounce" />
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* 6. TOP TURN-BY-TURN INSTRUCTION BANNER (HUD) */}
-      {permissionGranted && targetPoi && activeStep && (
-        <div className="absolute top-4 inset-x-4 z-40 animate-in slide-in-from-top-4 duration-300">
-          <div className="bg-slate-900/90 backdrop-blur-xl border border-amber-400/50 rounded-3xl p-4 shadow-2xl flex items-center justify-between gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center shrink-0">
+        {/* TURN-BY-TURN GUIDANCE BANNER */}
+        {permissionGranted && targetPoi && activeStep && (
+          <div className="bg-slate-950/90 border border-amber-400/50 rounded-2xl p-4 shadow-xl flex items-center justify-between gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center shrink-0">
               {activeStep.type.includes('Right') ? (
-                <Navigation className="w-6 h-6 rotate-90 text-amber-400" />
+                <Navigation className="w-5 h-5 rotate-90 text-amber-400" />
               ) : activeStep.type.includes('Left') ? (
-                <Navigation className="w-6 h-6 -rotate-90 text-amber-400" />
+                <Navigation className="w-5 h-5 -rotate-90 text-amber-400" />
               ) : activeStep.type.includes('Arrival') ? (
-                <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
               ) : (
-                <Navigation className="w-6 h-6 text-emerald-400" />
+                <Navigation className="w-5 h-5 text-emerald-400" />
               )}
             </div>
             <div className="flex-1 overflow-hidden">
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/30">
+                <span className="text-[9px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/30">
                   {t.stepOf(activeStepIndex + 1, steps.length)}
                 </span>
-                <span className="text-[10px] font-bold text-slate-400 truncate">
-                  Target: {targetPoi.name[lang] || targetPoi.name.en}
+                <span className="text-[10px] font-bold text-slate-300 truncate">
+                  {targetPoi.name[lang] || targetPoi.name.en}
                 </span>
               </div>
-              <h3 className="text-sm font-black text-white leading-snug truncate">{activeStep.text}</h3>
-              <p className="text-[11px] font-bold text-amber-300/90 mt-0.5">
+              <h3 className="text-xs font-black text-white leading-snug truncate">{activeStep.text}</h3>
+              <p className="text-[10px] font-bold text-amber-300/90 mt-0.5">
                 {Math.round(distanceToNextStep)} m {t.toTurn} • {Math.round(distanceToDestination)} m {t.totalRemaining}
               </p>
             </div>
             <button
               onClick={handleClearQuestTarget}
               title={t.endNavigation}
-              className="p-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-all shrink-0"
+              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-all shrink-0"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* TOP HEADER CONTROLS */}
-      <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-30 pointer-events-none">
-        {!targetPoi && (
-          <div className="pointer-events-auto bg-slate-900/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 flex items-center gap-2 shadow-lg">
-            <div className={`w-2.5 h-2.5 rounded-full animate-pulse ${cameraActive ? 'bg-emerald-400' : 'bg-blue-400'}`} />
-            <span className="text-white text-[11px] font-black uppercase tracking-widest">
-              {cameraActive ? t.cameraActive : t.compassMode}
-            </span>
           </div>
         )}
 
-        <div className="flex gap-2 pointer-events-auto ml-auto">
-          <button
-            onClick={() => setViewMode(viewMode === 'AR' ? 'HORIZON' : 'AR')}
-            className="bg-blue-600/90 hover:bg-blue-600 p-2.5 rounded-2xl border border-white/20 text-white shadow-xl backdrop-blur-md transition-all active:scale-95 flex items-center gap-1.5 px-3"
-          >
-            {viewMode === 'AR' ? <Compass className="w-5 h-5" /> : <Camera className="w-5 h-5" />}
-            <span className="text-xs font-bold uppercase tracking-wider">{viewMode}</span>
-          </button>
-          <button
-            onClick={() => setShowHelp(!showHelp)}
-            className="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-white/20 text-white shadow-xl backdrop-blur-md transition-all active:scale-95"
-          >
-            <Info className="w-5 h-5" />
-          </button>
+        {/* SELECTED POI CARD */}
+        {selectedLocation && !targetPoi && (
+          <div className="bg-slate-950/90 rounded-2xl p-4 shadow-xl border border-amber-400/40 text-white space-y-3">
+            <div className="flex justify-between items-start">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">
+                  {selectedLocation.loc.category}
+                </span>
+                <h3 className="text-lg font-black text-white">
+                  {selectedLocation.loc.name[lang] || selectedLocation.loc.name.en}
+                </h3>
+                <p className="text-xs text-amber-300 font-bold mt-0.5">
+                  {t.metersAway(Math.round(selectedLocation.dist))}
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedLocation(null)}
+                className="p-1.5 bg-white/10 rounded-full text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-slate-300 text-xs leading-relaxed line-clamp-2">
+              {selectedLocation.loc.description[lang] || selectedLocation.loc.description.en}
+            </p>
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              <button
+                onClick={() => handleStartQuestTarget(selectedLocation.loc)}
+                className="py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
+              >
+                <Target className="w-4 h-4" />
+                {t.startGuide}
+              </button>
+              <button
+                onClick={() => onNavigate?.(selectedLocation.loc)}
+                className="py-2.5 bg-white/10 border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 active:scale-95 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
+              >
+                <MapPin className="w-4 h-4" />
+                {t.viewOnMap}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* POI QUEST LOCATIONS DASHBOARD LIST */}
+        <div className="space-y-2 flex-1">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-xs font-black uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
+              <MapPin className="w-4 h-4" />
+              {lang === 'bs' ? 'Znamenitosti & Vodič' : 'Landmarks & Guide'}
+            </h4>
+            <span className="text-[10px] font-bold text-slate-400">
+              {LOCATIONS.length} {lang === 'bs' ? 'lokacija' : 'locations'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2">
+            {LOCATIONS.map((loc) => {
+              const isUnlocked = localUnlockedRewards.includes(loc.id);
+              const isSelected = selectedLocation?.loc.id === loc.id;
+              const customColor = POI_COLORS[loc.id] || '#3b82f6';
+
+              return (
+                <div
+                  key={loc.id}
+                  onClick={() => handleStartQuestTarget(loc)}
+                  className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${isSelected
+                      ? 'bg-amber-500/20 border-amber-400 shadow-lg'
+                      : 'bg-slate-950/70 border-white/10 hover:border-amber-400/40'
+                    }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs text-white shadow-md"
+                      style={{ backgroundColor: customColor }}
+                    >
+                      {isUnlocked ? '★' : '📍'}
+                    </div>
+                    <div>
+                      <h5 className="text-xs font-extrabold text-white">
+                        {loc.name[lang] || loc.name.en}
+                      </h5>
+                      <span className="text-[10px] font-bold text-slate-400">
+                        {loc.category} • {isUnlocked ? (lang === 'bs' ? 'Otključano' : 'Unlocked') : (lang === 'bs' ? 'Dodirnite za AR Vodič' : 'Tap for AR Guide')}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* COMPASS CALIBRATION WARNING */}
-      {headingAccuracy !== null && headingAccuracy > 20 && (
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-amber-500/90 text-slate-950 px-4 py-1.5 rounded-full text-xs font-black uppercase z-50 animate-pulse shadow-xl border border-amber-300">
-          ⚠️ {t.calibrationNeeded}
-        </div>
-      )}
-
       {/* HELP MODAL */}
       {showHelp && (
-        <div className="absolute top-20 left-4 right-4 bg-slate-900/95 border border-amber-400/40 rounded-3xl p-5 text-white text-xs z-50 shadow-2xl backdrop-blur-xl animate-in fade-in duration-200">
+        <div className="absolute top-16 left-4 right-4 bg-slate-900/95 border border-amber-400/40 rounded-3xl p-5 text-white text-xs z-50 shadow-2xl backdrop-blur-xl animate-in fade-in duration-200">
           <div className="flex justify-between items-center mb-2">
             <h4 className="font-black text-amber-400 uppercase tracking-widest">{t.instructionsTitle}</h4>
             <button onClick={() => setShowHelp(false)} className="text-slate-400 hover:text-white">
@@ -811,64 +894,18 @@ export const ARGuide: React.FC<ARGuideProps> = ({
         </div>
       )}
 
-      {/* 7. SELECTED POI ACTION MODAL */}
-      {selectedLocation && !targetPoi && (
-        <div className="absolute inset-x-4 bottom-12 z-50 animate-in slide-in-from-bottom duration-300">
-          <div className="bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-6 shadow-2xl border border-amber-400/40 text-white">
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">
-                  {selectedLocation.loc.category}
-                </span>
-                <h3 className="text-xl font-black text-white">
-                  {selectedLocation.loc.name[lang] || selectedLocation.loc.name.en}
-                </h3>
-                <p className="text-xs text-amber-300 font-bold mt-0.5">
-                  {t.metersAway(Math.round(selectedLocation.dist))}
-                </p>
-              </div>
-              <button
-                onClick={() => setSelectedLocation(null)}
-                className="p-2 bg-white/10 rounded-full text-slate-300 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <p className="text-slate-300 text-xs leading-relaxed mb-5 line-clamp-3">
-              {selectedLocation.loc.description[lang] || selectedLocation.loc.description.en}
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => handleStartQuestTarget(selectedLocation.loc)}
-                className="py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black rounded-2xl shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
-              >
-                <Target className="w-5 h-5" />
-                {t.startGuide}
-              </button>
-              <button
-                onClick={() => onNavigate?.(selectedLocation.loc)}
-                className="py-3 bg-white/10 border border-white/20 text-white font-bold rounded-2xl hover:bg-white/20 active:scale-95 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
-              >
-                <MapPin className="w-5 h-5" />
-                {t.viewOnMap}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* START PERMISSION OVERLAY */}
       {!permissionGranted && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 z-50 p-8 text-center backdrop-blur-md">
-          <Compass className="w-20 h-20 text-amber-400 mb-6 animate-bounce" />
-          <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">{t.enableArSensors}</h2>
-          <p className="text-slate-300 text-xs max-w-xs mb-8 leading-relaxed">
+          <Compass className="w-16 h-16 text-amber-400 mb-4 animate-bounce" />
+          <h2 className="text-xl font-black text-white mb-2 uppercase tracking-tight">{t.enableArSensors}</h2>
+          <p className="text-slate-300 text-xs max-w-xs mb-6 leading-relaxed">
             {t.arSensorsDesc}
           </p>
           {error && <p className="text-amber-400 text-xs font-bold mb-4">{error}</p>}
           <button
             onClick={requestPermission}
-            className="px-10 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-base font-black rounded-2xl shadow-2xl hover:brightness-110 active:scale-95 transition-all"
+            className="px-8 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-sm font-black rounded-2xl shadow-2xl hover:brightness-110 active:scale-95 transition-all"
           >
             {t.startArTour}
           </button>

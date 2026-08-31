@@ -47,23 +47,24 @@ export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
 ];
 
 export const POI_COLORS: Record<string, string> = {
-  "1": "#06b6d4",
-  "3": "#e2e8f0",
-  "4": "#84cc16",
-  "5": "#ec4899",
-  "mesa_selimovic": "#0284c7",
-  "trg_slobode": "#10b981",
-  "galerija": "#3b82f6",
-  "banja": "#fbbf24",
-  "panonika": "#f97316",
-  "slapovi": "#0ea5e9",
-  "kapija": "#ef4444",
-  "tvrtko_park": "#f59e0b",
-  "slana_banja": "#a07403ff",
-
-  "atelje_ismet": "#8b5cf6",
-  "bingo_city_centar": "#2563eb"
+  'mesa_selimovic': '#4d068fff',
+  'trg_slobode': '#10b981',
+  'galerija': '#afcbf8ff',
+  'panonika': '#040e8fff',
+  'slapovi': '#0ea5e9',
+  'kapija': '#ef4444',
+  'tvrtko_park': '#18a506ff',
+  'slana_banja': '#cf0404ff',
+  'atelje_ismet': '#8b5cf6',
+  'bingo_city_centar': '#145a03ff',
+  'salt_square': '#f59e0b',
+  'palancinkara': '#ec4899',
 };
+
+export const PHASE_1_POIS = ['trg_slobode', 'kapija', 'mesa_selimovic'];
+export const PHASE_2_POIS = ['tvrtko_park', 'palancikara', 'salt_square'];
+export const PHASE_3_POIS = ['panonika', 'slapovi', 'slana_banja', 'atelje_ismet'];
+export const GRAND_FINALE_POIS = ['bingo_city_centar'];
 
 export const NFT_REWARD_IDS: string[] = ["panonika"];
 
