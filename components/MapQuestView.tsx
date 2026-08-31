@@ -868,7 +868,11 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       </div>
 
       {/* BOTTOM LEFT CONTROLS (LOCATION, RULES & LAYER SWITCHER) */}
-      <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2">
+      <div
+        className={`absolute z-20 flex items-center gap-2 transition-all duration-300 ${
+          showARGuide ? 'bottom-[62%] left-4' : 'bottom-4 left-4'
+        }`}
+      >
         <button
           onClick={() => {
             if (userLocation && map.current) {
@@ -905,7 +909,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
             initial={{ opacity: 0, y: 10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}
-            className="absolute bottom-16 left-4 z-30 w-64 p-3 bg-slate-900/95 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-2xl space-y-1.5"
+            className={`absolute z-30 w-64 p-3 bg-slate-900/95 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-2xl space-y-1.5 transition-all duration-300 ${
+              showARGuide ? 'bottom-[calc(62%+48px)] left-4' : 'bottom-16 left-4'
+            }`}
           >
             <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2 py-1 border-b border-white/5 flex items-center justify-between">
               <span>{lang === 'bs' ? 'Sloj Mape' : 'Map Layer'}</span>

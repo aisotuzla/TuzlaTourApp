@@ -896,19 +896,23 @@ export const ARGuide: React.FC<ARGuideProps> = ({
 
       {/* START PERMISSION OVERLAY */}
       {!permissionGranted && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 z-50 p-8 text-center backdrop-blur-md">
-          <Compass className="w-16 h-16 text-amber-400 mb-4 animate-bounce" />
-          <h2 className="text-xl font-black text-white mb-2 uppercase tracking-tight">{t.enableArSensors}</h2>
-          <p className="text-slate-300 text-xs max-w-xs mb-6 leading-relaxed">
-            {t.arSensorsDesc}
-          </p>
-          {error && <p className="text-amber-400 text-xs font-bold mb-4">{error}</p>}
-          <button
-            onClick={requestPermission}
-            className="px-8 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-sm font-black rounded-2xl shadow-2xl hover:brightness-110 active:scale-95 transition-all"
-          >
-            {t.startArTour}
-          </button>
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/95 z-[100] p-4 text-center backdrop-blur-xl overflow-y-auto">
+          <div className="max-w-xs w-full bg-slate-900/90 border border-amber-400/40 rounded-3xl p-5 shadow-2xl flex flex-col items-center space-y-3 my-auto">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center animate-bounce">
+              <Compass className="w-6 h-6 text-amber-400" />
+            </div>
+            <h2 className="text-sm font-black text-white uppercase tracking-wider">{t.enableArSensors}</h2>
+            <p className="text-[11px] text-slate-300 leading-snug font-medium">
+              {t.arSensorsDesc}
+            </p>
+            {error && <p className="text-amber-400 text-[10px] font-bold">{error}</p>}
+            <button
+              onClick={requestPermission}
+              className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black rounded-xl shadow-xl active:scale-95 transition-all uppercase tracking-wider"
+            >
+              {t.startArTour}
+            </button>
+          </div>
         </div>
       )}
 
