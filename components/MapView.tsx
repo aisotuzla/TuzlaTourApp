@@ -656,8 +656,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
         </button>
       </div>
 
-      {/* Floating Weather — sits below the nav button on the right */}
-      
+
 
       {/* Destination Preset Selector Modal */}
       <AnimatePresence>

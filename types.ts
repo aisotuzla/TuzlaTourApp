@@ -24,8 +24,17 @@ export interface WifiSpot {
 }
 
 
-export interface Location {
+export interface RouteStep {
+  id: string;
+  text: string;
+  type: string;
+  distance: number;
+  lat: number;
+  lng: number;
+  stepIndex: number;
+}
 
+export interface Location {
   id: string;
   name: Record<Language, string>;
   description: Record<Language, string>;

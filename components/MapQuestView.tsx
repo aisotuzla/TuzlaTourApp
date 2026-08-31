@@ -202,6 +202,14 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
     mapInstance.on('load', () => {
       setIsLoaded(true);
 
+      // Listen to pitch and rotate events to keep state in sync with gestures
+      mapInstance.on('pitch', () => {
+        setPitch(Math.round(mapInstance.getPitch()));
+      });
+      mapInstance.on('rotate', () => {
+        setBearing(Math.round(mapInstance.getBearing()));
+      });
+
       // Apply Geoapify paint overrides when primary style loads
       if (mapInstance.getStyle().name?.toLowerCase().includes('maptiler') ||
         (mapInstance as any)._requestedStyleURL?.includes('geoapify')) {
@@ -587,25 +595,33 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
       {/* MAIN MAP CONTAINER */}
       <div ref={mapContainer} className="h-full w-full" />
       {/* 3D Tilt Slider */}
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 bg-black/40 backdrop-blur-md p-2 rounded-xl">
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 bg-slate-900/90 backdrop-blur-xl p-2.5 rounded-2xl border border-blue-500/30 shadow-2xl z-20">
+        <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">3D</span>
         <input
           type="range"
-          min="0"
-          max="80"
+          min="15"
+          max="85"
           step="1"
           value={pitch}
-          onChange={e => setPitch(Number(e.target.value))}
-          className="w-2 h-40 transform rotate-180"
+          onChange={(e) => {
+            const val = Number(e.target.value);
+            setPitch(val);
+            if (map.current) {
+              map.current.setPitch(val);
+            }
+          }}
+          onInput={(e) => {
+            const val = Number((e.target as HTMLInputElement).value);
+            setPitch(val);
+            if (map.current) {
+              map.current.setPitch(val);
+            }
+          }}
+          className="w-2 h-36 accent-blue-500 cursor-pointer [writing-mode:vertical-lr] [direction:rtl]"
         />
-        <span className="text-xs text-white">{pitch}°</span>
+        <span className="text-[10px] font-bold text-white bg-blue-600/40 px-1.5 py-0.5 rounded-md border border-blue-400/30">{pitch}°</span>
       </div>
-      {/* Compass Direction Buttons */}
-      <div className="absolute left-4 bottom-20 flex flex-col gap-1 bg-black/40 backdrop-blur-md p-2 rounded-xl">
-        <button onClick={() => setBearing(0)} className="text-xs text-white hover:text-amber-300">N</button>
-        <button onClick={() => setBearing(90)} className="text-xs text-white hover:text-amber-300">E</button>
-        <button onClick={() => setBearing(180)} className="text-xs text-white hover:text-amber-300">S</button>
-        <button onClick={() => setBearing(270)} className="text-xs text-white hover:text-amber-300">W</button>
-      </div>
+
       {/* AR Guide Overlay */}
       {showARGuide && (
         <ARGuide
@@ -617,6 +633,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           }}
         />
       )}
+
       {/* TOP FLOATING NAVIGATION HUB */}
       <div className="absolute top-4 inset-x-0 mx-auto z-10 w-[92%] max-w-md">
         <div className="bg-slate-900/90 backdrop-blur-xl px-4 py-3 rounded-3xl border border-blue-500/30 shadow-2xl flex flex-col gap-2.5">
@@ -661,7 +678,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         </div>
       </div>
 
-      {/* BOTTOM LEFT CONTROLS (LOCATION & RULES) */}
+      {/* BOTTOM LEFT CONTROLS (LOCATION, RULES & LAYER SWITCHER) */}
       <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2">
         <button
           onClick={() => {
@@ -678,44 +695,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
         <button
           onClick={() => setShowRules((prev) => !prev)}
           className="w-10 h-10 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-blue-400/30 rounded-full shadow-lg text-blue-400 hover:text-white active:scale-95 transition-all"
+          title={lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}
         >
           <Info size={18} />
         </button>
-      </div>
-
-      {/* BOTTOM RIGHT FLOATING LAYER SWITCHER BUTTON & MENU */}
-      <div className="absolute bottom-16 right-4 z-20 flex flex-col items-end gap-2">
-        <AnimatePresence>
-          {showLayerMenu && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.9 }}
-              className="w-64 p-3 bg-slate-900/95 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-2xl space-y-1.5"
-            >
-              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2 py-1 border-b border-white/5 flex items-center justify-between">
-                <span>{lang === 'bs' ? 'Sloj Mape' : 'Map Layer'}</span>
-                <Layers size={12} className="text-blue-400" />
-              </div>
-              {MAP_LAYER_OPTIONS.map((layerOpt) => {
-                const isSelected = activeStyle === layerOpt.url;
-                return (
-                  <button
-                    key={layerOpt.id}
-                    onClick={() => handleSwitchLayer(layerOpt.url)}
-                    className={`w-full px-3 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-all ${isSelected
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
-                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
-                      }`}
-                  >
-                    <span className="truncate">{layerOpt.name[lang] || layerOpt.name.bs}</span>
-                    {isSelected && <Check size={14} className="shrink-0 text-white" />}
-                  </button>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         <button
           onClick={() => setShowLayerMenu((prev) => !prev)}
@@ -725,6 +708,39 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({
           <Layers size={18} />
         </button>
       </div>
+
+      {/* BOTTOM LEFT FLOATING LAYER MENU POPUP */}
+      <AnimatePresence>
+        {showLayerMenu && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
+            className="absolute bottom-16 left-4 z-30 w-64 p-3 bg-slate-900/95 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-2xl space-y-1.5"
+          >
+            <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2 py-1 border-b border-white/5 flex items-center justify-between">
+              <span>{lang === 'bs' ? 'Sloj Mape' : 'Map Layer'}</span>
+              <Layers size={12} className="text-blue-400" />
+            </div>
+            {MAP_LAYER_OPTIONS.map((layerOpt) => {
+              const isSelected = activeStyle === layerOpt.url;
+              return (
+                <button
+                  key={layerOpt.id}
+                  onClick={() => handleSwitchLayer(layerOpt.url)}
+                  className={`w-full px-3 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-all ${isSelected
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
+                    : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                    }`}
+                >
+                  <span className="truncate">{layerOpt.name[lang] || layerOpt.name.bs}</span>
+                  {isSelected && <Check size={14} className="shrink-0 text-white" />}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* RULES POPUP OVERLAY */}
       <AnimatePresence>
