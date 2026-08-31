@@ -563,7 +563,32 @@ export const ARGuide: React.FC<ARGuideProps> = ({
     targetRelativeBearing !== null && Math.abs(targetRelativeBearing) <= 15;
 
   return (
-    <div className="relative w-full h-[calc(100vh-88px)] bg-slate-950 overflow-hidden select-none flex flex-col font-quicksand">
+    <div className="relative w-full h-full bg-slate-950 overflow-hidden select-none flex flex-col font-quicksand">
+      {/* 0. TOP BANNER: ENABLE AR SENSORS / START AR TOUR BUTTON */}
+      {!permissionGranted && (
+        <div className="w-full bg-gradient-to-r from-amber-950 via-slate-900 to-amber-950 border-b-2 border-amber-400 p-2.5 px-4 flex items-center justify-between gap-3 shadow-2xl z-[200] shrink-0">
+          <div className="flex items-center gap-2.5 overflow-hidden">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center shrink-0 animate-bounce">
+              <Compass className="w-5 h-5 text-amber-400" />
+            </div>
+            <div className="truncate">
+              <h4 className="text-xs font-black text-amber-300 uppercase tracking-wider truncate">
+                {t.enableArSensors}
+              </h4>
+              <p className="text-[10px] text-slate-300 font-medium truncate">
+                {t.arSensorsDesc}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={requestPermission}
+            className="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs font-black rounded-xl shadow-lg ring-2 ring-amber-300/60 active:scale-95 transition-all uppercase tracking-wider shrink-0"
+          >
+            {t.startArTour}
+          </button>
+        </div>
+      )}
+
       {/* TOP 40% - AR VIEWPORT & CAMERA */}
       <div className="relative w-full h-[40%] flex-shrink-0 bg-slate-950 overflow-hidden border-b border-amber-500/40 shadow-xl">
         {/* 1. CAMERA & PASS-THROUGH VIEWPORT */}
@@ -891,28 +916,6 @@ export const ARGuide: React.FC<ARGuideProps> = ({
           <p className="text-slate-300 leading-relaxed font-medium">
             {t.instructionsDesc}
           </p>
-        </div>
-      )}
-
-      {/* START PERMISSION OVERLAY */}
-      {!permissionGranted && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/95 z-[100] p-4 text-center backdrop-blur-xl overflow-y-auto">
-          <div className="max-w-xs w-full bg-slate-900/90 border border-amber-400/40 rounded-3xl p-5 shadow-2xl flex flex-col items-center space-y-3 my-auto">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center animate-bounce">
-              <Compass className="w-6 h-6 text-amber-400" />
-            </div>
-            <h2 className="text-sm font-black text-white uppercase tracking-wider">{t.enableArSensors}</h2>
-            <p className="text-[11px] text-slate-300 leading-snug font-medium">
-              {t.arSensorsDesc}
-            </p>
-            {error && <p className="text-amber-400 text-[10px] font-bold">{error}</p>}
-            <button
-              onClick={requestPermission}
-              className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black rounded-xl shadow-xl active:scale-95 transition-all uppercase tracking-wider"
-            >
-              {t.startArTour}
-            </button>
-          </div>
         </div>
       )}
 
