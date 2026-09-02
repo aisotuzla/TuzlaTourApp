@@ -11,6 +11,7 @@ import { tuzlaHotelData } from '../tuzlaHotelData';
 import { Hotel as HotelIcon } from 'lucide-react';
 import { QUEST_TARGETS } from '../constants/questData';
 import { motion, AnimatePresence } from 'framer-motion';
+import { flyToFirstPerson } from '../utils/geoUtils';
 
 
 interface MapViewProps {
@@ -157,6 +158,15 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
       for (let i = 0; i < popups.length; i++) {
         (popups[i] as HTMLElement).remove();
       }
+      // Cinematic first-person fly-in toward navigation target
+      if (map.current) {
+        const userPos = userLocationRef.current;
+        if (userPos) {
+          flyToFirstPerson(map.current, userPos[0], userPos[1], lat, lon);
+        } else {
+          map.current.flyTo({ center: [lon, lat], zoom: 17, pitch: 65, duration: 2000 });
+        }
+      }
     };
     return () => {
       delete (window as any).startNavigationFromPopup;
@@ -243,16 +253,24 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
       }
 
       const coordinates = routeFeature.geometry.coordinates;
-      if (coordinates && coordinates.length > 0) {
-        const bounds = new maplibregl.LngLatBounds();
-        coordinates.forEach((coord: [number, number]) => {
-          bounds.extend(coord);
-        });
-
-        map.current.fitBounds(bounds, {
-          padding: { top: 120, bottom: 240, left: 60, right: 60 },
-          duration: 1500
-        });
+      if (coordinates && coordinates.length > 0 && map.current) {
+        // First-person fly-in: orient camera to face the route direction
+        const userPos = userLocationRef.current;
+        if (userPos) {
+          const lookAheadIdx = Math.min(coordinates.length - 1, 3);
+          const lookAheadCoord = coordinates[lookAheadIdx];
+          flyToFirstPerson(map.current, userPos[0], userPos[1], lookAheadCoord[1], lookAheadCoord[0], { zoom: 18, duration: 2500 });
+        } else {
+          // Fallback: fitBounds if no user GPS
+          const bounds = new maplibregl.LngLatBounds();
+          coordinates.forEach((coord: [number, number]) => {
+            bounds.extend(coord);
+          });
+          map.current.fitBounds(bounds, {
+            padding: { top: 120, bottom: 240, left: 60, right: 60 },
+            duration: 1500
+          });
+        }
       }
 
     } catch (error) {
@@ -633,6 +651,15 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
             } else if (searchedTarget) {
               setSelectedTarget(searchedTarget);
               setIsNavigating(true);
+              // First-person fly-in toward the searched target
+              if (map.current) {
+                const userPos = userLocationRef.current;
+                if (userPos) {
+                  flyToFirstPerson(map.current, userPos[0], userPos[1], searchedTarget.lat, searchedTarget.lon);
+                } else {
+                  map.current.flyTo({ center: [searchedTarget.lon, searchedTarget.lat], zoom: 17, pitch: 65, duration: 2000 });
+                }
+              }
             } else {
               setIsPresetModalOpen(true);
             }
@@ -729,13 +756,23 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
                     <button
                       key={idx}
                       onClick={() => {
-                        setSelectedTarget({
+                        const target = {
                           name: poi.name[lang] ?? poi.name.en,
                           lat: poi.lat,
                           lon: poi.lon
-                        });
+                        };
+                        setSelectedTarget(target);
                         setIsNavigating(true);
                         setIsPresetModalOpen(false);
+                        // First-person fly-in toward POI
+                        if (map.current) {
+                          const userPos = userLocationRef.current;
+                          if (userPos) {
+                            flyToFirstPerson(map.current, userPos[0], userPos[1], poi.lat, poi.lon);
+                          } else {
+                            map.current.flyTo({ center: [poi.lon, poi.lat], zoom: 17, pitch: 65, duration: 2000 });
+                          }
+                        }
                       }}
                       className="w-full p-4 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
                     >
@@ -760,13 +797,23 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
                     <button
                       key={idx}
                       onClick={() => {
-                        setSelectedTarget({
+                        const target = {
                           name: hotel.name,
                           lat: hotel.latitude,
                           lon: hotel.longitude
-                        });
+                        };
+                        setSelectedTarget(target);
                         setIsNavigating(true);
                         setIsPresetModalOpen(false);
+                        // First-person fly-in toward hotel
+                        if (map.current) {
+                          const userPos = userLocationRef.current;
+                          if (userPos) {
+                            flyToFirstPerson(map.current, userPos[0], userPos[1], hotel.latitude, hotel.longitude);
+                          } else {
+                            map.current.flyTo({ center: [hotel.longitude, hotel.latitude], zoom: 17, pitch: 65, duration: 2000 });
+                          }
+                        }
                       }}
                       className="w-full p-4 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
                     >

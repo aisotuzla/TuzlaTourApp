@@ -9,7 +9,7 @@ import { Language } from '../types.ts';
 import { TUZLA_CENTER, LOCATIONS } from '../constants.tsx';
 import { useNetwork } from '../hooks/useNetwork.ts';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
-import { getDistance } from '../utils/geoUtils.ts';
+import { getDistance, flyToFirstPerson } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
 import { QUEST_TARGETS, POI_COLORS, ROUTE_POI_PRESETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES } from '../constants/questData.ts';
 import { NavigationHud } from './NavigationHud.tsx';
@@ -25,7 +25,7 @@ export interface MapQuestViewProps {
 const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   trg_slobode: { lat: 44.5395175, lon: 18.6749037 }, salt_square: { lat: 44.5382182, lon: 18.6759398 },
   palancinkara: { lat: 44.5383762, lon: 18.6775339 }, slana_banja: { lat: 44.5378167, lon: 18.6875664 },
-  panonika: { lat: 44.5385, lon: 18.6767 }, slapovi: { lat: 44.5404243, lon: 18.6819408 },
+  panonika: { lat: 44.538885, lon: 18.680012 }, slapovi: { lat: 44.5404243, lon: 18.6819408 },
   kapija: { lat: 44.53863, lon: 18.676805 }, atelje_ismet: { lat: 44.5371465, lon: 18.6810454 },
   bingo_city_centar: { lat: 44.532177, lon: 18.651743 }, mesa_selimovic: { lat: 44.5370993, lon: 18.6781216 },
   tvrtko_park: { lat: 44.5380826, lon: 18.6783327 },
@@ -186,7 +186,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       const description = matchedLoc?.description?.[lang] || matchedLoc?.description?.bs || matchedLoc?.description?.en || (lang === 'bs' ? 'Kulturna i historijska znamenitost grada Tuzle.' : 'Cultural and historical landmark of Tuzla.');
       const customPoiColor = POI_COLORS[target.id] || '#3b82f6';
       const el = document.createElement('div');
-      
+
       if (isCompletedFromPreviousPhase) {
         el.className = 'quest-target-marker transition-all duration-300 opacity-40 grayscale blur-[0.5px] scale-90';
       } else if (!isUnlocked) {
@@ -239,10 +239,20 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         map.current.addLayer({ id: 'route-layer', type: 'line', source: 'route-source', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#22c55e', 'line-width': 4, 'line-opacity': 0.9 } });
       }
       const coordinates = routeFeature.geometry.coordinates;
-      if (coordinates && coordinates.length > 0) {
-        const bounds = new maplibregl.LngLatBounds();
-        coordinates.forEach((coord: [number, number]) => bounds.extend(coord));
-        map.current.fitBounds(bounds, { padding: { top: 120, bottom: 240, left: 60, right: 60 }, duration: 1500 });
+      if (coordinates && coordinates.length > 0 && map.current) {
+        // First-person fly-in: use the route's first segment to determine facing direction
+        const userPos = userLocationRef.current;
+        if (userPos) {
+          // Use the 3rd or 4th waypoint of the route for a more accurate initial bearing
+          const lookAheadIdx = Math.min(coordinates.length - 1, 3);
+          const lookAheadCoord = coordinates[lookAheadIdx];
+          flyToFirstPerson(map.current, userPos[0], userPos[1], lookAheadCoord[1], lookAheadCoord[0], { zoom: 18, duration: 2500 });
+        } else {
+          // Fallback: fitBounds if no user position
+          const bounds = new maplibregl.LngLatBounds();
+          coordinates.forEach((coord: [number, number]) => bounds.extend(coord));
+          map.current.fitBounds(bounds, { padding: { top: 120, bottom: 240, left: 60, right: 60 }, duration: 1500 });
+        }
       }
     } catch (error) {
       console.warn('Geoapify route fallback triggered:', error);
@@ -482,9 +492,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
       {/* TOP HUD CONTAINER WITH HIDE / SHOW ANIMATION */}
       <div
-        className={`absolute top-3 inset-x-0 mx-auto z-30 w-[92%] max-w-md transition-transform duration-300 ease-in-out pointer-events-auto ${
-          isHudHidden ? '-translate-y-[calc(100%+16px)] pointer-events-none' : 'translate-y-0'
-        }`}
+        className={`absolute top-3 inset-x-0 mx-auto z-30 w-[92%] max-w-md transition-transform duration-300 ease-in-out pointer-events-auto ${isHudHidden ? '-translate-y-[calc(100%+16px)] pointer-events-none' : 'translate-y-0'
+          }`}
       >
         <div className="bg-slate-900/95 backdrop-blur-xl px-4 py-3 rounded-3xl border border-blue-500/30 shadow-2xl flex flex-col gap-2.5 relative">
           <div className="flex items-center justify-between">
