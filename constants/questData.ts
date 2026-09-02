@@ -68,3 +68,23 @@ export const GRAND_FINALE_POIS = ['bingo_city_centar'];
 
 export const NFT_REWARD_IDS: string[] = ["panonika"];
 
+export const QUEST_GAME_RULES: Record<Language, { title: string; text: string }> = {
+  bs: {
+    title: 'Pravila igre potrage',
+    text: 'Pronađite označene lokacije na mapi grada. Pratite GPS navigaciju ili AR vodič. Kada stignete na lokaciju, pronađite QR kod i skenirajte ga kako biste otključali sljedeće nivoe igre i osvojili nagrade.',
+  },
+  en: {
+    title: 'Quest Game Rules',
+    text: 'Find the marked locations on the city map. Follow the GPS navigation or the AR guide. Once at the location, find the QR code and scan it to unlock the next game levels and win rewards.',
+  },
+  de: {
+    title: 'Regeln für das Suchspiel',
+    text: 'Finden Sie die markierten Orte auf der Stadtkarte. Folgen Sie der GPS-Navigation oder dem AR-Guide. Finden Sie vor Ort den QR-Code und scannen Sie ihn, um die nächsten Spiel-Level und Belohnungen freizuschalten.',
+  },
+  tr: {
+    title: 'Keşif Oyunu Kuralları',
+    text: 'Şehir haritasında işaretlenmiş konumları bulun. GPS navigasyonunu veya AR rehberini takip edin. Konuma ulaştığınızda QR kodunu bulun ve bir sonraki oyun seviyelerinin ve ödüllerin kilidini açmak için kodu tarayın.',
+  },
+};
+
+

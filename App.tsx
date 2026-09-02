@@ -6,7 +6,7 @@ import { Menu } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
-
+import { Analytics } from "@vercel/analytics/react"
 import Sidebar from './components/Sidebar';
 import LandingPage from './components/LandingPage';
 import SecurityGuard from './components/SecurityGuard';
@@ -20,7 +20,7 @@ import { AppTab } from './types';
 import { ImageProvider } from './hooks/ImageContext';
 import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
 import { useDraggablePopups } from './hooks/useDraggablePopups';
-
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import ARGuide from './components/ARGuide';
 
 const MapView = React.lazy(() => import('./components/MapView'));
