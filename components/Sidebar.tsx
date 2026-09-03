@@ -34,59 +34,50 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
       id: AppTab.LANDING,
       icon: Home,
       label: { en: 'Home', bs: 'Početna', de: 'Startseite', tr: 'Ana Sayfa' },
-      color: 'bg-blue-50 text-blue-600'
     },
     {
       id: AppTab.CITY_GUIDE,
       icon: BookOpen,
       label: { en: 'City Guide', bs: 'Gradski Vodič', de: 'Stadtführer', tr: 'Şehir Rehberi' },
       isHeader: true,
-      color: 'text-blue-900'
     },
     {
       id: AppTab.HISTORY,
       icon: HistoryIcon,
       label: { en: 'History', bs: 'Historija', de: 'Geschichte', tr: 'Tarih' },
       isSubItem: true,
-      color: 'bg-blue-50/50 text-blue-800'
     },
     {
       id: AppTab.FOOD,
       icon: Utensils,
       label: { en: 'Food', bs: 'Hrana', de: 'Essen', tr: 'Yemek' },
       isSubItem: true,
-      color: 'bg-blue-50/30 text-blue-700'
     },
     {
       id: AppTab.ACCOMMODATION,
       icon: Bed,
       label: { en: 'Accommodation', bs: 'Smještaj', de: 'Unterkunft', tr: 'Konaklama' },
       isSubItem: true,
-      color: 'bg-blue-50/10 text-blue-600'
     },
     {
       id: AppTab.MAP,
       icon: Map,
       label: { en: 'Map', bs: 'Mapa', de: 'Karte', tr: 'Harita' },
-      color: 'bg-blue-100 text-blue-700'
     },
     {
       id: AppTab.QUEST,
       icon: Gamepad2,
       label: { en: 'Quest', bs: 'Potraga', de: 'Quest', tr: 'Görev' },
-      color: 'bg-blue-200 text-blue-800'
     },
     {
       id: AppTab.TASK_MANAGER,
       icon: CheckSquare,
       label: { en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
-      color: 'bg-blue-400 text-blue-900'
     },
     {
       id: AppTab.WALLET,
       icon: Wallet,
       label: { en: 'Wallet', bs: 'Novčanik', de: 'Wallet', tr: 'Cüzdan' },
-      color: 'bg-blue-500 text-white'
     },
   ];
 
@@ -118,12 +109,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
           >
             {/* Header */}
             <div className="p-6 flex items-center justify-between border-b border-slate-100">
-
+              <span className="text-sm font-black uppercase tracking-widest text-blue-900 font-quicksand">Tuzla Tour</span>
               <button
                 onClick={() => onClose()}
-                className="p-2 rounded-full hover:bg-slate-100 transition-colors"
+                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
               >
-                <X className="w-6 h-6 text-slate-400" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -140,14 +131,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
                   <button
                     key={item.id}
                     onClick={() => { handleSelect(item.id); }}
-                    className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all group text-left ${isSubItem ? 'ml-6 w-[calc(100%-1.5rem)] py-2' : ''
-                      } ${isActive
-                        ? (item.id === AppTab.QUEST ? 'bg-amber-500 text-white shadow-xl scale-[1.02]' : 'bg-blue-600 text-white shadow-lg')
-                        : `${item.color} hover:opacity-100 hover:scale-[1.01]`
-                      } ${!isActive && !isHeader ? 'opacity-80' : ''}`}
+                    className={`w-full flex items-center gap-3.5 p-2.5 rounded-2xl transition-all duration-200 group text-left ${
+                      isSubItem ? 'ml-5 w-[calc(100%-1.25rem)] py-2' : ''
+                    } ${
+                      isActive
+                        ? item.id === AppTab.QUEST
+                          ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 border border-amber-400 font-black'
+                          : 'bg-blue-600 text-white shadow-md shadow-blue-600/20 border border-blue-500 font-black'
+                        : 'bg-slate-50 hover:bg-blue-50/80 text-slate-700 hover:text-blue-700 border border-slate-200/60 hover:border-blue-200/80'
+                    }`}
                   >
-                    <Icon className={`w-5 h-5 ${isActive ? 'scale-110' : 'group-hover:scale-110'} transition-transform`} />
-                    <span className={`tracking-wide ${isHeader ? 'text-lg font-black uppercase' : 'text-sm font-bold'}`}>
+                    <div className={`p-2 rounded-xl transition-all duration-200 shrink-0 ${
+                      isActive
+                        ? item.id === AppTab.QUEST
+                          ? 'bg-amber-400/30 text-slate-950'
+                          : 'bg-white/20 text-white'
+                        : 'bg-white text-slate-600 group-hover:text-blue-600 border border-slate-200/60 shadow-xs'
+                    }`}>
+                      <Icon className={`w-4 h-4 ${isActive ? 'scale-110' : 'group-hover:scale-110'} transition-transform`} />
+                    </div>
+                    <span className={`tracking-wide ${isHeader ? 'text-base font-extrabold uppercase text-blue-950' : 'text-sm font-bold'}`}>
                       {label}
                     </span>
                   </button>

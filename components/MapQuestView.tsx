@@ -9,12 +9,13 @@ import { Language } from '../types.ts';
 import { TUZLA_CENTER, LOCATIONS } from '../constants.tsx';
 import { useNetwork } from '../hooks/useNetwork.ts';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
-import { getDistance } from '../utils/geoUtils.ts';
+import { getDistance, flyToFirstPerson } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
 import { QUEST_TARGETS, POI_COLORS, ROUTE_POI_PRESETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES } from '../constants/questData.ts';
 import { NavigationHud } from './NavigationHud.tsx';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import ARGuide from './ARGuide.tsx';
+import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 
 export interface MapQuestViewProps {
   lang: Language; features: AppFeatures; unlockedRewards: string[];
@@ -95,9 +96,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     setActiveVictoryModal(null);
   };
 
-  const handleStartNavAndAR = (targetId: string, name: string, lat: number, lon: number) => {
+  const handleStartNavigation = (name: string, lat: number, lon: number) => {
     setSelectedNavTarget({ name, lat, lon });
     setIsNavigating(true);
+  };
+
+  const handleStartARGuide = (name: string, lat: number, lon: number) => {
+    setSelectedNavTarget({ name, lat, lon });
     setShowARGuide(true);
   };
 
@@ -108,9 +113,15 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
   useEffect(() => {
     (window as any).startNavigationFromPopup = (name: string, lat: number, lon: number) => {
-      handleStartNavAndAR(name, name, lat, lon);
+      handleStartNavigation(name, lat, lon);
     };
-    return () => { delete (window as any).startNavigationFromPopup; };
+    (window as any).startARFromPopup = (name: string, lat: number, lon: number) => {
+      handleStartARGuide(name, lat, lon);
+    };
+    return () => {
+      delete (window as any).startNavigationFromPopup;
+      delete (window as any).startARFromPopup;
+    };
   }, []);
 
   useEffect(() => {
@@ -187,17 +198,11 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       const customPoiColor = POI_COLORS[target.id] || '#3b82f6';
       const el = document.createElement('div');
 
-      if (isCompletedFromPreviousPhase) {
-        el.className = 'quest-target-marker transition-all duration-300 opacity-40 grayscale blur-[0.5px] scale-90';
-      } else if (!isUnlocked) {
-        el.className = 'quest-target-marker transition-all duration-300 opacity-75 brightness-[0.45] contrast-125 grayscale-[0.4] hover:scale-110';
-      } else {
-        el.className = 'quest-target-marker transition-all duration-300 opacity-100 hover:scale-125 brightness-110 shadow-lg';
-      }
+      el.className = 'quest-target-marker opacity-100';
 
-      el.innerHTML = `<div class="relative flex items-center justify-center cursor-pointer group" title="${title}"><div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-2xl transition-all border-2" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><span class="text-xs font-black text-white">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm" style="background-color: ${customPoiColor};"></div></div>`;
+      el.innerHTML = `<div class="relative flex items-center justify-center cursor-pointer group" title="${title}"><div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-2xl transition-transform duration-200 origin-bottom group-hover:scale-110 border-2" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 4px 14px ${customPoiColor}99;"><span class="text-xs font-black text-white">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm transition-transform duration-200 origin-bottom group-hover:scale-110" style="background-color: ${customPoiColor};"></div></div>`;
       const marker = new maplibregl.Marker(el).setLngLat([coords.lon, coords.lat]).addTo(map.current!);
-      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 220px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);"><div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;"><img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 6px;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="width: 100%; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 0; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66;">${lang === 'bs' ? '🧭 Navigacija & AR' : '🧭 Navigate & AR'}</button></div></div>`;
+      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 12px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border-radius: 20px; color: white; width: 230px; border: 1px solid ${customPoiColor}66; box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);"><div style="position: relative; overflow: hidden; border-radius: 12px; height: 105px; margin-bottom: 10px; background: #1e293b;"><img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 6px; right: 6px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 3px 8px; border-radius: 10px; font-weight: 900; font-size: 9px; backdrop-filter: blur(4px);">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 14px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 12px 0; color: #94a3b8; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 8px;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 12px; color: white; padding: 8px 0; font-weight: 800; font-size: 11px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); text-align: center;">🧭 ${lang === 'bs' ? 'Navigacija' : 'Navigate'}</button><button onclick="window.startARFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; background: linear-gradient(135deg, #9333ea, #7e22ce); border: none; border-radius: 12px; color: white; padding: 8px 0; font-weight: 800; font-size: 11px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4); text-align: center;">📷 ${lang === 'bs' ? 'AR Vodič' : 'AR Guide'}</button></div></div>`;
       const popup = new maplibregl.Popup({ offset: 25, closeButton: false, maxWidth: '240px' }).setHTML(popupHtml);
       marker.setPopup(popup);
       markersRef.current[target.id] = marker;
@@ -419,7 +424,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
               unlockedRewards={unlockedRewards}
               onRewardFound={onRewardFound}
               onNavigate={poi => {
-                handleStartNavAndAR(poi.id, poi.name[lang] || poi.name.bs, poi.coordinates[0], poi.coordinates[1]);
+                handleStartNavigation(poi.name[lang] || poi.name.bs, poi.coordinates[0], poi.coordinates[1]);
               }}
             />
           </div>
@@ -594,7 +599,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
                     const coords = QUEST_TARGET_COORDS[target.id];
                     const title = target.name[lang] || target.name.bs;
                     return (
-                      <button key={target.id} onClick={() => { if (coords) { handleStartNavAndAR(target.id, title, coords.lat, coords.lon); setIsPresetModalOpen(false); } }} className="w-full p-3.5 bg-white/5 hover:bg-amber-500/20 hover:border-amber-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left">
+                      <div key={target.id} className="w-full p-3.5 bg-white/5 border border-white/5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 group">
                         <div className="flex items-center gap-3.5">
                           <img src={target.Image} alt={title} className="w-12 h-12 rounded-xl object-cover border border-white/10 shadow-md" onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }} />
                           <div>
@@ -602,13 +607,26 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
                             <span className={`text-[10px] uppercase font-black tracking-wider ${isUnlocked ? 'text-amber-400' : 'text-blue-400/80'}`}>{isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2"><span className="text-xs font-bold text-amber-400 group-hover:underline">{lang === 'bs' ? 'Navigiraj & AR' : 'Navigate & AR'}</span><Route size={18} className="text-amber-400 group-hover:translate-x-1 transition-all" /></div>
-                      </button>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {coords && (
+                            <>
+                              <button onClick={() => { handleStartNavigation(title, coords.lat, coords.lon); setIsPresetModalOpen(false); }} className="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all active:scale-95 shadow-md">
+                                <Route size={14} />
+                                <span>{lang === 'bs' ? 'Navigacija' : 'Navigate'}</span>
+                              </button>
+                              <button onClick={() => { handleStartARGuide(title, coords.lat, coords.lon); setIsPresetModalOpen(false); }} className="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all active:scale-95 shadow-md">
+                                <Compass size={14} />
+                                <span>{lang === 'bs' ? 'AR Vodič' : 'AR Guide'}</span>
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     );
                   })
                 ) : activeModalTab === 'poi' ? (
                   ROUTE_POI_PRESETS.map((poi, idx) => (
-                    <button key={idx} onClick={() => { handleStartNavAndAR(poi.name.en, poi.name[lang] ?? poi.name.en, poi.lat, poi.lon); setIsPresetModalOpen(false); }} className="w-full p-3.5 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left">
+                    <div key={idx} className="w-full p-3.5 bg-white/5 border border-white/5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 group">
                       <div className="flex items-center gap-3.5">
                         <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all"><Landmark size={20} /></div>
                         <div>
@@ -616,12 +634,21 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
                           <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">{poi.category}</span>
                         </div>
                       </div>
-                      <Route size={18} className="text-blue-400 group-hover:translate-x-1 transition-all" />
-                    </button>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button onClick={() => { handleStartNavigation(poi.name[lang] ?? poi.name.en, poi.lat, poi.lon); setIsPresetModalOpen(false); }} className="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all active:scale-95 shadow-md">
+                          <Route size={14} />
+                          <span>{lang === 'bs' ? 'Navigacija' : 'Navigate'}</span>
+                        </button>
+                        <button onClick={() => { handleStartARGuide(poi.name[lang] ?? poi.name.en, poi.lat, poi.lon); setIsPresetModalOpen(false); }} className="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all active:scale-95 shadow-md">
+                          <Compass size={14} />
+                          <span>{lang === 'bs' ? 'AR Vodič' : 'AR Guide'}</span>
+                        </button>
+                      </div>
+                    </div>
                   ))
                 ) : (
                   TUZLA_HOTELS.map((hotel, idx) => (
-                    <button key={idx} onClick={() => { handleStartNavAndAR(hotel.name, hotel.name, hotel.latitude, hotel.longitude); setIsPresetModalOpen(false); }} className="w-full p-3.5 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left">
+                    <div key={idx} className="w-full p-3.5 bg-white/5 border border-white/5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 group">
                       <div className="flex items-center gap-3.5">
                         <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all"><HotelIcon size={20} /></div>
                         <div>
@@ -629,8 +656,17 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
                           <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">{hotel.rating} ★ • {hotel.priceRange}</span>
                         </div>
                       </div>
-                      <Route size={18} className="text-blue-400 group-hover:translate-x-1 transition-all" />
-                    </button>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button onClick={() => { handleStartNavigation(hotel.name, hotel.latitude, hotel.longitude); setIsPresetModalOpen(false); }} className="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all active:scale-95 shadow-md">
+                          <Route size={14} />
+                          <span>{lang === 'bs' ? 'Navigacija' : 'Navigate'}</span>
+                        </button>
+                        <button onClick={() => { handleStartARGuide(hotel.name, hotel.latitude, hotel.longitude); setIsPresetModalOpen(false); }} className="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all active:scale-95 shadow-md">
+                          <Compass size={14} />
+                          <span>{lang === 'bs' ? 'AR Vodič' : 'AR Guide'}</span>
+                        </button>
+                      </div>
+                    </div>
                   ))
                 )}
               </div>
@@ -639,7 +675,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         )}
       </AnimatePresence>
 
-      <NavigationHud isNavigating={isNavigating} selectedNavTarget={selectedNavTarget} lang={lang} routeDistance={routeDistance} routeTime={routeTime} isRouteLoading={isRouteLoading} onEndNavigation={handleEndNavigation} />
+      <NavigationHud isNavigating={isNavigating} selectedNavTarget={selectedNavTarget} lang={lang} routeDistance={routeDistance} routeTime={routeTime} isRouteLoading={isRouteLoading} onEndNavigation={handleEndNavigation} onOpenAR={() => setShowARGuide(true)} />
       <QrScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} lang={lang} unlockedRewards={unlockedRewards} onRewardFound={onRewardFound} />
     </div>
   );
