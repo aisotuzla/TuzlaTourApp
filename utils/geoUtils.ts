@@ -33,3 +33,40 @@ export const getBearing = (lat1: number, lon1: number, lat2: number, lon2: numbe
 
     return ((theta * 180) / Math.PI + 360) % 360;
 };
+
+/**
+ * Performs a cinematic "first-person / street-view" fly-in on a MapLibre map.
+ * Flies to the user's current position, rotates the camera to face the
+ * navigation target (bearing), and sets a high pitch for an immersive view.
+ *
+ * @param mapInstance  The MapLibre GL map instance
+ * @param userLng     User's longitude
+ * @param userLat     User's latitude
+ * @param targetLat   Navigation target latitude
+ * @param targetLon   Navigation target longitude
+ * @param opts        Optional overrides for zoom, pitch, and duration
+ */
+export const flyToFirstPerson = (
+    mapInstance: any,
+    userLng: number,
+    userLat: number,
+    targetLat: number,
+    targetLon: number,
+    opts?: { zoom?: number; pitch?: number; duration?: number }
+): void => {
+    const bearing = getBearing(userLat, userLng, targetLat, targetLon);
+    const zoom = opts?.zoom ?? 18.5;
+    const pitch = opts?.pitch ?? 72;
+    const duration = opts?.duration ?? 2800;
+
+    mapInstance.flyTo({
+        center: [userLng, userLat],
+        zoom,
+        pitch,
+        bearing,
+        duration,
+        essential: true,
+        curve: 1.42,
+        easing: (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+    });
+};

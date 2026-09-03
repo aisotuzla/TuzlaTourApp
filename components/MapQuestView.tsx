@@ -9,7 +9,6 @@ import { Language } from '../types.ts';
 import { TUZLA_CENTER, LOCATIONS } from '../constants.tsx';
 import { useNetwork } from '../hooks/useNetwork.ts';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
-import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
 import { QUEST_TARGETS, POI_COLORS, ROUTE_POI_PRESETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES } from '../constants/questData.ts';
@@ -26,7 +25,7 @@ export interface MapQuestViewProps {
 const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   trg_slobode: { lat: 44.5395175, lon: 18.6749037 }, salt_square: { lat: 44.5382182, lon: 18.6759398 },
   palancinkara: { lat: 44.5383762, lon: 18.6775339 }, slana_banja: { lat: 44.5378167, lon: 18.6875664 },
-  panonika: { lat: 44.5385, lon: 18.6767 }, slapovi: { lat: 44.5404243, lon: 18.6819408 },
+  panonika: { lat: 44.538885, lon: 18.680012 }, slapovi: { lat: 44.5404243, lon: 18.6819408 },
   kapija: { lat: 44.53863, lon: 18.676805 }, atelje_ismet: { lat: 44.5371465, lon: 18.6810454 },
   bingo_city_centar: { lat: 44.532177, lon: 18.651743 }, mesa_selimovic: { lat: 44.5370993, lon: 18.6781216 },
   tvrtko_park: { lat: 44.5380826, lon: 18.6783327 },
@@ -188,7 +187,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       const customPoiColor = POI_COLORS[target.id] || '#3b82f6';
       const el = document.createElement('div');
 
-      el.className = 'quest-target-marker transition-all duration-300 opacity-100 hover:scale-125 shadow-lg';
+      if (isCompletedFromPreviousPhase) {
+        el.className = 'quest-target-marker transition-all duration-300 opacity-40 grayscale blur-[0.5px] scale-90';
+      } else if (!isUnlocked) {
+        el.className = 'quest-target-marker transition-all duration-300 opacity-75 brightness-[0.45] contrast-125 grayscale-[0.4] hover:scale-110';
+      } else {
+        el.className = 'quest-target-marker transition-all duration-300 opacity-100 hover:scale-125 brightness-110 shadow-lg';
+      }
 
       el.innerHTML = `<div class="relative flex items-center justify-center cursor-pointer group" title="${title}"><div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-2xl transition-all border-2" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><span class="text-xs font-black text-white">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm" style="background-color: ${customPoiColor};"></div></div>`;
       const marker = new maplibregl.Marker(el).setLngLat([coords.lon, coords.lat]).addTo(map.current!);
@@ -234,10 +239,20 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         map.current.addLayer({ id: 'route-layer', type: 'line', source: 'route-source', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#22c55e', 'line-width': 4, 'line-opacity': 0.9 } });
       }
       const coordinates = routeFeature.geometry.coordinates;
-      if (coordinates && coordinates.length > 0) {
-        const bounds = new maplibregl.LngLatBounds();
-        coordinates.forEach((coord: [number, number]) => bounds.extend(coord));
-        map.current.fitBounds(bounds, { padding: { top: 120, bottom: 240, left: 60, right: 60 }, duration: 1500 });
+      if (coordinates && coordinates.length > 0 && map.current) {
+        // First-person fly-in: use the route's first segment to determine facing direction
+        const userPos = userLocationRef.current;
+        if (userPos) {
+          // Use the 3rd or 4th waypoint of the route for a more accurate initial bearing
+          const lookAheadIdx = Math.min(coordinates.length - 1, 3);
+          const lookAheadCoord = coordinates[lookAheadIdx];
+          flyToFirstPerson(map.current, userPos[0], userPos[1], lookAheadCoord[1], lookAheadCoord[0], { zoom: 18, duration: 2500 });
+        } else {
+          // Fallback: fitBounds if no user position
+          const bounds = new maplibregl.LngLatBounds();
+          coordinates.forEach((coord: [number, number]) => bounds.extend(coord));
+          map.current.fitBounds(bounds, { padding: { top: 120, bottom: 240, left: 60, right: 60 }, duration: 1500 });
+        }
       }
     } catch (error) {
       console.warn('Geoapify route fallback triggered:', error);
