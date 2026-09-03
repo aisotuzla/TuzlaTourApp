@@ -10,6 +10,7 @@ import {
 import { AppFeatures } from '../utils/platform';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { useGeoapifyRoute } from '../hooks/useGeoapifyRoute';
+import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher';
 import { ARPolylineCanvas } from './ARPolylineCanvas';
 import { QrScannerModal } from './QrScannerModal';
 import { POI_COLORS } from './Route_POI_QUEST_TARGET';
@@ -190,34 +191,37 @@ export const ARGuide: React.FC<ARGuideProps> = ({ lang, features, onNavigate, in
     else if (viewMode === 'HORIZON' && cameraActive) stopCamera();
   }, [viewMode, permissionGranted, isForeground, cameraActive, startCamera, stopCamera]);
 
-  // PRO FIX: GPS Geolocation Watcher with Adaptive Low-Pass Filter
+  const { position: rawGeoPosition, hasPermission: geoPermission } = useGeolocationWatcher({
+    enabled: permissionGranted && isForeground,
+    onError: (err) => console.warn('AR Geolocation error:', err),
+  });
+
   useEffect(() => {
-    if (!permissionGranted || !isForeground) return;
-    if (!navigator.geolocation) { setError(t.gpsNotSupported); return; }
+    if (!geoPermission && permissionGranted) {
+      setError(t.gpsNotSupported);
+    }
+  }, [geoPermission, permissionGranted, t.gpsNotSupported]);
 
-    const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const rawLat = pos.coords.latitude;
-        const rawLng = pos.coords.longitude;
+  // PRO FIX: Adaptive Low-Pass Filter driven by app-wide GeolocationWatcher
+  useEffect(() => {
+    if (!rawGeoPosition) return;
 
-        let distance = Infinity;
-        if (targetPoi) {
-          const dLat = (rawLat - targetPoi.coordinates[0]) * 111000;
-          const dLng = (rawLng - targetPoi.coordinates[1]) * 111000 * Math.cos(targetPoi.coordinates[0] * Math.PI / 180);
-          distance = Math.sqrt(dLat * dLat + dLng * dLng);
-        }
+    const rawLat = rawGeoPosition.lat;
+    const rawLng = rawGeoPosition.lng;
 
-        const smoothed = gpsFilterRef.current.update(rawLat, rawLng, distance);
-        const newLoc: WGS84Location = { lat: smoothed.lat, lng: smoothed.lng, elevation: pos.coords.altitude ?? 0 };
+    let distance = Infinity;
+    if (targetPoi) {
+      const dLat = (rawLat - targetPoi.coordinates[0]) * 111000;
+      const dLng = (rawLng - targetPoi.coordinates[1]) * 111000 * Math.cos(targetPoi.coordinates[0] * Math.PI / 180);
+      distance = Math.sqrt(dLat * dLat + dLng * dLng);
+    }
 
-        userLocationRef.current = newLoc;
-        setUserLocationState(newLoc);
-      },
-      (err) => console.warn('AR Geolocation error:', err),
-      { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
-    );
-    return () => navigator.geolocation.clearWatch(watchId);
-  }, [permissionGranted, isForeground, t.gpsNotSupported, targetPoi]);
+    const smoothed = gpsFilterRef.current.update(rawLat, rawLng, distance);
+    const newLoc: WGS84Location = { lat: smoothed.lat, lng: smoothed.lng, elevation: rawGeoPosition.elevation ?? 0 };
+
+    userLocationRef.current = newLoc;
+    setUserLocationState(newLoc);
+  }, [rawGeoPosition, targetPoi]);
 
   // PRO FIX: Full 3-Axis Sensor Fusion
   useEffect(() => {

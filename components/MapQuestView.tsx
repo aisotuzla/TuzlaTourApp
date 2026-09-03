@@ -9,6 +9,7 @@ import { Language } from '../types.ts';
 import { TUZLA_CENTER, LOCATIONS } from '../constants.tsx';
 import { useNetwork } from '../hooks/useNetwork.ts';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
+import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
 import { QUEST_TARGETS, POI_COLORS, ROUTE_POI_PRESETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES } from '../constants/questData.ts';
@@ -186,16 +187,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       const description = matchedLoc?.description?.[lang] || matchedLoc?.description?.bs || matchedLoc?.description?.en || (lang === 'bs' ? 'Kulturna i historijska znamenitost grada Tuzle.' : 'Cultural and historical landmark of Tuzla.');
       const customPoiColor = POI_COLORS[target.id] || '#3b82f6';
       const el = document.createElement('div');
-      
-      if (isCompletedFromPreviousPhase) {
-        el.className = 'quest-target-marker transition-all duration-300 opacity-40 grayscale blur-[0.5px] scale-90';
-      } else if (!isUnlocked) {
-        el.className = 'quest-target-marker transition-all duration-300 opacity-75 brightness-[0.45] contrast-125 grayscale-[0.4] hover:scale-110';
-      } else {
-        el.className = 'quest-target-marker transition-all duration-300 opacity-100 hover:scale-125 brightness-110 shadow-lg';
-      }
 
-      el.innerHTML = `<div class="relative flex items-center justify-center cursor-pointer group" title="${title}"><div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-2xl transition-all border-2" style="background-color: ${isUnlocked ? customPoiColor : '#1e293b'}; border-color: ${isUnlocked ? '#fef08a' : '#475569'}; box-shadow: 0 0 ${isUnlocked ? '15px' : '4px'} ${isUnlocked ? customPoiColor : 'rgba(0,0,0,0.8)'};"><span class="text-xs font-black ${isUnlocked ? 'text-white' : 'text-slate-400'}">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm" style="background-color: ${isUnlocked ? customPoiColor : '#1e293b'};"></div></div>`;
+      el.className = 'quest-target-marker transition-all duration-300 opacity-100 hover:scale-125 shadow-lg';
+
+      el.innerHTML = `<div class="relative flex items-center justify-center cursor-pointer group" title="${title}"><div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-2xl transition-all border-2" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><span class="text-xs font-black text-white">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm" style="background-color: ${customPoiColor};"></div></div>`;
       const marker = new maplibregl.Marker(el).setLngLat([coords.lon, coords.lat]).addTo(map.current!);
       const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 220px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);"><div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;"><img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 6px;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="width: 100%; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 0; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66;">${lang === 'bs' ? '🧭 Navigacija & AR' : '🧭 Navigate & AR'}</button></div></div>`;
       const popup = new maplibregl.Popup({ offset: 25, closeButton: false, maxWidth: '240px' }).setHTML(popupHtml);
@@ -266,78 +261,73 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     } else { clearRoute(); }
   }, [isNavigating, selectedNavTarget, isLoaded]);
 
-  // PRO FIX: Watch Position & User Marker (Optimized with Low-Pass Filter)
+  const { position: rawGeoPosition } = useGeolocationWatcher({
+    onError: (err) => console.error("MapQuest Geolocation Error:", err),
+  });
+
+  // User Marker & Nav Line Update driven by single geolocation watcher stream
   useEffect(() => {
-    let watchId: number;
-    const startTracking = () => {
-      watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const rawLat = pos.coords.latitude;
-          const rawLng = pos.coords.longitude;
+    if (!rawGeoPosition) return;
 
-          let targetLat = null; let targetLng = null;
-          if (selectedNavTarget) { targetLat = selectedNavTarget.lat; targetLng = selectedNavTarget.lon; }
-          else {
-            const lockedPoints = LOCATIONS.filter(l => !unlockedRewards.includes(l.id) && l.category !== 'hotel' && l.category !== 'food' && l.category !== 'shop');
-            if (lockedPoints.length > 0) {
-              let closest = lockedPoints[0];
-              let minDist = getDistance(rawLat, rawLng, closest.coordinates[0], closest.coordinates[1]);
-              lockedPoints.forEach(p => { const d = getDistance(rawLat, rawLng, p.coordinates[0], p.coordinates[1]); if (d < minDist) { minDist = d; closest = p; } });
-              targetLat = closest.coordinates[0]; targetLng = closest.coordinates[1];
-            }
-          }
+    const rawLat = rawGeoPosition.lat;
+    const rawLng = rawGeoPosition.lng;
 
-          let distance = Infinity;
-          if (targetLat !== null && targetLng !== null) {
-            const dLat = (rawLat - targetLat) * 111000;
-            const dLng = (rawLng - targetLng) * 111000 * Math.cos(rawLat * Math.PI / 180);
-            distance = Math.sqrt(dLat * dLat + dLng * dLng);
-          }
+    let targetLat = null; let targetLng = null;
+    if (selectedNavTarget) { targetLat = selectedNavTarget.lat; targetLng = selectedNavTarget.lon; }
+    else {
+      const lockedPoints = LOCATIONS.filter(l => !unlockedRewards.includes(l.id) && l.category !== 'hotel' && l.category !== 'food' && l.category !== 'shop');
+      if (lockedPoints.length > 0) {
+        let closest = lockedPoints[0];
+        let minDist = getDistance(rawLat, rawLng, closest.coordinates[0], closest.coordinates[1]);
+        lockedPoints.forEach(p => { const d = getDistance(rawLat, rawLng, p.coordinates[0], p.coordinates[1]); if (d < minDist) { minDist = d; closest = p; } });
+        targetLat = closest.coordinates[0]; targetLng = closest.coordinates[1];
+      }
+    }
 
-          const smoothed = gpsFilterRef.current.update(rawLat, rawLng, distance);
-          const latitude = smoothed.lat;
-          const longitude = smoothed.lng;
+    let distance = Infinity;
+    if (targetLat !== null && targetLng !== null) {
+      const dLat = (rawLat - targetLat) * 111000;
+      const dLng = (rawLng - targetLng) * 111000 * Math.cos(rawLat * Math.PI / 180);
+      distance = Math.sqrt(dLat * dLat + dLng * dLng);
+    }
 
-          setUserLocation([latitude, longitude]);
-          userLocationRef.current = [longitude, latitude];
+    const smoothed = gpsFilterRef.current.update(rawLat, rawLng, distance);
+    const latitude = smoothed.lat;
+    const longitude = smoothed.lng;
 
-          if (map.current && isLoaded) {
-            if (!userMarkerRef.current) {
-              const el = document.createElement('div');
-              el.className = 'user-gps-marker';
-              el.innerHTML = `<div class="relative flex items-center justify-center w-6 h-6"><div class="absolute w-full h-full bg-blue-500 rounded-full animate-ping opacity-75"></div><div class="relative w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-lg"></div></div>`;
-              userMarkerRef.current = new maplibregl.Marker(el).setLngLat([longitude, latitude]).addTo(map.current);
-              map.current?.flyTo({ center: [longitude, latitude], zoom: 17, pitch: 60, duration: 2000 });
-            } else {
-              userMarkerRef.current.setLngLat([longitude, latitude]);
-            }
-            (window as any).currentUserLngLat = [longitude, latitude];
+    setUserLocation([latitude, longitude]);
+    userLocationRef.current = [longitude, latitude];
 
-            let targetPoint = navigationTarget;
-            if (!targetPoint) {
-              const lockedPoints = LOCATIONS.filter(l => !unlockedRewards.includes(l.id) && l.category !== 'hotel' && l.category !== 'food' && l.category !== 'shop');
-              if (lockedPoints.length > 0) {
-                let closest = lockedPoints[0];
-                let minDist = getDistance(latitude, longitude, closest.coordinates[0], closest.coordinates[1]);
-                lockedPoints.forEach(p => { const d = getDistance(latitude, longitude, p.coordinates[0], p.coordinates[1]); if (d < minDist) { minDist = d; closest = p; } });
-                targetPoint = closest;
-              }
-            }
-            if (targetPoint) {
-              const navLineSource = map.current.getSource('nav-line') as maplibregl.GeoJSONSource;
-              if (navLineSource) {
-                navLineSource.setData({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [[longitude, latitude], [targetPoint.coordinates[1], targetPoint.coordinates[0]]] } });
-              }
-            }
-          }
-        },
-        (err) => { console.error("MapQuest Geolocation Error:", err); },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 } // PRO FIX: Battery saver
-      );
-    };
-    startTracking();
-    return () => { if (watchId) navigator.geolocation.clearWatch(watchId); };
-  }, [isLoaded, navigationTarget, unlockedRewards, selectedNavTarget]);
+    if (map.current && isLoaded) {
+      if (!userMarkerRef.current) {
+        const el = document.createElement('div');
+        el.className = 'user-gps-marker';
+        el.innerHTML = `<div class="relative flex items-center justify-center w-6 h-6"><div class="absolute w-full h-full bg-blue-500 rounded-full animate-ping opacity-75"></div><div class="relative w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-lg"></div></div>`;
+        userMarkerRef.current = new maplibregl.Marker(el).setLngLat([longitude, latitude]).addTo(map.current);
+        map.current?.flyTo({ center: [longitude, latitude], zoom: 17, pitch: 60, duration: 2000 });
+      } else {
+        userMarkerRef.current.setLngLat([longitude, latitude]);
+      }
+      (window as any).currentUserLngLat = [longitude, latitude];
+
+      let targetPoint = navigationTarget;
+      if (!targetPoint) {
+        const lockedPoints = LOCATIONS.filter(l => !unlockedRewards.includes(l.id) && l.category !== 'hotel' && l.category !== 'food' && l.category !== 'shop');
+        if (lockedPoints.length > 0) {
+          let closest = lockedPoints[0];
+          let minDist = getDistance(latitude, longitude, closest.coordinates[0], closest.coordinates[1]);
+          lockedPoints.forEach(p => { const d = getDistance(latitude, longitude, p.coordinates[0], p.coordinates[1]); if (d < minDist) { minDist = d; closest = p; } });
+          targetPoint = closest;
+        }
+      }
+      if (targetPoint) {
+        const navLineSource = map.current.getSource('nav-line') as maplibregl.GeoJSONSource;
+        if (navLineSource) {
+          navLineSource.setData({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [[longitude, latitude], [targetPoint.coordinates[1], targetPoint.coordinates[0]]] } });
+        }
+      }
+    }
+  }, [rawGeoPosition, isLoaded, navigationTarget, unlockedRewards, selectedNavTarget]);
 
   const handleEndNavigation = () => {
     setIsNavigating(false); setSelectedNavTarget(null); setRouteDistance(null); setRouteTime(null);
@@ -482,9 +472,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
       {/* TOP HUD CONTAINER WITH HIDE / SHOW ANIMATION */}
       <div
-        className={`absolute top-3 inset-x-0 mx-auto z-30 w-[92%] max-w-md transition-transform duration-300 ease-in-out pointer-events-auto ${
-          isHudHidden ? '-translate-y-[calc(100%+16px)] pointer-events-none' : 'translate-y-0'
-        }`}
+        className={`absolute top-3 inset-x-0 mx-auto z-30 w-[92%] max-w-md transition-transform duration-300 ease-in-out pointer-events-auto ${isHudHidden ? '-translate-y-[calc(100%+16px)] pointer-events-none' : 'translate-y-0'
+          }`}
       >
         <div className="bg-slate-900/95 backdrop-blur-xl px-4 py-3 rounded-3xl border border-blue-500/30 shadow-2xl flex flex-col gap-2.5 relative">
           <div className="flex items-center justify-between">

@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from 'react';
+import { useMemo } from 'react';
+import { useGeolocationWatcher } from './useGeolocationWatcher';
 
 function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const toRad = (deg: number) => (deg * Math.PI) / 180;
@@ -10,36 +11,20 @@ function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
+// PRO FIX: No longer owns a watchPosition subscription. Reads from the
+// single app-wide GPS stream (useGeolocationWatcher) so opening AR mode,
+// the map, and proximity checks at the same time doesn't spin up 2-3
+// concurrent high-accuracy GPS watchers.
 export function useProximity(
   targetLat: number, targetLng: number,
   options?: { onError?: (error: GeolocationPositionError) => void; }
 ) {
-  const [distance, setDistance] = useState<number | null>(null);
-  const [hasPermission, setHasPermission] = useState<boolean>(false);
-  const watchIdRef = useRef<number | null>(null);
+  const { position, hasPermission } = useGeolocationWatcher({ onError: options?.onError });
 
-  useEffect(() => {
-    if (!navigator.geolocation) { console.warn('Geolocation not supported'); return; }
-
-    // PRO FIX: Removed redundant setInterval. watchPosition is sufficient and far more battery-efficient.
-    // PRO FIX: Increased maximumAge to 5000ms to allow OS to use cached GPS.
-    watchIdRef.current = navigator.geolocation.watchPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        const d = haversineDistance(latitude, longitude, targetLat, targetLng);
-        setDistance(d); setHasPermission(true);
-      },
-      (err) => {
-        options?.onError?.(err); setHasPermission(false);
-        console.error('Geolocation error:', err.message);
-      },
-      { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
-    );
-
-    return () => {
-      if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current);
-    };
-  }, [targetLat, targetLng, options?.onError]);
+  const distance = useMemo(() => {
+    if (!position) return null;
+    return haversineDistance(position.lat, position.lng, targetLat, targetLng);
+  }, [position, targetLat, targetLng]);
 
   return { distance, hasPermission };
 }
