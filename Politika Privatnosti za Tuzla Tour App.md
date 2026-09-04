@@ -40,7 +40,7 @@ C. Podaci o Web3 novčaniku (Solana)
 
 D. Pohrana na uređaju i postavke aplikacije
 
-    Svrha: Koristimo lokalnu pohranu (npr. Capacitor Preferences) za spremanje vaših postavki, podataka van mreže (offline), napretka u aplikaciji i odabira jezika (pružajući prilagođenu podršku lokalnom stanovništvu, turistima i migrantima).
+    Svrha: Koristimo lokalnu pohranu (npr. Capacitor Preferences) za spremanje vaših postavki, podataka van mreže (offline), napretka u aplikaciji i odabira jezika (pružajući prilagođenu podršku lokalnom stanovništvu, turistima).
 
     Obrada: Pohranjeno isključivo lokalno na vašem telefonu.
 

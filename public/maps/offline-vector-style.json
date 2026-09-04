@@ -7,21 +7,17 @@
   "sources": {
     "tuzla-pmtiles": {
       "type": "vector",
-      "url": "pmtiles:///maps/tiles/tuzla.pmtiles",
+      "url": "pmtiles:///maps/tuzla.pmtiles",
       "minzoom": 0,
       "maxzoom": 18
     },
     "app-buildings": {
       "type": "geojson",
-      "data": "/maps/tiles/TuzlaTourGuide.geojson"
-    },
-    "tour-data": {
-      "type": "geojson",
-      "data": "/maps/tour-data.geojson"
+      "data": "/maps/TuzlaTourGuide.geojson"
     },
     "app-pois": {
       "type": "geojson",
-      "data": "/maps/tiles/poi.geojson"
+      "data": "/maps/poi.geojson"
     }
   },
   "layers": [
@@ -67,12 +63,20 @@
         "line-color": "#334155",
         "line-width": [
           "interpolate",
-          ["linear"],
-          ["zoom"],
-          0, 0.5,
-          10, 1.5,
-          14, 3,
-          18, 8
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          0,
+          0.5,
+          10,
+          1.5,
+          14,
+          3,
+          18,
+          8
         ]
       }
     },
@@ -85,8 +89,30 @@
       "maxzoom": 18,
       "paint": {
         "fill-extrusion-color": "#334155",
-        "fill-extrusion-height": ["coalesce", ["get", "render_height"], ["get", "height"], 12],
-        "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], ["get", "min_height"], 0],
+        "fill-extrusion-height": [
+          "coalesce",
+          [
+            "get",
+            "render_height"
+          ],
+          [
+            "get",
+            "height"
+          ],
+          12
+        ],
+        "fill-extrusion-base": [
+          "coalesce",
+          [
+            "get",
+            "render_min_height"
+          ],
+          [
+            "get",
+            "min_height"
+          ],
+          0
+        ],
         "fill-extrusion-opacity": 0.8
       }
     },
@@ -99,21 +125,40 @@
       "paint": {
         "fill-extrusion-color": [
           "interpolate",
-          ["linear"],
-          ["coalesce", ["get", "height"], 14],
-          0, "#3b82f6",
-          15, "#1d4ed8",
-          30, "#1e40af",
-          60, "#1e3a8a"
+          [
+            "linear"
+          ],
+          [
+            "coalesce",
+            [
+              "get",
+              "height"
+            ],
+            14
+          ],
+          0,
+          "#3b82f6",
+          15,
+          "#1d4ed8",
+          30,
+          "#1e40af",
+          60,
+          "#1e3a8a"
         ],
         "fill-extrusion-height": [
           "coalesce",
-          ["get", "height"],
+          [
+            "get",
+            "height"
+          ],
           14
         ],
         "fill-extrusion-base": [
           "coalesce",
-          ["get", "min_height"],
+          [
+            "get",
+            "min_height"
+          ],
           0
         ],
         "fill-extrusion-opacity": 0.85,

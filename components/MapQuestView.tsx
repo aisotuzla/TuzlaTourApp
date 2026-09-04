@@ -9,7 +9,7 @@ import { Language } from '../types.ts';
 import { TUZLA_CENTER, LOCATIONS } from '../constants.tsx';
 import { useNetwork } from '../hooks/useNetwork.ts';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
-import { getDistance, flyToFirstPerson } from '../utils/geoUtils.ts';
+import { getDistance, flyToFirstPerson, getBearing } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
 import { QUEST_TARGETS, POI_COLORS, ROUTE_POI_PRESETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES } from '../constants/questData.ts';
 import { NavigationHud } from './NavigationHud.tsx';
@@ -44,7 +44,14 @@ const GEOAPIFY_API_KEY = '765d67152f78438bacd2c66f73665a91';
 const VITE_PROTOMAPS_CARTO_API = '78417d24f3c5d515';
 export const GEOAPIFY_MAPTILER_3D = `https://maps.geoapify.com/v1/styles/maptiler-3d/style.json?apiKey=${GEOAPIFY_API_KEY}`;
 export const CARTO_VOYAGER_STYLE = `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?apiKey=${VITE_PROTOMAPS_CARTO_API}`;
-export const OFFLINE_STYLE = '/maps/tiles/offline-vector-style.json';
+export const OFFLINE_STYLE = '/maps/offline-vector-style.json';
+
+const pmtilesProtocol = new pmtiles.Protocol();
+try {
+  maplibregl.addProtocol('pmtiles', pmtilesProtocol.tile);
+} catch (e) {
+  // Ignore duplicate protocol registration
+}
 
 const MAP_LAYER_OPTIONS = [
   { id: 'geoapify', name: { bs: 'Geoapify 3D (Primarna)', en: 'Geoapify 3D (Primary)' }, url: GEOAPIFY_MAPTILER_3D },
@@ -99,6 +106,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const handleStartNavigation = (name: string, lat: number, lon: number) => {
     setSelectedNavTarget({ name, lat, lon });
     setIsNavigating(true);
+    setIsPresetModalOpen(false);
+
+    if (map.current) {
+      const userPos = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+      flyToFirstPerson(map.current, userPos[0], userPos[1], lat, lon, { zoom: 19, pitch: 75, duration: 2500 });
+    }
   };
 
   const handleStartARGuide = (name: string, lat: number, lon: number) => {
@@ -202,7 +215,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
       el.innerHTML = `<div class="relative flex items-center justify-center cursor-pointer group" title="${title}"><div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-2xl transition-transform duration-200 origin-bottom group-hover:scale-110 border-2" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 4px 14px ${customPoiColor}99;"><span class="text-xs font-black text-white">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm transition-transform duration-200 origin-bottom group-hover:scale-110" style="background-color: ${customPoiColor};"></div></div>`;
       const marker = new maplibregl.Marker(el).setLngLat([coords.lon, coords.lat]).addTo(map.current!);
-      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 12px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border-radius: 20px; color: white; width: 230px; border: 1px solid ${customPoiColor}66; box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);"><div style="position: relative; overflow: hidden; border-radius: 12px; height: 105px; margin-bottom: 10px; background: #1e293b;"><img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 6px; right: 6px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 3px 8px; border-radius: 10px; font-weight: 900; font-size: 9px; backdrop-filter: blur(4px);">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 14px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 12px 0; color: #94a3b8; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 8px;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 12px; color: white; padding: 8px 0; font-weight: 800; font-size: 11px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); text-align: center;">🧭 ${lang === 'bs' ? 'Navigacija' : 'Navigate'}</button><button onclick="window.startARFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; background: linear-gradient(135deg, #9333ea, #7e22ce); border: none; border-radius: 12px; color: white; padding: 8px 0; font-weight: 800; font-size: 11px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4); text-align: center;">📷 ${lang === 'bs' ? 'AR Vodič' : 'AR Guide'}</button></div></div>`;
+      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 12px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border-radius: 20px; color: white; width: 230px; border: 1px solid ${customPoiColor}66; box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);"><div style="position: relative; overflow: hidden; border-radius: 12px; height: 105px; margin-bottom: 10px; background: #1e293b;"><img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 6px; right: 6px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 3px 8px; border-radius: 10px; font-weight: 900; font-size: 9px; backdrop-filter: blur(4px);">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 14px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 12px 0; color: #94a3b8; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="width: 100%; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 12px; color: white; padding: 8px 0; font-weight: 800; font-size: 11px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); text-align: center;">🧭 ${lang === 'bs' ? 'Navigacija' : 'Navigate'}</button></div></div>`;
       const popup = new maplibregl.Popup({ offset: 25, closeButton: false, maxWidth: '240px' }).setHTML(popupHtml);
       marker.setPopup(popup);
       markersRef.current[target.id] = marker;
@@ -246,25 +259,21 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       const coordinates = routeFeature.geometry.coordinates;
       if (coordinates && coordinates.length > 0 && map.current) {
         // First-person fly-in: use the route's first segment to determine facing direction
-        const userPos = userLocationRef.current;
-        if (userPos) {
-          // Use the 3rd or 4th waypoint of the route for a more accurate initial bearing
-          const lookAheadIdx = Math.min(coordinates.length - 1, 3);
-          const lookAheadCoord = coordinates[lookAheadIdx];
-          flyToFirstPerson(map.current, userPos[0], userPos[1], lookAheadCoord[1], lookAheadCoord[0], { zoom: 18, duration: 2500 });
-        } else {
-          // Fallback: fitBounds if no user position
-          const bounds = new maplibregl.LngLatBounds();
-          coordinates.forEach((coord: [number, number]) => bounds.extend(coord));
-          map.current.fitBounds(bounds, { padding: { top: 120, bottom: 240, left: 60, right: 60 }, duration: 1500 });
-        }
+        const userPos = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+        const lookAheadIdx = Math.min(coordinates.length - 1, 3);
+        const lookAheadCoord = coordinates[lookAheadIdx];
+        flyToFirstPerson(map.current, userPos[0], userPos[1], lookAheadCoord[1], lookAheadCoord[0], { zoom: 19, pitch: 75, duration: 2500 });
       }
     } catch (error) {
       console.warn('Geoapify route fallback triggered:', error);
-      const distKm = getDistance(startLoc[0], startLoc[1], target.lat, target.lon);
+      const userPos = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+      if (map.current) {
+        flyToFirstPerson(map.current, userPos[0], userPos[1], target.lat, target.lon, { zoom: 19, pitch: 75, duration: 2500 });
+      }
+      const distKm = getDistance(startLoc[1], startLoc[0], target.lat, target.lon);
       const distMeters = distKm * 1000;
       setRouteDistance(distMeters); setRouteTime(distMeters / 1.4);
-      const lineGeoJson = { type: 'FeatureCollection', features: [{ type: 'Feature', geometry: { type: 'LineString', coordinates: [[startLoc[1], startLoc[0]], [target.lon, target.lat]] }, properties: {} }] };
+      const lineGeoJson = { type: 'FeatureCollection', features: [{ type: 'Feature', geometry: { type: 'LineString', coordinates: [[startLoc[0], startLoc[1]], [target.lon, target.lat]] }, properties: {} }] };
       if (map.current.getSource('route-source')) {
         (map.current.getSource('route-source') as maplibregl.GeoJSONSource).setData(lineGeoJson as any);
       } else {
@@ -276,7 +285,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
   useEffect(() => {
     if (isNavigating && selectedNavTarget && isLoaded) {
-      const start = userLocationRef.current || [TUZLA_CENTER[0], TUZLA_CENTER[1]];
+      const start = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
       calculateRoute(start, selectedNavTarget);
     } else { clearRoute(); }
   }, [isNavigating, selectedNavTarget, isLoaded]);
@@ -347,7 +356,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         }
       }
     }
-  }, [rawGeoPosition, isLoaded, navigationTarget, unlockedRewards, selectedNavTarget]);
+  }, [rawGeoPosition, isLoaded, navigationTarget, unlockedRewards, selectedNavTarget, isNavigating]);
 
   const handleEndNavigation = () => {
     setIsNavigating(false); setSelectedNavTarget(null); setRouteDistance(null); setRouteTime(null);

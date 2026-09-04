@@ -54,10 +54,11 @@ export const flyToFirstPerson = (
     targetLon: number,
     opts?: { zoom?: number; pitch?: number; duration?: number }
 ): void => {
+    if (!mapInstance) return;
     const bearing = getBearing(userLat, userLng, targetLat, targetLon);
-    const zoom = opts?.zoom ?? 18.5;
-    const pitch = opts?.pitch ?? 72;
-    const duration = opts?.duration ?? 2800;
+    const zoom = opts?.zoom ?? 17;
+    const pitch = opts?.pitch ?? 55;
+    const duration = opts?.duration ?? 2000;
 
     mapInstance.flyTo({
         center: [userLng, userLat],
@@ -65,8 +66,6 @@ export const flyToFirstPerson = (
         pitch,
         bearing,
         duration,
-        essential: true,
-        curve: 1.42,
-        easing: (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+        essential: true
     });
 };

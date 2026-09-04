@@ -11,13 +11,15 @@ import { tuzlaHotelData } from '../tuzlaHotelData';
 import { Hotel as HotelIcon } from 'lucide-react';
 import { QUEST_TARGETS } from '../constants/questData';
 import { motion, AnimatePresence } from 'framer-motion';
-import { flyToFirstPerson } from '../utils/geoUtils';
+import { flyToFirstPerson, getBearing } from '../utils/geoUtils';
 
 
 interface MapViewProps {
   lang: Language;
   features: AppFeatures;
   unlockedRewards?: string[];
+  navigationTarget?: any | null;
+  onClearNavigation?: () => void;
 }
 
 
@@ -121,7 +123,7 @@ const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
   }
 ];
 
-const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] }) => {
+const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [], navigationTarget, onClearNavigation }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const userMarker = useRef<maplibregl.Marker | null>(null);
@@ -148,6 +150,23 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
   const [isRouteLoading, setIsRouteLoading] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState<'poi' | 'hotel' | 'qrcode'>('poi');
 
+  // Handle external navigation target prop
+  useEffect(() => {
+    if (navigationTarget && isLoaded) {
+      const name = navigationTarget.name?.[lang] || navigationTarget.name?.bs || navigationTarget.name || 'Target';
+      const lat = navigationTarget.coordinates ? navigationTarget.coordinates[0] : (navigationTarget.latitude || navigationTarget.lat);
+      const lon = navigationTarget.coordinates ? navigationTarget.coordinates[1] : (navigationTarget.longitude || navigationTarget.lon);
+      if (lat && lon) {
+        setSelectedTarget({ name, lat, lon });
+        setIsNavigating(true);
+        const userPos = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+        if (map.current) {
+          flyToFirstPerson(map.current, userPos[0], userPos[1], lat, lon, { zoom: 19, pitch: 75, duration: 2500 });
+        }
+      }
+    }
+  }, [navigationTarget, isLoaded, lang]);
+
   // Expose global callback for Mapbox popup navigation clicks
   useEffect(() => {
     (window as any).startNavigationFromPopup = (name: string, lat: number, lon: number) => {
@@ -158,14 +177,10 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
       for (let i = 0; i < popups.length; i++) {
         (popups[i] as HTMLElement).remove();
       }
-      // Cinematic first-person fly-in toward navigation target
+      // FPS fly-in toward navigation target
       if (map.current) {
-        const userPos = userLocationRef.current;
-        if (userPos) {
-          flyToFirstPerson(map.current, userPos[0], userPos[1], lat, lon);
-        } else {
-          map.current.flyTo({ center: [lon, lat], zoom: 17, pitch: 65, duration: 2000 });
-        }
+        const userPos = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+        flyToFirstPerson(map.current, userPos[0], userPos[1], lat, lon, { zoom: 19, pitch: 75, duration: 2500 });
       }
     };
     return () => {
@@ -255,26 +270,18 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
       const coordinates = routeFeature.geometry.coordinates;
       if (coordinates && coordinates.length > 0 && map.current) {
         // First-person fly-in: orient camera to face the route direction
-        const userPos = userLocationRef.current;
-        if (userPos) {
-          const lookAheadIdx = Math.min(coordinates.length - 1, 3);
-          const lookAheadCoord = coordinates[lookAheadIdx];
-          flyToFirstPerson(map.current, userPos[0], userPos[1], lookAheadCoord[1], lookAheadCoord[0], { zoom: 18, duration: 2500 });
-        } else {
-          // Fallback: fitBounds if no user GPS
-          const bounds = new maplibregl.LngLatBounds();
-          coordinates.forEach((coord: [number, number]) => {
-            bounds.extend(coord);
-          });
-          map.current.fitBounds(bounds, {
-            padding: { top: 120, bottom: 240, left: 60, right: 60 },
-            duration: 1500
-          });
-        }
+        const userPos = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+        const lookAheadIdx = Math.min(coordinates.length - 1, 3);
+        const lookAheadCoord = coordinates[lookAheadIdx];
+        flyToFirstPerson(map.current, userPos[0], userPos[1], lookAheadCoord[1], lookAheadCoord[0], { zoom: 19, pitch: 75, duration: 2500 });
       }
 
     } catch (error) {
       console.error('Error calculating route:', error);
+      if (map.current && selectedTarget) {
+        const userPos = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+        flyToFirstPerson(map.current, userPos[0], userPos[1], selectedTarget.lat, selectedTarget.lon, { zoom: 19, pitch: 75, duration: 2500 });
+      }
     } finally {
       setIsRouteLoading(false);
     }
@@ -653,12 +660,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
               setIsNavigating(true);
               // First-person fly-in toward the searched target
               if (map.current) {
-                const userPos = userLocationRef.current;
-                if (userPos) {
-                  flyToFirstPerson(map.current, userPos[0], userPos[1], searchedTarget.lat, searchedTarget.lon);
-                } else {
-                  map.current.flyTo({ center: [searchedTarget.lon, searchedTarget.lat], zoom: 17, pitch: 65, duration: 2000 });
-                }
+                const userPos = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+                flyToFirstPerson(map.current, userPos[0], userPos[1], searchedTarget.lat, searchedTarget.lon, { zoom: 19, pitch: 75, duration: 2500 });
               }
             } else {
               setIsPresetModalOpen(true);
@@ -766,12 +769,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
                         setIsPresetModalOpen(false);
                         // First-person fly-in toward POI
                         if (map.current) {
-                          const userPos = userLocationRef.current;
-                          if (userPos) {
-                            flyToFirstPerson(map.current, userPos[0], userPos[1], poi.lat, poi.lon);
-                          } else {
-                            map.current.flyTo({ center: [poi.lon, poi.lat], zoom: 17, pitch: 65, duration: 2000 });
-                          }
+                          const userPos = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+                          flyToFirstPerson(map.current, userPos[0], userPos[1], poi.lat, poi.lon, { zoom: 19, pitch: 75, duration: 2500 });
                         }
                       }}
                       className="w-full p-4 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
@@ -807,12 +806,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
                         setIsPresetModalOpen(false);
                         // First-person fly-in toward hotel
                         if (map.current) {
-                          const userPos = userLocationRef.current;
-                          if (userPos) {
-                            flyToFirstPerson(map.current, userPos[0], userPos[1], hotel.latitude, hotel.longitude);
-                          } else {
-                            map.current.flyTo({ center: [hotel.longitude, hotel.latitude], zoom: 17, pitch: 65, duration: 2000 });
-                          }
+                          const userPos = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+                          flyToFirstPerson(map.current, userPos[0], userPos[1], hotel.latitude, hotel.longitude, { zoom: 19, pitch: 75, duration: 2500 });
                         }
                       }}
                       className="w-full p-4 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
