@@ -34,6 +34,7 @@ const MAP_LAYER_OPTIONS = [
   { id: 'raster', name: { bs: 'OpenStreetMap (Raster)', en: 'OpenStreetMap (Raster)' }, url: RASTER_STYLE },
   { id: 'offline', name: { bs: 'Lokalna PMTiles 3D (Offline)', en: 'Local PMTiles 3D (Offline)' }, url: OFFLINE_STYLE },
 ];
+
 interface RoutePoiPreset {
   name: Partial<Record<Language, string>> & { en: string; bs: string };
   lat: number;
@@ -171,7 +172,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     }
 
     if (styleUrl === OFFLINE_STYLE) {
-      ensureTuzlaOfflineMapDownloaded().catch(() => {});
+      ensureTuzlaOfflineMapDownloaded().catch(() => { });
     }
 
     setActiveStyle(styleUrl);

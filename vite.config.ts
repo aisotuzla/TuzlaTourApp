@@ -94,7 +94,13 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
               src: 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
               sizes: '512x512',
               type: 'image/png',
-              purpose: 'any maskable'
+              purpose: 'any'
+            },
+            {
+              src: 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable'
             }
           ]
         },
