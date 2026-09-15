@@ -382,6 +382,11 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     watchCinematic: 'Watch 3D Tour / Cinematic',
     closeVideo: 'Close Video',
     solBalance: 'SOL Balance',
+    trailStepTitle: 'Quest Trail Progress',
+    trailStepPhase: 'Phase',
+    trailStepComplete: 'Complete',
+    trailStepGrandFinale: 'Grand Finale',
+    trailStepLocked: 'Locked',
   },
   bs: {
     welcome: 'Dobrodošli u Tuzlu',
@@ -490,6 +495,11 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     watchCinematic: 'Pogledaj 3D Tour / Video',
     closeVideo: 'Zatvori Video',
     solBalance: 'SOL Saldo',
+    trailStepTitle: 'Napredak u potrazi',
+    trailStepPhase: 'Faza',
+    trailStepComplete: 'Završena',
+    trailStepGrandFinale: 'Veliki Finale',
+    trailStepLocked: 'Zaključano',
   },
   de: {
     welcome: 'Willkommen in Tuzla!',
@@ -598,6 +608,11 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     watchCinematic: '3D-Tour / Video ansehen',
     closeVideo: 'Video schließen',
     solBalance: 'SOL-Guthaben',
+    trailStepTitle: 'Quest-Fortschritt',
+    trailStepPhase: 'Phase',
+    trailStepComplete: 'Abgeschlossen',
+    trailStepGrandFinale: 'Großes Finale',
+    trailStepLocked: 'Gesperrt',
   },
   tr: {
     welcome: 'Tuzla\'ya Hoşgeldiniz',
@@ -706,6 +721,11 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     watchCinematic: '3D Turu / Videoyu İzle',
     closeVideo: 'Videoyu Kapat',
     solBalance: 'SOL Bakiyesi',
+    trailStepTitle: 'Görev Rotası İlerlemesi',
+    trailStepPhase: 'Aşama',
+    trailStepComplete: 'Tamamlandı',
+    trailStepGrandFinale: 'Büyük Final',
+    trailStepLocked: 'Kilitli',
   },
 };
 

@@ -17,8 +17,121 @@ import {
     Play,
     Trash2,
     AlertCircle,
-    Stethoscope
+    Stethoscope,
+    Sparkles,
+    ChevronDown,
+    ChevronUp,
+    Gift
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
+
+// Discover Tuzla Quest Trails Definition
+export interface TrailStep {
+    id: string;
+    name: string;
+    completed: boolean;
+}
+
+export interface ThemedTrail {
+    id: string;
+    name: string;
+    theme: string;
+    color: string;
+    borderColor: string;
+    badgeBg: string;
+    reward: string;
+    rewardBorderColor?: string;
+    rewardTextColor?: string;
+    rewardHeaderColor?: string;
+    steps: TrailStep[];
+}
+
+const INITIAL_TRAILS: ThemedTrail[] = [
+    {
+        id: 'salt-trail',
+        name: 'Salt Trail',
+        theme: 'Heritage & Origins',
+        color: 'from-amber-700 to-amber-900',
+        borderColor: 'border-amber-800/40',
+        badgeBg: 'bg-amber-100 text-amber-900 border-amber-800/40',
+        rewardBorderColor: 'border-2 border-amber-800',
+        rewardTextColor: 'text-amber-900',
+        rewardHeaderColor: 'text-amber-800',
+        reward: '10% off partner locations',
+        steps: [
+            { id: 'st-1', name: 'Pannonica (Neolithic Settlement)', completed: false },
+            { id: 'st-2', name: 'Salt Square', completed: false }
+        ]
+    },
+    {
+        id: 'sweet-trail',
+        name: 'Sweet Trail',
+        theme: 'Local Delicacies',
+        color: 'from-pink-500 to-rose-600',
+        borderColor: 'border-pink-500/40',
+        badgeBg: 'bg-pink-100 text-pink-700 border-pink-400/40',
+        rewardBorderColor: 'border-2 border-pink-500',
+        rewardTextColor: 'text-pink-700',
+        rewardHeaderColor: 'text-pink-600',
+        reward: '10% off sweet treat',
+        steps: [
+            { id: 'sw-1', name: 'Papi Gelato', completed: false },
+            { id: 'sw-2', name: 'Sweet House', completed: false },
+            { id: 'sw-3', name: 'Palačinkara Bagi', completed: false }
+        ]
+    },
+    {
+        id: 'history-trail',
+        name: 'History Trail',
+        theme: 'Historic Landmarks',
+        color: 'from-amber-500 to-orange-600',
+        borderColor: 'border-amber-500/40',
+        badgeBg: 'bg-amber-100 text-amber-800 border-amber-400/40',
+        rewardBorderColor: 'border-2 border-amber-500',
+        rewardTextColor: 'text-amber-800',
+        rewardHeaderColor: 'text-amber-600',
+        reward: 'Exclusive Audio of Kapija tragedy',
+        steps: [
+            { id: 'ht-1', name: 'Freedom Square', completed: false },
+            { id: 'ht-2', name: 'Old Town Clock', completed: false },
+            { id: 'ht-3', name: 'Kapija', completed: false }
+        ]
+    },
+    {
+        id: 'shopping-trail',
+        name: 'Shopping Trail',
+        theme: 'Retail & Lifestyle',
+        color: 'from-purple-500 to-indigo-600',
+        borderColor: 'border-purple-500/40',
+        badgeBg: 'bg-purple-100 text-purple-800 border-purple-400/40',
+        rewardBorderColor: 'border-2 border-purple-500',
+        rewardTextColor: 'text-purple-800',
+        rewardHeaderColor: 'text-purple-600',
+        reward: 'CineStar combo voucher',
+        steps: [
+            { id: 'sh-1', name: 'Mercator', completed: false },
+            { id: 'sh-2', name: 'R.K. Tuzlanka', completed: false },
+            { id: 'sh-3', name: 'Bingo City Center', completed: false }
+        ]
+    },
+    {
+        id: 'wise-men-trail',
+        name: 'Three Wise Men Trail',
+        theme: 'Art & Cultural Giants',
+        color: 'from-emerald-500 to-teal-600',
+        borderColor: 'border-emerald-500/40',
+        badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-400/40',
+        rewardBorderColor: 'border-2 border-emerald-500',
+        rewardTextColor: 'text-emerald-800',
+        rewardHeaderColor: 'text-emerald-600',
+        reward: 'Unreleased video Mesa.mp4',
+        steps: [
+            { id: 'wm-1', name: 'King Tvrtko Monument', completed: false },
+            { id: 'wm-2', name: 'Ismet Mujezinović Gallery', completed: false },
+            { id: 'wm-3', name: 'Meša Selimović Monument', completed: false }
+        ]
+    }
+];
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -60,6 +173,114 @@ const WalletContent: React.FC<{
     const [ledger, setLedger] = useState<LedgerEntry[]>([]);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+
+    // ── Discover Tuzla Quest Tracking & Rewards State ──
+    const [trails, setTrails] = useState<ThemedTrail[]>(() => {
+        try {
+            const saved = localStorage.getItem('tuzla_themed_trails');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+        } catch (e) {
+            console.error('Error loading saved trails', e);
+        }
+        return INITIAL_TRAILS;
+    });
+
+    const [scratchedRewards, setScratchedRewards] = useState<Record<string, boolean>>(() => {
+        try {
+            const saved = localStorage.getItem('tuzla_scratched_rewards');
+            if (saved) return JSON.parse(saved);
+        } catch (e) {
+            console.error('Error loading scratched rewards', e);
+        }
+        return {};
+    });
+
+    const [scratchProgress, setScratchProgress] = useState<Record<string, number>>({});
+    const [expandedTrailId, setExpandedTrailId] = useState<string | null>(INITIAL_TRAILS[0].id);
+
+    // Save trails to localStorage
+    useEffect(() => {
+        try {
+            localStorage.setItem('tuzla_themed_trails', JSON.stringify(trails));
+        } catch (e) {
+            console.error('Error saving trails', e);
+        }
+    }, [trails]);
+
+    // Save scratched rewards to localStorage
+    useEffect(() => {
+        try {
+            localStorage.setItem('tuzla_scratched_rewards', JSON.stringify(scratchedRewards));
+        } catch (e) {
+            console.error('Error saving scratched rewards', e);
+        }
+    }, [scratchedRewards]);
+
+    // Confetti celebration helper
+    const triggerConfetti = (colors?: string[]) => {
+        try {
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.65 },
+                colors: colors || ['#10B981', '#3B82F6', '#F59E0B', '#EC4899', '#8B5CF6']
+            });
+        } catch (err) {
+            console.error('Confetti error', err);
+        }
+    };
+
+    // Toggle step completion
+    const toggleStep = (trailId: string, stepId: string) => {
+        setTrails(prev => {
+            const next = prev.map(trail => {
+                if (trail.id !== trailId) return trail;
+                const updatedSteps = trail.steps.map(step =>
+                    step.id === stepId ? { ...step, completed: !step.completed } : step
+                );
+                const wasComplete = trail.steps.every(s => s.completed);
+                const nowComplete = updatedSteps.every(s => s.completed);
+
+                // If just achieved 100% completion, trigger celebratory confetti!
+                if (!wasComplete && nowComplete) {
+                    setTimeout(() => triggerConfetti(), 150);
+                }
+
+                return { ...trail, steps: updatedSteps };
+            });
+            return next;
+        });
+    };
+
+    // Handle scratch-off interaction on the canvas
+    const handleScratchAction = (trailId: string, clientX: number, clientY: number, canvas: HTMLCanvasElement) => {
+        if (scratchedRewards[trailId]) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 22, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Incrementally calculate scratched percentage
+        const currentProg = scratchProgress[trailId] || 0;
+        const newProg = Math.min(100, currentProg + 6);
+        setScratchProgress(prev => ({ ...prev, [trailId]: newProg }));
+
+        if (newProg >= 50 && !scratchedRewards[trailId]) {
+            setScratchedRewards(prev => ({ ...prev, [trailId]: true }));
+            triggerConfetti(['#F59E0B', '#10B981', '#EC4899']);
+        }
+    };
 
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const isOnline = useNetwork();
@@ -264,8 +485,8 @@ const WalletContent: React.FC<{
                     <div className="lg:col-span-7 space-y-6">
 
                         {/* Solana Card (Solflare Integration) */}
-                        <div className="p-5 sm:p-6 bg-white border border-purple-100 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col gap-5">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+                        <div className="p-5 sm:p-6 bg-white border-2 border-purple-500 rounded-[2rem] shadow-[0_0_25px_rgba(168,85,247,0.35)] relative overflow-hidden flex flex-col gap-5">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
                             
                             {/* Header */}
                             <div className="flex justify-between items-start gap-4">
@@ -274,7 +495,7 @@ const WalletContent: React.FC<{
                                         <img src="/assets/Gallery/QuestQRLocations/sologo.png" alt="Solflare" className="w-7 h-7 object-contain" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Solflare Wallet</p>
+                                        <p className="text-[10px] font-black text-purple-600 uppercase tracking-widest">Solflare Wallet</p>
                                         <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">Solana Blockchain</h3>
                                     </div>
                                 </div>
@@ -338,7 +559,7 @@ const WalletContent: React.FC<{
                         </div>
 
                         {/* QR Scanner Trigger Card */}
-                        <div className="p-5 sm:p-6 bg-white border border-blue-100 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col gap-5">
+                        <div className="p-5 sm:p-6 bg-white border-2 border-blue-500 rounded-[2rem] shadow-[0_0_25px_rgba(59,130,246,0.35)] relative overflow-hidden flex flex-col gap-5">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
                             
                             {/* Header */}
@@ -433,8 +654,245 @@ const WalletContent: React.FC<{
                     {/* ── Right Column: Scan History Ledger + Partner Links (5 cols on lg) ── */}
                     <div className="lg:col-span-5 space-y-6">
 
+                        {/* Discover Tuzla: Themed Trails Quest Tracking & Rewards */}
+                        <div className="p-4 sm:p-6 bg-white border-2 border-emerald-400 text-slate-800 rounded-[2rem] shadow-[0_0_25px_rgba(52,211,153,0.35)] space-y-5 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-36 h-36 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                            {/* Header */}
+                            <div className="flex justify-between items-center pb-3 border-b border-slate-100 shrink-0">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600">
+                                        <Award className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-1.5">
+                                            <h3 className="text-sm font-black uppercase tracking-tight text-slate-800">
+                                                Discover Tuzla
+                                            </h3>
+                                        </div>
+                                        <p className="text-[11px] text-slate-500">Themed Quests & Milestone Scratch Rewards</p>
+                                    </div>
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    {trails.filter(t => t.steps.every(s => s.completed)).length}/{trails.length} Complete
+                                </span>
+                            </div>
+
+                            {/* Trails Accordion List */}
+                            <div className="space-y-3.5">
+                                {trails.map(trail => {
+                                    const completedSteps = trail.steps.filter(s => s.completed).length;
+                                    const totalSteps = trail.steps.length;
+                                    const progressPercent = Math.round((completedSteps / totalSteps) * 100);
+                                    const isComplete = progressPercent === 100;
+                                    const isExpanded = expandedTrailId === trail.id;
+                                    const isScratched = !!scratchedRewards[trail.id];
+
+                                    return (
+                                        <div
+                                            key={trail.id}
+                                            className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                                                isComplete ? 'border-emerald-400 bg-emerald-50/40 shadow-sm' : 'border-slate-200 bg-slate-50/70 hover:border-slate-300'
+                                            }`}
+                                        >
+                                            {/* Trail Header Banner */}
+                                            <div
+                                                onClick={() => setExpandedTrailId(isExpanded ? null : trail.id)}
+                                                className="p-3.5 sm:p-4 cursor-pointer hover:bg-slate-100/60 flex flex-col gap-2.5 select-none"
+                                            >
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${trail.badgeBg}`}>
+                                                            {trail.theme}
+                                                        </span>
+                                                        <h4 className="text-xs sm:text-sm font-extrabold text-slate-800 tracking-wide">
+                                                            {trail.name}
+                                                        </h4>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        {isComplete && (
+                                                            <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">
+                                                                <CheckCircle2 className="w-3 h-3" />
+                                                                100%
+                                                            </span>
+                                                        )}
+                                                        {isExpanded ? (
+                                                            <ChevronUp className="w-4 h-4 text-slate-500" />
+                                                        ) : (
+                                                            <ChevronDown className="w-4 h-4 text-slate-500" />
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Dynamic Progress Bar */}
+                                                <div className="space-y-1">
+                                                    <div className="flex justify-between text-[10px] text-slate-500 font-semibold">
+                                                        <span>Progress</span>
+                                                        <span className={isComplete ? 'text-emerald-700 font-bold' : ''}>
+                                                            {completedSteps}/{totalSteps} ({progressPercent}%)
+                                                        </span>
+                                                    </div>
+                                                    <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden p-0.5">
+                                                        <motion.div
+                                                            className={`h-full rounded-full bg-gradient-to-r ${trail.color}`}
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: `${progressPercent}%` }}
+                                                            transition={{ duration: 0.4, ease: 'easeOut' }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Expanded Checkpoints & Reward Area */}
+                                            <AnimatePresence>
+                                                {isExpanded && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        transition={{ duration: 0.2 }}
+                                                        className="px-3.5 pb-4 pt-1 sm:px-4 space-y-3.5 border-t border-slate-200"
+                                                    >
+                                                        {/* Interactive Checkpoint List */}
+                                                        <div className="space-y-2 pt-2">
+                                                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                                                                Checkpoints (Tap to Complete)
+                                                            </p>
+                                                            <div className="space-y-1.5">
+                                                                {trail.steps.map((step, idx) => (
+                                                                    <div
+                                                                        key={step.id}
+                                                                        onClick={() => toggleStep(trail.id, step.id)}
+                                                                        className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${
+                                                                            step.completed
+                                                                                ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-medium'
+                                                                                : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                                                                        }`}
+                                                                    >
+                                                                        <div className="flex items-center gap-2.5">
+                                                                            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
+                                                                                step.completed
+                                                                                    ? 'bg-emerald-500 text-white font-black'
+                                                                                    : 'bg-slate-100 text-slate-500'
+                                                                            }`}>
+                                                                                {idx + 1}
+                                                                            </span>
+                                                                            <span className={`text-xs font-medium ${step.completed ? 'line-through text-slate-400' : ''}`}>
+                                                                                {step.name}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className={`w-5 h-5 rounded-lg flex items-center justify-center border transition-all ${
+                                                                            step.completed
+                                                                                ? 'bg-emerald-500 border-emerald-400 text-white'
+                                                                                : 'border-slate-300 bg-slate-50'
+                                                                        }`}>
+                                                                            {step.completed && <CheckCircle2 className="w-3.5 h-3.5 stroke-[3]" />}
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Reward Section / Scratch-off Card */}
+                                                        <div className="pt-2 border-t border-slate-200">
+                                                            <div className="flex items-center gap-1.5 mb-2">
+                                                                <Gift className={`w-3.5 h-3.5 ${trail.rewardHeaderColor || 'text-amber-600'}`} />
+                                                                <span className={`text-[10px] font-black uppercase tracking-wider ${trail.rewardHeaderColor || 'text-amber-600'}`}>
+                                                                    Trail Reward
+                                                                </span>
+                                                            </div>
+
+                                                            {!isComplete ? (
+                                                                /* Locked Reward Notice */
+                                                                <div className={`p-3 rounded-xl bg-slate-50 ${trail.rewardBorderColor || 'border border-slate-200'} flex items-center justify-between text-slate-500`}>
+                                                                    <div className="flex items-center gap-2.5">
+                                                                        <div className="p-1.5 rounded-lg bg-slate-200 text-slate-500">
+                                                                            <Lock className="w-4 h-4" />
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className={`text-xs font-bold ${trail.rewardTextColor || 'text-slate-700'}`}>Reward Locked</p>
+                                                                            <p className="text-[10px] text-slate-500">Complete all checkpoints above to scratch and reveal</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <span className="text-[11px] font-bold text-slate-500">{progressPercent}%</span>
+                                                                </div>
+                                                            ) : isScratched ? (
+                                                                /* Revealed Reward */
+                                                                <motion.div
+                                                                    initial={{ scale: 0.95, opacity: 0 }}
+                                                                    animate={{ scale: 1, opacity: 1 }}
+                                                                    className={`p-3.5 rounded-xl bg-gradient-to-r from-amber-50 to-emerald-50 ${trail.rewardBorderColor || 'border-2 border-amber-400'} text-center space-y-1 relative overflow-hidden`}
+                                                                >
+                                                                    <div className="absolute top-1 right-2">
+                                                                        <Sparkles className="w-4 h-4 text-amber-500 animate-spin" />
+                                                                    </div>
+                                                                    <p className={`text-[10px] font-black uppercase tracking-wider ${trail.rewardHeaderColor || 'text-amber-600'}`}>Reward Unlocked!</p>
+                                                                    <p className={`text-sm font-black ${trail.rewardTextColor || 'text-slate-900'}`}>{trail.reward}</p>
+                                                                    <p className="text-[10px] text-emerald-700 font-semibold">Show this screen at partner desk or redeem in app</p>
+                                                                </motion.div>
+                                                            ) : (
+                                                                /* Interactive Scratch-off Card */
+                                                                <div className={`relative rounded-xl overflow-hidden ${trail.rewardBorderColor || 'border border-amber-400'} shadow-md bg-gradient-to-br from-amber-50 to-emerald-50 p-4 text-center select-none`}>
+                                                                    {/* Background Revealed Reward */}
+                                                                    <div className="space-y-1 pointer-events-none py-1">
+                                                                        <p className={`text-[10px] font-black uppercase tracking-wider ${trail.rewardHeaderColor || 'text-amber-600'}`}>Congratulations!</p>
+                                                                        <p className={`text-sm font-black ${trail.rewardTextColor || 'text-slate-900'}`}>{trail.reward}</p>
+                                                                        <p className="text-[10px] text-emerald-700 font-semibold">Trail Completed</p>
+                                                                    </div>
+
+                                                                    {/* Scratch Surface Canvas */}
+                                                                    <canvas
+                                                                        ref={(canvas) => {
+                                                                            if (canvas && !canvas.dataset.initialized) {
+                                                                                canvas.dataset.initialized = 'true';
+                                                                                const ctx = canvas.getContext('2d');
+                                                                                if (ctx) {
+                                                                                    canvas.width = canvas.offsetWidth;
+                                                                                    canvas.height = canvas.offsetHeight;
+                                                                                    // Silver scratch foil gradient
+                                                                                    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                                                                                    grad.addColorStop(0, '#64748b');
+                                                                                    grad.addColorStop(0.5, '#94a3b8');
+                                                                                    grad.addColorStop(1, '#475569');
+                                                                                    ctx.fillStyle = grad;
+                                                                                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                                                                                    // Text overlay on foil
+                                                                                    ctx.fillStyle = '#f8fafc';
+                                                                                    ctx.font = 'bold 12px sans-serif';
+                                                                                    ctx.textAlign = 'center';
+                                                                                    ctx.textBaseline = 'middle';
+                                                                                    ctx.fillText('✨ Swipe / Drag to Scratch Off ✨', canvas.width / 2, canvas.height / 2);
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                        onMouseMove={(e) => {
+                                                                            if (e.buttons === 1) {
+                                                                                handleScratchAction(trail.id, e.clientX, e.clientY, e.currentTarget);
+                                                                            }
+                                                                        }}
+                                                                        onTouchMove={(e) => {
+                                                                            if (e.touches[0]) {
+                                                                                handleScratchAction(trail.id, e.touches[0].clientX, e.touches[0].clientY, e.currentTarget);
+                                                                            }
+                                                                        }}
+                                                                        className="absolute inset-0 w-full h-full cursor-crosshair touch-none rounded-xl"
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
                         {/* Scan History Ledger */}
-                        <div className="p-4 sm:p-6 bg-white border border-emerald-100 rounded-[2rem] shadow-xl space-y-4 flex flex-col relative min-h-[380px]">
+                        <div className="p-4 sm:p-6 bg-white border-2 border-amber-400 rounded-[2rem] shadow-[0_0_25px_rgba(251,191,36,0.35)] space-y-4 flex flex-col relative min-h-[380px]">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
 
                             <div className="flex justify-between items-center pb-3 border-b border-slate-100 shrink-0">
@@ -543,9 +1001,9 @@ const WalletContent: React.FC<{
                         </div>
 
                         {/* Partner Agencies */}
-                        <div className="p-4 sm:p-8 bg-white border border-emerald-100 rounded-[2rem] shadow-xl space-y-6 overflow-hidden">
-                            <h2 className="text-xl font-black text-emerald-950 uppercase tracking-tight flex items-center gap-2">
-                                <Globe size={20} className="text-emerald-600" />
+                        <div className="p-4 sm:p-8 bg-white border-2 border-blue-700 rounded-[2rem] shadow-[0_0_25px_rgba(29,78,216,0.35)] space-y-6 overflow-hidden">
+                            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                                <Globe size={20} className="text-blue-700" />
                                 {t.partnerAgenciesTitle}
                             </h2>
                             <div className="space-y-4">
@@ -560,6 +1018,7 @@ const WalletContent: React.FC<{
                                     onClick={() => window.open('https://aiso-tuzla.lovable.app/', '_blank')}
                                     className="w-full h-16 bg-blue-600 text-yellow-300 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-blue-700"
                                 >
+                                    <img src="/assets/icons/aisologo.webp" alt="AISO Logo" className="w-6 h-6 object-contain" />
                                     AISO TUZLA
                                 </button>
                             </div>
@@ -568,7 +1027,7 @@ const WalletContent: React.FC<{
                 </div>
 
                 {/* Privacy Disclaimer (Placed at the bottom of the Wallet page) */}
-                <div className="mt-12 p-6 sm:p-8 bg-white border border-slate-200/80 rounded-[2rem] shadow-sm text-xs text-slate-500 leading-relaxed space-y-4">
+                <div className="mt-12 p-6 sm:p-8 bg-white border-2 border-slate-300 rounded-[2rem] shadow-[0_0_20px_rgba(148,163,184,0.35)] text-xs text-slate-500 leading-relaxed space-y-4">
                     <p className="font-light italic text-slate-500 leading-relaxed">
                         {t.privacyDisclaimerText}
                     </p>

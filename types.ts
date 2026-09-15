@@ -155,6 +155,11 @@ export interface TranslationSet {
   watchCinematic: string;
   closeVideo: string;
   solBalance: string;
+  trailStepTitle: string;
+  trailStepPhase: string;
+  trailStepComplete: string;
+  trailStepGrandFinale: string;
+  trailStepLocked: string;
 }
 
 export enum AppTab {

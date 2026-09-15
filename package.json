@@ -44,6 +44,7 @@
     "@vercel/blob": "^2.8.0",
     "@vercel/speed-insights": "^2.0.0",
     "@wasmer/sdk": "^0.10.0",
+    "canvas-confetti": "^1.9.4",
     "express": "^5.2.1",
     "framer-motion": "^12.38.0",
     "glob": "^13.0.4",
@@ -68,6 +69,7 @@
     "vite-pwa": "^1.0.2"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "24.6.0",
     "@types/react": "^19.2.14",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
@@ -99,6 +101,6 @@
     "usb@2.18.0": true,
     "node": true,
     "@google/genai@2.19.0": true,
-    "esbuild@0.25.12": true
+    "esbuild@0.27.0": true
   }
 }

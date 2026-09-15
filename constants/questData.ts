@@ -30,7 +30,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
   { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRBingoCityCenter.png', Image: '/assets/Bingo-supermarket.webp', website: 'https://tuzla.bingocitycenter.ba/' },
   { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRMesaStatue.png', Image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4' },
   { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRtvrtko.png', Image: '/assets/Gallery/Photos/tuzla12.webp' },
-  { id: 'panonika', name: { en: 'Pannonian Lakes', bs: 'Panonska jezera' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRpanonika.png', Image: '/assets/Gallery/QuestQRLocations/Panonsko jezero.png' },
+  { id: 'panonika', name: { en: 'Pannonian Lakes', bs: 'Panonska jezera' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRpanonika.png', Image: '/assets/Gallery/QuestQRLocations/panonsko jezero.png' },
 ];
 
 export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [

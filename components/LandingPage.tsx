@@ -176,7 +176,7 @@ const externalLinks = [
   { name: 'Airbnb', url: 'https://www.airbnb.ba/tuzla-bosnia-and-herzegovina/stays', logo: '/assets/Gallery/QuestQRLocations/airbnbng.webp' },
 ];
 
-const previewImages = Array.from({ length: 25 }, (_, i) => `/assets/Gallery/Photos/tuzla${i + 1}.webp`)
+const previewImages = Array.from({ length: 24 }, (_, i) => `/assets/Gallery/Photos/tuzla${i + 1}.webp`)
   .filter(p => p !== '/assets/Gallery/Photos/tuzla2.webp');
 
 const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
@@ -197,8 +197,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
   const pannonicaSrc = lang === 'bs' ? '/assets/PannonicaBA.webp'
     : lang === 'de' ? '/assets/PannonicaDE.webp'
-    : lang === 'tr' ? '/assets/PannonicaTR.webp'
-    : '/assets/Pannonica.webp';
+      : lang === 'tr' ? '/assets/PannonicaTR.webp'
+        : '/assets/Pannonica.webp';
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -380,12 +380,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       {/* 1. HERO SECTION */}
       <section className="hero-section relative w-full flex flex-col items-center justify-center bg-white">
         {/* Rounded wrapper with glowing blue border and interactive markers */}
-        <div 
+        <div
           className="hero-wrapper relative overflow-hidden bg-slate-950 flex select-none group/hero cursor-pointer"
           onClick={() => setActiveMarkerId(null)}
         >
           <img
-            src="/assets/Gallery/herooo.webp"
+            src="/assets/Gallery/heroo.webp"
             alt="Tuzla Pannonica Lakes"
             className="hero-image-img w-full h-auto block object-cover pointer-events-none"
             draggable={false}
@@ -420,14 +420,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                   title={`${labelText} (${(marker.tagText as any)[lang] || marker.tagText.en})`}
                 >
                   {/* Glowing hotspot indicator over the 3D pin in the artwork */}
-                  <div className={`relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-full transition-all duration-300 ${
-                    isOpen ? 'scale-110' : 'hover:scale-105'
-                  }`}>
-                    <span className={`absolute inset-0 rounded-full transition-all duration-300 ${
-                      isOpen
-                        ? 'border-2 border-cyan-300 bg-cyan-400/30 shadow-[0_0_22px_rgba(34,211,238,0.85)] ring-2 ring-cyan-400/50'
-                        : 'border border-cyan-400/40 bg-cyan-400/10 hover:border-cyan-300 hover:bg-cyan-400/25 shadow-[0_0_12px_rgba(34,211,238,0.4)]'
-                    }`} />
+                  <div className={`relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-full transition-all duration-300 ${isOpen ? 'scale-110' : 'hover:scale-105'
+                    }`}>
+                    <span className={`absolute inset-0 rounded-full transition-all duration-300 ${isOpen
+                      ? 'border-2 border-cyan-300 bg-cyan-400/30 shadow-[0_0_22px_rgba(34,211,238,0.85)] ring-2 ring-cyan-400/50'
+                      : 'border border-cyan-400/40 bg-cyan-400/10 hover:border-cyan-300 hover:bg-cyan-400/25 shadow-[0_0_12px_rgba(34,211,238,0.4)]'
+                      }`} />
                     {!isOpen && (
                       <span className="absolute inset-1 rounded-full border border-cyan-400/35 animate-ping opacity-35 pointer-events-none" />
                     )}
@@ -441,9 +439,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                         animate={{ opacity: 1, scale: 1, x: 0 }}
                         exit={{ opacity: 0, scale: 0.85, x: isLeft ? 10 : -10 }}
                         transition={{ duration: 0.2 }}
-                        className={`absolute top-1/2 -translate-y-1/2 ${
-                          isLeft ? 'right-full mr-2 sm:mr-3.5' : 'left-full ml-2 sm:ml-3.5'
-                        } pointer-events-auto z-30`}
+                        className={`absolute top-1/2 -translate-y-1/2 ${isLeft ? 'right-full mr-2 sm:mr-3.5' : 'left-full ml-2 sm:ml-3.5'
+                          } pointer-events-auto z-30`}
                         onClick={(e) => {
                           e.stopPropagation();
                           setActiveMarkerId(null);
@@ -499,11 +496,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                   title={pannonicaLabel}
                 >
                   {/* Subtle interactive glow box over the embedded logo */}
-                  <div className={`w-[125px] sm:w-[170px] h-[34px] sm:h-[46px] rounded-2xl transition-all duration-300 flex items-center justify-center ${
-                    isPannonicaOpen
-                      ? 'border-2 border-cyan-300 bg-cyan-400/25 shadow-[0_0_25px_rgba(34,211,238,0.75)] ring-2 ring-cyan-400/50'
-                      : 'border border-cyan-400/40 bg-cyan-400/10 hover:border-cyan-300 hover:bg-cyan-400/20 shadow-[0_0_14px_rgba(34,211,238,0.35)]'
-                  }`}>
+                  <div className={`w-[125px] sm:w-[170px] h-[34px] sm:h-[46px] rounded-2xl transition-all duration-300 flex items-center justify-center ${isPannonicaOpen
+                    ? 'border-2 border-cyan-300 bg-cyan-400/25 shadow-[0_0_25px_rgba(34,211,238,0.75)] ring-2 ring-cyan-400/50'
+                    : 'border border-cyan-400/40 bg-cyan-400/10 hover:border-cyan-300 hover:bg-cyan-400/20 shadow-[0_0_14px_rgba(34,211,238,0.35)]'
+                    }`}>
                     {!isPannonicaOpen && (
                       <span className="absolute inset-0 rounded-2xl border border-cyan-400/30 animate-pulse pointer-events-none" />
                     )}
@@ -582,6 +578,38 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         </section>
 
 
+        {/* 2.5. Pannonica Special */}
+        <div className="w-full mt-8 relative rounded-[2.5rem] overflow-hidden shadow-2xl border-2 border-blue-400/40 group">
+          <div
+            className="cursor-pointer"
+            onClick={() => openGallery(['/assets/Pannonica.webp', ...previewImages], 0)}
+          >
+            <img
+              src="/assets/Pannonica.webp"
+              alt="Pannonica Lakes"
+              className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
+          <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-sm text-white/80 p-2.5 rounded-2xl pointer-events-none">
+            <ZoomIn size={20} />
+          </div>
+        </div>
+
+        <div className="w-full flex justify-center mt-4">
+          <a
+            href="https://panonika.ba"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:scale-105 transition-transform duration-300"
+          >
+            <img
+              src="/assets/panonikalogo.webp"
+              alt="Pannonica Logo"
+              className="w-[200px] h-[50px] object-contain"
+            />
+          </a>
+        </div>
+
 
         {/* 3. EXTERNAL PARTNER LINKS */}
         <section className="py-10">
@@ -642,7 +670,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             </h2>
             <div className="w-16 h-2 bg-blue-600 rounded-full mt-2 mx-auto" />
           </div>
-          <div 
+          <div
             onClick={toggleHeroVideo}
             className="relative w-[340px] sm:w-[360px] h-[680px] sm:h-[720px] border-[14px] border-slate-900 rounded-[3rem] bg-black shadow-2xl overflow-hidden ring-4 ring-slate-800 cursor-pointer group select-none"
           >
@@ -693,7 +721,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                     className="absolute inset-0 w-full h-full object-cover opacity-60"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
-                  
+
                   {/* Play trigger button */}
                   <div className="relative z-20 flex flex-col items-center gap-3">
                     <button
@@ -737,7 +765,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
             {/* Interactive Control Overlay Bar when Playing */}
             {isHeroPlaying && (
-              <div 
+              <div
                 onClick={(e) => e.stopPropagation()}
                 className="absolute bottom-4 inset-x-4 z-20 p-2.5 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-between text-white transition-opacity duration-300 opacity-90 hover:opacity-100"
               >
@@ -805,11 +833,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 <img src="/assets/bluesky.svg" alt="Bluesky" className="w-6 h-6" />
                 <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Bluesky</span>
               </a>
-              <a href="https://www.facebook.com/AmirICPTuzla" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#4267B2] hover:bg-[#4267B2]/10 transition-colors relative group">
+              <a href="https://facebook.com/profile.php?id=61589883383077" target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#4267B2] hover:bg-[#4267B2]/10 transition-colors relative group">
                 <Facebook className="w-6 h-6" />
                 <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Facebook</span>
               </a>
-              <a href="https://www.linkedin.com/in/icptuzla-amir-mulaosmanovic-ab356a34b/" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#0077b5] hover:bg-[#0077b5]/10 transition-colors relative group">
+              <a href="https://www.linkedin.com/in/aiso-tuzla-ab356a34b/?isSelfProfile=true" target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#0077b5] hover:bg-[#0077b5]/10 transition-colors relative group">
                 <Linkedin className="w-6 h-6" />
                 <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">LinkedIn</span>
               </a>
@@ -821,11 +849,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
             <div className="flex flex-wrap justify-center items-center gap-8 text-sm font-bold uppercase tracking-widest">
               <a
-                href="#"
-                className="flex items-center gap-2 group hover:text-blue-600 transition-colors border-b-2 border-transparent hover:border-blue-600 pb-1 text-slate-400"
+                href="https://aiso-tuzla.lovable.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 group hover:text-blue-600 transition-colors border-b-2 border-transparent hover:border-blue-600 pb-1 text-slate-600"
               >
                 <img
-                  src="/assets/aisologo.webp"
+                  src="/assets/icons/aisologo.webp"
                   alt="AISO Logo"
                   className="w-6 h-6 object-contain pointer-events-none group-hover:scale-110 transition-transform"
                 />
