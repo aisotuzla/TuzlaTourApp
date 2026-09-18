@@ -123,6 +123,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     }
   };
 
+  useEffect(() => {
+    if (!navigationTarget || !Number.isFinite(navigationTarget.lat) || !Number.isFinite(navigationTarget.lon)) return;
+    handleStartNavigation(navigationTarget.name, navigationTarget.lat, navigationTarget.lon);
+    onClearNavigation?.();
+  }, [navigationTarget]);
+
   const handleToggleARMode = () => {
     if (!showARGuide && isNavigating) {
       setIsNavigating(false);

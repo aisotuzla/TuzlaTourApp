@@ -63,7 +63,7 @@ const CityGuide: React.FC<CityGuideProps> = ({ lang }) => {
   const pannonicaSrc = lang === 'bs' ? '/assets/PannonicaBA.webp'
     : lang === 'de' ? '/assets/PannonicaDE.webp'
       : lang === 'tr' ? '/assets/PannonicaTR.webp'
-        : '/assets/Pannonica.webp';
+        : '/assets/PannonicaEN.webp';
 
   const emergencySrc = '/assets/Gallery/QuestQRLocations/tour-emergency info.webp';
 

@@ -167,8 +167,16 @@ const externalLinks = [
 const previewImages = Array.from({ length: 24 }, (_, i) => `/assets/Gallery/Photos/tuzla${i + 1}.webp`)
   .filter(p => p !== '/assets/Gallery/Photos/tuzla2.webp');
 
+const pannonicaImageByLanguage: Record<Language, string> = {
+  en: '/assets/PannonicaEN.webp',
+  bs: '/assets/PannonicaBA.webp',
+  de: '/assets/PannonicaDE.webp',
+  tr: '/assets/PannonicaTR.webp',
+};
+
 const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const t = (copy as any)[lang] || copy.en;
+  const pannonicaImage = pannonicaImageByLanguage[lang] || pannonicaImageByLanguage.en;
   const { openGallery } = useImage();
   const { platform } = getAppFeatures();
   const [heroLoopCount, setHeroLoopCount] = useState(0);
@@ -484,11 +492,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         <div className="w-full mt-8 relative rounded-[2.5rem] overflow-hidden shadow-2xl border-2 border-blue-400/40 group">
           <div
             className="cursor-pointer"
-            onClick={() => openGallery(['/assets/Pannonica.webp', ...previewImages], 0)}
+            onClick={() => openGallery([pannonicaImage, ...previewImages], 0)}
           >
             <img
-              src="/assets/Pannonica.webp"
-              alt="Pannonica Lakes"
+              src={pannonicaImage}
+              alt={t.pannonicaTitle}
               className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
             />
           </div>

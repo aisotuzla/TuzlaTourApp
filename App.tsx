@@ -196,7 +196,13 @@ const AppContent: React.FC = () => {
                   } />
                   <Route path="/wallet" element={
                     <SecurityGuard lang={lang} isUnlocked={isWalletUnlocked} onUnlock={() => setIsWalletUnlocked(true)}>
-                      <WalletShell lang={lang} />
+                      <WalletShell
+                        lang={lang}
+                        onNavigateToTarget={(target) => {
+                          setNavigationTarget(target);
+                          navigateToTab(AppTab.QUEST);
+                        }}
+                      />
                     </SecurityGuard>
                   } />
                   <Route path="/task-manager" element={<TaskManager lang={lang} />} />

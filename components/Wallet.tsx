@@ -18,35 +18,16 @@ import {
     Trash2,
     AlertCircle,
     Stethoscope,
-    Sparkles,
+    MapPin,
+    Navigation,
+    CircleCheck,
     ChevronDown,
     ChevronUp,
     Gift
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 
-// Discover Tuzla Quest Trails Definition
-export interface TrailStep {
-    id: string;
-    name: string;
-    completed: boolean;
-}
-
-export interface ThemedTrail {
-    id: string;
-    name: string;
-    theme: string;
-    color: string;
-    borderColor: string;
-    badgeBg: string;
-    reward: string;
-    rewardBorderColor?: string;
-    rewardTextColor?: string;
-    rewardHeaderColor?: string;
-    steps: TrailStep[];
-}
-
-const INITIAL_TRAILS: ThemedTrail[] = [
+// Legacy trail data remains only for backwards-compatible saved data; it is not rendered.
+const INITIAL_TRAILS = [
     {
         id: 'salt-trail',
         name: 'Salt Trail',
@@ -142,7 +123,7 @@ import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-r
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
-import { QUEST_TARGETS } from '../constants/questData';
+import { QUEST_TARGETS, QUEST_TARGET_COORDS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, isPoiRewardUnlocked } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
 import { Preferences } from '@capacitor/preferences';
 
@@ -150,6 +131,7 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 
 interface WalletProps {
     lang: Language;
+    onNavigateToTarget: (target: { name: string; lat: number; lon: number }) => void;
 }
 
 interface LedgerEntry {
@@ -162,7 +144,8 @@ const WalletContent: React.FC<{
     lang: Language;
     network: 'mainnet-beta' | 'devnet';
     setNetwork: (net: 'mainnet-beta' | 'devnet') => void;
-}> = ({ lang, network, setNetwork }) => {
+    onNavigateToTarget: WalletProps['onNavigateToTarget'];
+}> = ({ lang, network, setNetwork, onNavigateToTarget }) => {
     const [bamValue, setBamValue] = useState<string>('');
     const [conversionMode, setConversionMode] = useState<'BAM_TO_EUR' | 'EUR_TO_BAM'>('BAM_TO_EUR');
     const [solBalance, setSolBalance] = useState<number | null>(null);
@@ -174,119 +157,29 @@ const WalletContent: React.FC<{
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [playingVideo, setPlayingVideo] = useState<string | null>(null);
 
-    // ── Discover Tuzla Quest Tracking & Rewards State ──
-    const [trails, setTrails] = useState<ThemedTrail[]>(() => {
-        try {
-            const saved = localStorage.getItem('tuzla_themed_trails');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-            }
-        } catch (e) {
-            console.error('Error loading saved trails', e);
-        }
-        return INITIAL_TRAILS;
-    });
-
-    const [scratchedRewards, setScratchedRewards] = useState<Record<string, boolean>>(() => {
-        try {
-            const saved = localStorage.getItem('tuzla_scratched_rewards');
-            if (saved) return JSON.parse(saved);
-        } catch (e) {
-            console.error('Error loading scratched rewards', e);
-        }
-        return {};
-    });
-
-    const [scratchProgress, setScratchProgress] = useState<Record<string, number>>({});
-    const [expandedTrailId, setExpandedTrailId] = useState<string | null>(INITIAL_TRAILS[0].id);
-
-    // Save trails to localStorage
-    useEffect(() => {
-        try {
-            localStorage.setItem('tuzla_themed_trails', JSON.stringify(trails));
-        } catch (e) {
-            console.error('Error saving trails', e);
-        }
-    }, [trails]);
-
-    // Save scratched rewards to localStorage
-    useEffect(() => {
-        try {
-            localStorage.setItem('tuzla_scratched_rewards', JSON.stringify(scratchedRewards));
-        } catch (e) {
-            console.error('Error saving scratched rewards', e);
-        }
-    }, [scratchedRewards]);
-
-    // Confetti celebration helper
-    const triggerConfetti = (colors?: string[]) => {
-        try {
-            confetti({
-                particleCount: 80,
-                spread: 70,
-                origin: { y: 0.65 },
-                colors: colors || ['#10B981', '#3B82F6', '#F59E0B', '#EC4899', '#8B5CF6']
-            });
-        } catch (err) {
-            console.error('Confetti error', err);
-        }
-    };
-
-    // Toggle step completion
-    const toggleStep = (trailId: string, stepId: string) => {
-        setTrails(prev => {
-            const next = prev.map(trail => {
-                if (trail.id !== trailId) return trail;
-                const updatedSteps = trail.steps.map(step =>
-                    step.id === stepId ? { ...step, completed: !step.completed } : step
-                );
-                const wasComplete = trail.steps.every(s => s.completed);
-                const nowComplete = updatedSteps.every(s => s.completed);
-
-                // If just achieved 100% completion, trigger celebratory confetti!
-                if (!wasComplete && nowComplete) {
-                    setTimeout(() => triggerConfetti(), 150);
-                }
-
-                return { ...trail, steps: updatedSteps };
-            });
-            return next;
-        });
-    };
-
-    // Handle scratch-off interaction on the canvas
-    const handleScratchAction = (trailId: string, clientX: number, clientY: number, canvas: HTMLCanvasElement) => {
-        if (scratchedRewards[trailId]) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.beginPath();
-        ctx.arc(x, y, 22, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Incrementally calculate scratched percentage
-        const currentProg = scratchProgress[trailId] || 0;
-        const newProg = Math.min(100, currentProg + 6);
-        setScratchProgress(prev => ({ ...prev, [trailId]: newProg }));
-
-        if (newProg >= 50 && !scratchedRewards[trailId]) {
-            setScratchedRewards(prev => ({ ...prev, [trailId]: true }));
-            triggerConfetti(['#F59E0B', '#10B981', '#EC4899']);
-        }
-    };
-
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const isOnline = useNetwork();
     const t = TRANSLATIONS[lang];
 
     const { unlockedRewards, setUnlockedRewards } = useGlobalApp();
+    const [playingVideoError, setPlayingVideoError] = useState<string | null>(null);
+
+    const questPhases = useMemo(() => [
+        { number: 1, ids: PHASE_1_POIS },
+        { number: 2, ids: PHASE_2_POIS },
+        { number: 3, ids: PHASE_3_POIS }
+    ], []);
+    const currentTarget = useMemo(() => {
+        const nextId = questPhases.flatMap(phase => phase.ids).find(id => !isPoiRewardUnlocked(id, unlockedRewards));
+        return nextId ? QUEST_TARGETS.find(target => target.id === nextId) : undefined;
+    }, [questPhases, unlockedRewards]);
+
+    // Retained temporarily for existing local state, but the obsolete trail UI is hidden.
+    const [trails] = useState(INITIAL_TRAILS);
+    const [scratchedRewards] = useState<Record<string, boolean>>({});
+    const [expandedTrailId, setExpandedTrailId] = useState<string | null>(null);
+    const toggleStep = () => undefined;
+    const handleScratchAction = () => undefined;
 
     const convertedValue = bamValue
         ? conversionMode === 'BAM_TO_EUR'
@@ -654,8 +547,38 @@ const WalletContent: React.FC<{
                     {/* ── Right Column: Scan History Ledger + Partner Links (5 cols on lg) ── */}
                     <div className="lg:col-span-5 space-y-6">
 
-                        {/* Discover Tuzla: Themed Trails Quest Tracking & Rewards */}
-                        <div className="p-4 sm:p-6 bg-white border border-emerald-400 text-slate-800 rounded-[2rem] shadow-[0_0_25px_rgba(52,211,153,0.35)] space-y-5 relative overflow-hidden">
+                        <div className="p-4 sm:p-6 bg-white border border-emerald-200 text-slate-800 rounded-[2rem] shadow-[0_12px_30px_rgba(15,23,42,0.08)] space-y-5">
+                            <div className="flex items-start gap-3 pb-4 border-b border-slate-100">
+                                <div className="p-2.5 rounded-2xl bg-blue-50 text-blue-700"><MapPin className="w-5 h-5" /></div>
+                                <div>
+                                    <h3 className="text-sm font-black uppercase tracking-tight">Tuzla quest</h3>
+                                    <p className="text-[11px] text-slate-500">Visit the real location, scan its QR code, and unlock the next phase.</p>
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                {questPhases.map((phase) => {
+                                    const complete = phase.ids.every(id => isPoiRewardUnlocked(id, unlockedRewards));
+                                    const count = phase.ids.filter(id => isPoiRewardUnlocked(id, unlockedRewards)).length;
+                                    return (
+                                        <div key={phase.number} className={`rounded-2xl border p-3.5 ${complete ? 'border-emerald-300 bg-emerald-50/70' : 'border-slate-200 bg-slate-50'}`}>
+                                            <div className="flex items-center justify-between gap-3">
+                                                <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Phase {phase.number}</p><p className="text-xs font-bold text-slate-800 mt-0.5">{count}/{phase.ids.length} locations scanned</p></div>
+                                                {complete ? <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-700"><CircleCheck className="w-4 h-4" />Success</span> : <span className="text-[10px] font-bold text-slate-400">In progress</span>}
+                                            </div>
+                                            <div className="mt-3 h-1.5 rounded-full bg-slate-200 overflow-hidden"><div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${(count / phase.ids.length) * 100}%` }} /></div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            {currentTarget ? (() => {
+                                const coords = QUEST_TARGET_COORDS[currentTarget.id];
+                                const name = currentTarget.name[lang] || currentTarget.name.en;
+                                return coords ? <button onClick={() => onNavigateToTarget({ name, ...coords })} className="w-full flex items-center justify-between gap-3 rounded-2xl bg-blue-700 hover:bg-blue-800 px-4 py-3.5 text-left text-white transition-colors active:scale-[0.98]"><span><span className="block text-[10px] font-black uppercase tracking-widest text-blue-200">Next real-location target</span><span className="block text-sm font-black mt-0.5">{name}</span></span><Navigation className="w-5 h-5 shrink-0" /></button> : null;
+                            })() : <div className="rounded-2xl bg-emerald-600 px-4 py-4 text-white"><p className="text-sm font-black">Quest complete</p><p className="text-[11px] text-emerald-100 mt-1">All three phases are successfully unlocked.</p></div>}
+                        </div>
+
+                        {/* Legacy themed trails are intentionally hidden; phases above use real QR progress. */}
+                        <div className="hidden">
                             <div className="absolute top-0 right-0 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
                             <div className="absolute bottom-0 left-0 w-36 h-36 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -820,9 +743,6 @@ const WalletContent: React.FC<{
                                                                     animate={{ scale: 1, opacity: 1 }}
                                                                     className={`p-3.5 rounded-xl bg-gradient-to-r from-amber-50 to-emerald-50 ${trail.rewardBorderColor || 'border-2 border-amber-400'} text-center space-y-1 relative overflow-hidden`}
                                                                 >
-                                                                    <div className="absolute top-1 right-2">
-                                                                        <Sparkles className="w-4 h-4 text-amber-500 animate-spin" />
-                                                                    </div>
                                                                     <p className={`text-[10px] font-black uppercase tracking-wider ${trail.rewardHeaderColor || 'text-amber-600'}`}>Reward Unlocked!</p>
                                                                     <p className={`text-sm font-black ${trail.rewardTextColor || 'text-slate-900'}`}>{trail.reward}</p>
                                                                     <p className="text-[10px] text-emerald-700 font-semibold">Show this screen at partner desk or redeem in app</p>
@@ -859,7 +779,7 @@ const WalletContent: React.FC<{
                                                                                     ctx.font = 'bold 12px sans-serif';
                                                                                     ctx.textAlign = 'center';
                                                                                     ctx.textBaseline = 'middle';
-                                                                                    ctx.fillText('✨ Swipe / Drag to Scratch Off ✨', canvas.width / 2, canvas.height / 2);
+                                                                                    ctx.fillText('Swipe or drag to reveal', canvas.width / 2, canvas.height / 2);
                                                                                 }
                                                                             }
                                                                         }}
@@ -948,7 +868,7 @@ const WalletContent: React.FC<{
                                                 {/* Play Reward Video Button */}
                                                 {(target as any).video && (
                                                     <button
-                                                        onClick={() => setPlayingVideo((target as any).video)}
+                                                        onClick={() => { setPlayingVideoError(null); setPlayingVideo((target as any).video); }}
                                                         className="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl transition-all shrink-0 active:scale-90"
                                                         title={t.watchCinematic}
                                                     >
@@ -1074,14 +994,18 @@ const WalletContent: React.FC<{
 
                             <div className="relative w-full aspect-video sm:max-h-[60vh] bg-black flex items-center justify-center">
                                 <video
+                                    key={playingVideo}
                                     src={playingVideo}
-                                    autoPlay
                                     controls
                                     playsInline
-                                    preload="auto"
+                                    preload="metadata"
+                                    onCanPlay={() => setPlayingVideoError(null)}
+                                    onError={() => setPlayingVideoError(lang === 'bs' ? 'Video se ne može učitati na ovom uređaju.' : 'This video could not be loaded on this device.')}
                                     className="w-full h-full object-contain"
                                 />
                             </div>
+
+                            {playingVideoError && <p className="px-4 pt-3 text-xs font-bold text-rose-300">{playingVideoError}</p>}
 
                             <div className="p-4 border-t border-white/10 bg-white/5 flex items-center justify-between">
                                 <span className="text-xs font-bold text-slate-400">
@@ -1190,7 +1114,7 @@ const WalletContent: React.FC<{
 };
 
 // Main Export Component wrapping contents in Solana Providers
-const Wallet: React.FC<WalletProps> = ({ lang }) => {
+const Wallet: React.FC<WalletProps> = ({ lang, onNavigateToTarget }) => {
     const [network, setNetwork] = useState<'mainnet-beta' | 'devnet'>('devnet');
 
     const endpoint = useMemo(() => {
@@ -1208,7 +1132,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
-                    <WalletContent lang={lang} network={network} setNetwork={setNetwork} />
+                    <WalletContent lang={lang} network={network} setNetwork={setNetwork} onNavigateToTarget={onNavigateToTarget} />
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>

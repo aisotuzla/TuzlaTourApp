@@ -52,8 +52,10 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'assets/Gallery/Ilovetuzla.webp',
           'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
           'assets/MapaBosnia.webp',
-          'assets/Pannonica.webp',
+          'assets/PannonicaEN.webp',
           'assets/PannonicaBA.webp',
+          'assets/PannonicaDE.webp',
+          'assets/PannonicaTR.webp',
           'assets/panonikalogo.webp',
           'assets/aisologo.webp',
           'assets/x.svg',
@@ -178,21 +180,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
               },
             },
             // 5. Video files — NetworkFirst (large, don't bloat cache)
-            {
-              urlPattern: /\.(?:mp4|webm|ogg)$/i,
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'video-cache',
-                expiration: {
-                  maxEntries: 5,
-                  maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-                networkTimeoutSeconds: 10,
-              },
-            },
             // 6. Map tiles — CacheFirst for fast map loads
             {
               urlPattern: /^https:\/\/.*\.(?:tile|tiles)\..*\/\d+\/\d+\/\d+/i,
