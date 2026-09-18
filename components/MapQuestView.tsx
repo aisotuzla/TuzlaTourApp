@@ -172,7 +172,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     safeSet('road_minor', 'line-color', '#ffffff');
     safeSet('road_trunk_primary', 'line-color', '#f7dcb2');
     safeSet('road_secondary_tertiary', 'line-color', '#fff299');
-    safeSet('building-3d', 'fill-extrusion-color', '#8098bdff');
+    safeSet('building-3d', 'fill-extrusion-color', '#9aaac4ff');
   };
 
   useEffect(() => {
@@ -226,7 +226,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     }
 
     if (styleUrl === OFFLINE_STYLE) {
-      ensureTuzlaOfflineMapDownloaded().catch(() => {});
+      ensureTuzlaOfflineMapDownloaded().catch(() => { });
     }
     setActiveStyle(styleUrl);
     if (styleUrl === OFFLINE_STYLE) {

@@ -54,7 +54,7 @@ const INITIAL_TRAILS: ThemedTrail[] = [
         color: 'from-amber-700 to-amber-900',
         borderColor: 'border-amber-800/40',
         badgeBg: 'bg-amber-100 text-amber-900 border-amber-800/40',
-        rewardBorderColor: 'border-2 border-amber-800',
+        rewardBorderColor: 'border border-amber-800',
         rewardTextColor: 'text-amber-900',
         rewardHeaderColor: 'text-amber-800',
         reward: '10% off partner locations',
@@ -70,7 +70,7 @@ const INITIAL_TRAILS: ThemedTrail[] = [
         color: 'from-pink-500 to-rose-600',
         borderColor: 'border-pink-500/40',
         badgeBg: 'bg-pink-100 text-pink-700 border-pink-400/40',
-        rewardBorderColor: 'border-2 border-pink-500',
+        rewardBorderColor: 'border border-pink-500',
         rewardTextColor: 'text-pink-700',
         rewardHeaderColor: 'text-pink-600',
         reward: '10% off sweet treat',
@@ -87,7 +87,7 @@ const INITIAL_TRAILS: ThemedTrail[] = [
         color: 'from-amber-500 to-orange-600',
         borderColor: 'border-amber-500/40',
         badgeBg: 'bg-amber-100 text-amber-800 border-amber-400/40',
-        rewardBorderColor: 'border-2 border-amber-500',
+        rewardBorderColor: 'border border-amber-500',
         rewardTextColor: 'text-amber-800',
         rewardHeaderColor: 'text-amber-600',
         reward: 'Exclusive Audio of Kapija tragedy',
@@ -104,7 +104,7 @@ const INITIAL_TRAILS: ThemedTrail[] = [
         color: 'from-purple-500 to-indigo-600',
         borderColor: 'border-purple-500/40',
         badgeBg: 'bg-purple-100 text-purple-800 border-purple-400/40',
-        rewardBorderColor: 'border-2 border-purple-500',
+        rewardBorderColor: 'border border-purple-500',
         rewardTextColor: 'text-purple-800',
         rewardHeaderColor: 'text-purple-600',
         reward: 'CineStar combo voucher',
@@ -121,7 +121,7 @@ const INITIAL_TRAILS: ThemedTrail[] = [
         color: 'from-emerald-500 to-teal-600',
         borderColor: 'border-emerald-500/40',
         badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-400/40',
-        rewardBorderColor: 'border-2 border-emerald-500',
+        rewardBorderColor: 'border border-emerald-500',
         rewardTextColor: 'text-emerald-800',
         rewardHeaderColor: 'text-emerald-600',
         reward: 'Unreleased video Mesa.mp4',
@@ -485,9 +485,9 @@ const WalletContent: React.FC<{
                     <div className="lg:col-span-7 space-y-6">
 
                         {/* Solana Card (Solflare Integration) */}
-                        <div className="p-5 sm:p-6 bg-white border-2 border-purple-500 rounded-[2rem] shadow-[0_0_25px_rgba(168,85,247,0.35)] relative overflow-hidden flex flex-col gap-5">
+                        <div className="p-5 sm:p-6 bg-white border border-purple-500 rounded-[2rem] shadow-[0_0_25px_rgba(168,85,247,0.35)] relative overflow-hidden flex flex-col gap-5">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
-                            
+
                             {/* Header */}
                             <div className="flex justify-between items-start gap-4">
                                 <div className="flex items-center gap-3">
@@ -559,9 +559,9 @@ const WalletContent: React.FC<{
                         </div>
 
                         {/* QR Scanner Trigger Card */}
-                        <div className="p-5 sm:p-6 bg-white border-2 border-blue-500 rounded-[2rem] shadow-[0_0_25px_rgba(59,130,246,0.35)] relative overflow-hidden flex flex-col gap-5">
+                        <div className="p-5 sm:p-6 bg-white border border-blue-500 rounded-[2rem] shadow-[0_0_25px_rgba(59,130,246,0.35)] relative overflow-hidden flex flex-col gap-5">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
-                            
+
                             {/* Header */}
                             <div className="flex justify-between items-start gap-4">
                                 <div className="flex items-center gap-3">
@@ -595,7 +595,7 @@ const WalletContent: React.FC<{
                         {/* Currency Converter */}
                         <div className="p-5 sm:p-6 bg-white border border-emerald-100 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col gap-5">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-                            
+
                             {/* Header */}
                             <div className="flex justify-between items-start gap-4">
                                 <div className="flex items-center gap-3">
@@ -655,7 +655,7 @@ const WalletContent: React.FC<{
                     <div className="lg:col-span-5 space-y-6">
 
                         {/* Discover Tuzla: Themed Trails Quest Tracking & Rewards */}
-                        <div className="p-4 sm:p-6 bg-white border-2 border-emerald-400 text-slate-800 rounded-[2rem] shadow-[0_0_25px_rgba(52,211,153,0.35)] space-y-5 relative overflow-hidden">
+                        <div className="p-4 sm:p-6 bg-white border border-emerald-400 text-slate-800 rounded-[2rem] shadow-[0_0_25px_rgba(52,211,153,0.35)] space-y-5 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
                             <div className="absolute bottom-0 left-0 w-36 h-36 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -692,9 +692,8 @@ const WalletContent: React.FC<{
                                     return (
                                         <div
                                             key={trail.id}
-                                            className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
-                                                isComplete ? 'border-emerald-400 bg-emerald-50/40 shadow-sm' : 'border-slate-200 bg-slate-50/70 hover:border-slate-300'
-                                            }`}
+                                            className={`rounded-2xl border transition-all duration-200 overflow-hidden ${isComplete ? 'border-emerald-400 bg-emerald-50/40 shadow-sm' : 'border-slate-200 bg-slate-50/70 hover:border-slate-300'
+                                                }`}
                                         >
                                             {/* Trail Header Banner */}
                                             <div
@@ -764,29 +763,26 @@ const WalletContent: React.FC<{
                                                                     <div
                                                                         key={step.id}
                                                                         onClick={() => toggleStep(trail.id, step.id)}
-                                                                        className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${
-                                                                            step.completed
+                                                                        className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${step.completed
                                                                                 ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-medium'
                                                                                 : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
-                                                                        }`}
+                                                                            }`}
                                                                     >
                                                                         <div className="flex items-center gap-2.5">
-                                                                            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
-                                                                                step.completed
+                                                                            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${step.completed
                                                                                     ? 'bg-emerald-500 text-white font-black'
                                                                                     : 'bg-slate-100 text-slate-500'
-                                                                            }`}>
+                                                                                }`}>
                                                                                 {idx + 1}
                                                                             </span>
                                                                             <span className={`text-xs font-medium ${step.completed ? 'line-through text-slate-400' : ''}`}>
                                                                                 {step.name}
                                                                             </span>
                                                                         </div>
-                                                                        <div className={`w-5 h-5 rounded-lg flex items-center justify-center border transition-all ${
-                                                                            step.completed
+                                                                        <div className={`w-5 h-5 rounded-lg flex items-center justify-center border transition-all ${step.completed
                                                                                 ? 'bg-emerald-500 border-emerald-400 text-white'
                                                                                 : 'border-slate-300 bg-slate-50'
-                                                                        }`}>
+                                                                            }`}>
                                                                             {step.completed && <CheckCircle2 className="w-3.5 h-3.5 stroke-[3]" />}
                                                                         </div>
                                                                     </div>
@@ -892,7 +888,7 @@ const WalletContent: React.FC<{
                         </div>
 
                         {/* Scan History Ledger */}
-                        <div className="p-4 sm:p-6 bg-white border-2 border-amber-400 rounded-[2rem] shadow-[0_0_25px_rgba(251,191,36,0.35)] space-y-4 flex flex-col relative min-h-[380px]">
+                        <div className="p-4 sm:p-6 bg-white border border-amber-400 rounded-[2rem] shadow-[0_0_25px_rgba(251,191,36,0.35)] space-y-4 flex flex-col relative min-h-[380px]">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
 
                             <div className="flex justify-between items-center pb-3 border-b border-slate-100 shrink-0">
@@ -1001,7 +997,7 @@ const WalletContent: React.FC<{
                         </div>
 
                         {/* Partner Agencies */}
-                        <div className="p-4 sm:p-8 bg-white border-2 border-blue-700 rounded-[2rem] shadow-[0_0_25px_rgba(29,78,216,0.35)] space-y-6 overflow-hidden">
+                        <div className="p-4 sm:p-8 bg-white border border-blue-700 rounded-[2rem] shadow-[0_0_25px_rgba(29,78,216,0.35)] space-y-6 overflow-hidden">
                             <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
                                 <Globe size={20} className="text-blue-700" />
                                 {t.partnerAgenciesTitle}
@@ -1027,7 +1023,7 @@ const WalletContent: React.FC<{
                 </div>
 
                 {/* Privacy Disclaimer (Placed at the bottom of the Wallet page) */}
-                <div className="mt-12 p-6 sm:p-8 bg-white border-2 border-slate-300 rounded-[2rem] shadow-[0_0_20px_rgba(148,163,184,0.35)] text-xs text-slate-500 leading-relaxed space-y-4">
+                <div className="mt-12 p-6 sm:p-8 bg-white border border-slate-300 rounded-[2rem] shadow-[0_0_20px_rgba(148,163,184,0.35)] text-xs text-slate-500 leading-relaxed space-y-4">
                     <p className="font-light italic text-slate-500 leading-relaxed">
                         {t.privacyDisclaimerText}
                     </p>
