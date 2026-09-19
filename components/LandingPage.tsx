@@ -368,6 +368,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           <img
             src="/assets/Gallery/heroo.webp"
             alt="Tuzla Pannonica Lakes"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="hero-image-img w-full h-auto block object-cover pointer-events-none"
             draggable={false}
           />

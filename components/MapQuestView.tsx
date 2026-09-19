@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { globalPMTilesProtocol, ensureTuzlaOfflineMapDownloaded } from '../utils/pmtilesProtocol.ts';
+import { OFFLINE_STYLE_SPEC } from '../utils/offlineMapStyle.ts';
 import { motion, AnimatePresence } from 'framer-motion';
 import CelebrationOverlay from './CelebrationOverlay.tsx';
 import { QrCode, Navigation, Route, Info, X, Compass, Landmark, Hotel as HotelIcon, Trophy, Layers, Check, ChevronUp, ChevronDown, Play } from 'lucide-react';
@@ -95,7 +96,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
   useEffect(() => {
     if (activeVictoryModal === 'phase2') {
-      setShowCelebration({ phase: 2, rewardUrl: 'https://bafybeibd5ee6pjvkhn3kuitcclb5zjqdwo23yvprfwsaabcctylesvspsi.ipfs.dweb.link?filename=kenan-alajbegovic.webp' });
+      setShowCelebration({ phase: 2, rewardUrl: 'https://black-known-amphibian-995.mypinata.cloud/ipfs/bafybeiagaakoykbdpfi2u6qvm7uaijzirgrvat5xvuowwn63ceq5mvjmru/components/players/kenan-alajbegovic.webp' });
     } else if (activeVictoryModal === 'phase3') {
       setShowCelebration({ phase: 3 });
     } else {
@@ -183,7 +184,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
-    const initialStyle = navigator.onLine ? GEOAPIFY_MAPTILER_3D : OFFLINE_STYLE;
+    const initialStyle = navigator.onLine ? GEOAPIFY_MAPTILER_3D : OFFLINE_STYLE_SPEC;
     const mapInstance = new maplibregl.Map({
       container: mapContainer.current, style: initialStyle, center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
       zoom: 15.5, pitch: 55, bearing: -15, dragRotate: true, pitchWithRotate: true, touchPitch: true, touchZoomRotate: true, attributionControl: false,
@@ -196,7 +197,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       mapInstance.on('rotate', () => setBearing(Math.round(mapInstance.getBearing())));
       if (mapInstance.getStyle().name?.toLowerCase().includes('maptiler') || (mapInstance as any)._requestedStyleURL?.includes('geoapify')) applyGeoapifyPaintOverrides(mapInstance);
       mapInstance.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }), 'bottom-right');
-      if (initialStyle === OFFLINE_STYLE) {
+      if (initialStyle === OFFLINE_STYLE_SPEC) {
         mapInstance.setMaxZoom(16);
         if (mapInstance.getZoom() > 16) mapInstance.setZoom(16);
       }
@@ -214,12 +215,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       const msg = e.error?.message || '';
       console.warn('🗺️ Map style notice:', msg);
       if (!navigator.onLine && !isOfflineMode) {
-        await ensureTuzlaOfflineMapDownloaded();
         setIsOfflineMode(true);
         setActiveStyle(OFFLINE_STYLE);
         mapInstance.setMaxZoom(16);
         if (mapInstance.getZoom() > 16) mapInstance.setZoom(16);
-        mapInstance.setStyle(OFFLINE_STYLE);
+        mapInstance.setStyle(OFFLINE_STYLE_SPEC);
+        ensureTuzlaOfflineMapDownloaded().catch(() => { });
       }
     });
     return () => { mapInstance.remove(); map.current = null; };
@@ -231,17 +232,18 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       return;
     }
 
-    if (styleUrl === OFFLINE_STYLE) {
-      ensureTuzlaOfflineMapDownloaded().catch(() => { });
-    }
     setActiveStyle(styleUrl);
     if (styleUrl === OFFLINE_STYLE) {
+      setIsOfflineMode(true);
       map.current.setMaxZoom(16);
       if (map.current.getZoom() > 16) map.current.setZoom(16);
+      map.current.setStyle(OFFLINE_STYLE_SPEC);
+      ensureTuzlaOfflineMapDownloaded().catch(() => { });
     } else {
+      setIsOfflineMode(false);
       map.current.setMaxZoom(20);
+      map.current.setStyle(styleUrl);
     }
-    map.current.setStyle(styleUrl);
     map.current.once('style.load', () => {
       setIsLoaded(true);
       if (isNavigating && selectedNavTarget) {
@@ -470,7 +472,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const totalItemsCount = QUEST_TARGETS.length;
 
   return (
-    <div className="h-[calc(100vh-88px)] w-full relative flex flex-col overflow-hidden bg-slate-950 font-quicksand select-none">
+    <div className="h-[calc(100vh-70px)] w-full relative flex flex-col overflow-hidden bg-slate-950 font-quicksand select-none">
       {/* 3D Map Container */}
       <div
         ref={mapContainer}
@@ -575,32 +577,32 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
       {/* TOP HUD CONTAINER WITH HIDE / SHOW ANIMATION */}
       <div
-        className={`absolute top-3 inset-x-0 mx-auto z-30 w-[92%] max-w-md transition-transform duration-300 ease-in-out pointer-events-auto ${isHudHidden ? '-translate-y-[calc(100%+16px)] pointer-events-none' : 'translate-y-0'
+        className={`absolute top-2.5 inset-x-0 mx-auto z-30 w-[78%] max-w-[380px] transition-transform duration-300 ease-in-out pointer-events-auto ${isHudHidden ? '-translate-y-[calc(100%+16px)] pointer-events-none' : 'translate-y-0'
           }`}
       >
-        <div className="bg-slate-900/95 backdrop-blur-xl px-4 py-3 rounded-3xl border border-blue-500/30 shadow-2xl flex flex-col gap-2.5 relative">
+        <div className="bg-slate-900/95 backdrop-blur-xl px-3.5 py-2.5 rounded-2xl border border-blue-500/30 shadow-2xl flex flex-col gap-2 relative">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
+            <h2 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping" />
               {lang === 'bs' ? 'Tuzla Potraga' : 'Tuzla Quest'}
             </h2>
-            <div className="flex items-center gap-2">
-              <div className="px-2.5 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-[10px] font-black text-blue-400">
+            <div className="flex items-center gap-1.5">
+              <div className="px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-[9px] font-black text-blue-400">
                 {unlockedItemsCount} / {totalItemsCount} {lang === 'bs' ? 'Otključano' : 'Unlocked'}
               </div>
               <button
                 onClick={() => setIsHudHidden(true)}
-                className="p-1.5 rounded-full bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition-all active:scale-95"
+                className="p-1 rounded-full bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition-all active:scale-95"
                 title={lang === 'bs' ? 'Sakrij zaglavlje' : 'Hide HUD'}
               >
-                <ChevronUp size={16} />
+                <ChevronUp size={14} />
               </button>
             </div>
           </div>
-          <div className="flex gap-2">
-            <button onClick={() => setIsScannerOpen(true)} className="flex-1 flex flex-col items-center gap-1 py-2 bg-gradient-to-b from-amber-500/20 to-amber-600/10 hover:from-amber-500 hover:to-amber-600 text-amber-300 hover:text-slate-950 rounded-2xl border border-amber-500/30 transition-all active:scale-95 shadow-md"><QrCode className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-wider">QR Code</span></button>
-            <button onClick={handleToggleARMode} className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-2xl border transition-all active:scale-95 shadow-md ${showARGuide ? 'bg-purple-500 text-slate-950 border-purple-300' : 'bg-gradient-to-b from-purple-500/20 to-purple-600/10 hover:from-purple-500 hover:to-purple-600 text-purple-300 hover:text-slate-950 border-purple-500/30'}`}><Compass className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-wider">AR Guide</span></button>
-            <button onClick={() => setIsPresetModalOpen(true)} className="flex-1 flex flex-col items-center gap-1 py-2 bg-gradient-to-b from-blue-500/20 to-blue-600/10 hover:from-blue-500 hover:to-blue-600 text-blue-300 hover:text-white rounded-2xl border border-blue-500/30 transition-all active:scale-95 shadow-md"><Route className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-wider">GPS Route</span></button>
+          <div className="flex gap-1.5">
+            <button onClick={() => setIsScannerOpen(true)} className="flex-1 flex flex-col items-center gap-0.5 py-1.5 bg-gradient-to-b from-amber-500/20 to-amber-600/10 hover:from-amber-500 hover:to-amber-600 text-amber-300 hover:text-slate-950 rounded-xl border border-amber-500/30 transition-all active:scale-95 shadow-md"><QrCode className="w-4 h-4" /><span className="text-[8px] font-black uppercase tracking-wider">QR Code</span></button>
+            <button onClick={handleToggleARMode} className={`flex-1 flex flex-col items-center gap-0.5 py-1.5 rounded-xl border transition-all active:scale-95 shadow-md ${showARGuide ? 'bg-purple-500 text-slate-950 border-purple-300' : 'bg-gradient-to-b from-purple-500/20 to-purple-600/10 hover:from-purple-500 hover:to-purple-600 text-purple-300 hover:text-slate-950 border-purple-500/30'}`}><Compass className="w-4 h-4" /><span className="text-[8px] font-black uppercase tracking-wider">AR Guide</span></button>
+            <button onClick={() => setIsPresetModalOpen(true)} className="flex-1 flex flex-col items-center gap-0.5 py-1.5 bg-gradient-to-b from-blue-500/20 to-blue-600/10 hover:from-blue-500 hover:to-blue-600 text-blue-300 hover:text-white rounded-xl border border-blue-500/30 transition-all active:scale-95 shadow-md"><Route className="w-4 h-4" /><span className="text-[8px] font-black uppercase tracking-wider">GPS Route</span></button>
           </div>
         </div>
       </div>
@@ -609,18 +611,18 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       {isHudHidden && (
         <button
           onClick={() => setIsHudHidden(false)}
-          className="absolute top-2 left-1/2 -translate-x-1/2 z-30 px-3 py-1 bg-slate-900/90 backdrop-blur-md border border-amber-500/40 rounded-full text-amber-400 hover:text-amber-300 shadow-2xl flex items-center gap-1.5 transition-all text-[10px] font-black uppercase tracking-wider animate-bounce cursor-pointer active:scale-95"
+          className="absolute top-2 left-1/2 -translate-x-1/2 z-30 px-2.5 py-0.5 bg-slate-900/90 backdrop-blur-md border border-amber-500/40 rounded-full text-amber-400 hover:text-amber-300 shadow-2xl flex items-center gap-1 transition-all text-[9px] font-black uppercase tracking-wider animate-bounce cursor-pointer active:scale-95"
           title={lang === 'bs' ? 'Prikaži zaglavlje' : 'Tap to show HUD'}
         >
-          <ChevronDown size={14} />
+          <ChevronDown size={12} />
           <span>{lang === 'bs' ? 'Tuzla Potraga' : 'Tuzla Quest'}</span>
         </button>
       )}
 
       {/* FLOATING ACTION BUTTONS (LOCATION, RULES, LAYERS) */}
       <div
-        className="absolute z-30 flex items-center gap-2 transition-all duration-150 left-3"
-        style={showARGuide ? { bottom: `calc(${100 - splitHeight}% + 16px)` } : { bottom: '1rem' }}
+        className="absolute z-30 flex items-center gap-1.5 transition-all duration-150 left-3"
+        style={showARGuide ? { bottom: `calc(${100 - splitHeight}% + 14px)` } : { bottom: '0.85rem' }}
       >
         <button
           onClick={() => {
@@ -655,13 +657,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
               });
             }
           }}
-          className="w-10 h-10 flex items-center justify-center bg-purple-600/90 backdrop-blur-xl border border-purple-400/40 rounded-full shadow-lg text-white active:scale-95 transition-all hover:bg-purple-500"
+          className="w-9 h-9 flex items-center justify-center bg-purple-600/90 backdrop-blur-xl border border-purple-400/40 rounded-full shadow-lg text-white active:scale-95 transition-all hover:bg-purple-500"
           title={lang === 'bs' ? 'Moja Lokacija' : 'My Location'}
         >
-          <Navigation size={18} />
+          <Navigation size={16} />
         </button>
-        <button onClick={() => setShowRules((prev) => !prev)} className="w-10 h-10 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-purple-400/30 rounded-full shadow-lg text-purple-400 hover:text-white active:scale-95 transition-all" title={lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}><Info size={18} /></button>
-        <button onClick={() => setShowLayerMenu((prev) => !prev)} className="w-10 h-10 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-purple-400/40 rounded-full shadow-xl text-purple-400 hover:text-white hover:border-purple-400 active:scale-95 transition-all" title={lang === 'bs' ? 'Promijeni Sloj Mape' : 'Switch Map Layer'}><Layers size={18} /></button>
+        <button onClick={() => setShowRules((prev) => !prev)} className="w-9 h-9 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-purple-400/30 rounded-full shadow-lg text-purple-400 hover:text-white active:scale-95 transition-all" title={lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}><Info size={16} /></button>
+        <button onClick={() => setShowLayerMenu((prev) => !prev)} className="w-9 h-9 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-purple-400/40 rounded-full shadow-xl text-purple-400 hover:text-white hover:border-purple-400 active:scale-95 transition-all" title={lang === 'bs' ? 'Promijeni Sloj Mape' : 'Switch Map Layer'}><Layers size={16} /></button>
       </div>
 
       {/* Layer Menu Dropdown */}

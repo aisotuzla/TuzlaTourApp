@@ -386,44 +386,63 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
 
       if (isOnline) {
         try {
-          let geoData;
-          try {
-            const geoapifyKey = import.meta.env.VITE_GEOAPIFY_GEOCODING_API ?? import.meta.env.VITE_GEOAPIFY_KEY;
-            const geoRes = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&bias=proximity:18.67,44.53&filter=rect:18.5,44.4,18.8,44.7&apiKey=${geoapifyKey}`);
-            if (!geoRes.ok) throw new Error("Primary API failed");
-            geoData = await geoRes.json();
-          } catch (primaryErr) {
-            console.warn('Primary geocoding API failed, trying backup...', primaryErr);
-            const backupKey = import.meta.env.VITE_GEOCODING_API_KEY;
-            if (backupKey) {
-              const backupRes = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&bias=proximity:18.67,44.53&filter=rect:18.5,44.4,18.8,44.7&apiKey=${backupKey}`);
-              if (!backupRes.ok) {
-                const liqRes = await fetch(`https://eu1.locationiq.com/v1/search.php?key=${backupKey}&q=${encodeURIComponent(searchQuery)}&format=json`);
-                if (liqRes.ok) {
-                  const liqData = await liqRes.json();
-                  geoData = {
-                    features: Array.isArray(liqData) ? liqData.map((item: any) => ({
-                      properties: { formatted: item.display_name, lat: parseFloat(item.lat), lon: parseFloat(item.lon) }
-                    })) : []
-                  };
-                } else {
-                  throw new Error("Backup API also failed");
+          let geoMatches: any[] = [];
+          const geoapifyKey =
+            import.meta.env.VITE_GEOAPIFY_GEOCODING_API ||
+            import.meta.env.VITE_GEOAPIFY_STATIC_API ||
+            import.meta.env.VITE_GEOAPIFY_ROUTING_API ||
+            ROUTE_MAP_KEY ||
+            GEO_MAP_KEY ||
+            '765d67152f78438bacd2c66f73665a91';
+
+          // 1. Try Geoapify Geocoding API with Tuzla proximity
+          if (geoapifyKey) {
+            try {
+              const geoRes = await fetch(
+                `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&bias=proximity:18.6734,44.5385&filter=countrycode:ba&apiKey=${geoapifyKey}`
+              );
+              if (geoRes.ok) {
+                const geoData = await geoRes.json();
+                if (geoData?.features && geoData.features.length > 0) {
+                  geoMatches = geoData.features.map((f: any) => ({
+                    display_name: f.properties.formatted || f.properties.address_line1 || f.properties.name,
+                    lat: f.properties.lat,
+                    lon: f.properties.lon,
+                    category: f.properties.category || 'Address'
+                  }));
                 }
-              } else {
-                geoData = await backupRes.json();
               }
-            } else {
-              throw new Error("No backup API key provided");
+            } catch (geoErr) {
+              console.warn('Geoapify geocoding API error:', geoErr);
             }
           }
 
-          if (geoData && geoData.features) {
-            const geoMatches = geoData.features.map((f: any) => ({
-              display_name: f.properties.formatted,
-              lat: f.properties.lat,
-              lon: f.properties.lon,
-              category: 'Address'
-            }));
+          // 2. OpenStreetMap / Nominatim fallback (guaranteed high-accuracy free geocoding for Bosnia / Tuzla)
+          if (geoMatches.length === 0) {
+            try {
+              const queryWithCity = searchQuery.toLowerCase().includes('tuzla')
+                ? searchQuery
+                : `${searchQuery}, Tuzla`;
+              const osmRes = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryWithCity)}&addressdetails=1&limit=5&viewbox=18.45,44.60,18.85,44.45`
+              );
+              if (osmRes.ok) {
+                const osmData = await osmRes.json();
+                if (Array.isArray(osmData) && osmData.length > 0) {
+                  geoMatches = osmData.map((item: any) => ({
+                    display_name: item.display_name,
+                    lat: parseFloat(item.lat),
+                    lon: parseFloat(item.lon),
+                    category: item.type || 'Address'
+                  }));
+                }
+              }
+            } catch (osmErr) {
+              console.warn('Nominatim OSM geocoding fallback failed:', osmErr);
+            }
+          }
+
+          if (geoMatches.length > 0) {
             combinedResults = [...combinedResults, ...geoMatches];
           }
         } catch (geoErr) {

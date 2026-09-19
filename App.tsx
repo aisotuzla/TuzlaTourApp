@@ -115,26 +115,26 @@ const AppContent: React.FC = () => {
       <ReloadPrompt />
       <OfflineIndicator lang={lang} />
 
-      <header className="fixed top-0 left-0 right-0 h-[88px] bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm">
-        <div className="flex items-center z-10 w-20">
+      <header className="fixed top-0 left-0 right-0 h-[78px] bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm">
+        <div className="flex items-center z-10 w-16 sm:w-20">
           <button
             onClick={() => setIsDrawerOpen(true)}
-            className="flex flex-col items-center justify-center p-1 bg-transparent border-none transition-all active:scale-95 group focus:outline-none"
+            className="flex flex-col items-center justify-center p-0.7 bg-transparent border-none transition-all active:scale-95 group focus:outline-none"
           >
-            <Menu className="w-8 h-8 text-blue-900 transition-transform group-hover:scale-110" />
-            <span className="text-[10px] uppercase font-bold text-blue-900 mt-1">Menu</span>
+            <Menu className="w-6 h-6 sm:w-7 sm:h-7 text-blue-900 transition-transform group-hover:scale-110" />
+            <span className="text-[9px] sm:text-[10px] uppercase font-bold text-blue-900 mt-0.5">Menu</span>
           </button>
         </div>
 
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center z-0 w-[55%] sm:w-auto pointer-events-none">
-          <h1 className="text-[4.5vw] sm:text-xl lg:text-2xl font-black tracking-tight leading-none uppercase flex flex-row flex-wrap sm:flex-nowrap justify-center items-center gap-1 sm:gap-1.5 text-center">
+          <h1 className="text-[4vw] sm:text-xl lg:text-2xl font-black tracking-tight leading-none uppercase flex flex-row flex-wrap sm:flex-nowrap justify-center items-center gap-1 sm:gap-1.5 text-center">
             <span className="text-blue-900">Tuzla</span>
             <span className="text-blue-500">Tour</span>
             <span className="text-amber-500">Guide</span>
           </h1>
         </div>
 
-        <div className="flex items-center justify-end z-10 w-20">
+        <div className="flex items-center justify-end z-10 w-16 sm:w-20">
           <LanguageSelector currentLang={lang} onSelect={setLang} />
         </div>
       </header>
@@ -150,7 +150,7 @@ const AppContent: React.FC = () => {
         </filter>
       </svg>
 
-      <div className="relative min-h-screen bg-white flex overflow-hidden pt-[88px]">
+      <div className="relative min-h-screen bg-white flex overflow-hidden pt-[78px]">
         <Sidebar
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}

@@ -1,8 +1,11 @@
 import maplibregl from 'maplibre-gl';
 import { OfflinePlugin, OFFLINE_STATUS, type OfflineProgress } from '@makina-corpus/maplibre-offline-pmtiles';
 import * as pmtiles from 'pmtiles';
+import pako from 'pako';
 
 export { OfflinePlugin, OFFLINE_STATUS, type OfflineProgress };
+
+export const PMTILES_CACHE_NAME = 'tuzla-pmtiles-cache';
 
 /**
  * Singleton OfflinePlugin instance from @makina-corpus/maplibre-offline-pmtiles
@@ -86,9 +89,10 @@ class OpfsSource implements pmtiles.Source {
 }
 
 /**
- * Custom PMTiles Fetch Source with in-memory buffer fallback.
- * Solves the issue where static servers or Service Workers return HTTP 200
- * instead of HTTP 206 (partial content) for Range requests.
+ * Custom PMTiles Fetch Source with multi-tier fallback:
+ * 1. HTTP Range request
+ * 2. Full buffered archive from browser CacheStorage (works 100% offline)
+ * 3. In-memory ArrayBuffer
  */
 class RobustFetchSource implements pmtiles.Source {
   private url: string;
@@ -105,11 +109,36 @@ class RobustFetchSource implements pmtiles.Source {
   private async fetchFullBuffer(): Promise<ArrayBuffer> {
     if (!this.fullBufferPromise) {
       this.fullBufferPromise = (async () => {
+        // First check browser CacheStorage (for offline availability)
+        if (typeof window !== 'undefined' && 'caches' in window) {
+          try {
+            const cache = await caches.open(PMTILES_CACHE_NAME);
+            const cachedResp = await cache.match(this.url) || await cache.match('/maps/tuzla.pmtiles');
+            if (cachedResp) {
+              return await cachedResp.arrayBuffer();
+            }
+          } catch (cacheErr) {
+            console.warn('CacheStorage read notice:', cacheErr);
+          }
+        }
+
         const response = await fetch(this.url, { cache: 'force-cache' });
         if (!response.ok) {
-          throw new Error(`Failed to load full PMTiles archive from ${this.url}: ${response.status} ${response.statusText}`);
+          throw new Error(`Failed to load PMTiles archive from ${this.url}: ${response.status} ${response.statusText}`);
         }
-        return await response.arrayBuffer();
+        const buffer = await response.arrayBuffer();
+
+        // Save into CacheStorage for subsequent offline usage
+        if (typeof window !== 'undefined' && 'caches' in window) {
+          try {
+            const cache = await caches.open(PMTILES_CACHE_NAME);
+            await cache.put(this.url, new Response(buffer.slice(0), {
+              headers: { 'Content-Type': 'application/x-pmtiles' }
+            }));
+          } catch (_) { }
+        }
+
+        return buffer;
       })();
     }
     return this.fullBufferPromise;
@@ -153,13 +182,9 @@ class RobustFetchSource implements pmtiles.Source {
           expires: response.headers.get('Expires') || undefined,
         };
       }
-
-      if (response.status >= 300) {
-        throw new Error(`PMTiles fetch error: ${response.status} ${response.statusText}`);
-      }
     } catch (err: any) {
       if (err?.name === 'AbortError') throw err;
-      console.warn(`Range request failed for ${this.url}, attempting full buffered archive fallback:`, err);
+      // Network unreachable or offline: fall back to cached full buffer
     }
 
     const fullBuffer = await this.fetchFullBuffer();
@@ -170,7 +195,7 @@ class RobustFetchSource implements pmtiles.Source {
 
 /**
  * Hybrid Source: tries local OPFS storage first for instantaneous offline responses,
- * falling back to RobustFetchSource (HTTP Range / buffered archive).
+ * falling back to RobustFetchSource (CacheStorage / HTTP Range / buffered archive).
  */
 class HybridSource implements pmtiles.Source {
   private key: string;
@@ -198,7 +223,7 @@ class HybridSource implements pmtiles.Source {
       try {
         return await this.opfs.getBytes(offset, length);
       } catch (err) {
-        console.warn('OPFS read failed, falling back to network fetch:', err);
+        console.warn('OPFS read failed, falling back to cached fetch source:', err);
         this.preferred = 'fetch';
       }
     }
@@ -210,7 +235,7 @@ class HybridSource implements pmtiles.Source {
         try {
           return await this.opfs.getBytes(offset, length);
         } catch (err) {
-          console.warn('Initial OPFS read failed, falling back to fetch:', err);
+          console.warn('Initial OPFS read failed, falling back to cache/fetch:', err);
           this.preferred = 'fetch';
         }
       } else {
@@ -224,7 +249,7 @@ class HybridSource implements pmtiles.Source {
 
 /**
  * Unified PMTiles & Offline Protocol manager for MapLibre GL JS.
- * Supports both `pmtiles://` and `offline-pmtiles://` with automatic fallbacks.
+ * Supports both `pmtiles://` and `offline-pmtiles://` with automatic fallbacks and gzip inflation.
  */
 class RobustPMTilesProtocol {
   private protocolInstance = new pmtiles.Protocol();
@@ -240,7 +265,7 @@ class RobustPMTilesProtocol {
       console.warn('OfflinePlugin registerProtocol notice:', err);
     }
 
-    // 2. Setup Tuzla archive hybrid source (OPFS + HTTP Range fallback)
+    // 2. Setup Tuzla archive hybrid source (OPFS + CacheStorage + HTTP Range fallback)
     const tuzlaPath = '/maps/tuzla.pmtiles';
     const tuzlaUrl = typeof window !== 'undefined'
       ? new URL(tuzlaPath, window.location.href).href
@@ -307,8 +332,18 @@ class RobustPMTilesProtocol {
 
         const resp = await instance.getZxy(z, x, y, abortController?.signal);
         if (resp && resp.data) {
+          let tileBytes = new Uint8Array(resp.data);
+          // Decompress gzipped vector tiles if necessary
+          if (tileBytes.length > 2 && tileBytes[0] === 0x1f && tileBytes[1] === 0x8b) {
+            try {
+              tileBytes = pako.inflate(tileBytes);
+            } catch (decompErr) {
+              console.warn(`Tile gzip inflation notice for ${z}/${x}/${y}:`, decompErr);
+            }
+          }
+
           return {
-            data: new Uint8Array(resp.data),
+            data: tileBytes,
             cacheControl: resp.cacheControl,
             expires: resp.expires,
           };
@@ -329,8 +364,8 @@ class RobustPMTilesProtocol {
 export const globalPMTilesProtocol = new RobustPMTilesProtocol();
 
 /**
- * Pre-cache Tuzla PMTiles in OPFS in the background if supported,
- * without blocking immediate map rendering.
+ * Pre-cache Tuzla PMTiles in CacheStorage and OPFS in the background while online,
+ * ensuring 100% immediate availability when offline.
  */
 export async function ensureTuzlaOfflineMapDownloaded(
   onProgress?: (progress: OfflineProgress) => void
@@ -341,35 +376,56 @@ export async function ensureTuzlaOfflineMapDownloaded(
     try {
       globalPMTilesProtocol.init();
 
-      if (typeof navigator === 'undefined' || !navigator.storage || !navigator.storage.getDirectory) {
-        return false;
-      }
-
-      const root = await navigator.storage.getDirectory();
-      let exists = false;
-      try {
-        const handle = await root.getFileHandle('tuzla.pmtiles');
-        const file = await handle.getFile();
-        if (file && file.size > 1000000) {
-          exists = true;
+      // 1. Proactively store in browser CacheStorage while online
+      if (typeof window !== 'undefined' && 'caches' in window && navigator.onLine) {
+        try {
+          const cache = await caches.open(PMTILES_CACHE_NAME);
+          const cached = await cache.match('/maps/tuzla.pmtiles');
+          if (!cached) {
+            const resp = await fetch('/maps/tuzla.pmtiles');
+            if (resp.ok) {
+              await cache.put('/maps/tuzla.pmtiles', resp);
+              console.log('✅ Tuzla PMTiles cached in CacheStorage for offline use');
+            }
+          }
+        } catch (cacheErr) {
+          console.warn('CacheStorage pre-cache notice:', cacheErr);
         }
-      } catch {
-        exists = false;
       }
 
-      if (!exists) {
-        await offlinePlugin.downloadMap(
-          '/maps/tuzla.pmtiles',
-          'tuzla',
-          (prog) => {
-            if (onProgress) onProgress(prog);
-          },
-          '/maps/offline-vector-style.json'
-        );
+      // 2. Pre-cache in OPFS if supported
+      if (typeof navigator !== 'undefined' && navigator.storage && navigator.storage.getDirectory) {
+        try {
+          const root = await navigator.storage.getDirectory();
+          let exists = false;
+          try {
+            const handle = await root.getFileHandle('tuzla.pmtiles');
+            const file = await handle.getFile();
+            if (file && file.size > 1000000) {
+              exists = true;
+            }
+          } catch {
+            exists = false;
+          }
+
+          if (!exists && navigator.onLine) {
+            await offlinePlugin.downloadMap(
+              '/maps/tuzla.pmtiles',
+              'tuzla',
+              (prog) => {
+                if (onProgress) onProgress(prog);
+              },
+              '/maps/offline-vector-style.json'
+            );
+          }
+        } catch (opfsErr) {
+          console.warn('OPFS pre-cache notice:', opfsErr);
+        }
       }
+
       return true;
     } catch (err) {
-      console.warn('OPFS background cache warning (using direct stream):', err);
+      console.warn('Offline cache init warning:', err);
       return false;
     }
   })();

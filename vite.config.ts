@@ -48,7 +48,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         },
         includeAssets: [
           // Critical landing page images precached for offline
-          'assets/Gallery/QuestQRLocations/tuzla440.webp',
           'assets/Gallery/Ilovetuzla.webp',
           'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
           'assets/MapaBosnia.webp',
@@ -68,6 +67,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'assets/Gallery/QuestQRLocations/wizzurl.webp',
           'assets/Gallery/QuestQRLocations/ilincicaba.webp',
           'assets/Gallery/QuestQRLocations/tuzhero.webp',
+          'assets/Gallery/heroo.webp',
+          'assets/icons/Bingo-supermarket.webp',
           'assets/Gallery/gipslogo.png',
           'resources/TuzlaTourAppLogo96x96.png',
         ],
