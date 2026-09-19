@@ -396,20 +396,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                       setActiveMarkerId(marker.id);
                     }
                   }}
-                  className="relative flex items-center justify-center cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-full"
+                  className="relative flex items-center justify-center cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded-full"
                   aria-label={`${labelText} - ${t.explore}`}
                   title={`${labelText} (${(marker.tagText as any)[lang] || marker.tagText.en})`}
                 >
                   {/* Glowing hotspot indicator over the 3D pin in the artwork */}
                   <div className={`relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-full transition-all duration-300 ${isOpen ? 'scale-110' : 'hover:scale-105'
                     }`}>
-                    <span className={`absolute inset-0 rounded-full transition-all duration-300 ${isOpen
-                      ? 'border border-cyan-300 bg-cyan-400/30 shadow-[0_0_22px_rgba(34,211,238,0.85)] ring-2 ring-cyan-400/50'
-                      : 'border border-cyan-400/40 bg-cyan-400/10 hover:border-cyan-300 hover:bg-cyan-400/25 shadow-[0_0_12px_rgba(34,211,238,0.4)]'
-                      }`} />
-                    {!isOpen && (
-                      <span className="absolute inset-1 rounded-full border border-cyan-400/35 animate-ping opacity-35 pointer-events-none" />
-                    )}
+                    <span className={`absolute inset-0 rounded-full transition-all duration-300 ${isOpen
+                      ? 'border-2 border-blue-500 bg-blue-600/40 shadow-[0_0_28px_rgba(37,99,235,1)] ring-2 ring-blue-500/70'
+                      : 'hero-hotspot-btn'
+                      }`} />
+                    {!isOpen && (
+                      <span className="hero-hotspot-ripple hero-hotspot-ripple-continuous pointer-events-none" />
+                    )}
                   </div>
 
                   {/* Interactive Label Pill - Revealed on 1st tap */}

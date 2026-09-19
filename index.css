@@ -50,6 +50,152 @@ body {
     box-shadow: 0 4px 10px -2px rgba(59, 130, 246, 0.3);
 }
 
+/* ==========================================================================
+   Hero Image Hotspot & Action Button Animations
+   - Primary blue glowing circle border with semi-transparent fill
+   - Core button pulse effect (scale + glow transition, GPU accelerated)
+   - Expanding ripple/wave effect emitting from the button border every 500ms
+     (staggered using ::before and ::after pseudo-elements over 1.5s total loop)
+   - Zero layout shifts (CLS: 0) and zero main-thread recalculations
+   ========================================================================== */
+
+@keyframes hero-button-pulse {
+    0%, 100% {
+        transform: scale(1) translateZ(0);
+        box-shadow: 0 0 18px rgba(37, 99, 235, 0.8),
+                    inset 0 0 12px rgba(59, 130, 246, 0.42);
+    }
+    50% {
+        transform: scale(1.07) translateZ(0);
+        box-shadow: 0 0 28px rgba(37, 99, 235, 1),
+                    0 0 42px rgba(59, 130, 246, 0.65),
+                    inset 0 0 16px rgba(37, 99, 235, 0.55);
+    }
+}
+
+@keyframes hero-ripple-wave {
+    0% {
+        transform: scale(1) translateZ(0);
+        opacity: 1;
+        border-color: rgba(37, 99, 235, 1);
+    }
+    50% {
+        opacity: 0.65;
+    }
+    100% {
+        transform: scale(2.25) translateZ(0);
+        opacity: 0;
+        border-color: rgba(59, 130, 246, 0);
+    }
+}
+
+/* Core glowing button with semi-transparent fill and pulse effect */
+.hero-hotspot-btn {
+    position: relative;
+    border-radius: 9999px;
+    border: 2px solid rgba(37, 99, 235, 1);
+    background: rgba(37, 99, 235, 0.32);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: 0 0 18px rgba(37, 99, 235, 0.8), inset 0 0 12px rgba(59, 130, 246, 0.42);
+    will-change: transform;
+    animation: hero-button-pulse 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transform: translateZ(0);
+    contain: layout paint;
+}
+
+/* Expanding ripple waves emitting from button border every 500ms
+   staggered using ::before and ::after pseudo-elements over 1.5s loop */
+.hero-hotspot-ripple {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero-hotspot-ripple::before,
+.hero-hotspot-ripple::after {
+    content: '';
+    position: absolute;
+    inset: -2px; /* Starts exactly at the button border */
+    border-radius: 9999px;
+    border: 2px solid rgba(37, 99, 235, 1);
+    box-shadow: 0 0 16px rgba(37, 99, 235, 0.7);
+    pointer-events: none;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    animation: hero-ripple-wave 1.5s cubic-bezier(0.15, 0.6, 0.35, 1) infinite;
+}
+
+.hero-hotspot-ripple::before {
+    animation-delay: 0s;
+}
+
+.hero-hotspot-ripple::after {
+    animation-delay: 0.5s; /* 500ms stagger */
+}
+
+/* Continuous 3rd wave on host element every 500ms (0s, 0.5s, 1.0s) */
+.hero-hotspot-ripple-continuous {
+    border: 2px solid rgba(37, 99, 235, 1);
+    box-shadow: 0 0 16px rgba(37, 99, 235, 0.7);
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    animation: hero-ripple-wave 1.5s cubic-bezier(0.15, 0.6, 0.35, 1) infinite;
+    animation-delay: 1.0s;
+}
+
+/* Standalone button variant with direct pseudo-element ripples */
+.hero-pulse-circle {
+    position: relative;
+    border-radius: 9999px;
+    border: 2px solid rgba(37, 99, 235, 1);
+    background: rgba(37, 99, 235, 0.32);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    will-change: transform;
+    animation: hero-button-pulse 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transform: translateZ(0);
+    contain: layout paint;
+}
+
+.hero-pulse-circle::before,
+.hero-pulse-circle::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 9999px;
+    border: 2px solid rgba(37, 99, 235, 1);
+    box-shadow: 0 0 16px rgba(37, 99, 235, 0.7);
+    pointer-events: none;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    animation: hero-ripple-wave 1.5s cubic-bezier(0.15, 0.6, 0.35, 1) infinite;
+}
+
+.hero-pulse-circle::before {
+    animation-delay: 0s;
+}
+
+.hero-pulse-circle::after {
+    animation-delay: 0.5s;
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .hero-hotspot-btn,
+    .hero-pulse-circle,
+    .hero-hotspot-ripple::before,
+    .hero-hotspot-ripple::after,
+    .hero-pulse-circle::before,
+    .hero-pulse-circle::after,
+    .hero-hotspot-ripple-continuous {
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
 /* PDF Scroll Shadow */
 .pdf-page-shadow {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 0 10px rgba(59, 130, 246, 0.1);
