@@ -17,6 +17,7 @@ import {
     Play,
     Trash2,
     AlertCircle,
+    Car,
     Stethoscope,
     MapPin,
     Navigation,
@@ -178,8 +179,8 @@ const WalletContent: React.FC<{
     const [trails] = useState(INITIAL_TRAILS);
     const [scratchedRewards] = useState<Record<string, boolean>>({});
     const [expandedTrailId, setExpandedTrailId] = useState<string | null>(null);
-    const toggleStep = () => undefined;
-    const handleScratchAction = () => undefined;
+    const toggleStep = (_trailId: string, _stepId: string) => undefined;
+    const handleScratchAction = (_trailId: string, _x: number, _y: number, _canvas: HTMLCanvasElement) => undefined;
 
     const convertedValue = bamValue
         ? conversionMode === 'BAM_TO_EUR'
@@ -439,12 +440,12 @@ const WalletContent: React.FC<{
                                         onClick={() => {
                                             if (disconnect) disconnect();
                                         }}
-                                        className="w-full h-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                                        className="w-full h-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-x2 shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                                     >
                                         DISCONNECT
                                     </button>
                                 ) : (
-                                    <div className="w-full h-full [&>.wallet-adapter-button]:w-full [&>.wallet-adapter-button]:h-full [&>.wallet-adapter-button]:justify-center [&>.wallet-adapter-button]:bg-gradient-to-r [&>.wallet-adapter-button]:from-purple-600 [&>.wallet-adapter-button]:to-indigo-600 [&>.wallet-adapter-button]:rounded-xl [&>.wallet-adapter-button]:text-xs [&>.wallet-adapter-button]:font-black [&>.wallet-adapter-button]:uppercase [&>.wallet-adapter-button]:tracking-widest [&>.wallet-adapter-button]:shadow-lg hover:[&>.wallet-adapter-button]:scale-[0.98] [&>.wallet-adapter-button]:transition-all">
+                                    <div className="w-full h-full [&>.wallet-adapter-button]:w-full [&>.wallet-adapter-button]:h-full [&>.wallet-adapter-button]:justify-center [&>.wallet-adapter-button]:bg-gradient-to-r [&>.wallet-adapter-button]:from-purple-600 [&>.wallet-adapter-button]:to-indigo-600 [&>.wallet-adapter-button]:rounded-2xl [&>.wallet-adapter-button]:text-xs [&>.wallet-adapter-button]:font-black [&>.wallet-adapter-button]:uppercase [&>.wallet-adapter-button]:tracking-widest [&>.wallet-adapter-button]:shadow-lg hover:[&>.wallet-adapter-button]:scale-[0.98] [&>.wallet-adapter-button]:transition-all">
                                         <WalletMultiButton />
                                     </div>
                                 )}
@@ -687,14 +688,14 @@ const WalletContent: React.FC<{
                                                                         key={step.id}
                                                                         onClick={() => toggleStep(trail.id, step.id)}
                                                                         className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${step.completed
-                                                                                ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-medium'
-                                                                                : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                                                                            ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-medium'
+                                                                            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                                                                             }`}
                                                                     >
                                                                         <div className="flex items-center gap-2.5">
                                                                             <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${step.completed
-                                                                                    ? 'bg-emerald-500 text-white font-black'
-                                                                                    : 'bg-slate-100 text-slate-500'
+                                                                                ? 'bg-emerald-500 text-white font-black'
+                                                                                : 'bg-slate-100 text-slate-500'
                                                                                 }`}>
                                                                                 {idx + 1}
                                                                             </span>
@@ -703,8 +704,8 @@ const WalletContent: React.FC<{
                                                                             </span>
                                                                         </div>
                                                                         <div className={`w-5 h-5 rounded-lg flex items-center justify-center border transition-all ${step.completed
-                                                                                ? 'bg-emerald-500 border-emerald-400 text-white'
-                                                                                : 'border-slate-300 bg-slate-50'
+                                                                            ? 'bg-emerald-500 border-emerald-400 text-white'
+                                                                            : 'border-slate-300 bg-slate-50'
                                                                             }`}>
                                                                             {step.completed && <CheckCircle2 className="w-3.5 h-3.5 stroke-[3]" />}
                                                                         </div>
@@ -923,6 +924,12 @@ const WalletContent: React.FC<{
                                 {t.partnerAgenciesTitle}
                             </h2>
                             <div className="space-y-4">
+                                <button
+                                    onClick={() => window.open('https://gradskiparkingtuzla.vercel.app', '_blank')}
+                                    className="w-full h-16 bg-yellow-400 text-royal-blue-600 border-2 border-blue-500 rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-slate-50"
+                                >
+                                    Gradski Parking Tuzla
+                                </button>
                                 <button
                                     onClick={() => window.open('https://dentist-tuzla.onhercules.app/dentist-tourism/', '_blank')}
                                     className="w-full h-16 bg-white text-blue-600 border-2 border-blue-500 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-slate-50"

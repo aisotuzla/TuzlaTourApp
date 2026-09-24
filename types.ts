@@ -133,6 +133,7 @@ export interface TranslationSet {
   yesDelete: string;
   cancel: string;
   partnerAgenciesTitle: string;
+  gradskiParkingTuzla: string;
   scanLocationToUnlock: string;
   positionCodeInFrame: string;
   success: string;

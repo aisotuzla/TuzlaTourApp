@@ -4,7 +4,7 @@ import { Language } from '../types';
 import { Preferences } from '@capacitor/preferences';
 import { EventCalendarView } from './EventCalendarView';
 
-type Mode = 'calendar' | 'expenses' | 'tasks' | 'itinerary' | 'threeDayPlan';
+type Mode = 'expenses' | 'tasks' | 'itinerary' | 'calendar' | 'threeDayPlan';
 
 type ExpenseItem = {
   id: number;
@@ -332,13 +332,13 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'calendar' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
             >
               <CalendarIcon className="h-5 w-5" />
-              {lang === 'bs' ? 'Kalendar događaja' : 'Calendar of Events'}
+              {lang === 'bs' ? 'Kalendar događaja' : lang === 'de' ? 'Veranstaltungskalender' : lang === 'tr' ? 'Etkinlik Takvimi' : 'Calendar of Events'}
             </button>
             <button
               onClick={() => setView('threeDayPlan')}
               className={`rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'threeDayPlan' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
             >
-              3 Day Plan
+              {lang === 'bs' ? '3 Dnevni plan' : lang === 'de' ? '3-Tage-Plan' : lang === 'tr' ? '3 Günlük Plan' : '3 Day Plan'}
             </button>
           </div>
         </div>

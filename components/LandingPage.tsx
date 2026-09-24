@@ -51,6 +51,14 @@ const copy = {
     pannonicaBack: 'Back',
     pannonicaVisitSite: 'Visit panonika.ba',
     tapToOpen: 'Tap again to open',
+    questModalTitle: 'Search / Quest',
+    questModalSubtitle: 'Interactive exploration map with rewards, hidden history, and discounts across Tuzla.',
+    questModalStart: 'Start Quest',
+    questModalViewMap: 'View on Map',
+    questModalClose: 'Close',
+    questModalTarget1: 'Pannonian Lakes & Salt Waterfalls',
+    questModalTarget2: 'Freedom Square & Historic Center',
+    questModalTarget3: 'Salt Square & Neolithic Stilt Village',
   },
   bs: {
     heroScroll: 'Istražite Tuzlu',
@@ -188,11 +196,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
 
-  const [activeMarkerId, setActiveMarkerId] = useState<string | null>(null);
+  const [activeMarkerId, setActiveMarkerId] = useState<string | null>(AppTab.CITY_GUIDE);
+  const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
+  const hasOpenedQuestModalRef = useRef(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (isQuestModalOpen) {
+          setIsQuestModalOpen(false);
+        }
         if (activeMarkerId) {
           setActiveMarkerId(null);
         }
@@ -200,7 +213,65 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeMarkerId]);
+  }, [activeMarkerId, isQuestModalOpen]);
+
+  // Scroll triggers for hero hotspots & Search / Quest modal
+  useEffect(() => {
+    let lastStep = -1;
+
+    const getScrollTop = () => {
+      const mainEl = document.querySelector('main');
+      const mainScroll = mainEl ? mainEl.scrollTop : 0;
+      const winScroll = window.scrollY || document.documentElement.scrollTop || 0;
+      return Math.max(mainScroll, winScroll);
+    };
+
+    const handleScroll = () => {
+      const st = getScrollTop();
+
+      // Step 0: Initial Page Load / Top (st < 80px) -> City Guide (Gradski vodič)
+      if (st < 80) {
+        if (lastStep !== 0) {
+          lastStep = 0;
+          setActiveMarkerId(AppTab.CITY_GUIDE);
+        }
+      }
+      // Step 1: Scroll Step 1 (Down) (80px <= st < 220px) -> Map (Mapa)
+      else if (st >= 80 && st < 220) {
+        if (lastStep !== 1) {
+          lastStep = 1;
+          setActiveMarkerId(AppTab.MAP);
+        }
+      }
+      // Step 2: Scroll Step 2 (Down) (st >= 220px) -> Search / Quest (Potraga) popup modal
+      else {
+        if (lastStep !== 2) {
+          lastStep = 2;
+          setActiveMarkerId(AppTab.QUEST);
+          if (!hasOpenedQuestModalRef.current) {
+            hasOpenedQuestModalRef.current = true;
+            setIsQuestModalOpen(true);
+          }
+        }
+      }
+    };
+
+    // Evaluate scroll position on mount
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
+    const mainEl = document.querySelector('main');
+    if (mainEl) {
+      mainEl.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, { capture: true });
+      if (mainEl) {
+        mainEl.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
   const cleanSrc = (src?: string) => {
     if (!src) return '';
     return src.replace(/^["']|["']$/g, '');
@@ -392,7 +463,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (isOpen) {
+                    if (marker.id === AppTab.QUEST) {
+                      setActiveMarkerId(marker.id);
+                      setIsQuestModalOpen(true);
+                    } else if (isOpen) {
                       setActiveMarkerId(null);
                       onNavigate?.(marker.id);
                     } else {
@@ -404,15 +478,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                   title={`${labelText} (${(marker.tagText as any)[lang] || marker.tagText.en})`}
                 >
                   {/* Glowing hotspot indicator over the 3D pin in the artwork */}
-                  <div className={`relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-full transition-all duration-300 ${isOpen ? 'scale-110' : 'hover:scale-105'
-                    }`}>
-                    <span className={`absolute inset-0 rounded-full transition-all duration-300 ${isOpen
-                      ? 'border-2 border-blue-500 bg-blue-600/40 shadow-[0_0_28px_rgba(37,99,235,1)] ring-2 ring-blue-500/70'
-                      : 'hero-hotspot-btn'
-                      }`} />
-                    {!isOpen && (
-                      <span className="hero-hotspot-ripple hero-hotspot-ripple-continuous pointer-events-none" />
-                    )}
+                  <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-105">
+                    <span className="absolute inset-0 rounded-full hero-hotspot-btn" />
+                    <span className="hero-hotspot-ripple hero-hotspot-ripple-continuous pointer-events-none" />
                   </div>
 
                   {/* Interactive Label Pill - Revealed on 1st tap */}
@@ -427,8 +495,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                           } pointer-events-auto z-30`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          setActiveMarkerId(null);
-                          onNavigate?.(marker.id);
+                          if (marker.id === AppTab.QUEST) {
+                            setIsQuestModalOpen(true);
+                          } else {
+                            setActiveMarkerId(null);
+                            onNavigate?.(marker.id);
+                          }
                         }}
                       >
                         <div className="flex items-center gap-2 sm:gap-2.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-950/90 hover:bg-blue-950/95 backdrop-blur-md border border-cyan-400/80 shadow-[0_0_20px_rgba(34,211,238,0.55)] active:scale-95 transition-all duration-200 whitespace-nowrap cursor-pointer">
