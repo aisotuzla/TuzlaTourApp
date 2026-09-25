@@ -480,7 +480,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                   {/* Glowing hotspot indicator over the 3D pin in the artwork */}
                   <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-105">
                     <span className="absolute inset-0 rounded-full hero-hotspot-btn" />
-                    <span className="hero-hotspot-ripple hero-hotspot-ripple-continuous pointer-events-none" />
+                    <span className="hero-hotspot-ripple" />
                   </div>
 
                   {/* Interactive Label Pill - Revealed on 1st tap */}
@@ -510,9 +510,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                           <div className="flex flex-col text-left">
                             <span className="text-[11px] sm:text-xs md:text-sm font-black text-white uppercase tracking-wider font-quicksand drop-shadow-sm leading-tight">
                               {labelText}
-                            </span>
-                            <span className="text-[9px] sm:text-[10px] text-cyan-300/90 font-medium">
-                              {t.tapToOpen}
                             </span>
                           </div>
                           <ArrowRight className="w-3.5 h-3.5 text-cyan-300 animate-pulse shrink-0" />

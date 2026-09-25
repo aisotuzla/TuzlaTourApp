@@ -23,18 +23,6 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "/assets/resources/TuzlaTourAppLogo192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/resources/TuzlaTourAppLogo192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
       "src": "/assets/resources/TuzlaTourAppLogo512x512.png",
       "sizes": "512x512",
       "type": "image/png",
@@ -67,8 +55,8 @@
       "url": "/?tab=map",
       "icons": [
         {
-          "src": "/assets/resources/TuzlaTourAppLogo192x192.png",
-          "sizes": "192x192",
+          "src": "/assets/resources/TuzlaTourAppLogo96x96.png",
+          "sizes": "96x96",
           "type": "image/png",
           "purpose": "any"
         }

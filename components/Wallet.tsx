@@ -444,10 +444,15 @@ const WalletContent: React.FC<{
                                     >
                                         DISCONNECT
                                     </button>
-                                ) : (
-                                    <div className="w-full h-full [&>.wallet-adapter-button]:w-full [&>.wallet-adapter-button]:h-full [&>.wallet-adapter-button]:justify-center [&>.wallet-adapter-button]:bg-gradient-to-r [&>.wallet-adapter-button]:from-purple-600 [&>.wallet-adapter-button]:to-indigo-600 [&>.wallet-adapter-button]:rounded-2xl [&>.wallet-adapter-button]:text-xs [&>.wallet-adapter-button]:font-black [&>.wallet-adapter-button]:uppercase [&>.wallet-adapter-button]:tracking-widest [&>.wallet-adapter-button]:shadow-lg hover:[&>.wallet-adapter-button]:scale-[0.98] [&>.wallet-adapter-button]:transition-all">
-                                        <WalletMultiButton />
+                                ) : (<>
+                                    <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full p-4 text-center">
+                                        <h2 className="text-white text-lg font-bold mb-2">SOLANA BLOCKCHAIN WALLET</h2>
+                                        <button className="bg-white text-purple-600 font-black uppercase tracking-widest rounded-full px-4 py-2 hover:bg-gray-100 transition-all">
+                                            Select Wallet
+                                        </button>
                                     </div>
+                                    <WalletMultiButton />
+                                </>
                                 )}
                             </div>
                         </div>
@@ -552,8 +557,8 @@ const WalletContent: React.FC<{
                             <div className="flex items-start gap-3 pb-4 border-b border-slate-100">
                                 <div className="p-2.5 rounded-2xl bg-blue-50 text-blue-700"><MapPin className="w-5 h-5" /></div>
                                 <div>
-                                    <h3 className="text-sm font-black uppercase tracking-tight">Tuzla quest</h3>
-                                    <p className="text-[11px] text-slate-500">Visit the real location, scan its QR code, and unlock the next phase.</p>
+                                    <h3 className="text-sm font-black uppercase tracking-tight">{t.questPanelTitle}</h3>
+                                    <p className="text-[11px] text-slate-500">{t.questPanelSubtitle}</p>
                                 </div>
                             </div>
                             <div className="space-y-3">
@@ -563,8 +568,8 @@ const WalletContent: React.FC<{
                                     return (
                                         <div key={phase.number} className={`rounded-2xl border p-3.5 ${complete ? 'border-emerald-300 bg-emerald-50/70' : 'border-slate-200 bg-slate-50'}`}>
                                             <div className="flex items-center justify-between gap-3">
-                                                <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Phase {phase.number}</p><p className="text-xs font-bold text-slate-800 mt-0.5">{count}/{phase.ids.length} locations scanned</p></div>
-                                                {complete ? <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-700"><CircleCheck className="w-4 h-4" />Success</span> : <span className="text-[10px] font-bold text-slate-400">In progress</span>}
+                                                <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t.questPhaseLabel} {phase.number}</p><p className="text-xs font-bold text-slate-800 mt-0.5">{count}/{phase.ids.length} {t.questLocationsScanned}</p></div>
+                                                {complete ? <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-700"><CircleCheck className="w-4 h-4" />{t.questSuccess}</span> : <span className="text-[10px] font-bold text-slate-400">{t.questInProgress}</span>}
                                             </div>
                                             <div className="mt-3 h-1.5 rounded-full bg-slate-200 overflow-hidden"><div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${(count / phase.ids.length) * 100}%` }} /></div>
                                         </div>
@@ -574,8 +579,8 @@ const WalletContent: React.FC<{
                             {currentTarget ? (() => {
                                 const coords = QUEST_TARGET_COORDS[currentTarget.id];
                                 const name = currentTarget.name[lang] || currentTarget.name.en;
-                                return coords ? <button onClick={() => onNavigateToTarget({ name, ...coords })} className="w-full flex items-center justify-between gap-3 rounded-2xl bg-blue-700 hover:bg-blue-800 px-4 py-3.5 text-left text-white transition-colors active:scale-[0.98]"><span><span className="block text-[10px] font-black uppercase tracking-widest text-blue-200">Next real-location target</span><span className="block text-sm font-black mt-0.5">{name}</span></span><Navigation className="w-5 h-5 shrink-0" /></button> : null;
-                            })() : <div className="rounded-2xl bg-emerald-600 px-4 py-4 text-white"><p className="text-sm font-black">Quest complete</p><p className="text-[11px] text-emerald-100 mt-1">All three phases are successfully unlocked.</p></div>}
+                                return coords ? <button onClick={() => onNavigateToTarget({ name, ...coords })} className="w-full flex items-center justify-between gap-3 rounded-2xl bg-blue-700 hover:bg-blue-800 px-4 py-3.5 text-left text-white transition-colors active:scale-[0.98]"><span><span className="block text-[10px] font-black uppercase tracking-widest text-blue-200">{t.questNextTarget}</span><span className="block text-sm font-black mt-0.5">{name}</span></span><Navigation className="w-5 h-5 shrink-0" /></button> : null;
+                            })() : <div className="rounded-2xl bg-emerald-600 px-4 py-4 text-white"><p className="text-sm font-black">{t.questComplete}</p><p className="text-[11px] text-emerald-100 mt-1">{t.questAllPhasesUnlocked}</p></div>}
                         </div>
 
                         {/* Legacy themed trails are intentionally hidden; phases above use real QR progress. */}
@@ -926,9 +931,11 @@ const WalletContent: React.FC<{
                             <div className="space-y-4">
                                 <button
                                     onClick={() => window.open('https://gradskiparkingtuzla.vercel.app', '_blank')}
-                                    className="w-full h-16 bg-yellow-400 text-royal-blue-600 border-2 border-blue-500 rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-slate-50"
+                                    className="w-full h-16 bg-yellow-400 border-2 border-blue-600 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-yellow-300"
+                                    style={{ color: '#1a3a8f', boxShadow: '0 0 18px 4px rgba(37,99,235,0.45), 0 4px 14px rgba(0,0,0,0.12)' }}
                                 >
-                                    Gradski Parking Tuzla
+                                    <Car size={20} />
+                                    {t.gradskiParkingTuzla}
                                 </button>
                                 <button
                                     onClick={() => window.open('https://dentist-tuzla.onhercules.app/dentist-tourism/', '_blank')}

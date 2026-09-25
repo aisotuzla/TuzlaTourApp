@@ -120,12 +120,10 @@ body {
     z-index: 0;
 }
 
-.hero-hotspot-ripple::before,
-.hero-hotspot-ripple::after {
+.hero-hotspot-ripple::before {
     content: '';
     position: absolute;
     inset: -2px;
-    /* Starts exactly at the button border */
     border-radius: 9999px;
     border: 2px solid rgba(37, 99, 235, 1);
     box-shadow: 0 0 16px rgba(37, 99, 235, 0.7);
@@ -135,24 +133,8 @@ body {
     animation: hero-ripple-wave 1.5s cubic-bezier(0.15, 0.6, 0.35, 1) infinite;
 }
 
-.hero-hotspot-ripple::before {
-    animation-delay: 0s;
-}
-
-.hero-hotspot-ripple::after {
-    animation-delay: 0.5s;
-    /* 500ms stagger */
-}
-
 /* Continuous 3rd wave on host element every 500ms (0s, 0.5s, 1.0s) */
-.hero-hotspot-ripple-continuous {
-    border: 2px solid rgba(37, 99, 235, 1);
-    box-shadow: 0 0 16px rgba(37, 99, 235, 0.7);
-    will-change: transform, opacity;
-    transform: translateZ(0);
-    animation: hero-ripple-wave 1.5s cubic-bezier(0.15, 0.6, 0.35, 1) infinite;
-    animation-delay: 1.0s;
-}
+
 
 /* Standalone button variant with direct pseudo-element ripples */
 .hero-pulse-circle {

@@ -161,6 +161,15 @@ export interface TranslationSet {
   trailStepComplete: string;
   trailStepGrandFinale: string;
   trailStepLocked: string;
+  questPanelTitle: string;
+  questPanelSubtitle: string;
+  questPhaseLabel: string;
+  questLocationsScanned: string;
+  questInProgress: string;
+  questSuccess: string;
+  questNextTarget: string;
+  questComplete: string;
+  questAllPhasesUnlocked: string;
 }
 
 export enum AppTab {
