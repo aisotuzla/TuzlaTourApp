@@ -440,19 +440,14 @@ const WalletContent: React.FC<{
                                         onClick={() => {
                                             if (disconnect) disconnect();
                                         }}
-                                        className="w-full h-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-x2 shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                                        className="w-full h-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                                     >
                                         DISCONNECT
                                     </button>
-                                ) : (<>
-                                    <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full p-4 text-center">
-                                        <h2 className="text-white text-lg font-bold mb-2">SOLANA BLOCKCHAIN WALLET</h2>
-                                        <button className="bg-white text-purple-600 font-black uppercase tracking-widest rounded-full px-4 py-2 hover:bg-gray-100 transition-all">
-                                            Select Wallet
-                                        </button>
+                                ) : (
+                                    <div className="w-full h-full [&>.wallet-adapter-button]:w-full [&>.wallet-adapter-button]:h-full [&>.wallet-adapter-button]:justify-center [&>.wallet-adapter-button]:bg-gradient-to-r [&>.wallet-adapter-button]:from-purple-600 [&>.wallet-adapter-button]:to-indigo-600 [&>.wallet-adapter-button]:rounded-x4 [&>.wallet-adapter-button]:text-xs [&>.wallet-adapter-button]:font-black [&>.wallet-adapter-button]:uppercase [&>.wallet-adapter-button]:tracking-widest [&>.wallet-adapter-button]:shadow-lg [&>.wallet-adapter-button]:shadow-purple-500/20 hover:[&>.wallet-adapter-button]:scale-[0.98] [&>.wallet-adapter-button]:transition-all">
+                                        <WalletMultiButton />
                                     </div>
-                                    <WalletMultiButton />
-                                </>
                                 )}
                             </div>
                         </div>
