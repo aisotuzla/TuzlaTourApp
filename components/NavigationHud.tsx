@@ -29,7 +29,8 @@ export const NavigationHud: React.FC<NavigationHudProps> = ({
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 50, opacity: 0 }}
-          className="absolute inset-0 z-20 pointer-events-none flex items-end justify-center pb-24 px-3.5"
+          className="absolute inset-0 z-20 pointer-events-none flex items-end justify-center px-3.5"
+          style={{ paddingBottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))' }}
         >
           <motion.div
             drag

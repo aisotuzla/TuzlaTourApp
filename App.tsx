@@ -19,6 +19,8 @@ import MapQuestView from "./components/MapQuestView";
 import { AppTab } from './types';
 import { ImageProvider } from './hooks/ImageContext';
 import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
+import { AudioGuideProvider, useAudioGuide } from './contexts/AudioGuideContext';
+import AudioControlBar from './components/AudioControlBar';
 import { useDraggablePopups } from './hooks/useDraggablePopups';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import ARGuide from './components/ARGuide';
@@ -64,6 +66,17 @@ const getPathFromTab = (tab: AppTab): string => {
 
 const AppContent: React.FC = () => {
   const { lang, setLang, features, unlockedRewards, setUnlockedRewards } = useGlobalApp();
+  const {
+    currentNarration,
+    isPlaying,
+    isPaused,
+    isMuted,
+    pauseNarration,
+    resumeNarration,
+    stopNarration,
+    toggleMute,
+    disableAudioGuide
+  } = useAudioGuide();
   useDraggablePopups();
 
   const navigate = useNavigate();
@@ -115,7 +128,7 @@ const AppContent: React.FC = () => {
       <ReloadPrompt />
       <OfflineIndicator lang={lang} />
 
-      <header className="fixed top-0 left-0 right-0 h-[78px] bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm">
+      <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm" style={{ height: 'calc(56px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex items-center z-10 w-16 sm:w-20">
           <button
             onClick={() => setIsDrawerOpen(true)}
@@ -150,7 +163,7 @@ const AppContent: React.FC = () => {
         </filter>
       </svg>
 
-      <div className="relative min-h-screen bg-white flex overflow-hidden pt-[78px]">
+      <div className="relative min-h-screen bg-white flex overflow-hidden" style={{ paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))' }}>
         <Sidebar
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
@@ -160,8 +173,9 @@ const AppContent: React.FC = () => {
         />
 
         <div
-          className="flex-1 flex flex-col min-h-[calc(100vh-64px)] overflow-hidden"
+          className="flex-1 flex flex-col overflow-hidden"
           style={{
+            minHeight: 'calc(100vh - 56px - env(safe-area-inset-top, 0px))',
             filter: isDrawerOpen ? 'blur(4px)' : 'none',
             transition: 'filter 0.3s ease',
           }}
@@ -227,6 +241,25 @@ const AppContent: React.FC = () => {
           </main>
         </div>
       </div>
+
+      {/* Floating Global Audio Control Bar */}
+      {currentNarration && (
+        <AudioControlBar
+          lang={lang}
+          title={currentNarration.title}
+          isPlaying={isPlaying}
+          isPaused={isPaused}
+          isMuted={isMuted}
+          onPlay={resumeNarration}
+          onPause={pauseNarration}
+          onResume={resumeNarration}
+          onStop={stopNarration}
+          onToggleMute={toggleMute}
+          onDisableAudioGuide={disableAudioGuide}
+          onClose={stopNarration}
+        />
+      )}
+
       <FullScreenImageViewer />
     </ImageProvider>
   );
@@ -236,9 +269,11 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <GlobalAppProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
+        <AudioGuideProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </AudioGuideProvider>
       </GlobalAppProvider>
     </QueryClientProvider>
   );

@@ -170,16 +170,16 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     const safeSet = (layerId: string, prop: string, value: any) => {
       try { if (mapInstance.getLayer(layerId)) mapInstance.setPaintProperty(layerId, prop, value); } catch (_) { }
     };
-    safeSet('background', 'background-color', '#d3e6b4ff');
-    safeSet('landuse-residential', 'fill-color', '#fcf5f6ff');
+    safeSet('background', 'background-color', '#dfebbeff');
+    safeSet('landuse-residential', 'fill-color', '#fcf7f5ff');
     safeSet('landcover_grass', 'fill-color', '#c5f179');
     safeSet('park', 'fill-color', 'rgba(163, 219, 65, 0.82)');
-    safeSet('landcover_wood', 'fill-color', '#758d4bff');
+    safeSet('landcover_wood', 'fill-color', '#9ab370ff');
     safeSet('road_path', 'line-color', '#9e9a9aff');
     safeSet('road_minor', 'line-color', '#ffffff');
     safeSet('road_trunk_primary', 'line-color', '#f7dcb2');
     safeSet('road_secondary_tertiary', 'line-color', '#fff299');
-    safeSet('building-3d', 'fill-extrusion-color', '#9aaac4ff');
+    safeSet('building-3d', 'fill-extrusion-color', '#e9eef5f1');
   };
 
   useEffect(() => {

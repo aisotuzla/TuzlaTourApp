@@ -13,7 +13,6 @@ import {
   Bed,
   X,
   History as HistoryIcon,
-  Compass,
   Heart
 } from 'lucide-react';
 
@@ -177,10 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
             {/* Header */}
             <div className="p-4 flex items-center justify-between border-b border-slate-100 bg-white/50">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center shadow-md shadow-blue-500/30">
-                  <Compass className="w-4.5 h-4.5 text-white" />
-                </div>
-                <span className="font-quicksand font-black text-lg tracking-tight bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                <span className="font-quicksand font-black text-xl tracking-tight bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
                   Tuzla Tour Guide
                 </span>
               </div>

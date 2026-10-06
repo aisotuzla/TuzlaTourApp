@@ -13,6 +13,7 @@ import { tuzlaHotelData } from '../tuzlaHotelData';
 import { Hotel as HotelIcon } from 'lucide-react';
 import { QUEST_TARGETS } from '../constants/questData';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MapSheetDrawer, SheetSnapState, SheetTarget } from './MapSheetDrawer';
 
 
 interface MapViewProps {
@@ -136,28 +137,26 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
   const userMarker = useRef<maplibregl.Marker | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeStyle, setActiveStyle] = useState<string>(navigator.onLine ? ONLINE_STYLE : OFFLINE_STYLE);
-  const [showLayerMenu, setShowLayerMenu] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-  // Keep a ref to the latest location so calculateRoute can read it
-  // without being a reactive dependency — prevents auto-rererouting on GPS tick
   const userLocationRef = useRef<[number, number] | null>(null);
   const isOnline = useNetwork();
 
+  // Bottom Sheet Drawer State
+  const [snapState, setSnapState] = useState<SheetSnapState>('collapsed');
+  const [is3D, setIs3D] = useState(true);
+
+  // Search State
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const searchMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   // Routing and Navigation States
-  const [selectedTarget, setSelectedTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
-  const [searchedTarget, setSearchedTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
+  const [selectedTarget, setSelectedTarget] = useState<SheetTarget | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
-  const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
   const [routeDistance, setRouteDistance] = useState<number | null>(null);
   const [routeTime, setRouteTime] = useState<number | null>(null);
   const [isRouteLoading, setIsRouteLoading] = useState(false);
-  const [activeModalTab, setActiveModalTab] = useState<'poi' | 'hotel' | 'qrcode'>('poi');
 
   // Register PMTiles Protocol and pre-cache Tuzla PMTiles into OPFS
   useEffect(() => {
@@ -167,7 +166,6 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
 
   const handleSwitchLayer = (styleUrl: string) => {
     if (!map.current || activeStyle === styleUrl) {
-      setShowLayerMenu(false);
       return;
     }
 
@@ -176,7 +174,6 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     }
 
     setActiveStyle(styleUrl);
-    setShowLayerMenu(false);
 
     if (styleUrl === OFFLINE_STYLE) {
       map.current.setMaxZoom(16);
@@ -196,11 +193,84 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     });
   };
 
+  const togglePitch = () => {
+    if (!map.current) return;
+    const next3D = !is3D;
+    setIs3D(next3D);
+    map.current.easeTo({
+      pitch: next3D ? 55 : 0,
+      duration: 600,
+    });
+  };
+
+  const handleRecenterLocation = () => {
+    if (userLocationRef.current && map.current) {
+      map.current.flyTo({
+        center: [userLocationRef.current[0], userLocationRef.current[1]],
+        zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+        pitch: is3D ? 55 : 0,
+        bearing: -15,
+        duration: 1600,
+      });
+    } else if (navigator.geolocation && map.current) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const { longitude, latitude } = pos.coords;
+        userLocationRef.current = [longitude, latitude];
+        setUserLocation([longitude, latitude]);
+        map.current?.flyTo({
+          center: [longitude, latitude],
+          zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+          pitch: is3D ? 55 : 0,
+          bearing: -15,
+          duration: 1600,
+        });
+      });
+    }
+  };
+
+  const handleStartNavigation = (target: SheetTarget) => {
+    setSelectedTarget(target);
+    setIsNavigating(true);
+    setSnapState('collapsed');
+    if (map.current) {
+      const start = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+      map.current.flyTo({
+        center: [start[0], start[1]],
+        zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+        pitch: is3D ? 55 : 0,
+        bearing: -15,
+        duration: 2000,
+      });
+    }
+  };
+
+  const handleEndNavigation = () => {
+    setIsNavigating(false);
+    setSelectedTarget(null);
+    clearRoute();
+  };
+
+  const handleSelectTarget = (target: SheetTarget | null) => {
+    setSelectedTarget(target);
+    if (target && map.current) {
+      map.current.flyTo({
+        center: [target.lon, target.lat],
+        zoom: activeStyle === OFFLINE_STYLE ? 15 : 17,
+        pitch: is3D ? 50 : 0,
+        duration: 1400,
+      });
+      if (snapState === 'expanded') {
+        setSnapState('half');
+      }
+    }
+  };
+
   // Expose global callback for Mapbox popup navigation clicks
   useEffect(() => {
     (window as any).startNavigationFromPopup = (name: string, lat: number, lon: number) => {
       setSelectedTarget({ name, lat, lon });
       setIsNavigating(true);
+      setSnapState('collapsed');
       // Close any open popups
       const popups = document.getElementsByClassName('maplibregl-popup');
       for (let i = 0; i < popups.length; i++) {
@@ -210,7 +280,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
         map.current.flyTo({
           center: [userLocationRef.current[0], userLocationRef.current[1]],
           zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
-          pitch: 55,
+          pitch: is3D ? 55 : 0,
           bearing: -15,
           duration: 2000
         });
@@ -219,7 +289,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     return () => {
       delete (window as any).startNavigationFromPopup;
     };
-  }, [activeStyle]);
+  }, [activeStyle, is3D]);
 
   const clearRoute = () => {
     if (map.current) {
@@ -460,7 +530,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
 
   const handleSelectSearchResult = (result: any) => {
     if (map.current) {
-      map.current.flyTo({ center: [result.lon, result.lat], zoom: 17, pitch: 60 });
+      map.current.flyTo({ center: [result.lon, result.lat], zoom: 17, pitch: is3D ? 55 : 0, duration: 1500 });
       if (searchMarkerRef.current) searchMarkerRef.current.remove();
       searchMarkerRef.current = new maplibregl.Marker({ color: '#ea580c' })
         .setLngLat([result.lon, result.lat])
@@ -474,14 +544,15 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
         `))
         .addTo(map.current);
       searchMarkerRef.current.togglePopup();
-      setSearchedTarget({
+      setSelectedTarget({
         name: result.display_name,
         lat: result.lat,
-        lon: result.lon
+        lon: result.lon,
+        category: result.category,
       });
       setSearchResults([]);
       setSearchQuery('');
-      setIsSearchOpen(false);
+      setSnapState('half');
     }
   };
 
@@ -614,464 +685,38 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
         }
       `}</style>
 
-      {/* Search Overlay */}
-      <div className={`absolute top-3 sm:top-6 inset-x-0 mx-auto z-[300] w-[90%] max-w-lg transition-all duration-500 ${isSearchOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
-        <form onSubmit={handleSearch} className="relative">
-          <input
-            type="text"
-            placeholder={lang === 'bs' ? "Traži lokacije..." : "Search locations..."}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/95 backdrop-blur-xl border-2 border-white/20 rounded-[2rem] py-4 pl-14 pr-16 shadow-2xl text-blue-900 font-bold outline-none focus:border-blue-500 transition-all placeholder:text-blue-900/30"
-          />
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-blue-600" size={24} />
-          <button
-            type="button"
-            onClick={() => setIsSearchOpen(false)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full transition-all"
-          >
-            <X size={20} />
-          </button>
-        </form>
+      {/* Removed top controls now managed by bottom drawer */}
 
-        {/* Search Results */}
-        {(searchResults.length > 0 || isSearching) && (
-          <div className="mt-4 bg-white/95 backdrop-blur-xl rounded-3xl p-4 shadow-2xl border border-white/20 overflow-hidden">
-            {isSearching ? (
-              <div className="flex items-center justify-center py-8 text-blue-600 gap-3">
-                <Loader2 className="animate-spin" />
-                <span className="font-bold">{lang === 'bs' ? 'Pretraživanje...' : 'Searching...'}</span>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {searchResults.map((result, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSelectSearchResult(result)}
-                    className="w-full p-4 hover:bg-blue-50 rounded-2xl transition-all flex items-center gap-4 text-left group"
-                  >
-                    <div className="p-3 bg-blue-100 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all">
-                      <Navigation size={20} />
-                    </div>
-                    <div>
-                      <h4 className="font-extrabold text-blue-900">{result.display_name}</h4>
-                      <p className="text-xs text-blue-600/60 font-bold uppercase tracking-widest">{result.category || (lang === 'bs' ? 'Lokacija' : 'Location')}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Action Buttons — Search (top-left) */}
-      <div className="absolute top-3 sm:top-6 left-3 sm:left-6 flex flex-col gap-2 sm:gap-3 z-[150]">
-        <button
-          id="map-search-btn"
-          onClick={() => setIsSearchOpen(true)}
-          className="map-action-btn w-10 h-10 sm:w-14 sm:h-14 bg-white/90 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-2xl border border-white/20 flex items-center justify-center text-blue-600 hover:scale-110 active:scale-95 transition-all group"
-        >
-          <Search size={18} className="sm:hidden group-hover:rotate-12 transition-transform" />
-          <Search size={24} className="hidden sm:block group-hover:rotate-12 transition-transform" />
-        </button>
-      </div>
-
-      {/* Map Layer Switcher & GPS Button */}
-      <div className="absolute bottom-6 left-3 sm:left-6 z-[150] flex flex-col gap-2.5">
-        <button
-          onClick={() => {
-            if (userLocationRef.current && map.current) {
-              map.current.flyTo({
-                center: [userLocationRef.current[0], userLocationRef.current[1]],
-                zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
-                pitch: 55,
-                bearing: -15,
-                duration: 2000
-              });
-            } else if (navigator.geolocation && map.current) {
-              navigator.geolocation.getCurrentPosition((pos) => {
-                const { longitude, latitude } = pos.coords;
-                userLocationRef.current = [longitude, latitude];
-                setUserLocation([longitude, latitude]);
-                map.current?.flyTo({
-                  center: [longitude, latitude],
-                  zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
-                  pitch: 55,
-                  bearing: -15,
-                  duration: 2000
-                });
-              });
-            }
-          }}
-          className="map-action-btn w-10 h-10 sm:w-14 sm:h-14 bg-blue-600/90 hover:bg-blue-600 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-2xl border border-blue-400/50 flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all"
-          title={lang === 'bs' ? 'Moja Lokacija' : 'My Location'}
-        >
-          <Navigation size={20} className="text-white" />
-        </button>
-        <button
-          onClick={() => setShowLayerMenu((previous) => !previous)}
-          className="map-action-btn w-10 h-10 sm:w-14 sm:h-14 bg-slate-900/90 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-2xl border border-blue-400/40 flex items-center justify-center text-blue-300 hover:text-white hover:border-blue-300 active:scale-95 transition-all"
-          title={lang === 'bs' ? 'Promijeni sloj mape' : 'Switch map layer'}
-        >
-          <Layers size={20} />
-        </button>
-        <AnimatePresence>
-          {showLayerMenu && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="absolute bottom-12 sm:bottom-16 left-0 w-64 p-3 bg-slate-900/95 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-2xl space-y-1.5"
-            >
-              <div className="flex items-center justify-between px-2 py-1 border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <span>{lang === 'bs' ? 'Sloj mape' : 'Map layer'}</span>
-                <Layers size={12} className="text-blue-400" />
-              </div>
-              {MAP_LAYER_OPTIONS.map((layerOption) => {
-                const isSelected = activeStyle === layerOption.url;
-                return (
-                  <button
-                    key={layerOption.id}
-                    onClick={() => handleSwitchLayer(layerOption.url)}
-                    className={`w-full px-3 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-all ${isSelected ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'text-slate-300 hover:bg-white/5 hover:text-white'}`}
-                  >
-                    <span>{layerOption.name[lang as 'bs' | 'en'] || layerOption.name.bs}</span>
-                    {isSelected && <Check size={14} />}
-                  </button>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Floating Navigation Button (top-right) */}
-      <div className="absolute top-3 sm:top-6 right-3 sm:right-6 flex flex-col gap-2 sm:gap-3 z-[150]">
-        <button
-          id="map-nav-btn"
-          onClick={() => {
-            if (isNavigating) {
-              setIsNavigating(false);
-              setSelectedTarget(null);
-            } else if (searchedTarget) {
-              setSelectedTarget(searchedTarget);
-              setIsNavigating(true);
-            } else {
-              setIsPresetModalOpen(true);
-            }
-          }}
-          className={`map-action-btn w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl shadow-2xl border flex items-center justify-center transition-all duration-300 ${isNavigating
-            ? 'bg-red-500 hover:bg-red-600 border-red-400 text-white hover:scale-110 active:scale-95 animate-pulse'
-            : 'bg-white/90 border-white/20 text-blue-600 hover:scale-110 active:scale-95'
-            }`}
-        >
-          {isNavigating ? (
-            <>
-              <X size={16} className="sm:hidden animate-in spin-in-90 duration-300" />
-              <X size={24} className="hidden sm:block animate-in spin-in-90 duration-300" />
-            </>
-          ) : (
-            <>
-              <Route size={16} className="sm:hidden" />
-              <Route size={24} className="hidden sm:block" />
-            </>
-          )}
-        </button>
-      </div>
-
-
-
-      {/* Destination Preset Selector Modal */}
-      <AnimatePresence>
-        {isPresetModalOpen && (
-          <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="w-full max-w-lg overflow-hidden border bg-slate-900/95 backdrop-blur-2xl border-white/10 rounded-3xl shadow-2xl flex flex-col max-h-[80vh]"
-            >
-              {/* Modal Header */}
-              <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                <div>
-                  <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
-                    <Compass className="text-blue-500" size={24} />
-                    {lang === 'bs' ? 'Odaberi Odredište' : 'Choose Destination'}
-                  </h3>
-                  <p className="text-xs font-bold text-slate-400 mt-1">
-                    {lang === 'bs' ? 'Započni pješačku rutu kroz Tuzlu' : 'Start a walking route through Tuzla'}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setIsPresetModalOpen(false)}
-                  className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              {/* Tabs */}
-              <div className="px-6 py-2 border-b border-white/5 flex gap-2">
-                <button
-                  onClick={() => setActiveModalTab('poi')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'poi'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
-                >
-                  <Landmark size={16} />
-                  {lang === 'bs' ? 'Znamenitosti' : 'Landmarks'}
-                </button>
-                <button
-                  onClick={() => setActiveModalTab('hotel')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'hotel'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
-                >
-                  <HotelIcon size={16} />
-                  {lang === 'bs' ? 'Hoteli' : 'Hotels'}
-                </button>
-                <button
-                  onClick={() => setActiveModalTab('qrcode')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'qrcode'
-                    ? 'bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/30'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
-                >
-                  <QrCode size={16} />
-                  {lang === 'bs' ? 'QR Kod' : 'QR Code'}
-                </button>
-              </div>
-
-              {/* Scrollable List */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
-                {activeModalTab === 'poi' ? (
-                  ROUTE_POI_PRESETS.map((poi, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setSelectedTarget({
-                          name: poi.name[lang as 'bs' | 'en'] ?? poi.name.en,
-                          lat: poi.lat,
-                          lon: poi.lon
-                        });
-                        setIsNavigating(true);
-                        setIsPresetModalOpen(false);
-                      }}
-                      className="w-full p-4 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all">
-                          <Landmark size={20} />
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-white group-hover:text-blue-300 transition-colors">
-                            {poi.name[lang as 'bs' | 'en'] ?? poi.name.en}
-                          </h4>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">
-                            {poi.category}
-                          </span>
-                        </div>
-                      </div>
-                      <Route size={20} className="text-slate-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-                    </button>
-                  ))
-                ) : activeModalTab === 'hotel' ? (
-                  tuzlaHotelData.map((hotel, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setSelectedTarget({
-                          name: hotel.name,
-                          lat: hotel.latitude,
-                          lon: hotel.longitude
-                        });
-                        setIsNavigating(true);
-                        setIsPresetModalOpen(false);
-                      }}
-                      className="w-full p-4 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all">
-                          <HotelIcon size={20} />
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-white group-hover:text-blue-300 transition-colors">
-                            {hotel.name}
-                          </h4>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">
-                            {hotel.rating} ★ • {hotel.priceRange}
-                          </span>
-                        </div>
-                      </div>
-                      <Route size={20} className="text-slate-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-                    </button>
-                  ))
-                ) : (
-                  /* REWARDS TAB */
-                  <div className="space-y-3">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center pb-2">
-                      {unlockedRewards.length} / {QUEST_TARGETS.length} {lang === 'bs' ? 'otključano' : 'unlocked'}
-                    </p>
-                    {QUEST_TARGETS.map((item) => {
-                      const isUnlocked = unlockedRewards.includes(item.id);
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => {
-                            if (!isUnlocked) return;
-                            // Fly to location on map (approximate coords via LOCATIONS)
-                            setIsPresetModalOpen(false);
-                          }}
-                          className={`w-full rounded-2xl overflow-hidden relative flex items-center gap-4 p-3 border transition-all text-left ${isUnlocked
-                            ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer'
-                            : 'border-white/5 bg-white/3 opacity-60 cursor-default'
-                            }`}
-                        >
-                          <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
-                            <img
-                              src={item.Image}
-                              alt={item.name.en}
-                              className={`w-full h-full object-cover ${isUnlocked ? 'brightness-90' : 'grayscale brightness-40 blur-sm'
-                                }`}
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <span className={`text-[9px] font-black uppercase tracking-widest block mb-0.5 ${isUnlocked ? 'text-amber-400' : 'text-slate-600'
-                              }`}>
-                              {isUnlocked ? (lang === 'bs' ? 'Otključano' : 'Unlocked') : (lang === 'bs' ? 'Zaključano' : 'Locked')}
-                            </span>
-                            <h4 className={`font-extrabold text-sm leading-tight truncate ${isUnlocked ? 'text-white' : 'text-slate-600 italic'
-                              }`}>
-                              {isUnlocked ? (lang === 'bs' ? item.name.bs : item.name.en) : '??? Secret Location'}
-                            </h4>
-                          </div>
-                          <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${isUnlocked ? 'bg-amber-500/20' : 'bg-white/5'
-                            }`}>
-                            {isUnlocked
-                              ? <Trophy size={16} className="text-amber-400" />
-                              : <Lock size={14} className="text-slate-600" />}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Navigation HUD Panel */}
-      <AnimatePresence>
-        {isNavigating && selectedTarget && (
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 50, opacity: 0 }}
-            className="absolute inset-0 z-[250] pointer-events-none flex items-end justify-center pb-28 px-4"
-          >
-            <motion.div
-              drag
-              dragMomentum={false}
-              className="w-full max-w-sm sm:max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950 border border-blue-500/30 rounded-3xl p-4 sm:p-5 shadow-2xl flex flex-col gap-3 sm:gap-4 mx-2"
-            >
-              {/* Header Info */}
-              <div className="flex items-start justify-between">
-                <div className="flex gap-3">
-                  <div className="p-3 bg-blue-600/20 text-blue-400 rounded-2xl flex items-center justify-center border border-blue-500/20">
-                    <Route size={24} className="animate-pulse" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-blue-400">
-                      {lang === 'bs' ? 'U Toku je Pješačka Ruta' : 'Walking Route in Progress'}
-                    </span>
-                    <h4 className="text-base font-black text-white line-clamp-1 mt-0.5">
-                      {selectedTarget.name}
-                    </h4>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    setIsNavigating(false);
-                    setSelectedTarget(null);
-                  }}
-                  className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              {/* Navigation Data Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {/* Distance Card */}
-                <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <Footprints size={14} />
-                    <span className="text-xs font-bold">{lang === 'bs' ? 'Udaljenost' : 'Distance'}</span>
-                  </div>
-                  <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
-                    {isRouteLoading ? (
-                      <Loader2 className="animate-spin text-blue-400" size={20} />
-                    ) : routeDistance !== null ? (
-                      routeDistance >= 1000 ? (
-                        <>
-                          {(routeDistance / 1000).toFixed(1)}
-                          <span className="text-xs text-blue-400 font-bold">km</span>
-                        </>
-                      ) : (
-                        <>
-                          {Math.round(routeDistance)}
-                          <span className="text-xs text-blue-400 font-bold">m</span>
-                        </>
-                      )
-                    ) : (
-                      '--'
-                    )}
-                  </div>
-                </div>
-
-                {/* Duration Card */}
-                <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <Clock size={14} />
-                    <span className="text-xs font-bold">{lang === 'bs' ? 'Vrijeme' : 'Duration'}</span>
-                  </div>
-                  <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
-                    {isRouteLoading ? (
-                      <Loader2 className="animate-spin text-blue-400" size={20} />
-                    ) : routeTime !== null ? (
-                      <>
-                        {Math.ceil(routeTime / 60)}
-                        <span className="text-xs text-blue-400 font-bold">min</span>
-                      </>
-                    ) : (
-                      '--'
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Direct Maps Integration Button - Removed to keep navigation internal */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setIsNavigating(false);
-                    setSelectedTarget(null);
-                  }}
-                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-red-600/20"
-                >
-                  {lang === 'bs' ? 'Završi' : 'End'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Apple Maps / Google Maps Interactive Bottom Sheet Drawer */}
+      <MapSheetDrawer
+        lang={lang}
+        userLocation={userLocation}
+        snapState={snapState}
+        onSnapChange={setSnapState}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        onSearchSubmit={handleSearch}
+        isSearching={isSearching}
+        searchResults={searchResults}
+        onSelectSearchResult={handleSelectSearchResult}
+        onClearSearch={() => {
+          setSearchQuery('');
+          setSearchResults([]);
+        }}
+        selectedTarget={selectedTarget}
+        onSelectTarget={handleSelectTarget}
+        isNavigating={isNavigating}
+        onStartNavigation={handleStartNavigation}
+        onEndNavigation={handleEndNavigation}
+        routeDistance={routeDistance}
+        routeTime={routeTime}
+        isRouteLoading={isRouteLoading}
+        activeStyle={activeStyle}
+        onSelectLayer={handleSwitchLayer}
+        layerOptions={MAP_LAYER_OPTIONS}
+        unlockedRewards={unlockedRewards}
+        landmarks={ROUTE_POI_PRESETS}
+      />
 
 
 

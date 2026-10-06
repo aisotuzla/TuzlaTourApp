@@ -18,7 +18,7 @@ This application is built using a state-of-the-art modern web stack, optimized f
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
 ### 1. AR Guide & GPS Navigation
 The app features an advanced AR and GPS-based guide navigating tourists through the city:
@@ -45,30 +45,7 @@ Full localization for:
 - 🇬🇧 English
 - 🇧🇦 Bosnian
 - 🇩🇪 German
-- 🇹🇷 Turkish
-
-## 🛠️ How to Extend & Customize
-
-### Adding New Points of Interest (POI)
-
-### Adding a New Quest Reward
-
-### Adding Shops & Businesses
-
-
-## 📱 Deployment
-
-### Web & PWA (Vercel)
-The app is optimized for Vercel. 
-- Run `npm run dev` to test locally or let Vercel handle the build (`npm run build`).
-- The **Service Worker** (via `vite-plugin-pwa`) handles offline caching of large assets (videos/images) so tourists don't need continuous cellular data.
-
-### Mobile (Android/iOS)
-Using Capacitor, the app can be converted to a native binary:
-```bash
-npm run build
-npx cap sync android
-
+- 🇹🇷 Turkish.
 
 # Tuzla Tour Guide - Turistički Digitalni Vodič 🇧🇦
 
@@ -87,7 +64,7 @@ Aplikacija je izgrađena koristeći najmodernije tehnologije, optimizovane za pe
 
 ---
 
-## ✨ Ključne Karakteristike
+##  Ključne Karakteristike
 
 ### 1. AR Vodič i GPS Navigacija
 Aplikacija sadrži napredni vodič baziran na AR i GPS tehnologiji za navigaciju turista kroz grad:

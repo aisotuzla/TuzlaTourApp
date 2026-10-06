@@ -19,9 +19,13 @@ import {
   Loader2,
   Landmark,
   Map as MapIcon,
-  Smartphone
+  Smartphone,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { useImage } from '../hooks/ImageContext';
+import { useAudioGuide } from '../contexts/AudioGuideContext';
+import { PANNONICA_NARRATION } from '../utils/pannonicaNarrations';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAppFeatures } from '../utils/platform';
 
@@ -187,6 +191,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const pannonicaImage = pannonicaImageByLanguage[lang] || pannonicaImageByLanguage.en;
   const { openGallery } = useImage();
   const { platform } = getAppFeatures();
+  const { currentNarration, isPlaying, isPaused, playNarration, stopNarration } = useAudioGuide();
+
+  const handleTogglePannonicaAudio = () => {
+    const narrationId = 'landing-pannonica';
+    if (currentNarration?.id === narrationId && isPlaying) {
+      stopNarration();
+    } else {
+      const title = PANNONICA_NARRATION.title[lang] || PANNONICA_NARRATION.title.en;
+      const text = PANNONICA_NARRATION.text[lang] || PANNONICA_NARRATION.text.en;
+      playNarration({
+        id: narrationId,
+        title,
+        text,
+        lang
+      });
+    }
+  };
+
   const [heroLoopCount, setHeroLoopCount] = useState(0);
   const [isHeroPlaying, setIsHeroPlaying] = useState(false);
   const [isHeroReady, setIsHeroReady] = useState(false);
@@ -561,7 +583,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
 
         {/* 2.5. Pannonica Special */}
-        <div className="w-full mt-8 relative rounded-[2.5rem] overflow-hidden shadow-2xl border-2 border-blue-400/40 group">
+        <div className={`w-full mt-8 relative rounded-[2.5rem] overflow-hidden shadow-2xl border-2 transition-all duration-300 group ${
+          currentNarration?.id === 'landing-pannonica' && isPlaying && !isPaused
+            ? 'border-amber-400 ring-4 ring-amber-300/30 shadow-[0_0_25px_rgba(251,191,36,0.4)]'
+            : 'border-blue-400/40'
+        }`}>
           <div
             className="cursor-pointer"
             onClick={() => openGallery([pannonicaImage, ...previewImages], 0)}
@@ -572,8 +598,25 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
             />
           </div>
-          <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-sm text-white/80 p-2.5 rounded-2xl pointer-events-none">
-            <ZoomIn size={20} />
+
+          {/* Sound button in bottom left corner */}
+          <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleTogglePannonicaAudio();
+              }}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg backdrop-blur-md transition-all active:scale-95 cursor-pointer ${
+                currentNarration?.id === 'landing-pannonica' && isPlaying && !isPaused
+                  ? 'bg-amber-400 text-slate-950 border border-amber-300 shadow-amber-400/30 animate-pulse'
+                  : 'bg-slate-950/80 hover:bg-blue-600 text-white border border-white/20'
+              }`}
+              title={currentNarration?.id === 'landing-pannonica' && isPlaying && !isPaused ? (lang === 'bs' ? 'Zaustavi audio' : 'Stop audio') : (lang === 'bs' ? 'Poslušaj o Panonici' : 'Listen to Pannonica')}
+            >
+              {currentNarration?.id === 'landing-pannonica' && isPlaying && !isPaused ? <VolumeX size={16} /> : <Volume2 size={16} />}
+              <span>{currentNarration?.id === 'landing-pannonica' && isPlaying && !isPaused ? (lang === 'bs' ? 'Zaustavi' : 'Stop') : (lang === 'bs' ? 'Audio' : 'Listen')}</span>
+            </button>
           </div>
         </div>
 
