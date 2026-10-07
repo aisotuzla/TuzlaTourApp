@@ -71,6 +71,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState<'quest' | 'poi' | 'hotel'>('quest');
   const [playingQuestVideo, setPlayingQuestVideo] = useState<{ url: string; title: string } | null>(null);
+  const [playingQuestPanorama, setPlayingQuestPanorama] = useState<{ url: string; title: string; haov?: number } | null>(null);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [routeDistance, setRouteDistance] = useState<number | null>(null);
   const [routeTime, setRouteTime] = useState<number | null>(null);
@@ -155,9 +156,21 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     (window as any).playQuestVideo = (videoUrl: string, title?: string) => {
       setPlayingQuestVideo({ url: videoUrl, title: title || (lang === 'bs' ? 'Cinematic Video' : 'Cinematic Video') });
     };
+    (window as any).openQuestPanorama = (panoramaUrl: string, title?: string, haov: number = 270) => {
+      const popups = document.getElementsByClassName('maplibregl-popup');
+      for (let i = 0; i < popups.length; i++) {
+        (popups[i] as HTMLElement).remove();
+      }
+      setPlayingQuestPanorama({
+        url: panoramaUrl,
+        title: title || (lang === 'bs' ? 'Panoramski Prikaz 270°' : '270° Panoramic View'),
+        haov: haov || 270
+      });
+    };
     return () => {
       delete (window as any).startNavigationFromPopup;
       delete (window as any).playQuestVideo;
+      delete (window as any).openQuestPanorama;
     };
   }, [activeStyle, lang]);
 
@@ -284,7 +297,14 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         ? `<button onclick="window.playQuestVideo('${(target as any).video}', '${title.replace(/'/g, "\\'")}')" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 10px; color: #090d16; padding: 7px 10px; font-weight: 900; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">🎬 Video</button>`
         : '';
 
-      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 220px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);"><div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;"><img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 6px;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 0; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66;">${lang === 'bs' ? '🧭 Navigacija' : '🧭 Navigate'}</button>${videoBtnHtml}</div></div>`;
+      const hasPanorama = !!(target as any).panorama || target.id === 'mesa_selimovic';
+      const panoramaUrl = (target as any).panorama || '/assets/Gallery/QuestQRLocations/Tvrko pannellum/mesa360.webp';
+      const panoramaHaov = (target as any).panoramaHaov || 270;
+      const panoramaBtnHtml = hasPanorama
+        ? `<button onclick="window.openQuestPanorama('${panoramaUrl}', '${title.replace(/'/g, "\\'")}', ${panoramaHaov})" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); border: none; border-radius: 10px; color: #ffffff; padding: 7px 10px; font-weight: 900; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">🌐 270° Panorama</button>`
+        : '';
+
+      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 220px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);"><div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;"><img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 6px; flex-wrap: wrap;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; min-width: 80px; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 0; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66;">${lang === 'bs' ? '🧭 Navigacija' : '🧭 Navigate'}</button>${videoBtnHtml}${panoramaBtnHtml}</div></div>`;
       const popup = new maplibregl.Popup({ offset: 25, closeButton: false, maxWidth: '240px' }).setHTML(popupHtml);
       marker.setPopup(popup);
       markersRef.current[target.id] = marker;
@@ -833,6 +853,65 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
                   className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
                 >
                   {lang === 'bs' ? 'Zatvori Video' : 'Close Video'}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Direct Pannellum 270 Panorama Overlay in Map View */}
+      <AnimatePresence>
+        {playingQuestPanorama && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[7000] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-3 sm:p-6"
+          >
+            <div className="w-full max-w-4xl h-[82vh] max-h-[750px] bg-black border border-purple-500/40 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col">
+              <div className="p-4 sm:p-5 flex items-center justify-between border-b border-white/10 bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center border border-purple-400/40 text-lg">
+                    🌐
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-purple-400 tracking-wider block">
+                      {lang === 'bs' ? 'Pannellum 270° Panoramski Prikaz' : 'Pannellum 270° Panoramic View'}
+                    </span>
+                    <h3 className="text-base font-black text-white uppercase tracking-tight">
+                      {playingQuestPanorama.title}
+                    </h3>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setPlayingQuestPanorama(null)}
+                  className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="relative w-full flex-1 bg-black">
+                <iframe
+                  title="Pannellum 270 Panorama"
+                  src={`/assets/Gallery/QuestQRLocations/Tvrko%20pannellum/pannellum/pannellum.htm?panorama=${encodeURIComponent(playingQuestPanorama.url)}&autoLoad=true&haov=${playingQuestPanorama.haov || 270}&title=${encodeURIComponent(playingQuestPanorama.title)}`}
+                  className="w-full h-full border-0"
+                  allowFullScreen
+                />
+              </div>
+
+              <div className="p-3.5 border-t border-white/10 bg-white/5 flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-300 flex items-center gap-2">
+                  <Compass className="w-4 h-4 text-purple-400" />
+                  {lang === 'bs' ? 'Prevuci prstom ili mišem za rotaciju 270° panorame' : 'Drag or swipe to explore 270° panorama'}
+                </span>
+                <button
+                  onClick={() => setPlayingQuestPanorama(null)}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-lg shadow-purple-500/20"
+                >
+                  {lang === 'bs' ? 'Zatvori Panoramu' : 'Close Panorama'}
                 </button>
               </div>
             </div>

@@ -4,6 +4,8 @@
 
 let activeAudio: HTMLAudioElement | null = null;
 let isAudioPaused = false;
+// Dummy cache to keep legacy getAvailableVoices working (not used in backend mode)
+let currentVoiceCache: SpeechSynthesisVoice[] = [];
 
 // Initialize voices
 export function getAvailableVoices(): SpeechSynthesisVoice[] {
@@ -132,6 +134,54 @@ export interface PlayTTSOptions {
   onError?: (err: any) => void;
 }
 
+let activeUtterance: SpeechSynthesisUtterance | null = null;
+
+function fallbackToWebSpeech(options: PlayTTSOptions): boolean {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    if (options.onError) options.onError(new Error('Audio and Speech Synthesis not supported'));
+    return false;
+  }
+
+  try {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(options.text);
+    activeUtterance = utterance;
+
+    const voice = getBestVoice(options.lang);
+    if (voice) {
+      utterance.voice = voice;
+    }
+    utterance.lang = options.lang;
+    utterance.rate = options.rate ?? 1.0;
+    utterance.pitch = options.pitch ?? 1.0;
+
+    utterance.onstart = () => {
+      if (options.onStart) options.onStart();
+    };
+    utterance.onend = () => {
+      activeUtterance = null;
+      if (options.onEnd) options.onEnd();
+    };
+    utterance.onpause = () => {
+      if (options.onPause) options.onPause();
+    };
+    utterance.onresume = () => {
+      if (options.onResume) options.onResume();
+    };
+    utterance.onerror = (e) => {
+      activeUtterance = null;
+      if (options.onError) options.onError(e);
+    };
+
+    window.speechSynthesis.speak(utterance);
+    return true;
+  } catch (err) {
+    activeUtterance = null;
+    if (options.onError) options.onError(err);
+    return false;
+  }
+}
+
 export function stopTTS() {
   if (activeAudio) {
     activeAudio.pause();
@@ -139,84 +189,122 @@ export function stopTTS() {
     activeAudio = null;
     isAudioPaused = false;
   }
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    activeUtterance = null;
+  }
 }
 
 export function pauseTTS() {
   if (activeAudio && !activeAudio.paused) {
     activeAudio.pause();
-    // pause event will update isAudioPaused via listener in playTTS
+  } else if (typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking) {
+    window.speechSynthesis.pause();
   }
 }
 
 export function resumeTTS() {
   if (activeAudio && activeAudio.paused) {
     activeAudio.play().catch(() => {});
+  } else if (typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.paused) {
+    window.speechSynthesis.resume();
   }
 }
 
 export function isTTSSpeaking(): boolean {
-  return !!activeAudio && !activeAudio.paused && !activeAudio.ended;
+  const isAudioSpeaking = !!activeAudio && !activeAudio.paused && !activeAudio.ended;
+  const isSpeechSpeaking = typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking;
+  return isAudioSpeaking || isSpeechSpeaking;
 }
 
 export function isTTSPaused(): boolean {
-  return !!activeAudio && activeAudio.paused && !activeAudio.ended;
+  const isAudioPausedState = !!activeAudio && activeAudio.paused && !activeAudio.ended;
+  const isSpeechPausedState = typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.paused;
+  return isAudioPausedState || isSpeechPausedState;
 }
 
 export function isTTSSupported(): boolean {
-  return typeof Audio !== 'undefined';
+  return typeof Audio !== 'undefined' || (typeof window !== 'undefined' && 'speechSynthesis' in window);
 }
 
-export function playTTS({
-  text,
-  lang,
-  rate = 1.0,
-  pitch = 1.0,
-  onStart,
-  onEnd,
-  onPause,
-  onResume,
-  onError,
-}: PlayTTSOptions): boolean {
+export function playTTS(options: PlayTTSOptions): boolean {
+  const {
+    text,
+    lang,
+    onStart,
+    onEnd,
+    onPause,
+    onResume,
+    onError,
+  } = options;
+
   // Stop any existing playback
   stopTTS();
+
   if (!isTTSSupported()) {
     console.warn('Audio playback not supported in this browser.');
     if (onError) onError(new Error('Audio not supported'));
     return false;
   }
 
-  const src = `/api/tts?text=${encodeURIComponent(text)}&lang=${encodeURIComponent(lang)}`;
-  const audio = new Audio(src);
-  activeAudio = audio;
-  isAudioPaused = false;
+  // 1. Try Microsoft Neural Voices MP3 stream via /api/tts
+  try {
+    const src = `/api/tts?text=${encodeURIComponent(text)}&lang=${encodeURIComponent(lang)}`;
+    const audio = new Audio();
+    audio.preload = 'auto';
+    audio.src = src;
+    activeAudio = audio;
+    isAudioPaused = false;
 
-  audio.addEventListener('play', () => {
-    if (onStart) onStart();
-  });
-  audio.addEventListener('pause', () => {
-    isAudioPaused = true;
-    if (onPause) onPause();
-  });
-  audio.addEventListener('playing', () => {
-    if (isAudioPaused) {
-      isAudioPaused = false;
-      if (onResume) onResume();
+    let hasStarted = false;
+
+    audio.addEventListener('play', () => {
+      if (!hasStarted) {
+        hasStarted = true;
+        if (onStart) onStart();
+      }
+    });
+
+    audio.addEventListener('pause', () => {
+      isAudioPaused = true;
+      if (onPause) onPause();
+    });
+
+    audio.addEventListener('playing', () => {
+      if (isAudioPaused) {
+        isAudioPaused = false;
+        if (onResume) onResume();
+      }
+    });
+
+    audio.addEventListener('ended', () => {
+      activeAudio = null;
+      if (onEnd) onEnd();
+    });
+
+    audio.addEventListener('error', (e) => {
+      console.warn('Neural MP3 audio load failed, falling back to Web Speech synthesis:', e);
+      activeAudio = null;
+      // Graceful fallback to client Web Speech API
+      fallbackToWebSpeech(options);
+    });
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
+        console.warn('Neural MP3 audio play failed, falling back to Web Speech synthesis:', err);
+        activeAudio = null;
+        // Graceful fallback to client Web Speech API
+        fallbackToWebSpeech(options);
+      });
     }
-  });
-  audio.addEventListener('ended', () => {
-    activeAudio = null;
-    if (onEnd) onEnd();
-  });
-  audio.addEventListener('error', (e) => {
-    activeAudio = null;
-    if (onError) onError(e);
-  });
 
-  // Rate and pitch are not applicable for MP3 playback; they are ignored.
-  audio.play().catch((err) => {
+    return true;
+  } catch (err) {
+    console.warn('Neural MP3 initialization failed, falling back to Web Speech synthesis:', err);
     activeAudio = null;
-    if (onError) onError(err);
-  });
-  return true;
+    return fallbackToWebSpeech(options);
+  }
 }
+
 

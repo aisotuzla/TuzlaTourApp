@@ -54,7 +54,7 @@ app.get('/api/voices', async (req, res) => {
   }
 });
 
-// Synthesize Text-to-Speech stream / file
+// Synthesize Text-to-Speech stream directly in real-time
 // Supports GET (/api/tts?text=...&lang=bs&voice=...) and POST (/api/tts with body)
 const handleTTS = async (req, res) => {
   try {
@@ -69,57 +69,17 @@ const handleTTS = async (req, res) => {
 
     const selectedVoice = customVoice || DEFAULT_VOICES[lang] || DEFAULT_VOICES.bs;
 
-    // Create unique cache key for voice + text
-    const cacheKey = crypto
-      .createHash('md5')
-      .update(`${selectedVoice}_${trimmedText}`)
-      .digest('hex');
-    const cachedFilePath = path.join(CACHE_DIR, `${cacheKey}.mp3`);
-
-    // 1. If cached on disk, serve immediately with full Range / 206 Partial Content support for Mobile Safari
-    if (fs.existsSync(cachedFilePath)) {
-      res.setHeader('Content-Type', 'audio/mpeg');
-      res.setHeader('Accept-Ranges', 'bytes');
-      res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
-      return res.sendFile(cachedFilePath);
-    }
-
-    // 2. Synthesize with Microsoft Neural TTS
+    // Synthesize with Microsoft Neural TTS and stream directly to client without disk cache
     const tts = new MsEdgeTTS();
     await tts.setMetadata(selectedVoice, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
 
     const { audioStream } = tts.toStream(trimmedText);
 
-    // Write to cache file for instant repeated playback & HTTP Range support
-    const tempFilePath = path.join(CACHE_DIR, `${cacheKey}.tmp`);
-    const writeStream = fs.createWriteStream(tempFilePath);
+    res.setHeader('Content-Type', 'audio/mpeg');
+    res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 
-    audioStream.pipe(writeStream);
-
-    writeStream.on('finish', () => {
-      try {
-        fs.renameSync(tempFilePath, cachedFilePath);
-        res.setHeader('Content-Type', 'audio/mpeg');
-        res.setHeader('Accept-Ranges', 'bytes');
-        res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
-        res.sendFile(cachedFilePath);
-      } catch (e) {
-        // In case of rename contention, fallback to sending temp file
-        res.setHeader('Content-Type', 'audio/mpeg');
-        res.sendFile(tempFilePath);
-      }
-    });
-
-    writeStream.on('error', (err) => {
-      console.error('File write stream error:', err);
-      // Fallback: direct streaming to client
-      if (!res.headersSent) {
-        res.setHeader('Content-Type', 'audio/mpeg');
-        res.setHeader('Accept-Ranges', 'bytes');
-        res.setHeader('Cache-Control', 'no-cache');
-        audioStream.pipe(res);
-      }
-    });
+    audioStream.pipe(res);
 
     audioStream.on('error', (err) => {
       console.error('TTS stream error:', err);

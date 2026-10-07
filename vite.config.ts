@@ -1,15 +1,81 @@
 import path from 'path';
+import fs from 'fs';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import basicSsl from '@vitejs/plugin-basic-ssl';
+import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 
 import { VitePWA } from 'vite-plugin-pwa';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+function neuralTtsPlugin() {
+  const DEFAULT_VOICES: Record<string, string> = {
+    bs: 'bs-BA-GoranNeural',
+    en: 'en-US-AndrewNeural',
+    de: 'de-DE-ConradNeural',
+    tr: 'tr-TR-AhmetNeural',
+  };
+
+  return {
+    name: 'neural-tts-plugin',
+    configureServer(server: any) {
+      server.middlewares.use(async (req: any, res: any, next: any) => {
+        if (!req.url || !req.url.startsWith('/api/tts')) {
+          return next();
+        }
+
+        try {
+          const parsedUrl = new URL(req.url, 'http://localhost');
+          const text = parsedUrl.searchParams.get('text') || '';
+          const lang = (parsedUrl.searchParams.get('lang') || 'bs').toLowerCase();
+          const customVoice = parsedUrl.searchParams.get('voice');
+
+          const trimmedText = text.trim();
+          if (!trimmedText) {
+            res.statusCode = 400;
+            res.setHeader('Content-Type', 'application/json');
+            return res.end(JSON.stringify({ error: 'Text parameter is required' }));
+          }
+
+          const selectedVoice = customVoice || DEFAULT_VOICES[lang] || DEFAULT_VOICES.bs;
+
+          const tts = new MsEdgeTTS();
+          await tts.setMetadata(selectedVoice, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
+          const { audioStream } = tts.toStream(trimmedText);
+
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'audio/mpeg');
+          res.setHeader('Accept-Ranges', 'bytes');
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+
+          audioStream.pipe(res);
+
+          audioStream.on('error', (err: any) => {
+            console.error('[TTS Plugin] Stream error:', err);
+            if (!res.headersSent) {
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: 'TTS stream error', details: err?.message }));
+            }
+          });
+        } catch (err: any) {
+          console.error('[TTS Plugin] Error:', err);
+          if (!res.headersSent) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ error: 'TTS synthesis error', details: err?.message }));
+          }
+        }
+      });
+    },
+  };
+}
 
 import type { UserConfig, ConfigEnv } from 'vite';
 
@@ -20,18 +86,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       port: 3000,
       host: '0.0.0.0',
       open: true,
-      proxy: {
-        '/api/tts': {
-          target: 'http://localhost:5001',
-          changeOrigin: true,
-          secure: false,
-        },
-        '/api/voices': {
-          target: 'http://localhost:5001',
-          changeOrigin: true,
-          secure: false,
-        },
-      },
       watch: {
         ignored: ['**/rollup/**', '**/rollup/test/**'],
       },
@@ -40,6 +94,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       },
     },
     plugins: [
+      neuralTtsPlugin(),
       basicSsl(),
       react(),
       nodePolyfills({
@@ -132,21 +187,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           skipWaiting: true,
           clientsClaim: true,
           runtimeCaching: [
-            // 0. Audio files & Neural TTS MP3 streams — cache for offline and fast mobile playback
-            {
-              urlPattern: /\/api\/tts.*|\.(?:mp3|wav|ogg|m4a)$/i,
-              handler: 'StaleWhileRevalidate',
-              options: {
-                cacheName: 'audio-narrations-cache',
-                expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
             // 1. Google Fonts stylesheets (lightweight, changes rarely)
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

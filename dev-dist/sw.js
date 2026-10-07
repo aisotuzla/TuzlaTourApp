@@ -93,15 +93,5 @@ define(['./workbox-afac4cd2'], (function (workbox) { 'use strict';
       statuses: [0, 200]
     })]
   }), 'GET');
-  
-  workbox.registerRoute(/\.(?:mp3|wav|ogg|m4a)$|^\/api\/tts/, new workbox.StaleWhileRevalidate({
-    "cacheName": "audio-narrations-cache",
-    plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 100,
-      maxAgeSeconds: 2592000
-    }), new workbox.CacheableResponsePlugin({
-      statuses: [0, 200]
-    })]
-  }), 'GET');
 
 }));
