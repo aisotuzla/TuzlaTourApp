@@ -20,6 +20,18 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       port: 3000,
       host: '0.0.0.0',
       open: true,
+      proxy: {
+        '/api/tts': {
+          target: 'http://localhost:5001',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/api/voices': {
+          target: 'http://localhost:5001',
+          changeOrigin: true,
+          secure: false,
+        },
+      },
       watch: {
         ignored: ['**/rollup/**', '**/rollup/test/**'],
       },
@@ -120,6 +132,21 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           skipWaiting: true,
           clientsClaim: true,
           runtimeCaching: [
+            // 0. Audio files & Neural TTS MP3 streams — cache for offline and fast mobile playback
+            {
+              urlPattern: /\/api\/tts.*|\.(?:mp3|wav|ogg|m4a)$/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'audio-narrations-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
             // 1. Google Fonts stylesheets (lightweight, changes rarely)
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

@@ -17,7 +17,9 @@
   "categories": [
     "travel",
     "navigation",
-    "entertainment"
+    "entertainment",
+    "music",
+    "education"
   ],
   "lang": "bs",
   "dir": "ltr",
@@ -36,6 +38,19 @@
     }
   ],
   "shortcuts": [
+    {
+      "name": "Audio Guide",
+      "short_name": "Audio",
+      "description": "Listen to Tuzla audio tour guide",
+      "url": "/?tab=history",
+      "icons": [
+        {
+          "src": "/assets/resources/TuzlaTourAppLogo96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
     {
       "name": "Tuzla Quest",
       "short_name": "Quest",

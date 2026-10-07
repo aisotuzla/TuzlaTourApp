@@ -2,8 +2,8 @@
  * Browser Text-to-Speech (TTS) engine using Web Speech API (window.speechSynthesis)
  */
 
-let activeUtterance: SpeechSynthesisUtterance | null = null;
-let currentVoiceCache: SpeechSynthesisVoice[] = [];
+let activeAudio: HTMLAudioElement | null = null;
+let isAudioPaused = false;
 
 // Initialize voices
 export function getAvailableVoices(): SpeechSynthesisVoice[] {
@@ -133,40 +133,37 @@ export interface PlayTTSOptions {
 }
 
 export function stopTTS() {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    activeUtterance = null;
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+    activeAudio = null;
+    isAudioPaused = false;
   }
 }
 
 export function pauseTTS() {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    window.speechSynthesis.pause();
+  if (activeAudio && !activeAudio.paused) {
+    activeAudio.pause();
+    // pause event will update isAudioPaused via listener in playTTS
   }
 }
 
 export function resumeTTS() {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    window.speechSynthesis.resume();
+  if (activeAudio && activeAudio.paused) {
+    activeAudio.play().catch(() => {});
   }
 }
 
 export function isTTSSpeaking(): boolean {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    return window.speechSynthesis.speaking;
-  }
-  return false;
+  return !!activeAudio && !activeAudio.paused && !activeAudio.ended;
 }
 
 export function isTTSPaused(): boolean {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    return window.speechSynthesis.paused;
-  }
-  return false;
+  return !!activeAudio && activeAudio.paused && !activeAudio.ended;
 }
 
 export function isTTSSupported(): boolean {
-  return typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+  return typeof Audio !== 'undefined';
 }
 
 export function playTTS({
@@ -178,62 +175,48 @@ export function playTTS({
   onEnd,
   onPause,
   onResume,
-  onError
+  onError,
 }: PlayTTSOptions): boolean {
+  // Stop any existing playback
+  stopTTS();
   if (!isTTSSupported()) {
-    console.warn('SpeechSynthesis is not supported in this browser.');
+    console.warn('Audio playback not supported in this browser.');
+    if (onError) onError(new Error('Audio not supported'));
     return false;
   }
 
-  try {
-    stopTTS();
+  const src = `/api/tts?text=${encodeURIComponent(text)}&lang=${encodeURIComponent(lang)}`;
+  const audio = new Audio(src);
+  activeAudio = audio;
+  isAudioPaused = false;
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    activeUtterance = utterance; // Prevent garbage collection bug in Chrome
-
-    const voice = getBestVoice(lang);
-    if (voice) {
-      utterance.voice = voice;
-      utterance.lang = voice.lang;
-    } else {
-      utterance.lang = lang === 'bs' ? 'bs-BA' : lang === 'de' ? 'de-DE' : lang === 'tr' ? 'tr-TR' : 'en-CA';
-    }
-
-    utterance.rate = rate;
-    utterance.pitch = pitch;
-
-    utterance.onstart = () => {
-      if (onStart) onStart();
-    };
-
-    utterance.onpause = () => {
-      if (onPause) onPause();
-    };
-
-    utterance.onresume = () => {
+  audio.addEventListener('play', () => {
+    if (onStart) onStart();
+  });
+  audio.addEventListener('pause', () => {
+    isAudioPaused = true;
+    if (onPause) onPause();
+  });
+  audio.addEventListener('playing', () => {
+    if (isAudioPaused) {
+      isAudioPaused = false;
       if (onResume) onResume();
-    };
+    }
+  });
+  audio.addEventListener('ended', () => {
+    activeAudio = null;
+    if (onEnd) onEnd();
+  });
+  audio.addEventListener('error', (e) => {
+    activeAudio = null;
+    if (onError) onError(e);
+  });
 
-    utterance.onend = () => {
-      activeUtterance = null;
-      if (onEnd) onEnd();
-    };
-
-    utterance.onerror = (e) => {
-      activeUtterance = null;
-      if (e.error !== 'canceled' && e.error !== 'interrupted') {
-        console.warn('TTS error:', e);
-        if (onError) onError(e);
-      } else {
-        if (onEnd) onEnd();
-      }
-    };
-
-    window.speechSynthesis.speak(utterance);
-    return true;
-  } catch (err) {
-    console.error('Failed to trigger speech synthesis:', err);
+  // Rate and pitch are not applicable for MP3 playback; they are ignored.
+  audio.play().catch((err) => {
+    activeAudio = null;
     if (onError) onError(err);
-    return false;
-  }
+  });
+  return true;
 }
+
