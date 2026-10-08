@@ -2,6 +2,11 @@
 /// <reference types="vite-plugin-pwa/react" />
 /// <reference types="vite-plugin-pwa/client" />
 
+declare module '*.md?raw' {
+  const content: string;
+  export default content;
+}
+
 interface ImportMetaEnv {
   readonly VITE_GEMINI_API_KEY: string;
   readonly VITE_GEOCODING_API_KEY: string;

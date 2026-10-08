@@ -13,10 +13,10 @@ The most popular tourist attraction located in the heart of the city is the Comp
 ## VOŽNJA TURISTIČKIM VOZIĆEM / RIDE ON THE TOURISTIC TRAIN
 
 **Bosanski:**
-Od Trga slobode u centru grada do Panonskih jezera svakodnevno saobraća turistički vozić kapaciteta 36 mjesta. Tokom trajanja vožnje putnici se upoznaju sa znamenitostima grada kroz opis svih bitnih detalja i bogate turističke ponude.
+Od Trga slobode u centru grada do Panonskih jezera svakodnevno saobraća turistički vozić kapaciteta trideset šest mjesta. Tokom trajanja vožnje putnici se upoznaju sa znamenitostima grada kroz opis svih bitnih detalja i bogate turističke ponude.
 
 **English:**
-The Touristic Train with a capacity of 36 seats runs daily from the Freedom Square in the city center to the Pannonian Lakes. During the ride, passengers get to know the sights of the city and hear all the important details about the rich touristic offer.
+The Touristic Train with a capacity of thirty-six seats runs daily from the Freedom Square in the city center to the Pannonian Lakes. During the ride, passengers get to know the sights of the city and hear all the important details about the rich touristic offer.
 
 ---
 
@@ -24,11 +24,11 @@ The Touristic Train with a capacity of 36 seats runs daily from the Freedom Squa
 
 **Bosanski:**
 Povezan pješačkim mostom sa kompleksom Panonskih jezera, u samom centru Tuzle smjestio se i glavni Gradski park, bogat različitim spomenicima čija se tematika pretežno odnosi na srednjovjekovni period. Centralna figura parka je spomenik koji prikazuje Tvrtka I Kotromanića, bana i prvog kralja srednjovjekovne bosanske države. Pored ovog spomenika, u parku je moguće vidjeti i nekolicinu stećaka kao i spomenik na kome je uklesana povelja Kulina bana, najznačajniji dokument bosanske državnosti.
-*TVRTKO I KOTROMANIĆ bosanski ban od 1353. do 1377. bosanski kralj od 1377. do 1391.*
+*TVRTKO I KOTROMANIĆ bosanski ban od hiljadu tristo pedeset treće do hiljadu tristo sedamdeset sedme. bosanski kralj od hiljadu tristo sedamdeset sedme do hiljadu tristo devedeset i prve*
 
 **English:**
 The central City Park is located in the very heart of Tuzla and via a pedestrian bridge it is linked to the Pannonian Lakes. The park is rich in various monuments, mainly related to the medieval period. The central figure of the park is the statue depicting Tvrtko I Kotromanić, Ban and the first King of the Medieval Bosnian State. Also, there are several stećak tombstones, as well as a monument with a display of engraved Charter of Kulin Ban, the most important document of Bosnian statehood.
-*TVRTKO I KOTROMANIĆ Bosnian ban from 1353 to 1377, Bosnian king from 1377 to 1391.*
+*TVRTKO I KOTROMANIĆ Bosnian ban from one thousand three hundred fifty-three to one thousand three hundred seventy-seven. Bosnian king from one thousand three hundred seventy-seven to one thousand three hundred ninety-one.*
 
 ---
 
@@ -36,10 +36,10 @@ The central City Park is located in the very heart of Tuzla and via a pedestrian
 
 ### TRG SLOBODE / THE FREEDOM SQUARE
 **Bosanski:**
-Trg slobode najveći je gradski trg u Bosni i Hercegovini, a njime dominira monumentalna zgrada Barok, vjerna replika izvorne zgrade, podignute 1900. godine povodom najavljene posjete austrougarskog prestolonasljednika Franca Ferdinanda.
+Trg slobode najveći je gradski trg u Bosni i Hercegovini, a njime dominira monumentalna zgrada Barok, vjerna replika izvorne zgrade, podignute hiljadu devetstote godine povodom najavljene posjete austrougarskog prestolonasljednika Franca Ferdinanda.
 
 **English:**
-The Freedom Square (orig. name: Trg Slobode) is the largest city square in Bosnia and Herzegovina, and it is dominated by a monumental Baroque Building, a faithful replica of the original building, erected in 1900 on the occasion of the announced visit of the Austro-Hungarian heir to the throne, Franz Ferdinand.
+The Freedom Square (orig. name: Trg Slobode) is the largest city square in Bosnia and Herzegovina, and it is dominated by a monumental Baroque Building, a faithful replica of the original building, erected in nineteen hundreds on the occasion of the announced visit of the Austro-Hungarian heir to the throne, Franz Ferdinand.
 
 ### SONI TRG / THE SALT SQUARE
 **Bosanski:**
@@ -81,10 +81,10 @@ The "Ismet Mujezinović" Atelier is unique because one of the most important Bos
 
 ### MEĐUNARODNA GALERIJA PORTRETA / INTERNATIONAL PORTRAIT GALLERY
 **Bosanski:**
-Međunarodna galerija portreta u svom fundusu posjeduje preko 5.000 djela najpoznatijih slikara sa područja bivše Jugoslavije i na taj način predstavlja svojevrsni muzej slikarstva. Stalna postavka djela Ismeta Mujezinovića, portreta Josipa Broza Tita, Haime Pinte, Adele Ber i drugih je vrijedna pažnje svakog posjetioca koji je ljubitelj umjetnosti.
+Međunarodna galerija portreta u svom fundusu posjeduje preko pet hiljada djela naj poznatijih slikara sa područja bivše Jugoslavije i na taj način predstavlja svojevrsni muzej slikarstva. Stalna postavka djela Ismeta Mujezinovića, portreta Josipa Broza Tita, Haime Pinte, Adele Ber i drugih je vrijedna pažnje svakog posjetioca koji je ljubitelj umjetnosti.
 
 **English:**
-The International Portrait Gallery has over 5,000 fine art pieces by the most famous painters from the territory of the former Yugoslavia and thus it represents a kind of museum of fine art. The permanent exhibition of works by Ismet Mujezinović, portraits of Josip Broz Tito, Haim Pinto, Adela Ber and others is worthy of the attention of every art-loving visitor.
+The International Portrait Gallery has over five thousand fine art pieces by the most famous painters from the territory of the former Yugoslavia and thus it represents a kind of museum of fine art. The permanent exhibition of works by Ismet Mujezinović, portraits of Josip Broz Tito, Haim Pinto, Adela Ber and others is worthy of the attention of every art-loving visitor.
 
 ---
 
@@ -101,12 +101,12 @@ Sports Association RSD Sloboda's House of Sport is a combination of a multimedia
 ## 8. SPOMENIK HUSINSKOM RUDARU / MONUMENT OF THE HUSINO MINER
 
 **Bosanski:**
-Husinski rudar je spomenik podignut u sjećanje na rudare koji su se borili za radnička prava i ravnopravnost u Husinskoj buni 1920. godine i jedan je od simbola Tuzle.
-*RSD SLOBODA TUZLA 1919*
+Husinski rudar je spomenik podignut u sjećanje na rudare koji su se borili za radnička prava i ravnopravnost u Husinskoj buni hiljadu devetsto dvadesete godine i jedan je od simbola Tuzle.
+
 
 **English:**
-The Husino Miner is a monument erected in memory of the miners who fought for labor rights and equality in the Husino Uprising of 1920 and is one of the symbols of Tuzla.
-*RSD SLOBODA TUZLA 1919*
+The Husino Miner is a monument erected in memory of the miners who fought for labor rights and equality in the Husino Uprising of nineteen twenty and is one of the symbols of Tuzla.
+
 
 ---
 
@@ -139,10 +139,10 @@ Husein Čauš's Mosque, is architecturally the most valuable mosque with a woode
 
 ### SABORNI HRAM USPENJA PRESVETE BOGORODICE / THE CATHEDRAL OF THE ASSUMPTION OF THE BLESSED VIRGIN MARY
 **Bosanski:**
-Pravoslavna crkva smještena na atraktivnoj lokaciji nasuprot gradskog parka i kompleksa Panonskih jezera. Sagrađena je krajem 19. vijeka u neoklasicističkom stilu, te je kao i obližnji Dvor Zvorničko-tuzlanske eparhije proglašena za nacionalni spomenik Bosne i Hercegovine.
+Pravoslavna crkva smještena na atraktivnoj lokaciji nasuprot gradskog parka i kompleksa Panonskih jezera. Sagrađena je krajem devetnaestog vijeka u neoklasicističkom stilu, te je kao i obližnji Dvor Zvorničko-tuzlanske eparhije proglašena za nacionalni spomenik Bosne i Hercegovine.
 
 **English:**
-An Orthodox church located in an attractive location opposite the central city park and the Pannonian Lakes. It was built at the end of the 19th century in the neoclassical style, and like the nearby Court of the Zvornik-Tuzla Diocese, it was declared a national monument of Bosnia and Herzegovina.
+An Orthodox church located in an attractive location opposite the central city park and the Pannonian Lakes. It was built at the end of the nineteenth century in the neoclassical style, and like the nearby Court of the Zvornik-Tuzla Diocese, it was declared a national monument of Bosnia and Herzegovina.
 
 ### FRANJEVAČKA CRKVA I SAMOSTAN SV. PETRA I PAVLA / FRANCISCAN CHURCH AND MONASTERY OF ST. PETER AND PAUL
 **Bosanski:**
@@ -153,10 +153,10 @@ A modern and beautiful building designed by architect Zlatko Ugljen. The Monaste
 
 ### GAZI TURALI-BEGOVA (POLJSKA) DŽAMIJA / GAZI TURALI-BEG'S MOSQUE
 **Bosanski:**
-Nalazi se u samom centru Tuzle, a izgrađena 1572. godine, sredstvima jednog od utemeljivača moderne urbane Tuzle, Gazi Turali-bega.
+Nalazi se u samom centru Tuzle, a izgrađena hiljadu pet stotina sedamdeset druge godine, sredstvima jednog od utemeljivača moderne urbane Tuzle, Gazi Turali-bega.
 
 **English:**
-Located in the very center of Tuzla, and was built in 1572 with funds from one of the founders of modern urban Tuzla, Gazi Turali-beg.
+Located in the very center of Tuzla, and was built in fifteen seventy-two with funds from one of the founders of modern urban Tuzla, Gazi Turali-beg.
 
 ---
 

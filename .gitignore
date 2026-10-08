@@ -29,6 +29,10 @@ android/**/*.jks
 .agents
 .superpowers
 .vscode
+.claude
+.cursor
+.kiro
+
 
 
 # Editor directories and files

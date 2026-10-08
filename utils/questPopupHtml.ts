@@ -37,11 +37,6 @@ export const generateQuestPopupHtml = (loc: any, lang: Language, isUnlocked: boo
           </button>
         ` : ''}
 
-        ${(loc.panorama || loc.id === 'mesa_selimovic') ? `
-          <button onclick="window.openQuestPanorama && window.openQuestPanorama('${loc.panorama || '/assets/Gallery/QuestQRLocations/Tvrko pannellum/mesa360.webp'}', '${(loc.name[lang] || loc.name.bs || 'Spomenik Meši Selimoviću').replace(/'/g, "\\'")}', ${loc.panoramaHaov || 270})" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; box-shadow: 0 4px 12px rgba(139,92,246,0.4); display: flex; align-items: center; justify-content: center; gap: 6px;">
-            🌐 ${lang === 'bs' ? '270° Panoramski Prikaz (Pannellum)' : '270° Panoramic View (Pannellum)'}
-          </button>
-        ` : ''}
 
         ${isNFTReward && isUnlocked ? `
           <button onclick="window.mintNFTReward('${NFT_IPFS}')" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px;">

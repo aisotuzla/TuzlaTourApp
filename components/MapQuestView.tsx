@@ -183,16 +183,16 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     const safeSet = (layerId: string, prop: string, value: any) => {
       try { if (mapInstance.getLayer(layerId)) mapInstance.setPaintProperty(layerId, prop, value); } catch (_) { }
     };
-    safeSet('background', 'background-color', '#dfebbeff');
-    safeSet('landuse-residential', 'fill-color', '#fcf7f5ff');
-    safeSet('landcover_grass', 'fill-color', '#c5f179');
+    safeSet('background', 'background-color', '#ebf0d2');
+    safeSet('landuse-residential', 'fill-color', '#d5c2a7');
+    safeSet('landcover_grass', 'fill-color', '#91e147');
     safeSet('park', 'fill-color', 'rgba(163, 219, 65, 0.82)');
-    safeSet('landcover_wood', 'fill-color', '#9ab370ff');
-    safeSet('road_path', 'line-color', '#9e9a9aff');
+    safeSet('landcover_wood', 'fill-color', '#95b959');
+    safeSet('road_path', 'line-color', '#656262');
     safeSet('road_minor', 'line-color', '#ffffff');
-    safeSet('road_trunk_primary', 'line-color', '#f7dcb2');
-    safeSet('road_secondary_tertiary', 'line-color', '#fff299');
-    safeSet('building-3d', 'fill-extrusion-color', '#e9eef5f1');
+    safeSet('road_trunk_primary', 'line-color', '#f4ca61');
+    safeSet('road_secondary_tertiary', 'line-color', '#fcfb8f');
+    safeSet('building-3d', 'fill-extrusion-color', '#e9edf6');
   };
 
   useEffect(() => {
@@ -297,12 +297,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         ? `<button onclick="window.playQuestVideo('${(target as any).video}', '${title.replace(/'/g, "\\'")}')" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 10px; color: #090d16; padding: 7px 10px; font-weight: 900; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">🎬 Video</button>`
         : '';
 
-      const hasPanorama = !!(target as any).panorama || target.id === 'mesa_selimovic';
-      const panoramaUrl = (target as any).panorama || '/assets/Gallery/QuestQRLocations/Tvrko pannellum/mesa360.webp';
-      const panoramaHaov = (target as any).panoramaHaov || 270;
-      const panoramaBtnHtml = hasPanorama
-        ? `<button onclick="window.openQuestPanorama('${panoramaUrl}', '${title.replace(/'/g, "\\'")}', ${panoramaHaov})" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); border: none; border-radius: 10px; color: #ffffff; padding: 7px 10px; font-weight: 900; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">🌐 270° Panorama</button>`
-        : '';
+      // 270 Panorama button temporarily hidden
+      const panoramaBtnHtml = '';
 
       const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 220px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);"><div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;"><img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 6px; flex-wrap: wrap;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; min-width: 80px; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 0; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66;">${lang === 'bs' ? '🧭 Navigacija' : '🧭 Navigate'}</button>${videoBtnHtml}${panoramaBtnHtml}</div></div>`;
       const popup = new maplibregl.Popup({ offset: 25, closeButton: false, maxWidth: '240px' }).setHTML(popupHtml);
