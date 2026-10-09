@@ -1108,6 +1108,77 @@ const WalletContent: React.FC<{
                 )}
             </AnimatePresence>
 
+            {/* VIDEO PLAYER MODAL */}
+            <AnimatePresence>
+                {playingVideo && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[7000] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-6"
+                    >
+                        <div className="w-full max-w-2xl bg-black border border-white/15 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col">
+                            <div className="p-4 sm:p-5 flex items-center justify-between border-b border-white/10 bg-white/5">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
+                                        <Play className="w-4 h-4 fill-amber-400" />
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider block">
+                                            {lang === 'bs' ? 'Cinematic Video' : 'Cinematic Video'}
+                                        </span>
+                                        <h3 className="text-base font-black text-white uppercase tracking-tight">
+                                            {(() => {
+                                                const target = QUEST_TARGETS.find(q => (q as any).video === playingVideo);
+                                                return target ? (target.name[lang as keyof typeof target.name] || target.name.en || target.name.bs) : (playingVideo.includes('Mesa') ? 'Meša Selimović' : 'Cinematic Video');
+                                            })()}
+                                        </h3>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => { setPlayingVideo(null); setPlayingVideoError(null); }}
+                                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <div className="relative w-full aspect-video sm:max-h-[60vh] bg-black flex items-center justify-center">
+                                {playingVideoError ? (
+                                    <div className="text-center p-6 space-y-2">
+                                        <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
+                                        <p className="text-xs text-rose-300 font-bold">{playingVideoError}</p>
+                                    </div>
+                                ) : (
+                                    <video
+                                        src={playingVideo}
+                                        autoPlay
+                                        controls
+                                        playsInline
+                                        preload="auto"
+                                        onError={() => setPlayingVideoError(lang === 'bs' ? 'Neuspjelo učitavanje videa.' : 'Failed to load video.')}
+                                        className="w-full h-full object-contain"
+                                    />
+                                )}
+                            </div>
+
+                            <div className="p-4 border-t border-white/10 bg-white/5 flex items-center justify-between">
+                                <span className="text-xs font-bold text-slate-400">
+                                    {lang === 'bs' ? 'Tuzla Tour Video Vodič' : 'Tuzla Tour Video Guide'}
+                                </span>
+                                <button
+                                    onClick={() => { setPlayingVideo(null); setPlayingVideoError(null); }}
+                                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                                >
+                                    {lang === 'bs' ? 'Zatvori Video' : 'Close Video'}
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <style>{`
                 @keyframes laser-move {
                     0% { top: 10%; }

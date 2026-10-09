@@ -1,8 +1,8 @@
 import { Language } from '../types';
-import historyBaRaw from '../public/tour-tts-backend/HistoryBA.md?raw';
-import historyEnRaw from '../public/tour-tts-backend/HistoryEN.md?raw';
-import historyDeRaw from '../public/tour-tts-backend/HistoryDE.md?raw';
-import historyTrRaw from '../public/tour-tts-backend/HistoryTR.md?raw';
+import historyBaRaw from '../src/tour-tts-backend/HistoryBA.md?raw';
+import historyEnRaw from '../src/tour-tts-backend/HistoryEN.md?raw';
+import historyDeRaw from '../src/tour-tts-backend/HistoryDE.md?raw';
+import historyTrRaw from '../src/tour-tts-backend/HistoryTR.md?raw';
 
 export interface HistoryPageNarration {
   title: Record<Language, string>;

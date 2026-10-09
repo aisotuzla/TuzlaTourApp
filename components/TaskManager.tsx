@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Calendar as CalendarIcon, CheckCircle2, Circle, CreditCard, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, CheckCircle2, Circle, CreditCard, Headphones, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { Language } from '../types';
 import { Preferences } from '@capacitor/preferences';
 import { EventCalendarView } from './EventCalendarView';
+import { MediaAudioGuideTab } from './MediaAudioGuideTab';
 
-type Mode = 'expenses' | 'tasks' | 'itinerary' | 'calendar' | 'threeDayPlan';
+type Mode = 'expenses' | 'tasks' | 'itinerary' | 'calendar' | 'threeDayPlan' | 'media';
 
 type ExpenseItem = {
   id: number;
@@ -340,6 +341,13 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
             >
               {lang === 'bs' ? '3 Dnevni plan' : lang === 'de' ? '3-Tage-Plan' : lang === 'tr' ? '3 Günlük Plan' : '3 Day Plan'}
             </button>
+            <button
+              onClick={() => setView('media')}
+              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'media' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
+            >
+              <Headphones className="h-5 w-5" />
+              {lang === 'bs' ? 'Media' : 'Media'}
+            </button>
           </div>
         </div>
 
@@ -350,6 +358,20 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         ) : view === 'calendar' ? (
           <div className="p-6 sm:p-8">
             <EventCalendarView lang={lang} />
+          </div>
+        ) : view === 'threeDayPlan' ? (
+          <div className="p-6 sm:p-8 w-full">
+            <section className="w-full space-y-6">
+              <div className="rounded-[1.75rem] border border-blue-100 bg-white p-6 sm:p-8 shadow-sm">
+                <div className="whitespace-pre-wrap text-sm sm:text-base font-semibold leading-relaxed sm:leading-8 text-slate-700">
+                  {threeDayPlanText}
+                </div>
+              </div>
+            </section>
+          </div>
+        ) : view === 'media' ? (
+          <div className="p-6 sm:p-8 w-full">
+            <MediaAudioGuideTab lang={lang} />
           </div>
         ) : (
           <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_1fr]">
@@ -524,14 +546,6 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                       </div>
                     ))
                   )}
-                </div>
-              </section>
-            ) : view === 'threeDayPlan' ? (
-              <section className="space-y-5">
-                <div className="rounded-[1.5rem] border border-blue-100 bg-white p-5 shadow-sm">
-                  <div className="whitespace-pre-wrap text-sm font-semibold leading-7 text-slate-700 sm:text-base">
-                    {threeDayPlanText}
-                  </div>
                 </div>
               </section>
             ) : null}

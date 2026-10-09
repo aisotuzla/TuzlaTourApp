@@ -254,8 +254,8 @@ export const CITY_GUIDE_PAGES: CityGuideItem[] = [
       en: 'Džindijska, Orthodox Cathedral, Franciscan Monastery, Turali-beg'
     },
     audioText: {
-      bs: 'Džindijska džamija arhitektonski je najvrednija džamija sa drvenom munarom i očuvanim primjerom izvorne bosanske arhitekture. Saborni hram Uspenja Presvete Bogorodice iz 19. vijeka u neoklasicističkom stilu, Franjevačka crkva i samostan Sv. Petra i Pavla sa Galerijom Kristian Kreković, te Gazi Turali-begova džamija iz 1572. godine svjedoče o višestoljetnom suživotu.',
-      en: 'Džindijska Mosque is architecturally the most valuable mosque with an authentic wooden minaret. The Neoclassical 19th-century Orthodox Cathedral of the Assumption, the Franciscan Church and Monastery of St. Peter and Paul with the Kristian Kreković Gallery, and Gazi Turali-beg Mosque from 1572 demonstrate Tuzla centuries of multicultural coexistence.'
+      bs: 'Džindijska džamija arhitektonski je najvrednija džamija sa drvenom munarom i očuvanim primjerom izvorne bosanske arhitekture. Saborni hram Uspenja Presvete Bogorodice iz 19. vijeka u neoklasicističkom stilu, Franjevačka crkva i samostan Sv. Petra i Pavla sa Galerijom Kristian Kreković, te Gazi Turali-begova džamija iz hiljadupetstotina sedamdeset i druge (1572.) godine svjedoče o višestoljetnom suživotu.',
+      en: 'Džindijska Mosque is architecturally the most valuable mosque with an authentic wooden minaret. The Neoclassical 19th-century Orthodox Cathedral of the Assumption, the Franciscan Church and Monastery of St. Peter and Paul with the Kristian Kreković Gallery, and Gazi Turali-beg Mosque from fifteen seventy-two (1572.) demonstrate Tuzla centuries of multicultural coexistence.'
     },
     bsImage: '/assets/Gallery/City Guide/GradTuzla-11.webp',
     enImage: '/assets/Gallery/City Guide/TUZLA-CITY-GUIDEen_page-0013.webp',
@@ -325,27 +325,6 @@ export const CITY_GUIDE_PAGES: CityGuideItem[] = [
     planName: {
       bs: 'Kalendar Manifestacija Tuzla',
       en: 'Tuzla Events Calendar'
-    }
-  },
-  {
-    id: 'turisticki-info-kontakti',
-    title: {
-      bs: 'Korisne Informacije i Kontakti',
-      en: 'Useful Info & Contacts'
-    },
-    subtitle: {
-      bs: 'Turistička zajednica grada Tuzle - www.tztz.ba',
-      en: 'Tourist Board of Tuzla City - www.tztz.ba'
-    },
-    audioText: {
-      bs: 'Za sve dodatne informacije o gradu, smještaju, rasporedu događaja i turističkim turama posjetite zvaničnu stranicu Turističke zajednice grada Tuzle na tztz.ba ili kontaktirajte info centar.',
-      en: 'For more details about the city, accommodation, event schedules, and guided tours, visit the official website of the Tourist Board of Tuzla City at www.tztz.ba or reach out to the central info center.'
-    },
-    bsImage: '/assets/Gallery/City Guide/GradTuzla-15.webp',
-    enImage: '/assets/Gallery/City Guide/TUZLA-CITY-GUIDEen_page-0017.webp',
-    planName: {
-      bs: 'Turistički Info Centar',
-      en: 'Tourist Info Center'
     }
   }
 ];

@@ -287,12 +287,16 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       const description = matchedLoc?.description?.[lang] || matchedLoc?.description?.bs || matchedLoc?.description?.en || (lang === 'bs' ? 'Kulturna i historijska znamenitost grada Tuzle.' : 'Cultural and historical landmark of Tuzla.');
       const customPoiColor = POI_COLORS[target.id] || '#3b82f6';
       const el = document.createElement('div');
+      el.className = 'quest-target-marker cursor-pointer select-none';
+      el.style.width = '42px';
+      el.style.height = '42px';
+      el.style.display = 'flex';
+      el.style.alignItems = 'center';
+      el.style.justifyContent = 'center';
 
-      el.className = 'quest-target-marker transition-all duration-300 opacity-100 hover:scale-125 shadow-lg';
-
-      el.innerHTML = `<div class="relative flex items-center justify-center cursor-pointer group" title="${title}"><div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-2xl transition-all border-2" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><span class="text-xs font-black text-white">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm" style="background-color: ${customPoiColor};"></div></div>`;
+      el.innerHTML = `<div class="relative flex items-center justify-center group pointer-events-auto transition-transform duration-200 ease-out hover:scale-110 active:scale-95" title="${title}"><div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-2xl border-2 pointer-events-none" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><span class="text-xs font-black text-white pointer-events-none">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm pointer-events-none" style="background-color: ${customPoiColor};"></div></div>`;
       const marker = new maplibregl.Marker(el).setLngLat([coords.lon, coords.lat]).addTo(map.current!);
-      const hasVideo = !!(target as any).video && isUnlocked;
+      const hasVideo = !!(target as any).video && (isUnlocked || target.id === 'mesa_selimovic');
       const videoBtnHtml = hasVideo
         ? `<button onclick="window.playQuestVideo('${(target as any).video}', '${title.replace(/'/g, "\\'")}')" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 10px; color: #090d16; padding: 7px 10px; font-weight: 900; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">🎬 Video</button>`
         : '';

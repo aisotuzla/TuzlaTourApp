@@ -1,7 +1,7 @@
 Profil Aplikacije "Tuzla Tour" i Ključne Teme
 1. Vizija i Koncept Aplikacije
 
-    Pregled: Interaktivni web i mobilni virtualni turistički vodič pokretan umjetnom inteligencijom(BYOK), namijenjen turistima, ali i lokalnom stanovništvu Tuzle.
+    Pregled: Interaktivni web i mobilni digitalni turistički vodič namijenjen turistima i posjetiocima Tuzle. 
 
     Glavna Vrijednost: Rješava izazove navigacije i otkrivanja lokalnih sadržaja pružajući digitalnog saputnika sa mapama u realnom vremenu, prostornom navigacijom, audio vodičem i skeniranjem QR kodova i AR u igri potrage.
 
@@ -11,13 +11,12 @@ Profil Aplikacije "Tuzla Tour" i Ključne Teme
 
         AR koristi Kameru na 5m od lokacije za skeniranje QR koda otključavanje POI i verifikovanje nagrade:
 
-        GPS Prostorni Audio Vodič: Automatski pokreće audio naraciju kada se korisnik približi određenoj tački interesa (npr. unutar 25 metara).
+        GPS navigacijski i Audio Vodič: Pokreće audio naraciju kada se korisnik približi određenoj tački interesa (npr. unutar 25 metara).
 
         Gamifikacija i Putovanje kroz Vrijeme: Interaktivne rute, klizači s historijskim prikazima (prikaz starih bunara soli ispod današnjih ulica) i foto-izazovi.
 
-🏛️ Sveobuhvatna Baza Znanja: Turističke Atrakcije i Znamenitosti Tuzle
+🏛️ Turističke Atrakcije i Znamenitosti Tuzle
 
-Ovaj struktuirani sadržaj možete direktno proslijediti AI audio agentu za generisanje lokalizovanih glasovnih scenarija.
 1. Kompleks Panonskih Jezera (Panonica)
 
     Kategorija: Priroda, rekreacija, zdravlje i historija
@@ -28,7 +27,7 @@ Ovaj struktuirani sadržaj možete direktno proslijediti AI audio agentu za gene
 
         Dobitnik nagrade Svjetske turističke organizacije Ujedinjenih nacija (UNWTO Ulysses Award) za inovacije u turizmu.
 
-        Nastala umjetnim putem na prostoru nekadašnjih slijeganja tla uzrokovanih eksploatacijom soli; punjena ljekovitom slanom vodom koja se crpi iz dubokih podzemnih bunara (salinitet oko 14–17 g/L, uporedivo s morskom vodom).
+        Nastala umjetnim putem na prostoru nekadašnjih slijeganja tla uzrokovanih eksploatacijom soli; punjena ljekovitom slanom vodom koja se crpi iz dubokih podzemnih bunara.
 
     Ključne Pod-Atrakcije:
 
@@ -36,7 +35,7 @@ Ovaj struktuirani sadržaj možete direktno proslijediti AI audio agentu za gene
 
         Slani Slapovi i Inhalacioni Centar: Sistem kaskadnih slanih slapova na otvorenom gdje sitne kapljice slane vode stvaraju mikroklimu pogodnu za inhalaciju.
 
-        Arheološki Park – Sojeničko Naselje: Rekonstrukcija prahistorijskog naselja od 9 drvenih sojenica uz jezera, koje prikazuje 6.500 godina kontinuiteta života i tradicije eksploatacije soli iz doba neolita.
+        Arheološki Park – Sojeničko Naselje: Rekonstrukcija prahistorijskog naselja od devet drvenih sojenica uz jezera, koje prikazuje šest hiljada i petstotina godina kontinuiteta života i tradicije eksploatacije soli iz doba neolita.
 
         Geološki Muzej "Pannonica": Muzejska postavka koja prikazuje geološku transformaciju drevnog Panonskog mora i historiju kopanja soli u Tuzli.
 
@@ -132,26 +131,9 @@ Ovaj struktuirani sadržaj možete direktno proslijediti AI audio agentu za gene
 
 10. Gastronomija i Lokalna Kultura
 
-    Tuzlanski Ćevapi: Specifični i drugačiji od sarajevskih ili banjalučkih; služe se u natopljenoj lepinji/somunu sa bogatom goveđom supom (polivkom). Najpoznatija historijska mjesta su Limenka (kod jezera) i Birač.
+    Tuzlanski Ćevapi: Specifični i drugačiji od sarajevskih ili banjalučkih; služe se u natopljenoj lepinji/somunu sa bogatom goveđom supom (polivkom). Najpoznatija historijska mjesta su Limenka (kod jezera), Sarajka, Sezam, Česma.
 
     Tuzlanska Pita: Tradicionalne savijače od tankih agda ili jufki punjene sitno sjeckanim krompirom, lukom ili mljevenim mesom.
 
     Tuzlanska Pivara: Jedna od najstarijih pivara u BiH (osnovana 1884. godine tokom austrougarske uprave), poznata po proizvodnji Tuzlanskog Pilsnera.
 
-🎙️ Vodič za AI Audio Agenta (Predložak za Scenarije)
-
-Kada ove podatke prosljeđujete AI agentu za generisanje glasa, postavite mu sljedeće instrukcije:
-
-    Trajanje: 30 do 45 sekundi po atrakciji (oko 70–100 riječi).
-
-    Ton: Topao, dobrodošao, informativan i s privlačnim uvodom.
-
-    Struktura Scenarija (Predložak):
-
-        Privlačan uvod (0-5s): "Dobrodošli na [Naziv atrakcije]!" + 1 zanimljivost ("Da li ste znali da stojite pored jedinih urbanih slanih jezera u Evropi?").
-
-        Historija i kontekst (5-25s): Ključne činjenice, godine, kulturni značaj ili arhitektonski detalji.
-
-        Vizuelno usmjeravanje (25-35s): Usmjerite pogled posjetioca na nešto konkretno u blizini ("Pogledajte detaljne kamene rezbarije na centralnoj fontani...").
-
-        Preporuka / Sljedeći korak (35-45s): Lokalni savjet ili preporuka ("Prošetajte 50 metara južnije i probajte svježe tuzlanske ćevape u ćevabdžinici Limenka!").

@@ -279,10 +279,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   };
 
   const isDev = import.meta.env.DEV;
-  const defaultWebSrc = "/assets/Gallery/Photos/HDweb_compressed.mp4";
+  const defaultWebSrc = "/assets/Gallery/TuzlaCompressed.mp4";
 
   const initialWebSrc = cleanSrc(isDev ? '' : import.meta.env.VITE_VERCEL_BLOB_HERO_WEB) || defaultWebSrc;
-  const preferredSrc = initialWebSrc;
+  const preferredSrc = defaultWebSrc;
 
   const [videoSrc, setVideoSrc] = useState(preferredSrc);
 
@@ -662,6 +662,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             {/* Video element */}
             <video
               ref={heroVideoRef}
+              muted
               playsInline
               className="absolute inset-0 h-full w-full object-cover z-0"
               src={videoSrc}
@@ -678,44 +679,45 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
             {/* Buffering Spinner */}
             {isBuffering && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-                <div className="p-4 rounded-2xl bg-black/70 border border-white/10 flex flex-col items-center gap-2">
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/60 backdrop-blur-[2px]">
+                <div className="p-4 rounded-2xl bg-black/80 border border-white/10 flex flex-col items-center gap-2">
                   <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
                   <span className="text-[11px] font-black uppercase text-white tracking-widest">Loading...</span>
                 </div>
               </div>
             )}
 
-            {/* Cover image when paused or not started */}
+            {/* Black Poster overlay when paused or not started */}
             <AnimatePresence>
               {!isHeroPlaying && !hasVideoEnded && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 z-10 bg-black flex flex-col items-center justify-end"
+                  className="absolute inset-0 z-10 bg-slate-950 flex flex-col items-center justify-center p-6 select-none"
                 >
-                  <img
-                    src="/assets/Gallery/QuestQRLocations/tuzhero.webp"
-                    alt="Tuzla Video Preview"
-                    className="absolute inset-0 w-full h-full object-cover opacity-60"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+                  {/* Subtle background ambient ring */}
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(37,99,235,0.15)_0%,_rgba(2,6,23,0.95)_70%)] pointer-events-none" />
 
-                  {/* Play trigger button on bottom of video */}
-                  <div className="relative z-20 mb-8 sm:mb-10">
+                  {/* Centered Play button */}
+                  <div className="relative z-20 flex flex-col items-center gap-4">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleHeroVideo();
                       }}
-                      className="opacity-50 hover:opacity-80 transition-all flex items-center gap-2.5 px-6 py-3 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 shadow-xl active:scale-95 cursor-pointer"
+                      className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 border-2 border-cyan-300/40 shadow-[0_0_35px_rgba(37,99,235,0.6)] flex items-center justify-center text-white transition-all transform hover:scale-110 active:scale-95 cursor-pointer group/btn"
                     >
-                      <Play className="w-5 h-5 fill-[#4169E1] text-[#4169E1] ml-0.5" />
-                      <span className="text-xs sm:text-sm font-black uppercase tracking-widest text-[#FFD700]">
-                        Play Video
-                      </span>
+                      <Play className="w-8 h-8 fill-white ml-1 transition-transform group-hover/btn:scale-110" />
                     </button>
+                    <div className="text-center">
+                      <span className="text-xs font-black uppercase tracking-widest text-cyan-300 drop-shadow block">
+                        Tuzla Virtual Tour
+                      </span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-0.5 block">
+                        {lang === 'bs' ? 'Dodirni za video' : 'Tap to Play'}
+                      </span>
+                    </div>
                   </div>
                 </motion.div>
               )}
