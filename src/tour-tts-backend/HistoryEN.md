@@ -1,5 +1,5 @@
 Tuzla
-PPannonian Lakes Tuzla - Europe's Only Artificial Salt Lakes
+Pannonian Lakes Tuzla - Europe's Only Artificial Salt Lakes
 
 Tuzla is one of the oldest inhabited urban areas in Bosnia and Herzegovina, with a history that spans more than six thousand years. The city’s very name comes from the Turkish word tuz (“salt”), highlighting the natural resource that has shaped its destiny from prehistoric times to the present day.
 
@@ -15,9 +15,6 @@ Ottoman Era - The Birth of the City
 
 After the Ottoman conquest in the sixteenth century, Tuzla developed into a true urban center. Important landmarks were built, including the Gazi Turali-beg Mosque (fifteen seventy-two), which still stands today. The city core formed around Soni Trg (Salt Square), reflecting Tuzla’s long connection to salt production and commerce.
 
-WELCOME TO TUZLA
-
-Grad Tuzla
 
 Austro-Hungarian Modernization
 

@@ -7,6 +7,7 @@ import historyTrRaw from '../src/tour-tts-backend/HistoryTR.md?raw';
 export interface HistoryPageNarration {
   title: Record<Language, string>;
   text: Record<Language, string>;
+  audioSrc?: Record<Language, string>;
 }
 
 export const HISTORY_RAW_DOCUMENTS: Record<Language, string> = {
@@ -53,6 +54,12 @@ export const HISTORY_NARRATIONS: Record<number, HistoryPageNarration> = {
       de: parsedDE.page1,
       tr: parsedTR.page1,
     },
+    audioSrc: {
+      bs: '/audio/HistoryBA.mp3',
+      en: '/audio/HistoryEN.mp3',
+      de: '/audio/HistoryDE.mp3',
+      tr: '/audio/HistoryTR1.mp3',
+    },
   },
   1: {
     title: {
@@ -66,6 +73,12 @@ export const HISTORY_NARRATIONS: Record<number, HistoryPageNarration> = {
       en: parsedEN.page2,
       de: parsedDE.page2,
       tr: parsedTR.page2,
+    },
+    audioSrc: {
+      bs: '/audio/HistoryBA.mp3',
+      en: '/audio/HistoryEN.mp3',
+      de: '/audio/HistoryDE.mp3',
+      tr: '/audio/HistoryTR2.mp3',
     },
   },
 };

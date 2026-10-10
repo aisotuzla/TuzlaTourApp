@@ -7,6 +7,7 @@ export interface ActiveNarration {
   title: string;
   text: string;
   lang: Language;
+  audioSrc?: string;
 }
 
 interface AudioGuideContextProps {
@@ -72,6 +73,7 @@ export const AudioGuideProvider: React.FC<React.PropsWithChildren> = ({ children
     playTTS({
       text: narration.text,
       lang: narration.lang,
+      audioSrc: narration.audioSrc,
       onStart: () => {
         setIsPlaying(true);
         setIsPaused(false);
@@ -114,6 +116,7 @@ export const AudioGuideProvider: React.FC<React.PropsWithChildren> = ({ children
         playTTS({
           text: currentNarration.text,
           lang: currentNarration.lang,
+          audioSrc: currentNarration.audioSrc,
           onEnd: () => {
             setIsPlaying(false);
             setCurrentNarration(null);

@@ -31,11 +31,13 @@ const History: React.FC<HistoryProps> = ({ lang }) => {
     } else {
       const title = pageData.title[lang] || pageData.title.en;
       const text = pageData.text[lang] || pageData.text.en;
+      const audioSrc = pageData.audioSrc?.[lang] || pageData.audioSrc?.en;
       playNarration({
         id: narrationId,
         title,
         text,
-        lang
+        lang,
+        audioSrc,
       });
     }
   };

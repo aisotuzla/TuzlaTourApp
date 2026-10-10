@@ -125,6 +125,7 @@ export function getBestVoice(targetLang: string): SpeechSynthesisVoice | null {
 export interface PlayTTSOptions {
   text: string;
   lang: string;
+  audioSrc?: string;
   rate?: number;
   pitch?: number;
   onStart?: () => void;
@@ -231,6 +232,7 @@ export function playTTS(options: PlayTTSOptions): boolean {
   const {
     text,
     lang,
+    audioSrc,
     onStart,
     onEnd,
     onPause,
@@ -247,64 +249,67 @@ export function playTTS(options: PlayTTSOptions): boolean {
     return false;
   }
 
-  // 1. Try Microsoft Neural Voices MP3 stream via /api/tts
-  try {
-    const src = `/api/tts?text=${encodeURIComponent(text)}&lang=${encodeURIComponent(lang)}`;
-    const audio = new Audio();
-    audio.preload = 'auto';
-    audio.src = src;
-    activeAudio = audio;
-    isAudioPaused = false;
+  // 1. If pre-recorded static audio MP3 is provided (e.g. History tabs), play it directly across all browsers!
+  if (audioSrc) {
+    try {
+      const audio = new Audio();
+      audio.preload = 'auto';
+      audio.src = audioSrc;
+      activeAudio = audio;
+      isAudioPaused = false;
 
-    let hasStarted = false;
+      let hasStarted = false;
 
-    audio.addEventListener('play', () => {
-      if (!hasStarted) {
-        hasStarted = true;
-        if (onStart) onStart();
-      }
-    });
+      audio.addEventListener('play', () => {
+        if (!hasStarted) {
+          hasStarted = true;
+          if (onStart) onStart();
+        }
+      });
 
-    audio.addEventListener('pause', () => {
-      isAudioPaused = true;
-      if (onPause) onPause();
-    });
+      audio.addEventListener('pause', () => {
+        isAudioPaused = true;
+        if (onPause) onPause();
+      });
 
-    audio.addEventListener('playing', () => {
-      if (isAudioPaused) {
-        isAudioPaused = false;
-        if (onResume) onResume();
-      }
-    });
+      audio.addEventListener('playing', () => {
+        if (isAudioPaused) {
+          isAudioPaused = false;
+          if (onResume) onResume();
+        }
+      });
 
-    audio.addEventListener('ended', () => {
-      activeAudio = null;
-      if (onEnd) onEnd();
-    });
-
-    audio.addEventListener('error', (e) => {
-      console.warn('Neural MP3 audio load failed, falling back to Web Speech synthesis:', e);
-      activeAudio = null;
-      // Graceful fallback to client Web Speech API
-      fallbackToWebSpeech(options);
-    });
-
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch((err) => {
-        console.warn('Neural MP3 audio play failed, falling back to Web Speech synthesis:', err);
+      audio.addEventListener('ended', () => {
         activeAudio = null;
-        // Graceful fallback to client Web Speech API
+        if (onEnd) onEnd();
+      });
+
+      audio.addEventListener('error', (e) => {
+        console.warn(`Recorded audio (${audioSrc}) failed to load, falling back to Web Speech synthesis:`, e);
+        activeAudio = null;
         fallbackToWebSpeech(options);
       });
-    }
 
-    return true;
-  } catch (err) {
-    console.warn('Neural MP3 initialization failed, falling back to Web Speech synthesis:', err);
-    activeAudio = null;
-    return fallbackToWebSpeech(options);
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn(`Recorded audio (${audioSrc}) play failed, falling back to Web Speech synthesis:`, err);
+          activeAudio = null;
+          fallbackToWebSpeech(options);
+        });
+      }
+
+      return true;
+    } catch (err) {
+      console.warn('Recorded audio playback initialization error, falling back to Web Speech synthesis:', err);
+      activeAudio = null;
+      return fallbackToWebSpeech(options);
+    }
   }
+
+  // 2. Try Web Speech API directly (or optional backend if available)
+  // Web Speech API works natively in Chrome, Safari, Firefox, Edge across desktop and mobile
+  return fallbackToWebSpeech(options);
 }
 
 

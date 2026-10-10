@@ -87,7 +87,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       host: '0.0.0.0',
       open: true,
       watch: {
-        ignored: ['**/rollup/**', '**/rollup/test/**'],
+        ignored: ['**/rollup/**', '**/rollup/test/**', '**/*.mp3', '**/src/tour-tts-backend/*.mp3'],
       },
       fs: {
         deny: ['rollup'],
