@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Language } from '../types';
 import { useImage } from '../hooks/ImageContext';
+import { useAudioGuide } from '../contexts/AudioGuideContext';
 import { CalendarPlus, Check, Volume2, VolumeX } from 'lucide-react';
 import { addToItinerary } from '../utils/itineraryUtils';
 import { CITY_GUIDE_PAGES } from '../utils/cityGuideData';
-import { useAudioGuide } from '../contexts/AudioGuideContext';
+import { playTTS, stopTTS } from '../utils/tts';
 
 interface CityGuideProps {
   lang: Language;
@@ -12,7 +13,7 @@ interface CityGuideProps {
 
 const CityGuide: React.FC<CityGuideProps> = ({ lang }) => {
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
-  const { currentNarration, isPlaying, isPaused, playNarration, stopNarration } = useAudioGuide();
+  // Audio context removed – using MP3 playback only
 
   const items = useMemo(() => {
     return CITY_GUIDE_PAGES.map(item => ({
@@ -52,6 +53,8 @@ const CityGuide: React.FC<CityGuideProps> = ({ lang }) => {
     }
   };
 
+  const { currentNarration, isPlaying, isPaused, playNarration, stopNarration } = useAudioGuide();
+
   const handleToggleAudio = (item: typeof items[0]) => {
     if (currentNarration?.id === item.id && isPlaying) {
       stopNarration();
@@ -88,11 +91,10 @@ const CityGuide: React.FC<CityGuideProps> = ({ lang }) => {
           return (
             <div
               key={item.id}
-              className={`relative w-full rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-xl border transition-all duration-300 bg-white/90 group ${
-                isItemPlaying
+              className={`relative w-full rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-xl border transition-all duration-300 bg-white/90 group ${isItemPlaying
                   ? 'border-amber-400 ring-4 ring-amber-300/40 shadow-[0_0_30px_rgba(251,191,36,0.35)]'
                   : 'border-blue-300/40 shadow-[0_0_20px_rgba(59,130,246,0.15)] hover:border-blue-400/70'
-              }`}
+                }`}
             >
               {/* Image with overlay */}
               <div
@@ -116,11 +118,10 @@ const CityGuide: React.FC<CityGuideProps> = ({ lang }) => {
                       handleAddToPlan(item.currentPlanName);
                     }}
                     disabled={isAdded}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-bold text-[11px] sm:text-xs tracking-wide transition-all shadow-lg backdrop-blur-md cursor-pointer ${
-                      isAdded
+                    className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-bold text-[11px] sm:text-xs tracking-wide transition-all shadow-lg backdrop-blur-md cursor-pointer ${isAdded
                         ? 'bg-emerald-500/90 text-white border border-emerald-400 cursor-default'
                         : 'bg-yellow-400/95 text-blue-950 border border-yellow-200 hover:bg-yellow-300 active:scale-95'
-                    }`}
+                      }`}
                   >
                     {isAdded ? (
                       <>
@@ -135,31 +136,25 @@ const CityGuide: React.FC<CityGuideProps> = ({ lang }) => {
                     )}
                   </button>
 
-                  {/* Right: Audio Readout TTS Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToggleAudio(item);
-                    }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-bold text-[11px] sm:text-xs tracking-wide transition-all shadow-lg backdrop-blur-md cursor-pointer ${
-                      isItemPlaying
-                        ? 'bg-amber-400 text-slate-950 border border-amber-300 shadow-amber-400/30 animate-pulse'
-                        : 'bg-blue-600/90 text-white border border-blue-400/50 hover:bg-blue-600 active:scale-95'
-                    }`}
-                    title={isItemPlaying ? (lang === 'bs' ? 'Zaustavi audio' : 'Stop audio') : (lang === 'bs' ? 'Poslušaj tekst' : 'Listen to audio')}
-                  >
-                    {isItemPlaying ? (
-                      <>
-                        <VolumeX size={14} />
-                        <span>{lang === 'bs' ? 'Zaustavi' : 'Stop'}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Volume2 size={14} />
-                        <span>{lang === 'bs' ? 'Audio' : 'Listen'}</span>
-                      </>
-                    )}
-                  </button>
+                  {/* Right: Single Audio Guide Button – only on first card */}
+                  {index === 0 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Stop any existing playback then start the full guide audio
+                        stopTTS();
+                        playTTS({
+                          audioSrc: '/audio/CityGuideEN.mp3',
+                          text: '',
+                          lang: ''
+                        });
+                      }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-bold text-[11px] sm:text-xs tracking-wide transition-all shadow-lg backdrop-blur-md cursor-pointer bg-blue-600/90 text-white border border-blue-400/50 hover:bg-blue-600 active:scale-95`}
+                    >
+                      <Volume2 size={14} />
+                      <span>{lang === 'bs' ? 'Audio' : 'Listen'}</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

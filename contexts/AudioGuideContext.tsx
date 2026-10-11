@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Language } from '../types';
-import { playTTS, stopTTS, pauseTTS, resumeTTS, isTTSSpeaking, isTTSPaused, isTTSSupported } from '../utils/tts';
+import { playTTS, stopTTS, pauseTTS, resumeTTS } from '../utils/tts';
 
 export interface ActiveNarration {
   id: string;

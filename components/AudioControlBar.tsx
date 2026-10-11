@@ -81,7 +81,7 @@ export const AudioControlBar: React.FC<AudioControlBarProps> = ({
           </div>
           <div className="truncate">
             <div className="text-[10px] font-black uppercase tracking-wider text-amber-400">
-              {lang === 'bs' ? 'Audio Vodič' : 'AI Audio Guide'}
+              {lang === 'bs' ? 'Audio Vodič' : 'Audio Guide'}
             </div>
             <div className="text-xs font-bold text-white truncate">
               {title || (lang === 'bs' ? 'Naracija lokacije' : 'Location narration')}
