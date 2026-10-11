@@ -5,7 +5,7 @@ import { useAudioGuide } from '../contexts/AudioGuideContext';
 import { CalendarPlus, Check, Volume2, VolumeX } from 'lucide-react';
 import { addToItinerary } from '../utils/itineraryUtils';
 import { CITY_GUIDE_PAGES } from '../utils/cityGuideData';
-import { playTTS, stopTTS } from '../utils/tts';
+// TTS removed
 
 interface CityGuideProps {
   lang: Language;
@@ -55,15 +55,19 @@ const CityGuide: React.FC<CityGuideProps> = ({ lang }) => {
 
   const { currentNarration, isPlaying, isPaused, playNarration, stopNarration } = useAudioGuide();
 
-  const handleToggleAudio = (item: typeof items[0]) => {
-    if (currentNarration?.id === item.id && isPlaying) {
+  const handleToggleAudio = () => {
+    const audioId = 'city-guide-full';
+    if (currentNarration?.id === audioId && isPlaying) {
       stopNarration();
     } else {
+      const audioSrc = lang === 'bs' ? '/audio/CityGuideBA.mp3' : '/audio/CityGuideEN.mp3';
+      const title = lang === 'bs' ? 'Tuzla Gradski Vodič' : 'Tuzla City Guide';
       playNarration({
-        id: item.id,
-        title: item.currentTitle,
-        text: item.currentAudioText,
-        lang
+        id: audioId,
+        title,
+        text: '',
+        lang,
+        audioSrc
       });
     }
   };
@@ -136,23 +140,29 @@ const CityGuide: React.FC<CityGuideProps> = ({ lang }) => {
                     )}
                   </button>
 
-                  {/* Right: Single Audio Guide Button – only on first card */}
+                  {/* Right: Single Audio Guide Button – on first card */}
                   {index === 0 && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Stop any existing playback then start the full guide audio
-                        stopTTS();
-                        playTTS({
-                          audioSrc: '/audio/CityGuideEN.mp3',
-                          text: '',
-                          lang: ''
-                        });
+                        handleToggleAudio();
                       }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-bold text-[11px] sm:text-xs tracking-wide transition-all shadow-lg backdrop-blur-md cursor-pointer bg-blue-600/90 text-white border border-blue-400/50 hover:bg-blue-600 active:scale-95`}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-bold text-[11px] sm:text-xs tracking-wide transition-all shadow-lg backdrop-blur-md cursor-pointer border active:scale-95 ${
+                        currentNarration?.id === 'city-guide-full' && isPlaying && !isPaused
+                          ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-amber-400/30 animate-pulse'
+                          : 'bg-blue-600/90 text-white border-blue-400/50 hover:bg-blue-600'
+                      }`}
                     >
-                      <Volume2 size={14} />
-                      <span>{lang === 'bs' ? 'Audio' : 'Listen'}</span>
+                      {currentNarration?.id === 'city-guide-full' && isPlaying && !isPaused ? (
+                        <VolumeX size={14} />
+                      ) : (
+                        <Volume2 size={14} />
+                      )}
+                      <span>
+                        {currentNarration?.id === 'city-guide-full' && isPlaying && !isPaused
+                          ? (lang === 'bs' ? 'Zaustavi' : 'Stop')
+                          : (lang === 'bs' ? 'Audio' : 'Listen')}
+                      </span>
                     </button>
                   )}
                 </div>

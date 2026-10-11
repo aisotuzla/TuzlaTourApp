@@ -21,11 +21,11 @@ const History: React.FC<HistoryProps> = ({ lang }) => {
   const { openGallery } = useImage();
   const { currentNarration, isPlaying, isPaused, playNarration, stopNarration } = useAudioGuide();
 
-  const handleToggleAudio = (index: number) => {
-    const pageData = HISTORY_NARRATIONS[index];
+  const handleToggleAudio = () => {
+    const pageData = HISTORY_NARRATIONS[0];
     if (!pageData) return;
 
-    const narrationId = `history-page-${index}`;
+    const narrationId = 'history-full';
     if (currentNarration?.id === narrationId && isPlaying) {
       stopNarration();
     } else {
@@ -42,11 +42,11 @@ const History: React.FC<HistoryProps> = ({ lang }) => {
     }
   };
 
+  const isCurrentPlaying = currentNarration?.id === 'history-full' && isPlaying && !isPaused;
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 pb-32">
       {activeImages.map((src, index) => {
-        const isCurrentPlaying = currentNarration?.id === `history-page-${index}` && isPlaying && !isPaused;
-
         return (
           <div
             key={index}
@@ -76,7 +76,7 @@ const History: React.FC<HistoryProps> = ({ lang }) => {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleToggleAudio(index);
+                  handleToggleAudio();
                 }}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg backdrop-blur-md transition-all active:scale-95 cursor-pointer ${
                   isCurrentPlaying

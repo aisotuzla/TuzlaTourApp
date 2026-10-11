@@ -44,6 +44,7 @@
     "@vercel/blob": "^2.8.0",
     "@vercel/speed-insights": "^2.0.0",
     "@wasmer/sdk": "^0.10.0",
+    "blob": "^0.1.0",
     "canvas-confetti": "^1.9.4",
     "express": "^5.2.1",
     "framer-motion": "^12.38.0",

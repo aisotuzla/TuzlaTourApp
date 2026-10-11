@@ -1,8 +1,4 @@
 import { Language } from '../types';
-import historyBaRaw from '../src/tour-tts-backend/HistoryBA.md?raw';
-import historyEnRaw from '../src/tour-tts-backend/HistoryEN.md?raw';
-import historyDeRaw from '../src/tour-tts-backend/HistoryDE.md?raw';
-import historyTrRaw from '../src/tour-tts-backend/HistoryTR.md?raw';
 
 export interface HistoryPageNarration {
   title: Record<Language, string>;
@@ -11,34 +7,11 @@ export interface HistoryPageNarration {
 }
 
 export const HISTORY_RAW_DOCUMENTS: Record<Language, string> = {
-  bs: historyBaRaw,
-  en: historyEnRaw,
-  de: historyDeRaw,
-  tr: historyTrRaw,
+  bs: '',
+  en: '',
+  de: '',
+  tr: '',
 };
-
-function splitHistoryMarkdown(raw: string, lang: Language): { page1: string; page2: string } {
-  const lines = raw.replace(/\r\n/g, '\n').split('\n');
-  if (lang === 'bs') {
-    // In HistoryBA.md: Page 1 covers lines 1-18 (up to Austro-Hungarian modernization).
-    // Page 2 covers line 20 onwards (20th century, war, modern Tuzla).
-    const page1 = lines.slice(0, 19).join('\n').trim();
-    const page2 = lines.slice(19).join('\n').trim();
-    return { page1, page2 };
-  } else {
-    // In HistoryEN.md, HistoryDE.md, HistoryTR.md:
-    // Page 1 covers lines 1-16 (ending with WELCOME TO TUZLA banner).
-    // Page 2 covers line 17 onwards (starts with Grad Tuzla / modernization).
-    const page1 = lines.slice(0, 16).join('\n').trim();
-    const page2 = lines.slice(16).join('\n').trim();
-    return { page1, page2 };
-  }
-}
-
-const parsedBS = splitHistoryMarkdown(historyBaRaw, 'bs');
-const parsedEN = splitHistoryMarkdown(historyEnRaw, 'en');
-const parsedDE = splitHistoryMarkdown(historyDeRaw, 'de');
-const parsedTR = splitHistoryMarkdown(historyTrRaw, 'tr');
 
 export const HISTORY_NARRATIONS: Record<number, HistoryPageNarration> = {
   0: {
@@ -49,16 +22,10 @@ export const HISTORY_NARRATIONS: Record<number, HistoryPageNarration> = {
       tr: 'Tuzla Tarihi: Antik Başlangıçlar ve Şehrin Doğuşu (1. Bölüm)',
     },
     text: {
-      bs: parsedBS.page1,
-      en: parsedEN.page1,
-      de: parsedDE.page1,
-      tr: parsedTR.page1,
-    },
-    audioSrc: {
-      bs: '/audio/HistoryBA.mp3',
-      en: '/audio/HistoryEN.mp3',
-      de: '/audio/HistoryDE.mp3',
-      tr: '/audio/HistoryTR1.mp3',
+      bs: 'Tuzla je jedno od najstarijih naseljenih mjesta u Evropi sa kontinuitetom života preko 6.000 godina.',
+      en: 'Tuzla is one of the oldest settled places in Europe with continuity of life spanning over 6,000 years.',
+      de: 'Tuzla ist eine der ältesten Siedlungen Europas mit einer über 6.000-jährigen Geschichte.',
+      tr: 'Tuzla, 6.000 yılı aşkın kesintisiz yaşamıyla Avrupa\'nın en eski yerleşim yerlerinden biridir.',
     },
   },
   1: {
@@ -69,23 +36,17 @@ export const HISTORY_NARRATIONS: Record<number, HistoryPageNarration> = {
       tr: 'Tuzla Tarihi: 20. Yüzyıl, Kapija ve Bugünkü Tuzla (2. Bölüm)',
     },
     text: {
-      bs: parsedBS.page2,
-      en: parsedEN.page2,
-      de: parsedDE.page2,
-      tr: parsedTR.page2,
+      bs: 'Moderna Tuzla je simbol multikulturalnosti, industrijskog i obrazovnog razvoja, te jedinstvenih slanih jezera.',
+      en: 'Modern Tuzla is a symbol of multiculturalism, industrial and educational progress, and unique salt lakes.',
+      de: 'Das moderne Tuzla ist ein Symbol für Multikulturalismus, industrielle Entwicklung und einzigartige Salzseen.',
+      tr: 'Modern Tuzla, çok kültürlülüğün, sanayi ve eğitim gelişiminin ve eşsiz tuz göllerinin sembolüdür.',
     },
     audioSrc: {
       bs: '/audio/HistoryBA.mp3',
       en: '/audio/HistoryEN.mp3',
       de: '/audio/HistoryDE.mp3',
-      tr: '/audio/HistoryTR2.mp3',
+      tr: '/audio/HistoryTR.mp3',
     },
   },
-};
 
-export const HISTORY_FULL_TEXT: Record<Language, string> = {
-  bs: historyBaRaw.trim(),
-  en: historyEnRaw.trim(),
-  de: historyDeRaw.trim(),
-  tr: historyTrRaw.trim(),
 };
