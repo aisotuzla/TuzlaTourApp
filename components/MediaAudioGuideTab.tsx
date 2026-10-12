@@ -12,14 +12,16 @@ interface AudioFile {
   };
 }
 
-// Hard-coded list of audio assets
+// Vercel Blob CDN base URL for media assets
+const BLOB_CDN = 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com';
+
 const audioFiles: AudioFile[] = [
-  { id: 'city-guide-ba', src: '/audio/CityGuideBA.mp3', label: { bs: 'Gradski Vodič (Bosanski)', en: 'City Guide (Bosnian)' } },
-  { id: 'city-guide-en', src: '/audio/CityGuideEN.mp3', label: { bs: 'Gradski Vodič (Engleski)', en: 'City Guide (English)' } },
-  { id: 'history-ba', src: '/audio/HistoryBA.mp3', label: { bs: 'Historija Tuzle (Bosanski)', en: 'History of Tuzla (Bosnian)' } },
-  { id: 'history-en', src: '/audio/HistoryEN.mp3', label: { bs: 'Historija Tuzle (Engleski)', en: 'History of Tuzla (English)' } },
-  { id: 'history-de', src: '/audio/HistoryDE.mp3', label: { bs: 'Historija Tuzle (Njemački)', en: 'History of Tuzla (German)' } },
-  { id: 'history-tr', src: '/audio/HistoryTR.mp3', label: { bs: 'Historija Tuzle (Turski)', en: 'History of Tuzla (Turkish)' } },
+  { id: 'city-guide-ba', src: `${BLOB_CDN}/CityGuideBA.mp3`, label: { bs: 'Gradski Vodič (Bosanski)', en: 'City Guide (Bosnian)' } },
+  { id: 'city-guide-en', src: `${BLOB_CDN}/CityGuideEN.mp3`, label: { bs: 'Gradski Vodič (Engleski)', en: 'City Guide (English)' } },
+  { id: 'history-ba', src: `${BLOB_CDN}/HistoryBA.mp3`, label: { bs: 'Historija Tuzle (Bosanski)', en: 'History of Tuzla (Bosnian)' } },
+  { id: 'history-en', src: `${BLOB_CDN}/HistoryEN.mp3`, label: { bs: 'Historija Tuzle (Engleski)', en: 'History of Tuzla (English)' } },
+  { id: 'history-de', src: `${BLOB_CDN}/HistoryDE.mp3`, label: { bs: 'Historija Tuzle (Njemački)', en: 'History of Tuzla (German)' } },
+  { id: 'history-tr', src: `${BLOB_CDN}/HistoryTR.mp3`, label: { bs: 'Historija Tuzle (Turski)', en: 'History of Tuzla (Turkish)' } },
 ];
 
 /**

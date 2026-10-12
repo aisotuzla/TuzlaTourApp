@@ -279,7 +279,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   };
 
   const isDev = import.meta.env.DEV;
-  const defaultWebSrc = "/assets/Gallery/TuzlaCompressed.mp4";
+  const defaultWebSrc = "https://cki4usi56q35b3t6.public.blob.vercel-storage.com/TuzlaCompressed.mp4";
 
   const initialWebSrc = cleanSrc(isDev ? '' : import.meta.env.VITE_VERCEL_BLOB_HERO_WEB) || defaultWebSrc;
   const preferredSrc = defaultWebSrc;

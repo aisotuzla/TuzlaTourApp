@@ -42,10 +42,10 @@ export const HISTORY_NARRATIONS: Record<number, HistoryPageNarration> = {
       tr: 'Modern Tuzla, çok kültürlülüğün, sanayi ve eğitim gelişiminin ve eşsiz tuz göllerinin sembolüdür.',
     },
     audioSrc: {
-      bs: '/audio/HistoryBA.mp3',
-      en: '/audio/HistoryEN.mp3',
-      de: '/audio/HistoryDE.mp3',
-      tr: '/audio/HistoryTR.mp3',
+      bs: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/HistoryBA.mp3',
+      en: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/HistoryEN.mp3',
+      de: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/HistoryDE.mp3',
+      tr: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/HistoryTR.mp3',
     },
   },
 

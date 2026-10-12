@@ -32,7 +32,7 @@ export const generateQuestPopupHtml = (loc: any, lang: Language, isUnlocked: boo
         </button>
         
         ${isUnlocked && (loc.video || loc.id === 'mesa_selimovic') ? `
-          <button onclick="window.playQuestVideo && window.playQuestVideo('${loc.video || '/assets/Gallery/QuestQRLocations/MesaSelimovic.mp4'}', '${(loc.name[lang] || loc.name.bs || 'Meša Selimović').replace(/'/g, "\\'")}')" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; box-shadow: 0 4px 12px rgba(245,158,11,0.4);">
+          <button onclick="window.playQuestVideo && window.playQuestVideo('${loc.video || 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/MesaSelimovic.mp4'}', '${(loc.name[lang] || loc.name.bs || 'Meša Selimović').replace(/'/g, "\\'")}')" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; box-shadow: 0 4px 12px rgba(245,158,11,0.4);">
             🎬 ${lang === 'bs' ? 'Pogledaj Video' : 'Watch Cinematic'}
           </button>
         ` : ''}
