@@ -1,24 +1,119 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { 
-    Wallet as WalletIcon, 
-    Lock, 
-    CheckCircle2, 
-    Globe, 
-    X, 
-    Copy, 
-    ExternalLink, 
-    Zap, 
-    QrCode, 
-    Award, 
-    ArrowLeftRight, 
-    BookOpen, 
-    Play, 
+import {
+    Wallet as WalletIcon,
+    Lock,
+    CheckCircle2,
+    Globe,
+    X,
+    Copy,
+    ExternalLink,
+    Zap,
+    QrCode,
+    Award,
+    ArrowLeftRight,
+    BookOpen,
+    Play,
     Trash2,
     AlertCircle,
-    Stethoscope
+    Car,
+    Stethoscope,
+    MapPin,
+    Navigation,
+    CircleCheck,
+    ChevronDown,
+    ChevronUp,
+    Gift
 } from 'lucide-react';
+
+// Legacy trail data remains only for backwards-compatible saved data; it is not rendered.
+const INITIAL_TRAILS = [
+    {
+        id: 'salt-trail',
+        name: 'Salt Trail',
+        theme: 'Heritage & Origins',
+        color: 'from-amber-700 to-amber-900',
+        borderColor: 'border-amber-800/40',
+        badgeBg: 'bg-amber-100 text-amber-900 border-amber-800/40',
+        rewardBorderColor: 'border border-amber-800',
+        rewardTextColor: 'text-amber-900',
+        rewardHeaderColor: 'text-amber-800',
+        reward: '10% off partner locations',
+        steps: [
+            { id: 'st-1', name: 'Pannonica (Neolithic Settlement)', completed: false },
+            { id: 'st-2', name: 'Salt Square', completed: false }
+        ]
+    },
+    {
+        id: 'sweet-trail',
+        name: 'Sweet Trail',
+        theme: 'Local Delicacies',
+        color: 'from-pink-500 to-rose-600',
+        borderColor: 'border-pink-500/40',
+        badgeBg: 'bg-pink-100 text-pink-700 border-pink-400/40',
+        rewardBorderColor: 'border border-pink-500',
+        rewardTextColor: 'text-pink-700',
+        rewardHeaderColor: 'text-pink-600',
+        reward: '10% off sweet treat',
+        steps: [
+            { id: 'sw-1', name: 'Papi Gelato', completed: false },
+            { id: 'sw-2', name: 'Sweet House', completed: false },
+            { id: 'sw-3', name: 'Palačinkara Bagi', completed: false }
+        ]
+    },
+    {
+        id: 'history-trail',
+        name: 'History Trail',
+        theme: 'Historic Landmarks',
+        color: 'from-amber-500 to-orange-600',
+        borderColor: 'border-amber-500/40',
+        badgeBg: 'bg-amber-100 text-amber-800 border-amber-400/40',
+        rewardBorderColor: 'border border-amber-500',
+        rewardTextColor: 'text-amber-800',
+        rewardHeaderColor: 'text-amber-600',
+        reward: 'Exclusive Audio of Kapija tragedy',
+        steps: [
+            { id: 'ht-1', name: 'Freedom Square', completed: false },
+            { id: 'ht-2', name: 'Old Town Clock', completed: false },
+            { id: 'ht-3', name: 'Kapija', completed: false }
+        ]
+    },
+    {
+        id: 'shopping-trail',
+        name: 'Shopping Trail',
+        theme: 'Retail & Lifestyle',
+        color: 'from-purple-500 to-indigo-600',
+        borderColor: 'border-purple-500/40',
+        badgeBg: 'bg-purple-100 text-purple-800 border-purple-400/40',
+        rewardBorderColor: 'border border-purple-500',
+        rewardTextColor: 'text-purple-800',
+        rewardHeaderColor: 'text-purple-600',
+        reward: 'CineStar combo voucher',
+        steps: [
+            { id: 'sh-1', name: 'Mercator', completed: false },
+            { id: 'sh-2', name: 'R.K. Tuzlanka', completed: false },
+            { id: 'sh-3', name: 'Bingo City Center', completed: false }
+        ]
+    },
+    {
+        id: 'wise-men-trail',
+        name: 'Three Wise Men Trail',
+        theme: 'Art & Cultural Giants',
+        color: 'from-emerald-500 to-teal-600',
+        borderColor: 'border-emerald-500/40',
+        badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-400/40',
+        rewardBorderColor: 'border border-emerald-500',
+        rewardTextColor: 'text-emerald-800',
+        rewardHeaderColor: 'text-emerald-600',
+        reward: 'Unreleased video Mesa.mp4',
+        steps: [
+            { id: 'wm-1', name: 'King Tvrtko Monument', completed: false },
+            { id: 'wm-2', name: 'Ismet Mujezinović Gallery', completed: false },
+            { id: 'wm-3', name: 'Meša Selimović Monument', completed: false }
+        ]
+    }
+];
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -29,13 +124,15 @@ import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-r
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
-import { QUEST_TARGETS } from './MapQuestView';
+import { QUEST_TARGETS, QUEST_TARGET_COORDS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, isPoiRewardUnlocked } from '../constants/questData';
+import { findQuestTargetFromQr } from '../utils/qrMatcher';
 import { Preferences } from '@capacitor/preferences';
 
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 interface WalletProps {
     lang: Language;
+    onNavigateToTarget: (target: { name: string; lat: number; lon: number }) => void;
 }
 
 interface LedgerEntry {
@@ -48,7 +145,8 @@ const WalletContent: React.FC<{
     lang: Language;
     network: 'mainnet-beta' | 'devnet';
     setNetwork: (net: 'mainnet-beta' | 'devnet') => void;
-}> = ({ lang, network, setNetwork }) => {
+    onNavigateToTarget: WalletProps['onNavigateToTarget'];
+}> = ({ lang, network, setNetwork, onNavigateToTarget }) => {
     const [bamValue, setBamValue] = useState<string>('');
     const [conversionMode, setConversionMode] = useState<'BAM_TO_EUR' | 'EUR_TO_BAM'>('BAM_TO_EUR');
     const [solBalance, setSolBalance] = useState<number | null>(null);
@@ -63,8 +161,26 @@ const WalletContent: React.FC<{
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const isOnline = useNetwork();
     const t = TRANSLATIONS[lang];
-    
+
     const { unlockedRewards, setUnlockedRewards } = useGlobalApp();
+    const [playingVideoError, setPlayingVideoError] = useState<string | null>(null);
+
+    const questPhases = useMemo(() => [
+        { number: 1, ids: PHASE_1_POIS },
+        { number: 2, ids: PHASE_2_POIS },
+        { number: 3, ids: PHASE_3_POIS }
+    ], []);
+    const currentTarget = useMemo(() => {
+        const nextId = questPhases.flatMap(phase => phase.ids).find(id => !isPoiRewardUnlocked(id, unlockedRewards));
+        return nextId ? QUEST_TARGETS.find(target => target.id === nextId) : undefined;
+    }, [questPhases, unlockedRewards]);
+
+    // Retained temporarily for existing local state, but the obsolete trail UI is hidden.
+    const [trails] = useState(INITIAL_TRAILS);
+    const [scratchedRewards] = useState<Record<string, boolean>>({});
+    const [expandedTrailId, setExpandedTrailId] = useState<string | null>(null);
+    const toggleStep = (_trailId: string, _stepId: string) => undefined;
+    const handleScratchAction = (_trailId: string, _x: number, _y: number, _canvas: HTMLCanvasElement) => undefined;
 
     const convertedValue = bamValue
         ? conversionMode === 'BAM_TO_EUR'
@@ -73,7 +189,7 @@ const WalletContent: React.FC<{
         : '0.00';
 
     // Solana hooks
-    const { publicKey, connected: solConnected } = useWallet();
+    const { publicKey, connected: solConnected, disconnect } = useWallet();
     const { connection } = useConnection();
 
     // Load Scan History Ledger on init
@@ -122,31 +238,6 @@ const WalletContent: React.FC<{
 
     const shortAddress = (addr: string) => `${addr.slice(0, 4)}...${addr.slice(-4)}`;
 
-    // QR Code matching helpers
-    const normalizeQrText = (value: string) => value
-        .normalize('NFD')
-        .replace(/[ - ]/g, '')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]/gi, '')
-        .toLowerCase();
-
-    const findQuestTargetFromQr = (decodedText: string) => {
-        const normalized = normalizeQrText(decodedText);
-        return QUEST_TARGETS.find(target => {
-            const candidates = [
-                target.id,
-                target.name?.en,
-                target.name?.bs,
-            ].filter(Boolean).map(normalizeQrText);
-
-            return candidates.some(candidate =>
-                candidate === normalized ||
-                candidate.includes(normalized) ||
-                normalized.includes(candidate)
-            );
-        });
-    };
-
     const startScanner = async () => {
         setIsScanning(true);
         setScannerFeedback(null);
@@ -162,7 +253,7 @@ const WalletContent: React.FC<{
                     async (decodedText) => {
                         const trimmed = decodedText?.trim() ?? '';
                         const target = findQuestTargetFromQr(trimmed);
-                        
+
                         if (!target) {
                             setScannerFeedback({
                                 text: lang === 'bs'
@@ -188,7 +279,7 @@ const WalletContent: React.FC<{
                         // Check if already in ledger
                         const exists = ledger.some(item => item.id === target.id);
                         let newLedger = [...ledger];
-                        
+
                         if (exists) {
                             setScannerFeedback({
                                 text: lang === 'bs'
@@ -270,7 +361,7 @@ const WalletContent: React.FC<{
                     <div className="mb-8 flex items-center gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-2xl animate-pulse">
                         <span className="text-amber-500">📡</span>
                         <p className="text-xs font-bold text-amber-700 uppercase tracking-wide">
-                            {lang === 'bs' ? 'Blockchain zahtijeva internet vezu' : 'Blockchain requires internet'}
+                            {t.blockchainOffline}
                         </p>
                     </div>
                 )}
@@ -278,7 +369,7 @@ const WalletContent: React.FC<{
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-black text-blue-950 uppercase tracking-tight flex items-center justify-center gap-3">
                         <WalletIcon className="w-10 h-10 text-blue-600" />
-                        {lang === 'bs' ? 'Digitalni' : 'Digital'} <span className="text-blue-600">{lang === 'bs' ? 'Novčanik' : 'Wallet'}</span>
+                        {t.digitalWalletTitle}
                     </h1>
                     <div className="h-1 w-24 bg-blue-600 mx-auto rounded-full mt-2" />
                 </div>
@@ -286,221 +377,446 @@ const WalletContent: React.FC<{
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* ── Left Column: Solana + Scanner + Converter (7 cols on lg) ── */}
                     <div className="lg:col-span-7 space-y-6">
-                        
-                        {/* Solana Card (Solflare Integration Only) */}
-                        <div className="p-4 sm:p-6 bg-white border border-purple-100 rounded-[2rem] shadow-xl space-y-4 overflow-hidden relative">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
-                            
-                            {/* Network Switcher & Header */}
-                            <div className="flex justify-between items-center flex-wrap gap-3 pb-4 border-b border-purple-100">
+
+                        {/* Solana Card (Solflare Integration) */}
+                        <div className="p-5 sm:p-6 bg-white border border-purple-500 rounded-[2rem] shadow-[0_0_25px_rgba(168,85,247,0.35)] relative overflow-hidden flex flex-col gap-5">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+
+                            {/* Header */}
+                            <div className="flex justify-between items-start gap-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                                        <Zap size={18} className="text-white" />
+                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0">
+                                        <img src="/assets/Gallery/QuestQRLocations/sologo.png" alt="Solflare" className="w-7 h-7 object-contain" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Solflare Wallet</p>
-                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">Solana Connection</h3>
+                                        <p className="text-[10px] font-black text-purple-600 uppercase tracking-widest">Solflare Wallet</p>
+                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">Solana Blockchain</h3>
                                     </div>
                                 </div>
-                                
-                                {/* Network Switcher */}
-                                <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
-                                    <button
-                                        onClick={() => setNetwork('devnet')}
-                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${network === 'devnet' ? 'bg-purple-600 text-white shadow' : 'text-slate-400 hover:text-slate-700'}`}
-                                    >
-                                        Devnet
-                                    </button>
-                                    <button
-                                        onClick={() => setNetwork('mainnet-beta')}
-                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${network === 'mainnet-beta' ? 'bg-purple-600 text-white shadow' : 'text-slate-400 hover:text-slate-700'}`}
-                                    >
-                                        Mainnet
-                                    </button>
-                                </div>
+                                {/* Clean Network Switcher */}
+                                <button
+                                    onClick={() => setNetwork(network === 'devnet' ? 'mainnet-beta' : 'devnet')}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all active:scale-95 shrink-0"
+                                    title={`Switch network. Current: ${network}`}
+                                >
+                                    <div className={`w-2 h-2 rounded-full ${network === 'mainnet-beta' ? 'bg-emerald-500' : 'bg-purple-500'}`} />
+                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">
+                                        {network === 'devnet' ? 'DEVNET' : 'MAINNET'}
+                                    </span>
+                                    <ArrowLeftRight size={10} className="text-slate-400 ml-1" />
+                                </button>
                             </div>
 
-                            {/* Wallet Info & Connect Button */}
-                            <div className="flex justify-between items-center flex-wrap gap-4 pt-2">
-                                <div>
-                                    {solConnected && publicKey ? (
-                                        <div>
-                                            <p className="text-xs text-slate-400 font-bold uppercase">{lang === 'bs' ? 'Adresa Novčanika' : 'Wallet Address'}</p>
-                                            <p className="text-base font-black text-purple-950 font-mono mt-0.5">{shortAddress(publicKey.toBase58())}</p>
+                            {/* Wallet Info */}
+                            <div className="flex-1 bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                                {solConnected && publicKey ? (
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <p className="text-xs text-slate-400 font-bold uppercase">{t.walletAddress}</p>
+                                            <button onClick={handleCopyAddress} className="text-purple-600 hover:text-purple-700 p-1" title="Copy Address">
+                                                {copySuccess ? <CheckCircle2 size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                                            </button>
                                         </div>
-                                    ) : (
-                                        <div>
-                                            <p className="text-xs text-slate-400 font-bold uppercase">{lang === 'bs' ? 'Status' : 'Status'}</p>
-                                            <p className="text-base font-black text-slate-400 mt-0.5">{lang === 'bs' ? 'Nije spojeno' : 'Not connected'}</p>
+                                        <p className="text-lg font-black text-purple-950 font-mono tracking-tight">{shortAddress(publicKey.toBase58())}</p>
+                                        <div className="pt-3 border-t border-slate-200 flex justify-between items-end">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">{t.solBalance}</p>
+                                            <p className="text-xl font-black text-purple-700 leading-none">
+                                                {solBalance !== null ? `◎ ${solBalance.toFixed(4)}` : '—'}
+                                            </p>
                                         </div>
-                                    )}
-                                </div>
-                                <div className="max-w-[170px] overflow-hidden">
-                                    <WalletMultiButton
-                                        style={{
-                                            background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
-                                            borderRadius: '1rem',
-                                            fontSize: '11px',
-                                            fontWeight: 900,
-                                            height: '38px',
-                                            padding: '0 16px',
-                                            maxWidth: '100%',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                            boxShadow: '0 4px 14px rgba(124, 58, 237, 0.3)'
-                                        }}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* SOL Balance + Address actions */}
-                            <AnimatePresence>
-                                {solConnected && publicKey && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="pt-4 border-t border-purple-100 space-y-4"
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase">SOL Balance</p>
-                                                <p className="text-2xl font-black text-purple-700 mt-0.5">
-                                                    {solBalance !== null ? `◎ ${solBalance.toFixed(4)}` : '—'}
-                                                </p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={handleCopyAddress}
-                                                    className="p-2.5 bg-purple-50 border border-purple-100 rounded-xl hover:bg-purple-100 transition-all active:scale-90"
-                                                    title="Copy address"
-                                                >
-                                                    {copySuccess
-                                                        ? <CheckCircle2 size={16} className="text-green-600" />
-                                                        : <Copy size={16} className="text-purple-600" />
-                                                    }
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        {/* Solana Explorer Button */}
-                                        <button
-                                            onClick={() => window.open(`https://explorer.solana.com/address/${publicKey.toBase58()}?cluster=${network === 'devnet' ? 'devnet' : ''}`, '_blank')}
-                                            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow hover:shadow-lg active:scale-95 transition-all"
-                                        >
-                                            <ExternalLink size={14} />
-                                            {lang === 'bs' ? 'Pregledaj na Solana Exploreru' : 'View on Solana Explorer'}
-                                        </button>
-                                        
-                                        <p className="text-[9px] text-slate-400 font-mono break-all text-center">
-                                            {publicKey.toBase58()}
-                                        </p>
-                                    </motion.div>
+                                    </div>
+                                ) : (
+                                    <div className="h-full flex flex-col justify-center">
+                                        <p className="text-xs text-slate-400 font-bold uppercase mb-1">Status</p>
+                                        <p className="text-sm font-black text-slate-800 uppercase">{t.statusNotConnected}</p>
+                                    </div>
                                 )}
-                            </AnimatePresence>
+                            </div>
+
+                            {/* Standardized Action Button */}
+                            <div className="h-14 w-full">
+                                {solConnected && publicKey ? (
+                                    <button
+                                        onClick={() => {
+                                            if (disconnect) disconnect();
+                                        }}
+                                        className="w-full h-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                                    >
+                                        DISCONNECT
+                                    </button>
+                                ) : (
+                                    <div className="w-full h-full [&>.wallet-adapter-button]:w-full [&>.wallet-adapter-button]:h-full [&>.wallet-adapter-button]:justify-center [&>.wallet-adapter-button]:bg-gradient-to-r [&>.wallet-adapter-button]:from-purple-600 [&>.wallet-adapter-button]:to-indigo-600 [&>.wallet-adapter-button]:rounded-x4 [&>.wallet-adapter-button]:text-xs [&>.wallet-adapter-button]:font-black [&>.wallet-adapter-button]:uppercase [&>.wallet-adapter-button]:tracking-widest [&>.wallet-adapter-button]:shadow-lg [&>.wallet-adapter-button]:shadow-purple-500/20 hover:[&>.wallet-adapter-button]:scale-[0.98] [&>.wallet-adapter-button]:transition-all">
+                                        <WalletMultiButton />
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* QR Scanner Trigger Card */}
-                        <div className="p-4 sm:p-6 bg-white border border-blue-100 rounded-[2rem] shadow-xl space-y-4 overflow-hidden relative">
+                        <div className="p-5 sm:p-6 bg-white border border-blue-500 rounded-[2rem] shadow-[0_0_25px_rgba(59,130,246,0.35)] relative overflow-hidden flex flex-col gap-5">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
-                            <div className="flex justify-between items-center">
+
+                            {/* Header */}
+                            <div className="flex justify-between items-start gap-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                                        <QrCode size={18} className="text-white" />
+                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0">
+                                        <QrCode size={24} className="text-blue-600" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">{lang === 'bs' ? 'Istraživanje' : 'Exploration'}</p>
-                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{lang === 'bs' ? 'QR Skeniranje Lokacija' : 'QR Location Scanner'}</h3>
+                                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">{t.explorationTitle}</p>
+                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t.qrLocationScannerTitle}</h3>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={startScanner}
-                                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 flex items-center gap-2 active:scale-95 transition-all"
-                                >
-                                    <QrCode size={14} />
-                                    {lang === 'bs' ? 'Pokreni' : 'Scan QR'}
-                                </button>
                             </div>
-                            <p className="text-xs text-slate-500 leading-relaxed">
-                                {lang === 'bs'
-                                    ? 'Pronađite i skenirajte QR kodove na istorijskim znamenitostima širom Tuzle kako biste otključali nagrade u svom vodiču i upisali ih u knjigu.'
-                                    : 'Find and scan QR codes at historical locations around Tuzla to unlock guide rewards and record them in your scan ledger.'}
-                            </p>
+
+                            {/* Content */}
+                            <div className="flex-1 bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center">
+                                <p className="text-xs text-slate-500 leading-relaxed">
+                                    {t.qrScannerDesc}
+                                </p>
+                            </div>
+
+                            {/* Standardized Action Button */}
+                            <button
+                                onClick={startScanner}
+                                className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                            >
+                                <QrCode size={16} />
+                                {t.startScanner}
+                            </button>
                         </div>
 
                         {/* Currency Converter */}
-                        <div className="p-4 sm:p-6 bg-white border border-blue-100 rounded-[2rem] shadow-xl space-y-4 overflow-hidden">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <ArrowLeftRight size={16} className="text-blue-600" />
-                                    <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest">{lang === 'bs' ? 'Konvertor Valuta' : 'Currency Converter'}</h3>
+                        <div className="p-5 sm:p-6 bg-white border border-emerald-100 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col gap-5">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+
+                            {/* Header */}
+                            <div className="flex justify-between items-start gap-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0">
+                                        <ArrowLeftRight size={24} className="text-emerald-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Exchange</p>
+                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t.currencyConverterTitle}</h3>
+                                    </div>
                                 </div>
                                 <button
                                     onClick={() => {
                                         setConversionMode(m => m === 'BAM_TO_EUR' ? 'EUR_TO_BAM' : 'BAM_TO_EUR');
                                         setBamValue('');
                                     }}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-blue-700 active:scale-95 transition-all shadow"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all active:scale-95 shrink-0"
+                                    title="Swap currency"
                                 >
-                                    <ArrowLeftRight size={12} />
-                                    {conversionMode === 'BAM_TO_EUR' ? 'BAM → EUR' : 'EUR → BAM'}
+                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">
+                                        {conversionMode === 'BAM_TO_EUR' ? 'BAM → EUR' : 'EUR → BAM'}
+                                    </span>
+                                    <ArrowLeftRight size={10} className="text-slate-400 ml-1" />
                                 </button>
                             </div>
-                            <div className="space-y-3">
+
+                            {/* Content */}
+                            <div className="flex-1 bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
                                 <div>
-                                    <label className="text-[10px] font-bold text-blue-300 uppercase block mb-1">
-                                        {conversionMode === 'BAM_TO_EUR' ? (lang === 'bs' ? 'Unesite Konvertibilne Marke (KM)' : 'Enter BAM (KM)') : 'Enter EUR (€)'}
+                                    <label className="text-[10px] font-bold text-emerald-600 uppercase block mb-1">
+                                        {conversionMode === 'BAM_TO_EUR' ? t.enterBamLabel : t.enterEurLabel}
                                     </label>
                                     <input
                                         type="number"
                                         value={bamValue}
                                         onChange={(e) => setBamValue(e.target.value)}
                                         placeholder="0.00"
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-slate-800 font-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 font-black focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
                                     />
                                 </div>
-                                <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100/50">
-                                    <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">
-                                        {conversionMode === 'BAM_TO_EUR' ? 'Estimated EUR' : 'Estimated BAM'}
-                                    </p>
-                                    <p className="text-3xl font-black text-blue-600">
+                                <div className="pt-3 border-t border-slate-200 flex justify-between items-end">
+                                    <div>
+                                        <p className="text-[10px] font-bold text-emerald-600 uppercase mb-0.5">
+                                            {conversionMode === 'BAM_TO_EUR' ? t.estimatedEurLabel : t.estimatedBamLabel}
+                                        </p>
+                                        <p className="text-[9px] text-slate-400">{t.conversionRateText}</p>
+                                    </div>
+                                    <p className="text-xl font-black text-emerald-700 leading-none">
                                         {conversionMode === 'BAM_TO_EUR' ? `€ ${convertedValue}` : `KM ${convertedValue}`}
-                                    </p>
-                                    <p className="text-[10px] text-blue-300 mt-1">
-                                        Rate: 1 EUR = 1.95583 BAM
                                     </p>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Privacy Disclaimer */}
-                        <div className="px-2 text-[11px] text-slate-500 font-light italic leading-relaxed space-y-3 pb-4">
-                            <p>
-                                This application functions as a non-custodial, self-sovereign interface. We provide the tools for you to interact with information and blockchain services, but you maintain absolute ownership and control of your digital assets and identity.
-                            </p>
-                            <p className="font-medium text-slate-600 not-italic">Key Privacy &amp; Data Security Points</p>
-                            <ul className="list-disc pl-4 space-y-2">
-                                <li><span className="font-medium not-italic text-slate-600">Zero Custody of Assets:</span> We do not hold your private keys, seed phrases, or digital assets. You have sole, exclusive control over your wallet. We cannot access, recover, or move your funds.</li>
-                                <li><span className="font-medium not-italic text-slate-600">Privacy-by-Design:</span> In compliance with the new Law on Personal Data Protection of Bosnia and Herzegovina (Official Gazette of BiH, No. 12/25, aligned with GDPR), this app is built to collect zero personal identifying information (PII).</li>
-                                <li><span className="font-medium not-italic text-slate-600">No Data Storage:</span> We do not store your personal history, location logs, or behavioral data on our servers. Any interaction—including AI queries or image analysis for landmark identification—is processed anonymously.</li>
-                                <li><span className="font-medium not-italic text-slate-600">On-Device Processing:</span> Wherever possible, data processing is handled locally on your own device to ensure your information never leaves your possession.</li>
-                            </ul>
                         </div>
                     </div>
 
                     {/* ── Right Column: Scan History Ledger + Partner Links (5 cols on lg) ── */}
                     <div className="lg:col-span-5 space-y-6">
-                        
+
+                        <div className="p-4 sm:p-6 bg-white border border-emerald-200 text-slate-800 rounded-[2rem] shadow-[0_12px_30px_rgba(15,23,42,0.08)] space-y-5">
+                            <div className="flex items-start gap-3 pb-4 border-b border-slate-100">
+                                <div className="p-2.5 rounded-2xl bg-blue-50 text-blue-700"><MapPin className="w-5 h-5" /></div>
+                                <div>
+                                    <h3 className="text-sm font-black uppercase tracking-tight">{t.questPanelTitle}</h3>
+                                    <p className="text-[11px] text-slate-500">{t.questPanelSubtitle}</p>
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                {questPhases.map((phase) => {
+                                    const complete = phase.ids.every(id => isPoiRewardUnlocked(id, unlockedRewards));
+                                    const count = phase.ids.filter(id => isPoiRewardUnlocked(id, unlockedRewards)).length;
+                                    return (
+                                        <div key={phase.number} className={`rounded-2xl border p-3.5 ${complete ? 'border-emerald-300 bg-emerald-50/70' : 'border-slate-200 bg-slate-50'}`}>
+                                            <div className="flex items-center justify-between gap-3">
+                                                <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t.questPhaseLabel} {phase.number}</p><p className="text-xs font-bold text-slate-800 mt-0.5">{count}/{phase.ids.length} {t.questLocationsScanned}</p></div>
+                                                {complete ? <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-700"><CircleCheck className="w-4 h-4" />{t.questSuccess}</span> : <span className="text-[10px] font-bold text-slate-400">{t.questInProgress}</span>}
+                                            </div>
+                                            <div className="mt-3 h-1.5 rounded-full bg-slate-200 overflow-hidden"><div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${(count / phase.ids.length) * 100}%` }} /></div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            {currentTarget ? (() => {
+                                const coords = QUEST_TARGET_COORDS[currentTarget.id];
+                                const name = currentTarget.name[lang] || currentTarget.name.en;
+                                return coords ? <button onClick={() => onNavigateToTarget({ name, ...coords })} className="w-full flex items-center justify-between gap-3 rounded-2xl bg-blue-700 hover:bg-blue-800 px-4 py-3.5 text-left text-white transition-colors active:scale-[0.98]"><span><span className="block text-[10px] font-black uppercase tracking-widest text-blue-200">{t.questNextTarget}</span><span className="block text-sm font-black mt-0.5">{name}</span></span><Navigation className="w-5 h-5 shrink-0" /></button> : null;
+                            })() : <div className="rounded-2xl bg-emerald-600 px-4 py-4 text-white"><p className="text-sm font-black">{t.questComplete}</p><p className="text-[11px] text-emerald-100 mt-1">{t.questAllPhasesUnlocked}</p></div>}
+                        </div>
+
+                        {/* Legacy themed trails are intentionally hidden; phases above use real QR progress. */}
+                        <div className="hidden">
+                            <div className="absolute top-0 right-0 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-36 h-36 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                            {/* Header */}
+                            <div className="flex justify-between items-center pb-3 border-b border-slate-100 shrink-0">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600">
+                                        <Award className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-1.5">
+                                            <h3 className="text-sm font-black uppercase tracking-tight text-slate-800">
+                                                Discover Tuzla
+                                            </h3>
+                                        </div>
+                                        <p className="text-[11px] text-slate-500">Themed Quests & Milestone Scratch Rewards</p>
+                                    </div>
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    {trails.filter(t => t.steps.every(s => s.completed)).length}/{trails.length} Complete
+                                </span>
+                            </div>
+
+                            {/* Trails Accordion List */}
+                            <div className="space-y-3.5">
+                                {trails.map(trail => {
+                                    const completedSteps = trail.steps.filter(s => s.completed).length;
+                                    const totalSteps = trail.steps.length;
+                                    const progressPercent = Math.round((completedSteps / totalSteps) * 100);
+                                    const isComplete = progressPercent === 100;
+                                    const isExpanded = expandedTrailId === trail.id;
+                                    const isScratched = !!scratchedRewards[trail.id];
+
+                                    return (
+                                        <div
+                                            key={trail.id}
+                                            className={`rounded-2xl border transition-all duration-200 overflow-hidden ${isComplete ? 'border-emerald-400 bg-emerald-50/40 shadow-sm' : 'border-slate-200 bg-slate-50/70 hover:border-slate-300'
+                                                }`}
+                                        >
+                                            {/* Trail Header Banner */}
+                                            <div
+                                                onClick={() => setExpandedTrailId(isExpanded ? null : trail.id)}
+                                                className="p-3.5 sm:p-4 cursor-pointer hover:bg-slate-100/60 flex flex-col gap-2.5 select-none"
+                                            >
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${trail.badgeBg}`}>
+                                                            {trail.theme}
+                                                        </span>
+                                                        <h4 className="text-xs sm:text-sm font-extrabold text-slate-800 tracking-wide">
+                                                            {trail.name}
+                                                        </h4>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        {isComplete && (
+                                                            <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">
+                                                                <CheckCircle2 className="w-3 h-3" />
+                                                                100%
+                                                            </span>
+                                                        )}
+                                                        {isExpanded ? (
+                                                            <ChevronUp className="w-4 h-4 text-slate-500" />
+                                                        ) : (
+                                                            <ChevronDown className="w-4 h-4 text-slate-500" />
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Dynamic Progress Bar */}
+                                                <div className="space-y-1">
+                                                    <div className="flex justify-between text-[10px] text-slate-500 font-semibold">
+                                                        <span>Progress</span>
+                                                        <span className={isComplete ? 'text-emerald-700 font-bold' : ''}>
+                                                            {completedSteps}/{totalSteps} ({progressPercent}%)
+                                                        </span>
+                                                    </div>
+                                                    <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden p-0.5">
+                                                        <motion.div
+                                                            className={`h-full rounded-full bg-gradient-to-r ${trail.color}`}
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: `${progressPercent}%` }}
+                                                            transition={{ duration: 0.4, ease: 'easeOut' }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Expanded Checkpoints & Reward Area */}
+                                            <AnimatePresence>
+                                                {isExpanded && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        transition={{ duration: 0.2 }}
+                                                        className="px-3.5 pb-4 pt-1 sm:px-4 space-y-3.5 border-t border-slate-200"
+                                                    >
+                                                        {/* Interactive Checkpoint List */}
+                                                        <div className="space-y-2 pt-2">
+                                                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                                                                Checkpoints (Tap to Complete)
+                                                            </p>
+                                                            <div className="space-y-1.5">
+                                                                {trail.steps.map((step, idx) => (
+                                                                    <div
+                                                                        key={step.id}
+                                                                        onClick={() => toggleStep(trail.id, step.id)}
+                                                                        className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${step.completed
+                                                                            ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-medium'
+                                                                            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                                                                            }`}
+                                                                    >
+                                                                        <div className="flex items-center gap-2.5">
+                                                                            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${step.completed
+                                                                                ? 'bg-emerald-500 text-white font-black'
+                                                                                : 'bg-slate-100 text-slate-500'
+                                                                                }`}>
+                                                                                {idx + 1}
+                                                                            </span>
+                                                                            <span className={`text-xs font-medium ${step.completed ? 'line-through text-slate-400' : ''}`}>
+                                                                                {step.name}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className={`w-5 h-5 rounded-lg flex items-center justify-center border transition-all ${step.completed
+                                                                            ? 'bg-emerald-500 border-emerald-400 text-white'
+                                                                            : 'border-slate-300 bg-slate-50'
+                                                                            }`}>
+                                                                            {step.completed && <CheckCircle2 className="w-3.5 h-3.5 stroke-[3]" />}
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Reward Section / Scratch-off Card */}
+                                                        <div className="pt-2 border-t border-slate-200">
+                                                            <div className="flex items-center gap-1.5 mb-2">
+                                                                <Gift className={`w-3.5 h-3.5 ${trail.rewardHeaderColor || 'text-amber-600'}`} />
+                                                                <span className={`text-[10px] font-black uppercase tracking-wider ${trail.rewardHeaderColor || 'text-amber-600'}`}>
+                                                                    Trail Reward
+                                                                </span>
+                                                            </div>
+
+                                                            {!isComplete ? (
+                                                                /* Locked Reward Notice */
+                                                                <div className={`p-3 rounded-xl bg-slate-50 ${trail.rewardBorderColor || 'border border-slate-200'} flex items-center justify-between text-slate-500`}>
+                                                                    <div className="flex items-center gap-2.5">
+                                                                        <div className="p-1.5 rounded-lg bg-slate-200 text-slate-500">
+                                                                            <Lock className="w-4 h-4" />
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className={`text-xs font-bold ${trail.rewardTextColor || 'text-slate-700'}`}>Reward Locked</p>
+                                                                            <p className="text-[10px] text-slate-500">Complete all checkpoints above to scratch and reveal</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <span className="text-[11px] font-bold text-slate-500">{progressPercent}%</span>
+                                                                </div>
+                                                            ) : isScratched ? (
+                                                                /* Revealed Reward */
+                                                                <motion.div
+                                                                    initial={{ scale: 0.95, opacity: 0 }}
+                                                                    animate={{ scale: 1, opacity: 1 }}
+                                                                    className={`p-3.5 rounded-xl bg-gradient-to-r from-amber-50 to-emerald-50 ${trail.rewardBorderColor || 'border-2 border-amber-400'} text-center space-y-1 relative overflow-hidden`}
+                                                                >
+                                                                    <p className={`text-[10px] font-black uppercase tracking-wider ${trail.rewardHeaderColor || 'text-amber-600'}`}>Reward Unlocked!</p>
+                                                                    <p className={`text-sm font-black ${trail.rewardTextColor || 'text-slate-900'}`}>{trail.reward}</p>
+                                                                    <p className="text-[10px] text-emerald-700 font-semibold">Show this screen at partner desk or redeem in app</p>
+                                                                </motion.div>
+                                                            ) : (
+                                                                /* Interactive Scratch-off Card */
+                                                                <div className={`relative rounded-xl overflow-hidden ${trail.rewardBorderColor || 'border border-amber-400'} shadow-md bg-gradient-to-br from-amber-50 to-emerald-50 p-4 text-center select-none`}>
+                                                                    {/* Background Revealed Reward */}
+                                                                    <div className="space-y-1 pointer-events-none py-1">
+                                                                        <p className={`text-[10px] font-black uppercase tracking-wider ${trail.rewardHeaderColor || 'text-amber-600'}`}>Congratulations!</p>
+                                                                        <p className={`text-sm font-black ${trail.rewardTextColor || 'text-slate-900'}`}>{trail.reward}</p>
+                                                                        <p className="text-[10px] text-emerald-700 font-semibold">Trail Completed</p>
+                                                                    </div>
+
+                                                                    {/* Scratch Surface Canvas */}
+                                                                    <canvas
+                                                                        ref={(canvas) => {
+                                                                            if (canvas && !canvas.dataset.initialized) {
+                                                                                canvas.dataset.initialized = 'true';
+                                                                                const ctx = canvas.getContext('2d');
+                                                                                if (ctx) {
+                                                                                    canvas.width = canvas.offsetWidth;
+                                                                                    canvas.height = canvas.offsetHeight;
+                                                                                    // Silver scratch foil gradient
+                                                                                    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                                                                                    grad.addColorStop(0, '#64748b');
+                                                                                    grad.addColorStop(0.5, '#94a3b8');
+                                                                                    grad.addColorStop(1, '#475569');
+                                                                                    ctx.fillStyle = grad;
+                                                                                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                                                                                    // Text overlay on foil
+                                                                                    ctx.fillStyle = '#f8fafc';
+                                                                                    ctx.font = 'bold 12px sans-serif';
+                                                                                    ctx.textAlign = 'center';
+                                                                                    ctx.textBaseline = 'middle';
+                                                                                    ctx.fillText('Swipe or drag to reveal', canvas.width / 2, canvas.height / 2);
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                        onMouseMove={(e) => {
+                                                                            if (e.buttons === 1) {
+                                                                                handleScratchAction(trail.id, e.clientX, e.clientY, e.currentTarget);
+                                                                            }
+                                                                        }}
+                                                                        onTouchMove={(e) => {
+                                                                            if (e.touches[0]) {
+                                                                                handleScratchAction(trail.id, e.touches[0].clientX, e.touches[0].clientY, e.currentTarget);
+                                                                            }
+                                                                        }}
+                                                                        className="absolute inset-0 w-full h-full cursor-crosshair touch-none rounded-xl"
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
                         {/* Scan History Ledger */}
-                        <div className="p-4 sm:p-6 bg-white border border-emerald-100 rounded-[2rem] shadow-xl space-y-4 flex flex-col relative min-h-[380px]">
+                        <div className="p-4 sm:p-6 bg-white border border-amber-400 rounded-[2rem] shadow-[0_0_25px_rgba(251,191,36,0.35)] space-y-4 flex flex-col relative min-h-[380px]">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-                            
+
                             <div className="flex justify-between items-center pb-3 border-b border-slate-100 shrink-0">
                                 <div className="flex items-center gap-2">
                                     <BookOpen className="w-5 h-5 text-emerald-600" />
                                     <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">
-                                        {lang === 'bs' ? 'Knjiga Skeniranja' : 'Scan History Ledger'}
+                                        {t.scanHistoryLedgerTitle}
                                     </h3>
                                 </div>
                                 <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
@@ -517,12 +833,10 @@ const WalletContent: React.FC<{
                                         </div>
                                         <div>
                                             <p className="text-xs font-black text-slate-700 uppercase">
-                                                {lang === 'bs' ? 'Knjiga je prazna' : 'Ledger is empty'}
+                                                {t.ledgerEmptyTitle}
                                             </p>
                                             <p className="text-[11px] text-slate-400 mt-1 max-w-[200px] mx-auto leading-relaxed">
-                                                {lang === 'bs' 
-                                                    ? 'Skenirajte lokacije širom grada za popunjavanje istorije.' 
-                                                    : 'Scan location QR codes around the city to build your history.'}
+                                                {t.ledgerEmptyDesc}
                                             </p>
                                         </div>
                                     </div>
@@ -530,33 +844,34 @@ const WalletContent: React.FC<{
                                     ledger.map((entry) => {
                                         const target = QUEST_TARGETS.find(q => q.id === entry.id);
                                         if (!target) return null;
+                                        const targetName = target.name[lang] || target.name.en || target.name.bs;
                                         return (
-                                            <div 
-                                                key={entry.id} 
+                                            <div
+                                                key={entry.id}
                                                 className="p-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-100 rounded-2xl flex items-center gap-3 transition-colors group relative"
                                             >
                                                 <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 border border-slate-200">
-                                                    <img 
-                                                        src={target.Image} 
-                                                        alt={target.name[lang] || target.name.en} 
+                                                    <img
+                                                        src={target.Image}
+                                                        alt={targetName}
                                                         className="w-full h-full object-cover"
                                                     />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight truncate">
-                                                        {lang === 'bs' ? target.name.bs : target.name.en}
+                                                        {targetName}
                                                     </h4>
                                                     <span className="text-[9px] text-slate-400 font-bold block mt-0.5">
                                                         {entry.timestamp}
                                                     </span>
                                                 </div>
-                                                
+
                                                 {/* Play Reward Video Button */}
                                                 {(target as any).video && (
                                                     <button
-                                                        onClick={() => setPlayingVideo((target as any).video)}
+                                                        onClick={() => { setPlayingVideoError(null); setPlayingVideo((target as any).video); }}
                                                         className="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl transition-all shrink-0 active:scale-90"
-                                                        title={lang === 'bs' ? 'Pogledaj cinematic' : 'Watch cinematic'}
+                                                        title={t.watchCinematic}
                                                     >
                                                         <Play size={14} className="fill-emerald-600" />
                                                     </button>
@@ -574,28 +889,28 @@ const WalletContent: React.FC<{
                                         <div className="flex items-center gap-2 bg-red-50 p-2 border border-red-100 rounded-2xl">
                                             <AlertCircle size={16} className="text-red-500 shrink-0" />
                                             <span className="text-[10px] font-bold text-red-700 uppercase flex-grow">
-                                                {lang === 'bs' ? 'Jeste li sigurni?' : 'Are you sure?'}
+                                                {t.clearHistoryConfirm}
                                             </span>
-                                            <button 
+                                            <button
                                                 onClick={handleClearLedger}
                                                 className="px-2.5 py-1 bg-red-600 text-white rounded-lg text-[9px] font-black uppercase tracking-wider"
                                             >
-                                                {lang === 'bs' ? 'Da, obriši' : 'Yes, delete'}
+                                                {t.yesDelete}
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => setShowClearConfirm(false)}
                                                 className="px-2.5 py-1 bg-slate-200 text-slate-700 rounded-lg text-[9px] font-black uppercase tracking-wider"
                                             >
-                                                {lang === 'bs' ? 'Otkaz' : 'Cancel'}
+                                                {t.cancel}
                                             </button>
                                         </div>
                                     ) : (
-                                        <button 
+                                        <button
                                             onClick={() => setShowClearConfirm(true)}
                                             className="w-full py-2.5 bg-slate-50 border border-slate-100 hover:bg-red-50 hover:text-red-600 hover:border-red-100 text-slate-400 font-black text-[10px] uppercase tracking-wider rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all"
                                         >
                                             <Trash2 size={12} />
-                                            {lang === 'bs' ? 'Očisti Knjigu Skeniranja' : 'Clear Scan History'}
+                                            {t.clearScanHistory}
                                         </button>
                                     )}
                                 </div>
@@ -603,34 +918,59 @@ const WalletContent: React.FC<{
                         </div>
 
                         {/* Partner Agencies */}
-                        <div className="p-4 sm:p-8 bg-white border border-emerald-100 rounded-[2rem] shadow-xl space-y-6 overflow-hidden">
-                            <h2 className="text-xl font-black text-emerald-950 uppercase tracking-tight flex items-center gap-2">
-                                <Globe size={20} className="text-emerald-600" />
-                                Partner Agencies
+                        <div className="p-4 sm:p-8 bg-white border border-blue-700 rounded-[2rem] shadow-[0_0_25px_rgba(29,78,216,0.35)] space-y-6 overflow-hidden">
+                            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                                <Globe size={20} className="text-blue-700" />
+                                {t.partnerAgenciesTitle}
                             </h2>
                             <div className="space-y-4">
+                                <button
+                                    onClick={() => window.open('https://gradskiparkingtuzla.vercel.app', '_blank')}
+                                    className="w-full h-16 bg-yellow-400 border-2 border-blue-600 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-yellow-300"
+                                    style={{ color: '#1a3a8f', boxShadow: '0 0 18px 4px rgba(37,99,235,0.45), 0 4px 14px rgba(0,0,0,0.12)' }}
+                                >
+                                    <Car size={20} />
+                                    {t.gradskiParkingTuzla}
+                                </button>
                                 <button
                                     onClick={() => window.open('https://dentist-tuzla.onhercules.app/dentist-tourism/', '_blank')}
                                     className="w-full h-16 bg-white text-blue-600 border-2 border-blue-500 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-slate-50"
                                 >
                                     <Stethoscope size={18} />
-                                    DENTAL TOURISM
+                                    {t.dentalTourism}
                                 </button>
                                 <button
-                                    onClick={() => window.open('https://aiso-tuzla-ai.lovable.app/', '_blank')}
+                                    onClick={() => window.open('https://aiso-tuzla.lovable.app/', '_blank')}
                                     className="w-full h-16 bg-blue-600 text-yellow-300 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-blue-700"
                                 >
+                                    <img src="/assets/icons/aisologo.webp" alt="AISO Logo" className="w-6 h-6 object-contain" />
                                     AISO TUZLA
-                                </button>
-                                <button
-                                    onClick={() => window.open('https://bosnia-collection.vercel.app/', '_blank')}
-                                    className="w-full h-16 bg-amber-500 text-blue-900 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-amber-600"
-                                >
-                                    BOSNIA AND HERZEGOVINA DIGITAL ALBUM
                                 </button>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Privacy Disclaimer (Placed at the bottom of the Wallet page) */}
+                <div className="mt-12 p-6 sm:p-8 bg-white border border-slate-300 rounded-[2rem] shadow-[0_0_20px_rgba(148,163,184,0.35)] text-xs text-slate-500 leading-relaxed space-y-4">
+                    <p className="font-light italic text-slate-500 leading-relaxed">
+                        {t.privacyDisclaimerText}
+                    </p>
+                    <p className="font-bold text-slate-700 uppercase tracking-tight text-xs">{t.privacyKeyPointsTitle}</p>
+                    <ul className="list-disc pl-5 space-y-2.5">
+                        <li>
+                            <span className="font-bold text-slate-700">{t.zeroCustodyTitle}</span> {t.zeroCustodyText}
+                        </li>
+                        <li>
+                            <span className="font-bold text-slate-700">{t.privacyByDesignTitle}</span> {t.privacyByDesignText}
+                        </li>
+                        <li>
+                            <span className="font-bold text-slate-700">{t.noDataStorageTitle}</span> {t.noDataStorageText}
+                        </li>
+                        <li>
+                            <span className="font-bold text-slate-700">{t.onDeviceProcessingTitle}</span> {t.onDeviceProcessingText}
+                        </li>
+                    </ul>
                 </div>
             </div>
 
@@ -641,26 +981,52 @@ const WalletContent: React.FC<{
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[7000] bg-black flex flex-col p-6"
+                        className="fixed inset-0 z-[7000] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-6"
                     >
-                        <div className="flex-grow flex items-center justify-center bg-black">
-                            <video
-                                src={playingVideo}
-                                autoPlay
-                                controls
-                                playsInline
-                                className="w-full max-h-[70vh] rounded-[2.5rem] bg-black shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10"
-                            />
-                        </div>
+                        <div className="w-full max-w-2xl bg-black border border-white/15 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col">
+                            <div className="p-4 sm:p-5 flex items-center justify-between border-b border-white/10 bg-white/5">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
+                                        <Play className="w-4 h-4 fill-amber-400" />
+                                    </div>
+                                    <h3 className="text-base font-black text-white uppercase tracking-tight">
+                                        {t.watchCinematic}
+                                    </h3>
+                                </div>
+                                <button
+                                    onClick={() => setPlayingVideo(null)}
+                                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
 
-                        <div className="h-48 flex flex-col items-center justify-center gap-6">
-                            <h2 className="text-white font-black text-2xl uppercase tracking-tighter text-center">Cinematic Playback</h2>
-                            <button
-                                onClick={() => setPlayingVideo(null)}
-                                className="px-12 py-5 bg-white text-slate-950 rounded-2xl font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all"
-                            >
-                                Close Video
-                            </button>
+                            <div className="relative w-full aspect-video sm:max-h-[60vh] bg-black flex items-center justify-center">
+                                <video
+                                    key={playingVideo}
+                                    src={playingVideo}
+                                    controls
+                                    playsInline
+                                    preload="metadata"
+                                    onCanPlay={() => setPlayingVideoError(null)}
+                                    onError={() => setPlayingVideoError(lang === 'bs' ? 'Video se ne može učitati na ovom uređaju.' : 'This video could not be loaded on this device.')}
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+
+                            {playingVideoError && <p className="px-4 pt-3 text-xs font-bold text-rose-300">{playingVideoError}</p>}
+
+                            <div className="p-4 border-t border-white/10 bg-white/5 flex items-center justify-between">
+                                <span className="text-xs font-bold text-slate-400">
+                                    {t.watchCinematic}
+                                </span>
+                                <button
+                                    onClick={() => setPlayingVideo(null)}
+                                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
+                                >
+                                    {t.closeVideo}
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 )}
@@ -675,10 +1041,10 @@ const WalletContent: React.FC<{
                             <div className="w-full flex justify-between items-center mb-6">
                                 <div>
                                     <h3 className="text-lg font-black text-white uppercase tracking-wider">
-                                        {lang === 'bs' ? 'Skeniraj QR Kod' : 'Scan QR Code'}
+                                        {t.qrLocationScannerTitle}
                                     </h3>
                                     <p className="text-xs text-slate-400 font-medium mt-0.5">
-                                        {lang === 'bs' ? 'Skenirajte kod lokacije za otključavanje' : 'Scan location QR code to unlock'}
+                                        {t.scanLocationToUnlock}
                                     </p>
                                 </div>
                                 <button
@@ -688,11 +1054,11 @@ const WalletContent: React.FC<{
                                     <X size={20} />
                                 </button>
                             </div>
-                            
+
                             {/* Camera Viewport */}
                             <div className="relative w-full aspect-square bg-black rounded-3xl overflow-hidden border-2 border-purple-500/30">
                                 <div id="wallet-reader" className="w-full h-full"></div>
-                                
+
                                 {/* Overlay Scanning Guide */}
                                 <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                                     <div className="w-48 h-48 border-2 border-dashed border-purple-500/40 rounded-2xl relative">
@@ -701,16 +1067,16 @@ const WalletContent: React.FC<{
                                         <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-purple-400 translate-x-1 -translate-y-1 rounded-tr-md"></div>
                                         <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-purple-400 -translate-x-1 translate-y-1 rounded-bl-md"></div>
                                         <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-purple-400 translate-x-1 translate-y-1 rounded-br-md"></div>
-                                        
+
                                         {/* Laser line animation */}
                                         <div className="absolute left-0 right-0 h-1 bg-purple-400/80 animate-scanner-laser top-[10%]"></div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {/* Hint */}
                             <p className="text-[10px] text-purple-400 font-bold uppercase tracking-widest mt-6 animate-pulse">
-                                {lang === 'bs' ? 'Pozicionirajte kod unutar okvira' : 'Position code within the frame'}
+                                {t.positionCodeInFrame}
                             </p>
                         </div>
                     </div>
@@ -742,6 +1108,77 @@ const WalletContent: React.FC<{
                 )}
             </AnimatePresence>
 
+            {/* VIDEO PLAYER MODAL */}
+            <AnimatePresence>
+                {playingVideo && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[7000] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-6"
+                    >
+                        <div className="w-full max-w-2xl bg-black border border-white/15 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col">
+                            <div className="p-4 sm:p-5 flex items-center justify-between border-b border-white/10 bg-white/5">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
+                                        <Play className="w-4 h-4 fill-amber-400" />
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider block">
+                                            {lang === 'bs' ? 'Cinematic Video' : 'Cinematic Video'}
+                                        </span>
+                                        <h3 className="text-base font-black text-white uppercase tracking-tight">
+                                            {(() => {
+                                                const target = QUEST_TARGETS.find(q => (q as any).video === playingVideo);
+                                                return target ? (target.name[lang as keyof typeof target.name] || target.name.en || target.name.bs) : (playingVideo.includes('Mesa') ? 'Meša Selimović' : 'Cinematic Video');
+                                            })()}
+                                        </h3>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => { setPlayingVideo(null); setPlayingVideoError(null); }}
+                                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <div className="relative w-full aspect-video sm:max-h-[60vh] bg-black flex items-center justify-center">
+                                {playingVideoError ? (
+                                    <div className="text-center p-6 space-y-2">
+                                        <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
+                                        <p className="text-xs text-rose-300 font-bold">{playingVideoError}</p>
+                                    </div>
+                                ) : (
+                                    <video
+                                        src={playingVideo}
+                                        autoPlay
+                                        controls
+                                        playsInline
+                                        preload="auto"
+                                        onError={() => setPlayingVideoError(lang === 'bs' ? 'Neuspjelo učitavanje videa.' : 'Failed to load video.')}
+                                        className="w-full h-full object-contain"
+                                    />
+                                )}
+                            </div>
+
+                            <div className="p-4 border-t border-white/10 bg-white/5 flex items-center justify-between">
+                                <span className="text-xs font-bold text-slate-400">
+                                    {lang === 'bs' ? 'Tuzla Tour Video Vodič' : 'Tuzla Tour Video Guide'}
+                                </span>
+                                <button
+                                    onClick={() => { setPlayingVideo(null); setPlayingVideoError(null); }}
+                                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                                >
+                                    {lang === 'bs' ? 'Zatvori Video' : 'Close Video'}
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <style>{`
                 @keyframes laser-move {
                     0% { top: 10%; }
@@ -757,9 +1194,9 @@ const WalletContent: React.FC<{
 };
 
 // Main Export Component wrapping contents in Solana Providers
-const Wallet: React.FC<WalletProps> = ({ lang }) => {
+const Wallet: React.FC<WalletProps> = ({ lang, onNavigateToTarget }) => {
     const [network, setNetwork] = useState<'mainnet-beta' | 'devnet'>('devnet');
-    
+
     const endpoint = useMemo(() => {
         if (network === 'mainnet-beta') {
             return 'https://api.mainnet-beta.solana.com';
@@ -775,7 +1212,7 @@ const Wallet: React.FC<WalletProps> = ({ lang }) => {
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
-                    <WalletContent lang={lang} network={network} setNetwork={setNetwork} />
+                    <WalletContent lang={lang} network={network} setNetwork={setNetwork} onNavigateToTarget={onNavigateToTarget} />
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>

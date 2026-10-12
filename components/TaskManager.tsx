@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CheckCircle2, Circle, CreditCard, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, CheckCircle2, Circle, CreditCard, Headphones, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { Language } from '../types';
 import { Preferences } from '@capacitor/preferences';
+import { EventCalendarView } from './EventCalendarView';
+import { MediaAudioGuideTab } from './MediaAudioGuideTab';
 
-type Mode = 'expenses' | 'tasks' | 'itinerary' | 'threeDayPlan';
+type Mode = 'expenses' | 'tasks' | 'itinerary' | 'calendar' | 'threeDayPlan' | 'media';
 
 type ExpenseItem = {
   id: number;
@@ -84,13 +86,10 @@ Dan 3: Priroda, Piknik i Shopping
 • Uživajte u adrenalinskom parku, šumi i hladovini
 • Preporuka za piknik: Ponesite hranu i piće sa sobom i uživajte u prirodi!
 
-🛍️ Shopping i Parking:
-• Otvorite tab "Parking" u aplikaciji
-• Pronađite najpovoljniju parking zonu za BCC (Bingo City Center)
-• Izvršite plaćanje putem SMS-a (odaberite trajanje: sat ili dan)
-• Koristite navigaciju u aplikaciji do tržnog centra Bingo
-• U tržnom centru Bingo koristite kameru za uvid u 3D model lopte
-• Ili skenirajte QR kod na info pultu u prizemlju za osvajanje nagrade!
+🛍️ Shopping i Odmor:
+• Posjetite BCC (Bingo City Center) ili RK Tuzlanka
+• Opustite se uz kafu i obavite kupovinu lokalnih proizvoda
+• Skenirajte QR kodove na partner lokacijama za osvajanje nagrada!
 
 🌙 Polazak:
 • Pozovite Taxi ili potražite autobusku liniju "34" i "11" u aplikaciji klikom na red vožnje
@@ -192,7 +191,7 @@ const readState = async (): Promise<{ expenses: ExpenseItem[]; tasks: TaskItem[]
 
 const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
   const t = copy[lang] ?? copy.en;
-  const [view, setView] = useState<Mode>('expenses');
+  const [view, setView] = useState<Mode>('calendar');
 
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -330,10 +329,24 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               {t.itinerary}
             </button>
             <button
+              onClick={() => setView('calendar')}
+              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'calendar' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
+            >
+              <CalendarIcon className="h-5 w-5" />
+              {lang === 'bs' ? 'Kalendar događaja' : lang === 'de' ? 'Veranstaltungskalender' : lang === 'tr' ? 'Etkinlik Takvimi' : 'Calendar of Events'}
+            </button>
+            <button
               onClick={() => setView('threeDayPlan')}
               className={`rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'threeDayPlan' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
             >
-              3 Day Plan
+              {lang === 'bs' ? '3 Dnevni plan' : lang === 'de' ? '3-Tage-Plan' : lang === 'tr' ? '3 Günlük Plan' : '3 Day Plan'}
+            </button>
+            <button
+              onClick={() => setView('media')}
+              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'media' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
+            >
+              <Headphones className="h-5 w-5" />
+              {lang === 'bs' ? 'Media' : 'Media'}
             </button>
           </div>
         </div>
@@ -341,6 +354,24 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         {!isLoaded ? (
           <div className="flex justify-center items-center py-20 min-h-[300px]">
             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : view === 'calendar' ? (
+          <div className="p-6 sm:p-8">
+            <EventCalendarView lang={lang} />
+          </div>
+        ) : view === 'threeDayPlan' ? (
+          <div className="p-6 sm:p-8 w-full">
+            <section className="w-full space-y-6">
+              <div className="rounded-[1.75rem] border border-blue-100 bg-white p-6 sm:p-8 shadow-sm">
+                <div className="whitespace-pre-wrap text-sm sm:text-base font-semibold leading-relaxed sm:leading-8 text-slate-700">
+                  {threeDayPlanText}
+                </div>
+              </div>
+            </section>
+          </div>
+        ) : view === 'media' ? (
+          <div className="p-6 sm:p-8 w-full">
+            <MediaAudioGuideTab lang={lang} />
           </div>
         ) : (
           <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_1fr]">
@@ -515,14 +546,6 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                       </div>
                     ))
                   )}
-                </div>
-              </section>
-            ) : view === 'threeDayPlan' ? (
-              <section className="space-y-5">
-                <div className="rounded-[1.5rem] border border-blue-100 bg-white p-5 shadow-sm">
-                  <div className="whitespace-pre-wrap text-sm font-semibold leading-7 text-slate-700 sm:text-base">
-                    {threeDayPlanText}
-                  </div>
                 </div>
               </section>
             ) : null}

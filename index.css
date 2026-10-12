@@ -1,4 +1,3 @@
-
 /* Tuzla Virtual Guide - Global Styles */
 
 @import "tailwindcss";
@@ -18,6 +17,7 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
 .hide-scrollbar::-webkit-scrollbar {
     display: none;
 }
@@ -49,6 +49,29 @@ body {
 .glow-line-bottom {
     border-bottom: 2px solid rgba(59, 130, 246, 0.5);
     box-shadow: 0 4px 10px -2px rgba(59, 130, 246, 0.3);
+}
+
+/* ==========================================================================
+   Hero Image Hotspot – Static Glow (no animations)
+   - Clean blue glowing circle with semi-transparent fill
+   - No keyframe animations – zero GPU overhead
+   - Hover effect only for interactivity feedback
+   ========================================================================== */
+
+/* Static glowing hotspot button */
+.hero-hotspot-btn {
+    position: relative;
+    border-radius: 9999px;
+    border: 2px solid rgba(37, 99, 235, 1);
+    background: rgba(37, 99, 235, 0.32);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: 0 0 18px rgba(37, 99, 235, 0.8), inset 0 0 12px rgba(59, 130, 246, 0.42);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.hero-hotspot-btn:hover {
+    box-shadow: 0 0 28px rgba(37, 99, 235, 1), inset 0 0 16px rgba(37, 99, 235, 0.55);
 }
 
 /* PDF Scroll Shadow */
@@ -143,12 +166,24 @@ body {
 }
 
 /* MapLibre GL Overrides */
+.maplibregl-marker {
+    z-index: 1 !important;
+}
+
+.maplibregl-popup {
+    z-index: 200 !important;
+}
+
+.maplibregl-ctrl-bottom-right {
+    z-index: 10 !important;
+}
+
 .maplibregl-popup-content {
     border-radius: 16px !important;
     padding: 0 !important;
     overflow: hidden !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25) !important;
-    border: 1px solid rgba(0,0,0,0.05) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
 .maplibregl-popup-close-button {
@@ -158,15 +193,27 @@ body {
     border-radius: 0 16px 0 12px !important;
     transition: all 0.2s;
 }
+
 .maplibregl-popup-close-button:hover {
     background: #f1f5f9 !important;
     color: #333 !important;
 }
 
 @keyframes marker-pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
-    70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+    }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+    }
 }
 
 .quest-marker-pulse {
@@ -174,9 +221,20 @@ body {
 }
 
 @keyframes locked-marker-pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4); }
-    70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(148, 163, 184, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(148, 163, 184, 0); }
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4);
+    }
+
+    70% {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 10px rgba(148, 163, 184, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4);
+    }
 }
 
 .locked-quest-pulse {
@@ -204,14 +262,42 @@ body {
     position: absolute;
     width: 30px;
     height: 30px;
-    border: 4px solid #fbbf24; /* Yellow-400 */
+    border: 4px solid #fbbf24;
+    /* Yellow-400 */
     z-index: 10;
 }
 
-.qr-corner-tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; border-top-left-radius: 1.5rem; }
-.qr-corner-tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; border-top-right-radius: 1.5rem; }
-.qr-corner-bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; border-bottom-left-radius: 1.5rem; }
-.qr-corner-br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; border-bottom-right-radius: 1.5rem; }
+.qr-corner-tl {
+    top: -2px;
+    left: -2px;
+    border-right: 0;
+    border-bottom: 0;
+    border-top-left-radius: 1.5rem;
+}
+
+.qr-corner-tr {
+    top: -2px;
+    right: -2px;
+    border-left: 0;
+    border-bottom: 0;
+    border-top-right-radius: 1.5rem;
+}
+
+.qr-corner-bl {
+    bottom: -2px;
+    left: -2px;
+    border-right: 0;
+    border-top: 0;
+    border-bottom-left-radius: 1.5rem;
+}
+
+.qr-corner-br {
+    bottom: -2px;
+    right: -2px;
+    border-left: 0;
+    border-top: 0;
+    border-bottom-right-radius: 1.5rem;
+}
 
 /* Laser Animation */
 .qr-laser {
@@ -227,41 +313,58 @@ body {
 }
 
 @keyframes scanner-laser {
-    0% { top: 15%; opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { top: 85%; opacity: 0; }
+    0% {
+        top: 15%;
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        top: 85%;
+        opacity: 0;
+    }
 }
 
 /* Html5Qrcode video containment */
-#wallet-reader, #map-quest-reader {
+#wallet-reader,
+#map-quest-reader {
     width: 100% !important;
     height: 100% !important;
 }
 
-#wallet-reader video, #map-quest-reader video {
+#wallet-reader video,
+#map-quest-reader video {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
 }
 
 /* Hide the default html5-qrcode UI elements if any leak */
-#wallet-reader__dashboard, #map-quest-reader__dashboard {
+#wallet-reader__dashboard,
+#map-quest-reader__dashboard {
     display: none !important;
 }
-#wallet-reader__status_span, #map-quest-reader__status_span {
+
+#wallet-reader__status_span,
+#map-quest-reader__status_span {
     display: none !important;
 }
+
 /* Premium Title Shimmer */
 .title-shimmer {
-    background: linear-gradient(
-        120deg, 
-        #1e3a8a 0%, 
-        #1e3a8a 40%, 
-        #3b82f6 50%, 
-        #1e3a8a 60%, 
-        #1e3a8a 100%
-    );
+    background: linear-gradient(120deg,
+            #1e3a8a 0%,
+            #1e3a8a 40%,
+            #3b82f6 50%,
+            #1e3a8a 60%,
+            #1e3a8a 100%);
     background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
@@ -270,8 +373,13 @@ body {
 }
 
 @keyframes shimmer {
-    0% { background-position: 150% 0; }
-    100% { background-position: -50% 0; }
+    0% {
+        background-position: 150% 0;
+    }
+
+    100% {
+        background-position: -50% 0;
+    }
 }
 
 .glass-header {
@@ -303,21 +411,33 @@ body {
 }
 
 /* Map Markers */
-.hotel-marker, .hotel-marker-container {
+.hotel-marker,
+.hotel-marker-container {
     z-index: 100 !important;
     cursor: pointer;
     pointer-events: auto;
 }
 
-.hotel-marker div, .hotel-marker-container div {
+.hotel-marker div,
+.hotel-marker-container div {
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.hotel-marker:active div, .hotel-marker-container:active div {
+.hotel-marker:active div,
+.hotel-marker-container:active div {
     transform: scale(0.9);
 }
 
 @keyframes marker-breathe {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.08); opacity: 1; }
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
 }

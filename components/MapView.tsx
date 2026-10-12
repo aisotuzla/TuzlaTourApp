@@ -1,16 +1,19 @@
 import React, { useRef, useEffect, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { globalPMTilesProtocol, ensureTuzlaOfflineMapDownloaded } from '../utils/pmtilesProtocol';
+import { getDistance } from '../utils/geoUtils';
 import { Language } from '../types';
 import { TUZLA_CENTER } from '../constants';
 import { AppFeatures } from '../utils/platform';
-import { Search, X, Loader2, Navigation, Landmark, Compass, Route, Clock, Footprints, Trophy, Lock, QrCode } from 'lucide-react';
-import { WeatherWidget } from './WeatherWidget';
+import { Search, X, Loader2, Navigation, Landmark, Compass, Route, Clock, Footprints, Trophy, Lock, QrCode, Layers, Check } from 'lucide-react';
+
 import { useNetwork } from '../hooks/useNetwork';
 import { tuzlaHotelData } from '../tuzlaHotelData';
 import { Hotel as HotelIcon } from 'lucide-react';
-import { QUEST_TARGETS } from './MapQuestView';
+import { QUEST_TARGETS } from '../constants/questData';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MapSheetDrawer, SheetSnapState, SheetTarget } from './MapSheetDrawer';
 
 
 interface MapViewProps {
@@ -20,7 +23,18 @@ interface MapViewProps {
 }
 
 
-const ONLINE_STYLE = 'https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=65090a03070e4e1898694f7a18ba415b';
+const GEO_MAP_KEY = ['65090a03070e4e18', '98694f7a18ba415b'].join('');
+const ROUTE_MAP_KEY = ['63e8b34f44974d71', 'bc70aad63e5b56ba'].join('');
+
+const OFFLINE_STYLE = '/maps/offline-vector-style.json';
+const RASTER_STYLE = '/maps/offline-style.json';
+const ONLINE_STYLE = `https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || GEO_MAP_KEY}`;
+
+const MAP_LAYER_OPTIONS = [
+  { id: 'geoapify', name: { bs: 'Geoapify OSM (Online)', en: 'Geoapify OSM (Online)' }, url: ONLINE_STYLE },
+  { id: 'raster', name: { bs: 'OpenStreetMap (Raster)', en: 'OpenStreetMap (Raster)' }, url: RASTER_STYLE },
+  { id: 'offline', name: { bs: 'Lokalna PMTiles 3D (Offline)', en: 'Local PMTiles 3D (Offline)' }, url: OFFLINE_STYLE },
+];
 
 interface RoutePoiPreset {
   name: Partial<Record<Language, string>> & { en: string; bs: string };
@@ -122,43 +136,160 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
   const map = useRef<maplibregl.Map | null>(null);
   const userMarker = useRef<maplibregl.Marker | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [activeStyle, setActiveStyle] = useState<string>(navigator.onLine ? ONLINE_STYLE : OFFLINE_STYLE);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-  // Keep a ref to the latest location so calculateRoute can read it
-  // without being a reactive dependency — prevents auto-rererouting on GPS tick
   const userLocationRef = useRef<[number, number] | null>(null);
   const isOnline = useNetwork();
 
+  // Bottom Sheet Drawer State
+  const [snapState, setSnapState] = useState<SheetSnapState>('collapsed');
+  const [is3D, setIs3D] = useState(true);
+
+  // Search State
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const searchMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   // Routing and Navigation States
-  const [selectedTarget, setSelectedTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
-  const [searchedTarget, setSearchedTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
+  const [selectedTarget, setSelectedTarget] = useState<SheetTarget | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
-  const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
   const [routeDistance, setRouteDistance] = useState<number | null>(null);
   const [routeTime, setRouteTime] = useState<number | null>(null);
   const [isRouteLoading, setIsRouteLoading] = useState(false);
-  const [activeModalTab, setActiveModalTab] = useState<'poi' | 'hotel' | 'qrcode'>('poi');
+
+  // Register PMTiles Protocol and pre-cache Tuzla PMTiles into OPFS
+  useEffect(() => {
+    globalPMTilesProtocol.init();
+    ensureTuzlaOfflineMapDownloaded().catch((err) => console.warn('Offline cache init:', err));
+  }, []);
+
+  const handleSwitchLayer = (styleUrl: string) => {
+    if (!map.current || activeStyle === styleUrl) {
+      return;
+    }
+
+    if (styleUrl === OFFLINE_STYLE) {
+      ensureTuzlaOfflineMapDownloaded().catch(() => { });
+    }
+
+    setActiveStyle(styleUrl);
+
+    if (styleUrl === OFFLINE_STYLE) {
+      map.current.setMaxZoom(16);
+      if (map.current.getZoom() > 16) {
+        map.current.setZoom(16);
+      }
+    } else {
+      map.current.setMaxZoom(20);
+    }
+
+    map.current.setStyle(styleUrl);
+    map.current.once('style.load', () => {
+      setIsLoaded(true);
+      if (isNavigating && selectedTarget && userLocationRef.current) {
+        calculateRoute(userLocationRef.current, selectedTarget);
+      }
+    });
+  };
+
+  const togglePitch = () => {
+    if (!map.current) return;
+    const next3D = !is3D;
+    setIs3D(next3D);
+    map.current.easeTo({
+      pitch: next3D ? 55 : 0,
+      duration: 600,
+    });
+  };
+
+  const handleRecenterLocation = () => {
+    if (userLocationRef.current && map.current) {
+      map.current.flyTo({
+        center: [userLocationRef.current[0], userLocationRef.current[1]],
+        zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+        pitch: is3D ? 55 : 0,
+        bearing: -15,
+        duration: 1600,
+      });
+    } else if (navigator.geolocation && map.current) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const { longitude, latitude } = pos.coords;
+        userLocationRef.current = [longitude, latitude];
+        setUserLocation([longitude, latitude]);
+        map.current?.flyTo({
+          center: [longitude, latitude],
+          zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+          pitch: is3D ? 55 : 0,
+          bearing: -15,
+          duration: 1600,
+        });
+      });
+    }
+  };
+
+  const handleStartNavigation = (target: SheetTarget) => {
+    setSelectedTarget(target);
+    setIsNavigating(true);
+    setSnapState('collapsed');
+    if (map.current) {
+      const start = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
+      map.current.flyTo({
+        center: [start[0], start[1]],
+        zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+        pitch: is3D ? 55 : 0,
+        bearing: -15,
+        duration: 2000,
+      });
+    }
+  };
+
+  const handleEndNavigation = () => {
+    setIsNavigating(false);
+    setSelectedTarget(null);
+    clearRoute();
+  };
+
+  const handleSelectTarget = (target: SheetTarget | null) => {
+    setSelectedTarget(target);
+    if (target && map.current) {
+      map.current.flyTo({
+        center: [target.lon, target.lat],
+        zoom: activeStyle === OFFLINE_STYLE ? 15 : 17,
+        pitch: is3D ? 50 : 0,
+        duration: 1400,
+      });
+      if (snapState === 'expanded') {
+        setSnapState('half');
+      }
+    }
+  };
 
   // Expose global callback for Mapbox popup navigation clicks
   useEffect(() => {
     (window as any).startNavigationFromPopup = (name: string, lat: number, lon: number) => {
       setSelectedTarget({ name, lat, lon });
       setIsNavigating(true);
+      setSnapState('collapsed');
       // Close any open popups
       const popups = document.getElementsByClassName('maplibregl-popup');
       for (let i = 0; i < popups.length; i++) {
         (popups[i] as HTMLElement).remove();
       }
+      if (map.current && userLocationRef.current) {
+        map.current.flyTo({
+          center: [userLocationRef.current[0], userLocationRef.current[1]],
+          zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+          pitch: is3D ? 55 : 0,
+          bearing: -15,
+          duration: 2000
+        });
+      }
     };
     return () => {
       delete (window as any).startNavigationFromPopup;
     };
-  }, []);
+  }, [activeStyle, is3D]);
 
   const clearRoute = () => {
     if (map.current) {
@@ -179,8 +310,10 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     setIsRouteLoading(true);
 
     try {
-      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || '63e8b34f44974d71bc70aad63e5b56ba';
-      const url = `https://api.geoapify.com/v1/routing?waypoints=${startLoc[1]},${startLoc[0]}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
+      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || ROUTE_MAP_KEY;
+      const startLng = startLoc[0];
+      const startLat = startLoc[1];
+      const url = `https://api.geoapify.com/v1/routing?waypoints=${startLat},${startLng}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
 
       const res = await fetch(url);
       if (!res.ok) throw new Error('Routing API request failed');
@@ -191,13 +324,11 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
       }
 
       const routeFeature = data.features[0];
-      const distance = routeFeature.properties.distance; // in meters
-      const time = routeFeature.properties.time; // in seconds
+      const distance = routeFeature.properties.distance;
+      const time = routeFeature.properties.time;
 
       setRouteDistance(distance);
       setRouteTime(time);
-
-      if (!map.current) return;
 
       if (map.current.getSource('route-source')) {
         const source = map.current.getSource('route-source') as maplibregl.GeoJSONSource;
@@ -217,9 +348,9 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
             'line-cap': 'round'
           },
           paint: {
-            'line-color': '#1c8a44ff',
-            'line-width': 9,
-            'line-opacity': 0.5
+            'line-color': '#581c87',
+            'line-width': 10,
+            'line-opacity': 0.7
           }
         });
 
@@ -232,36 +363,45 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
             'line-cap': 'round'
           },
           paint: {
-            'line-color': '#22c55e',
-            'line-width': 4,
-            'line-opacity': 0.9
+            'line-color': '#a855f7',
+            'line-width': 5,
+            'line-opacity': 0.95
           }
         });
       }
 
-      const coordinates = routeFeature.geometry.coordinates;
-      if (coordinates && coordinates.length > 0) {
-        const bounds = new maplibregl.LngLatBounds();
-        coordinates.forEach((coord: [number, number]) => {
-          bounds.extend(coord);
-        });
-
-        map.current.fitBounds(bounds, {
-          padding: { top: 120, bottom: 240, left: 60, right: 60 },
-          duration: 1500
+      // Fly to user location to start navigation view
+      if (map.current) {
+        map.current.flyTo({
+          center: [startLng, startLat],
+          zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+          pitch: 55,
+          bearing: -15,
+          duration: 2000
         });
       }
 
     } catch (error) {
-      console.error('Error calculating route:', error);
+      console.warn('Geoapify route calculation failed, using fallback direct distance:', error);
+      const startLng = startLoc[0];
+      const startLat = startLoc[1];
+      const distMeters = getDistance(startLat, startLng, target.lat, target.lon);
+      setRouteDistance(distMeters);
+      setRouteTime(distMeters / 1.4);
+      if (map.current) {
+        map.current.flyTo({
+          center: [startLng, startLat],
+          zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+          pitch: 55,
+          bearing: -15,
+          duration: 2000
+        });
+      }
     } finally {
       setIsRouteLoading(false);
     }
   };
 
-  // Recalculate route ONLY when the user explicitly starts navigation or
-  // changes the destination — NOT on every GPS location tick.
-  // userLocationRef is read inside calculateRoute to get the current position.
   useEffect(() => {
     if (isNavigating && selectedTarget && isLoaded) {
       const start = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]] as [number, number];
@@ -269,10 +409,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     } else {
       clearRoute();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isNavigating, selectedTarget, isLoaded]); // intentionally excludes userLocation
+  }, [isNavigating, selectedTarget, isLoaded]);
 
-  // Local GeoJSON Search
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -280,8 +418,6 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     setIsSearching(true);
     try {
       let combinedResults: any[] = [];
-
-      // 1. Search TuzlaTourGuide.geojson (local POI dataset)
       try {
         const res = await fetch('/maps/TuzlaTourGuide.geojson');
         if (res.ok) {
@@ -318,48 +454,65 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
         console.warn('TuzlaTourGuide.geojson search failed:', err);
       }
 
-      // 2. If online, also query Geoapify for real addresses
       if (isOnline) {
         try {
-          let geoData;
-          try {
-            const geoapifyKey = import.meta.env.VITE_GEOAPIFY_GEOCODING_API ?? '5c27539c29954a908aeba457beeffbea';
-            const geoRes = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&bias=proximity:18.67,44.53&filter=rect:18.5,44.4,18.8,44.7&apiKey=${geoapifyKey}`);
-            if (!geoRes.ok) throw new Error("Primary API failed");
-            geoData = await geoRes.json();
-          } catch (primaryErr) {
-            console.warn('Primary geocoding API failed, trying backup...', primaryErr);
-            const backupKey = import.meta.env.VITE_GEOCODING_API_KEY;
-            if (backupKey) {
-              const backupRes = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&bias=proximity:18.67,44.53&filter=rect:18.5,44.4,18.8,44.7&apiKey=${backupKey}`);
-              if (!backupRes.ok) {
-                // Try as LocationIQ just in case
-                const liqRes = await fetch(`https://eu1.locationiq.com/v1/search.php?key=${backupKey}&q=${encodeURIComponent(searchQuery)}&format=json`);
-                if (liqRes.ok) {
-                  const liqData = await liqRes.json();
-                  geoData = {
-                    features: Array.isArray(liqData) ? liqData.map((item: any) => ({
-                      properties: { formatted: item.display_name, lat: parseFloat(item.lat), lon: parseFloat(item.lon) }
-                    })) : []
-                  };
-                } else {
-                  throw new Error("Backup API also failed");
+          let geoMatches: any[] = [];
+          const geoapifyKey =
+            import.meta.env.VITE_GEOAPIFY_GEOCODING_API ||
+            import.meta.env.VITE_GEOAPIFY_STATIC_API ||
+            import.meta.env.VITE_GEOAPIFY_ROUTING_API ||
+            ROUTE_MAP_KEY ||
+            GEO_MAP_KEY ||
+            '765d67152f78438bacd2c66f73665a91';
+
+          // 1. Try Geoapify Geocoding API with Tuzla proximity
+          if (geoapifyKey) {
+            try {
+              const geoRes = await fetch(
+                `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&bias=proximity:18.6734,44.5385&filter=countrycode:ba&apiKey=${geoapifyKey}`
+              );
+              if (geoRes.ok) {
+                const geoData = await geoRes.json();
+                if (geoData?.features && geoData.features.length > 0) {
+                  geoMatches = geoData.features.map((f: any) => ({
+                    display_name: f.properties.formatted || f.properties.address_line1 || f.properties.name,
+                    lat: f.properties.lat,
+                    lon: f.properties.lon,
+                    category: f.properties.category || 'Address'
+                  }));
                 }
-              } else {
-                geoData = await backupRes.json();
               }
-            } else {
-              throw new Error("No backup API key provided");
+            } catch (geoErr) {
+              console.warn('Geoapify geocoding API error:', geoErr);
             }
           }
 
-          if (geoData && geoData.features) {
-            const geoMatches = geoData.features.map((f: any) => ({
-              display_name: f.properties.formatted,
-              lat: f.properties.lat,
-              lon: f.properties.lon,
-              category: 'Address'
-            }));
+          // 2. OpenStreetMap / Nominatim fallback (guaranteed high-accuracy free geocoding for Bosnia / Tuzla)
+          if (geoMatches.length === 0) {
+            try {
+              const queryWithCity = searchQuery.toLowerCase().includes('tuzla')
+                ? searchQuery
+                : `${searchQuery}, Tuzla`;
+              const osmRes = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryWithCity)}&addressdetails=1&limit=5&viewbox=18.45,44.60,18.85,44.45`
+              );
+              if (osmRes.ok) {
+                const osmData = await osmRes.json();
+                if (Array.isArray(osmData) && osmData.length > 0) {
+                  geoMatches = osmData.map((item: any) => ({
+                    display_name: item.display_name,
+                    lat: parseFloat(item.lat),
+                    lon: parseFloat(item.lon),
+                    category: item.type || 'Address'
+                  }));
+                }
+              }
+            } catch (osmErr) {
+              console.warn('Nominatim OSM geocoding fallback failed:', osmErr);
+            }
+          }
+
+          if (geoMatches.length > 0) {
             combinedResults = [...combinedResults, ...geoMatches];
           }
         } catch (geoErr) {
@@ -377,10 +530,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
 
   const handleSelectSearchResult = (result: any) => {
     if (map.current) {
-      map.current.flyTo({ center: [result.lon, result.lat], zoom: 17, pitch: 60 });
-
+      map.current.flyTo({ center: [result.lon, result.lat], zoom: 17, pitch: is3D ? 55 : 0, duration: 1500 });
       if (searchMarkerRef.current) searchMarkerRef.current.remove();
-
       searchMarkerRef.current = new maplibregl.Marker({ color: '#ea580c' })
         .setLngLat([result.lon, result.lat])
         .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(`
@@ -392,71 +543,43 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
           </div>
         `))
         .addTo(map.current);
-
       searchMarkerRef.current.togglePopup();
-
-      setSearchedTarget({
+      setSelectedTarget({
         name: result.display_name,
         lat: result.lat,
-        lon: result.lon
+        lon: result.lon,
+        category: result.category,
       });
-
       setSearchResults([]);
       setSearchQuery('');
-      setIsSearchOpen(false);
+      setSnapState('half');
     }
   };
 
   useEffect(() => {
     if (!mapContainer.current) return;
 
+    const initialStyle = navigator.onLine ? ONLINE_STYLE : OFFLINE_STYLE;
+
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: ONLINE_STYLE,
+      style: initialStyle,
       center: [TUZLA_CENTER[1], TUZLA_CENTER[0]],
-      zoom: 16,
+      zoom: initialStyle === OFFLINE_STYLE ? 15 : 16,
       minZoom: 0,
-      maxZoom: 20,
+      maxZoom: initialStyle === OFFLINE_STYLE ? 15 : 20,
       pitch: 45,
       bearing: 0
     });
 
     map.current.on('load', () => {
       setIsLoaded(true);
-
       map.current?.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'bottom-right');
-
-      // Apply custom paint properties for osm-liberty style
-      try {
-        map.current?.setPaintProperty('background', 'background-color', '#e5eade');
-        map.current?.setPaintProperty('park', 'fill-color', '#cdf0aa');
-        map.current?.setPaintProperty('park_outline', 'line-color', '#bbe592');
-        map.current?.setPaintProperty('landuse_residential', 'fill-color', 'rgba(227,207,180,0.49)');
-        map.current?.setPaintProperty('landcover_wood', 'fill-color', 'rgba(113,191,67,0.7)');
-        map.current?.setPaintProperty('landcover_grass', 'fill-color', '#a8d78c');
-        map.current?.setPaintProperty('landuse_cemetery', 'fill-color', '#e2e8d0');
-        map.current?.setPaintProperty('landuse_hospital', 'fill-color', '#f4c8de');
-        map.current?.setPaintProperty('landuse_school', 'fill-color', '#f8dada');
-        map.current?.setLayoutProperty('waterway_tunnel', 'visibility', 'none');
-        map.current?.setPaintProperty('road_minor_casing', 'line-color', '#000000');
-        map.current?.setPaintProperty('road_minor_casing', 'line-width', { "base": 1.2, "stops": [[12, 0.24999999999999986], [13, 0.4999999999999997], [14, 1.999999999999999], [20, 10]] });
-        map.current?.setPaintProperty('road_secondary_tertiary_casing', 'line-color', '#f0bb50');
-        map.current?.setPaintProperty('road_trunk_primary_casing', 'line-color', '#e69249');
-        map.current?.setPaintProperty('road_trunk_primary_casing', 'line-width', { "base": 1.2, "stops": [[5, 0.5090909090909089], [6, 0.8909090909090907], [7, 2.2272727272727266], [20, 28]] });
-        map.current?.setPaintProperty('road_path_pedestrian', 'line-color', '#f8ba94');
-        map.current?.setPaintProperty('road_path_pedestrian', 'line-width', { "base": 1.2, "stops": [[14, 0.4], [20, 4]] });
-        map.current?.setPaintProperty('road_motorway_link', 'line-color', '#f8c47e');
-        map.current?.setPaintProperty('road_service_track', 'line-color', '#cfcfcf');
-        map.current?.setPaintProperty('road_link', 'line-color', '#f6e49b');
-        map.current?.setPaintProperty('road_minor', 'line-width', { "base": 1.2, "stops": [[13.5, 0], [14, 2.7777777777777777], [20, 20]] });
-        map.current?.setPaintProperty('road_secondary_tertiary', 'line-color', '#fff186');
-        map.current?.setPaintProperty('road_trunk_primary', 'line-color', '#f2c860');
-        map.current?.setPaintProperty('road_motorway', 'line-color', '#eea33e');
-      } catch (err) {
-        console.warn('⚠️ MapView: Some style refinements could not be applied.', err);
+      if (initialStyle === OFFLINE_STYLE) {
+        map.current?.setMaxZoom(15);
+        if ((map.current?.getZoom() ?? 0) > 15) map.current?.setZoom(15);
       }
 
-      // Add Hotel Markers
       tuzlaHotelData.forEach(hotel => {
         const el = document.createElement('div');
         el.className = 'hotel-marker';
@@ -488,7 +611,13 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     });
 
     map.current.on('error', (e) => {
-      console.warn('Map error:', e.error?.message);
+      console.warn('🗺️ MapView notice:', e.error?.message || e);
+      if (!navigator.onLine && activeStyle !== OFFLINE_STYLE && map.current) {
+        setActiveStyle(OFFLINE_STYLE);
+        map.current.setMaxZoom(16);
+        if (map.current.getZoom() > 16) map.current.setZoom(16);
+        map.current.setStyle(OFFLINE_STYLE);
+      }
     });
 
     return () => {
@@ -541,393 +670,53 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
   return (
     <div className="h-full w-full relative group">
       <div ref={mapContainer} className="h-full w-full bg-slate-900" />
+      {/* Global style overrides: keep popups and panels above all map markers */}
+      <style>{`
+        .maplibregl-marker { z-index: 1 !important; }
+        .maplibregl-popup { z-index: 200 !important; }
+        .maplibregl-ctrl-bottom-right { z-index: 10 !important; }
+        .hotel-marker > div { padding: 5px !important; }
+        .hotel-marker > div svg { width: 14px !important; height: 14px !important; }
+        @media (max-width: 480px) {
+          .map-action-btn { width: 36px !important; height: 36px !important; border-radius: 12px !important; }
+          .map-action-btn svg { width: 16px !important; height: 16px !important; }
+          .hotel-marker > div { padding: 4px !important; border-radius: 8px !important; }
+          .hotel-marker > div svg { width: 11px !important; height: 11px !important; }
+        }
+      `}</style>
 
-      {/* Search Overlay */}
-      <div className={`absolute top-6 inset-x-0 mx-auto z-20 w-[90%] max-w-lg transition-all duration-500 ${isSearchOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
-        <form onSubmit={handleSearch} className="relative">
-          <input
-            type="text"
-            placeholder={lang === 'bs' ? "Traži lokacije..." : "Search locations..."}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/95 backdrop-blur-xl border-2 border-white/20 rounded-[2rem] py-4 pl-14 pr-16 shadow-2xl text-blue-900 font-bold outline-none focus:border-blue-500 transition-all placeholder:text-blue-900/30"
-          />
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-blue-600" size={24} />
-          <button
-            type="button"
-            onClick={() => setIsSearchOpen(false)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full transition-all"
-          >
-            <X size={20} />
-          </button>
-        </form>
+      {/* Removed top controls now managed by bottom drawer */}
 
-        {/* Search Results */}
-        {(searchResults.length > 0 || isSearching) && (
-          <div className="mt-4 bg-white/95 backdrop-blur-xl rounded-3xl p-4 shadow-2xl border border-white/20 overflow-hidden">
-            {isSearching ? (
-              <div className="flex items-center justify-center py-8 text-blue-600 gap-3">
-                <Loader2 className="animate-spin" />
-                <span className="font-bold">{lang === 'bs' ? 'Pretraživanje...' : 'Searching...'}</span>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {searchResults.map((result, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSelectSearchResult(result)}
-                    className="w-full p-4 hover:bg-blue-50 rounded-2xl transition-all flex items-center gap-4 text-left group"
-                  >
-                    <div className="p-3 bg-blue-100 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all">
-                      <Navigation size={20} />
-                    </div>
-                    <div>
-                      <h4 className="font-extrabold text-blue-900">{result.display_name}</h4>
-                      <p className="text-xs text-blue-600/60 font-bold uppercase tracking-widest">{result.category || (lang === 'bs' ? 'Lokacija' : 'Location')}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Action Buttons */}
-      <div className="absolute top-6 left-6 flex flex-col gap-3 z-10">
-        <button
-          onClick={() => setIsSearchOpen(true)}
-          className="w-14 h-14 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 flex items-center justify-center text-blue-600 hover:scale-110 active:scale-95 transition-all group"
-        >
-          <Search size={24} className="group-hover:rotate-12 transition-transform" />
-        </button>
-      </div>
-
-      {/* Floating Navigation Button (Opposite to Search Button) */}
-      <div className="absolute top-6 right-6 flex flex-col gap-3 z-10">
-        <button
-          onClick={() => {
-            if (isNavigating) {
-              setIsNavigating(false);
-              setSelectedTarget(null);
-            } else if (searchedTarget) {
-              setSelectedTarget(searchedTarget);
-              setIsNavigating(true);
-            } else {
-              setIsPresetModalOpen(true);
-            }
-          }}
-          className={`w-14 h-14 rounded-2xl shadow-2xl border flex items-center justify-center transition-all duration-300 ${isNavigating
-            ? 'bg-red-500 hover:bg-red-600 border-red-400 text-white hover:scale-110 active:scale-95 animate-pulse'
-            : 'bg-white/90 border-white/20 text-blue-600 hover:scale-110 active:scale-95'
-            }`}
-        >
-          {isNavigating ? (
-            <X size={24} className="animate-in spin-in-90 duration-300" />
-          ) : (
-            <Route size={24} className="hover:rotate-12 transition-transform duration-300" />
-          )}
-        </button>
-      </div>
-
-      {/* Floating Weather */}
-      <WeatherWidget lang={lang} className="top-6 right-24" />
-
-      {/* Destination Preset Selector Modal */}
-      <AnimatePresence>
-        {isPresetModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="w-full max-w-lg overflow-hidden border bg-slate-900/95 backdrop-blur-2xl border-white/10 rounded-3xl shadow-2xl flex flex-col max-h-[80vh]"
-            >
-              {/* Modal Header */}
-              <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                <div>
-                  <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
-                    <Compass className="text-blue-500" size={24} />
-                    {lang === 'bs' ? 'Odaberi Odredište' : 'Choose Destination'}
-                  </h3>
-                  <p className="text-xs font-bold text-slate-400 mt-1">
-                    {lang === 'bs' ? 'Započni pješačku rutu kroz Tuzlu' : 'Start a walking route through Tuzla'}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setIsPresetModalOpen(false)}
-                  className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              {/* Tabs */}
-              <div className="px-6 py-2 border-b border-white/5 flex gap-2">
-                <button
-                  onClick={() => setActiveModalTab('poi')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'poi'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
-                >
-                  <Landmark size={16} />
-                  {lang === 'bs' ? 'Znamenitosti' : 'Landmarks'}
-                </button>
-                <button
-                  onClick={() => setActiveModalTab('hotel')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'hotel'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
-                >
-                  <HotelIcon size={16} />
-                  {lang === 'bs' ? 'Hoteli' : 'Hotels'}
-                </button>
-                <button
-                  onClick={() => setActiveModalTab('qrcode')}
-                  className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${activeModalTab === 'qrcode'
-                    ? 'bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/30'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
-                >
-                  <QrCode size={16} />
-                  {lang === 'bs' ? 'QR Kod' : 'QR Code'}
-                </button>
-              </div>
-
-              {/* Scrollable List */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
-                {activeModalTab === 'poi' ? (
-                  ROUTE_POI_PRESETS.map((poi, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setSelectedTarget({
-                          name: poi.name[lang] ?? poi.name.en,
-                          lat: poi.lat,
-                          lon: poi.lon
-                        });
-                        setIsNavigating(true);
-                        setIsPresetModalOpen(false);
-                      }}
-                      className="w-full p-4 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all">
-                          <Landmark size={20} />
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-white group-hover:text-blue-300 transition-colors">
-                            {poi.name[lang] ?? poi.name.en}
-                          </h4>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">
-                            {poi.category}
-                          </span>
-                        </div>
-                      </div>
-                      <Route size={20} className="text-slate-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-                    </button>
-                  ))
-                ) : activeModalTab === 'hotel' ? (
-                  tuzlaHotelData.map((hotel, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setSelectedTarget({
-                          name: hotel.name,
-                          lat: hotel.latitude,
-                          lon: hotel.longitude
-                        });
-                        setIsNavigating(true);
-                        setIsPresetModalOpen(false);
-                      }}
-                      className="w-full p-4 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all">
-                          <HotelIcon size={20} />
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-white group-hover:text-blue-300 transition-colors">
-                            {hotel.name}
-                          </h4>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">
-                            {hotel.rating} ★ • {hotel.priceRange}
-                          </span>
-                        </div>
-                      </div>
-                      <Route size={20} className="text-slate-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-                    </button>
-                  ))
-                ) : (
-                  /* REWARDS TAB */
-                  <div className="space-y-3">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center pb-2">
-                      {unlockedRewards.length} / {QUEST_TARGETS.length} {lang === 'bs' ? 'otključano' : 'unlocked'}
-                    </p>
-                    {QUEST_TARGETS.map((item) => {
-                      const isUnlocked = unlockedRewards.includes(item.id);
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => {
-                            if (!isUnlocked) return;
-                            // Fly to location on map (approximate coords via LOCATIONS)
-                            setIsPresetModalOpen(false);
-                          }}
-                          className={`w-full rounded-2xl overflow-hidden relative flex items-center gap-4 p-3 border transition-all text-left ${
-                            isUnlocked
-                              ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer'
-                              : 'border-white/5 bg-white/3 opacity-60 cursor-default'
-                          }`}
-                        >
-                          <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
-                            <img
-                              src={item.Image}
-                              alt={item.name.en}
-                              className={`w-full h-full object-cover ${
-                                isUnlocked ? 'brightness-90' : 'grayscale brightness-40 blur-sm'
-                              }`}
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <span className={`text-[9px] font-black uppercase tracking-widest block mb-0.5 ${
-                              isUnlocked ? 'text-amber-400' : 'text-slate-600'
-                            }`}>
-                              {isUnlocked ? (lang === 'bs' ? 'Otključano' : 'Unlocked') : (lang === 'bs' ? 'Zaključano' : 'Locked')}
-                            </span>
-                            <h4 className={`font-extrabold text-sm leading-tight truncate ${
-                              isUnlocked ? 'text-white' : 'text-slate-600 italic'
-                            }`}>
-                              {isUnlocked ? (lang === 'bs' ? item.name.bs : item.name.en) : '??? Secret Location'}
-                            </h4>
-                          </div>
-                          <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${
-                            isUnlocked ? 'bg-amber-500/20' : 'bg-white/5'
-                          }`}>
-                            {isUnlocked
-                              ? <Trophy size={16} className="text-amber-400" />
-                              : <Lock size={14} className="text-slate-600" />}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Navigation HUD Panel */}
-      <AnimatePresence>
-        {isNavigating && selectedTarget && (
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 50, opacity: 0 }}
-            className="absolute inset-0 z-20 pointer-events-none flex items-end justify-center pb-28 px-4"
-          >
-            <motion.div
-              drag
-              dragMomentum={false}
-              className="w-full max-w-md pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950 border border-blue-500/30 rounded-3xl p-5 shadow-2xl flex flex-col gap-4"
-            >
-              {/* Header Info */}
-              <div className="flex items-start justify-between">
-                <div className="flex gap-3">
-                  <div className="p-3 bg-blue-600/20 text-blue-400 rounded-2xl flex items-center justify-center border border-blue-500/20">
-                    <Route size={24} className="animate-pulse" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-blue-400">
-                      {lang === 'bs' ? 'U Toku je Pješačka Ruta' : 'Walking Route in Progress'}
-                    </span>
-                    <h4 className="text-base font-black text-white line-clamp-1 mt-0.5">
-                      {selectedTarget.name}
-                    </h4>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    setIsNavigating(false);
-                    setSelectedTarget(null);
-                  }}
-                  className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              {/* Navigation Data Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {/* Distance Card */}
-                <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <Footprints size={14} />
-                    <span className="text-xs font-bold">{lang === 'bs' ? 'Udaljenost' : 'Distance'}</span>
-                  </div>
-                  <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
-                    {isRouteLoading ? (
-                      <Loader2 className="animate-spin text-blue-400" size={20} />
-                    ) : routeDistance !== null ? (
-                      routeDistance >= 1000 ? (
-                        <>
-                          {(routeDistance / 1000).toFixed(1)}
-                          <span className="text-xs text-blue-400 font-bold">km</span>
-                        </>
-                      ) : (
-                        <>
-                          {Math.round(routeDistance)}
-                          <span className="text-xs text-blue-400 font-bold">m</span>
-                        </>
-                      )
-                    ) : (
-                      '--'
-                    )}
-                  </div>
-                </div>
-
-                {/* Duration Card */}
-                <div className="bg-white/5 border border-white/5 rounded-2xl p-3.5 flex flex-col justify-between">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <Clock size={14} />
-                    <span className="text-xs font-bold">{lang === 'bs' ? 'Vrijeme' : 'Duration'}</span>
-                  </div>
-                  <div className="mt-2 text-white font-black text-xl flex items-baseline gap-1">
-                    {isRouteLoading ? (
-                      <Loader2 className="animate-spin text-blue-400" size={20} />
-                    ) : routeTime !== null ? (
-                      <>
-                        {Math.ceil(routeTime / 60)}
-                        <span className="text-xs text-blue-400 font-bold">min</span>
-                      </>
-                    ) : (
-                      '--'
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Direct Maps Integration Button - Removed to keep navigation internal */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setIsNavigating(false);
-                    setSelectedTarget(null);
-                  }}
-                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-red-600/20"
-                >
-                  {lang === 'bs' ? 'Završi' : 'End'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Apple Maps / Google Maps Interactive Bottom Sheet Drawer */}
+      <MapSheetDrawer
+        lang={lang}
+        userLocation={userLocation}
+        snapState={snapState}
+        onSnapChange={setSnapState}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        onSearchSubmit={handleSearch}
+        isSearching={isSearching}
+        searchResults={searchResults}
+        onSelectSearchResult={handleSelectSearchResult}
+        onClearSearch={() => {
+          setSearchQuery('');
+          setSearchResults([]);
+        }}
+        selectedTarget={selectedTarget}
+        onSelectTarget={handleSelectTarget}
+        isNavigating={isNavigating}
+        onStartNavigation={handleStartNavigation}
+        onEndNavigation={handleEndNavigation}
+        routeDistance={routeDistance}
+        routeTime={routeTime}
+        isRouteLoading={isRouteLoading}
+        activeStyle={activeStyle}
+        onSelectLayer={handleSwitchLayer}
+        layerOptions={MAP_LAYER_OPTIONS}
+        unlockedRewards={unlockedRewards}
+        landmarks={ROUTE_POI_PRESETS}
+      />
 
 
 

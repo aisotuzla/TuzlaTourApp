@@ -15,18 +15,18 @@ const LanguageSelector: React.FC<Props> = ({ currentLang, onSelect }) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+    <div className="grid grid-cols-2 gap-1 sm:gap-1.5">
       {languages.map((l) => (
         <button
           key={l.code}
           onClick={() => onSelect(l.code)}
-          className={`flex items-center justify-center text-2xl sm:text-3xl transition-all ${currentLang === l.code
+          className={`flex items-center justify-center p-0.5 transition-all ${currentLang === l.code
               ? 'scale-110 grayscale-0 opacity-100 drop-shadow-sm'
               : 'hover:scale-105 opacity-60 grayscale hover:grayscale-0 hover:opacity-100'
             }`}
           title={l.label}
         >
-          <img src={l.flagUrl} alt={l.label} className="w-8 h-6 sm:w-10 sm:h-7 object-cover rounded shadow-sm" />
+          <img src={l.flagUrl} alt={l.label} className="w-6 h-4 sm:w-7 sm:h-5 object-cover rounded shadow-sm" />
         </button>
       ))}
     </div>

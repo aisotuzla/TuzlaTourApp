@@ -1,4 +1,6 @@
 import path from 'path';
+import fs from 'fs';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -11,6 +13,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
 import type { UserConfig, ConfigEnv } from 'vite';
 
 export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
@@ -21,7 +24,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       host: '0.0.0.0',
       open: true,
       watch: {
-        ignored: ['**/rollup/**', '**/rollup/test/**'],
+        ignored: ['**/rollup/**', '**/rollup/test/**', '**/*.mp3'],
       },
       fs: {
         deny: ['rollup'],
@@ -48,12 +51,13 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         },
         includeAssets: [
           // Critical landing page images precached for offline
-          'assets/Gallery/QuestQRLocations/tuzla440.webp',
           'assets/Gallery/Ilovetuzla.webp',
           'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
           'assets/MapaBosnia.webp',
-          'assets/Pannonica.webp',
+          'assets/PannonicaEN.webp',
           'assets/PannonicaBA.webp',
+          'assets/PannonicaDE.webp',
+          'assets/PannonicaTR.webp',
           'assets/panonikalogo.webp',
           'assets/aisologo.webp',
           'assets/x.svg',
@@ -66,6 +70,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'assets/Gallery/QuestQRLocations/wizzurl.webp',
           'assets/Gallery/QuestQRLocations/ilincicaba.webp',
           'assets/Gallery/QuestQRLocations/tuzhero.webp',
+          'assets/Gallery/heroo.webp',
+          'assets/icons/Bingo-supermarket.webp',
           'assets/Gallery/gipslogo.png',
           'resources/TuzlaTourAppLogo96x96.png',
         ],
@@ -94,7 +100,13 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
               src: 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
               sizes: '512x512',
               type: 'image/png',
-              purpose: 'any maskable'
+              purpose: 'any'
+            },
+            {
+              src: 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable'
             }
           ]
         },
@@ -172,21 +184,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
               },
             },
             // 5. Video files — NetworkFirst (large, don't bloat cache)
-            {
-              urlPattern: /\.(?:mp4|webm|ogg)$/i,
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'video-cache',
-                expiration: {
-                  maxEntries: 5,
-                  maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-                networkTimeoutSeconds: 10,
-              },
-            },
             // 6. Map tiles — CacheFirst for fast map loads
             {
               urlPattern: /^https:\/\/.*\.(?:tile|tiles)\..*\/\d+\/\d+\/\d+/i,

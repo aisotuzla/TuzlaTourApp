@@ -1,7 +1,7 @@
 {
-  "name": "Tuzla Virtual Tour Guide",
+  "name": "Tuzla Tour Guide",
   "short_name": "Tuzla Guide",
-  "description": "Digital PWA App Tour Guide for Tuzla with interactive maps, quests, QR scanner, camera and GPS support, Augmented Reality and NFT Rewards.",
+  "description": "Tour Guide application for Tuzla city with interactive maps, gamified quests, QR scanner, GPS support and real-location rewards.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -17,34 +17,56 @@
   "categories": [
     "travel",
     "navigation",
+    "entertainment",
+    "music",
     "education"
   ],
   "lang": "bs",
   "dir": "ltr",
   "icons": [
     {
-      "src": "/assets/resources/TuzlaTourAppLogo192x192.png",
+      "src": "/resources/TuzlaTourAppLogo192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/assets/resources/TuzlaTourAppLogo350x350.png",
-      "sizes": "350x350",
+      "src": "/resources/TuzlaTourAppLogo512x512.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/resources/TuzlaTourAppLogo512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "shortcuts": [
+    {
+      "name": "Audio Guide",
+      "short_name": "Audio",
+      "description": "Listen to Tuzla audio tour guide",
+      "url": "/?tab=history",
+      "icons": [
+        {
+          "src": "/resources/TuzlaTourAppLogo96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
     {
       "name": "Tuzla Quest",
       "short_name": "Quest",
       "url": "/?tab=quest",
       "icons": [
         {
-          "src": "/assets/resources/TuzlaTourAppLogo96x96.png",
+          "src": "/resources/TuzlaTourAppLogo96x96.png",
           "sizes": "96x96",
-          "type": "image/png"
+          "type": "image/png",
+          "purpose": "any"
         }
       ]
     },
@@ -54,9 +76,10 @@
       "url": "/?tab=map",
       "icons": [
         {
-          "src": "/assets/resources/TuzlaTourAppLogo192x192.png",
-          "sizes": "192x192",
-          "type": "image/png"
+          "src": "/resources/TuzlaTourAppLogo96x96.png",
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
         }
       ]
     }

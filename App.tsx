@@ -5,6 +5,8 @@ import { Capacitor } from '@capacitor/core';
 import { Menu } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+const queryClient = new QueryClient();
+import { Analytics } from "@vercel/analytics/react"
 import Sidebar from './components/Sidebar';
 import LandingPage from './components/LandingPage';
 import SecurityGuard from './components/SecurityGuard';
@@ -13,25 +15,23 @@ import FullScreenImageViewer from './components/FullScreenImageViewer';
 import ErrorBoundary from './components/ErrorBoundary';
 import ReloadPrompt from './components/ReloadPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
-
+import MapQuestView from "./components/MapQuestView";
 import { AppTab } from './types';
 import { ImageProvider } from './hooks/ImageContext';
 import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
+import { AudioGuideProvider, useAudioGuide } from './contexts/AudioGuideContext';
+import AudioControlBar from './components/AudioControlBar';
 import { useDraggablePopups } from './hooks/useDraggablePopups';
+import { SpeedInsights } from "@vercel/speed-insights/react"
+import ARGuide from './components/ARGuide';
 
 const MapView = React.lazy(() => import('./components/MapView'));
-const MapQuestView = React.lazy(() => import('./components/MapQuestView'));
 const History = React.lazy(() => import('./components/History'));
 const CityGuide = React.lazy(() => import('./components/CityGuide'));
 const WalletShell = React.lazy(() => import('./components/Wallet'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
-const ARGuide = React.lazy(() => import('./components/ARGuide'));
-const Parking = React.lazy(() => import('./components/Parking'));
-
-const queryClient = new QueryClient();
-
 const getTabFromPath = (path: string): AppTab => {
   switch (path) {
     case '/': return AppTab.LANDING;
@@ -44,7 +44,6 @@ const getTabFromPath = (path: string): AppTab => {
     case '/food': return AppTab.FOOD;
     case '/accommodation': return AppTab.ACCOMMODATION;
     case '/ar': return AppTab.AR;
-    case '/parking': return AppTab.PARKING;
     default: return AppTab.LANDING;
   }
 };
@@ -61,13 +60,23 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.FOOD: return '/food';
     case AppTab.ACCOMMODATION: return '/accommodation';
     case AppTab.AR: return '/ar';
-    case AppTab.PARKING: return '/parking';
     default: return '/';
   }
 };
 
 const AppContent: React.FC = () => {
   const { lang, setLang, features, unlockedRewards, setUnlockedRewards } = useGlobalApp();
+  const {
+    currentNarration,
+    isPlaying,
+    isPaused,
+    isMuted,
+    pauseNarration,
+    resumeNarration,
+    stopNarration,
+    toggleMute,
+    disableAudioGuide
+  } = useAudioGuide();
   useDraggablePopups();
 
   const navigate = useNavigate();
@@ -119,26 +128,26 @@ const AppContent: React.FC = () => {
       <ReloadPrompt />
       <OfflineIndicator lang={lang} />
 
-      <header className="fixed top-0 left-0 right-0 h-[88px] bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm">
-        <div className="flex items-center z-10 w-20">
+      <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm" style={{ height: 'calc(56px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+        <div className="flex items-center z-10 w-16 sm:w-20">
           <button
             onClick={() => setIsDrawerOpen(true)}
-            className="flex flex-col items-center justify-center p-1 bg-transparent border-none transition-all active:scale-95 group focus:outline-none"
+            className="flex flex-col items-center justify-center p-0.7 bg-transparent border-none transition-all active:scale-95 group focus:outline-none"
           >
-            <Menu className="w-8 h-8 text-blue-900 transition-transform group-hover:scale-110" />
-            <span className="text-[10px] uppercase font-bold text-blue-900 mt-1">Menu</span>
+            <Menu className="w-6 h-6 sm:w-7 sm:h-7 text-blue-900 transition-transform group-hover:scale-110" />
+            <span className="text-[9px] sm:text-[10px] uppercase font-bold text-blue-900 mt-0.5">Menu</span>
           </button>
         </div>
 
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center z-0 w-[55%] sm:w-auto pointer-events-none">
-          <h1 className="text-[4.5vw] sm:text-xl lg:text-2xl font-black tracking-tight leading-none uppercase flex flex-row flex-wrap sm:flex-nowrap justify-center items-center gap-1 sm:gap-1.5 text-center">
+          <h1 className="text-[4vw] sm:text-xl lg:text-2xl font-black tracking-tight leading-none uppercase flex flex-row flex-wrap sm:flex-nowrap justify-center items-center gap-1 sm:gap-1.5 text-center">
             <span className="text-blue-900">Tuzla</span>
             <span className="text-blue-500">Tour</span>
             <span className="text-amber-500">Guide</span>
           </h1>
         </div>
 
-        <div className="flex items-center justify-end z-10 w-20">
+        <div className="flex items-center justify-end z-10 w-16 sm:w-20">
           <LanguageSelector currentLang={lang} onSelect={setLang} />
         </div>
       </header>
@@ -154,7 +163,7 @@ const AppContent: React.FC = () => {
         </filter>
       </svg>
 
-      <div className="relative min-h-screen bg-white flex overflow-hidden pt-[88px]">
+      <div className="relative min-h-screen bg-white flex overflow-hidden" style={{ paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))' }}>
         <Sidebar
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
@@ -164,8 +173,9 @@ const AppContent: React.FC = () => {
         />
 
         <div
-          className="flex-1 flex flex-col min-h-[calc(100vh-64px)] overflow-hidden"
+          className="flex-1 flex flex-col overflow-hidden"
           style={{
+            minHeight: 'calc(100vh - 56px - env(safe-area-inset-top, 0px))',
             filter: isDrawerOpen ? 'blur(4px)' : 'none',
             transition: 'filter 0.3s ease',
           }}
@@ -193,7 +203,6 @@ const AppContent: React.FC = () => {
                       features={features}
                       unlockedRewards={unlockedRewards}
                       onRewardFound={(id) => setUnlockedRewards((prev) => (prev.includes(id) ? prev : [...prev, id]))}
-                      onToggleAR={() => navigateToTab(AppTab.AR)}
                       navigationTarget={navigationTarget}
                       onClearNavigation={() => setNavigationTarget(null)}
                       initialOpenScanner={autoOpenScanner}
@@ -201,7 +210,13 @@ const AppContent: React.FC = () => {
                   } />
                   <Route path="/wallet" element={
                     <SecurityGuard lang={lang} isUnlocked={isWalletUnlocked} onUnlock={() => setIsWalletUnlocked(true)}>
-                      <WalletShell lang={lang} />
+                      <WalletShell
+                        lang={lang}
+                        onNavigateToTarget={(target) => {
+                          setNavigationTarget(target);
+                          navigateToTab(AppTab.QUEST);
+                        }}
+                      />
                     </SecurityGuard>
                   } />
                   <Route path="/task-manager" element={<TaskManager lang={lang} />} />
@@ -211,19 +226,40 @@ const AppContent: React.FC = () => {
                     <ARGuide
                       lang={lang}
                       features={features}
+                      unlockedRewards={unlockedRewards}
+                      onRewardFound={(id) => setUnlockedRewards((prev) => (prev.includes(id) ? prev : [...prev, id]))}
+                      initialTarget={navigationTarget}
                       onNavigate={(poi) => {
                         setNavigationTarget(poi);
                         navigateToTab(AppTab.MAP);
                       }}
                     />
                   } />
-                  <Route path="/parking" element={<Parking lang={lang} />} />
                 </Routes>
               </Suspense>
             </ErrorBoundary>
           </main>
         </div>
       </div>
+
+      {/* Floating Global Audio Control Bar */}
+      {currentNarration && (
+        <AudioControlBar
+          lang={lang}
+          title={currentNarration.title}
+          isPlaying={isPlaying}
+          isPaused={isPaused}
+          isMuted={isMuted}
+          onPlay={resumeNarration}
+          onPause={pauseNarration}
+          onResume={resumeNarration}
+          onStop={stopNarration}
+          onToggleMute={toggleMute}
+          onDisableAudioGuide={disableAudioGuide}
+          onClose={stopNarration}
+        />
+      )}
+
       <FullScreenImageViewer />
     </ImageProvider>
   );
@@ -233,9 +269,11 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <GlobalAppProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
+        <AudioGuideProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </AudioGuideProvider>
       </GlobalAppProvider>
     </QueryClientProvider>
   );
