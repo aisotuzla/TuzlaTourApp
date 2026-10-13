@@ -18,6 +18,7 @@ import { QUEST_TARGETS, POI_COLORS, ROUTE_POI_PRESETS, PHASE_1_POIS, PHASE_2_POI
 import { NavigationHud } from './NavigationHud.tsx';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import ARGuide from './ARGuide.tsx';
+import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
 
 export interface MapQuestViewProps {
   lang: Language; features: AppFeatures; unlockedRewards: string[];
@@ -55,6 +56,7 @@ const MAP_LAYER_OPTIONS = [
 ];
 
 const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRewards, onRewardFound, navigationTarget, onClearNavigation, initialOpenScanner = false }) => {
+  const { playNarration, currentNarration, isPlaying, pauseNarration } = useAudioGuide();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const [pitch, setPitch] = useState<number>(55);
@@ -167,12 +169,29 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         haov: haov || 270
       });
     };
+    (window as any).playPoiAudio = (poiId: string, poiTitle: string, audioUrl?: string) => {
+      const target = QUEST_TARGETS.find(t => t.id === poiId);
+      const audioSrc = audioUrl || target?.audio;
+      if (!audioSrc) return;
+      if (currentNarration?.id === poiId && isPlaying) {
+        pauseNarration();
+        return;
+      }
+      playNarration({
+        id: poiId,
+        title: poiTitle,
+        text: '',
+        lang,
+        audioSrc
+      });
+    };
     return () => {
       delete (window as any).startNavigationFromPopup;
       delete (window as any).playQuestVideo;
       delete (window as any).openQuestPanorama;
+      delete (window as any).playPoiAudio;
     };
-  }, [activeStyle, lang]);
+  }, [activeStyle, lang, currentNarration, isPlaying, playNarration, pauseNarration]);
 
   useEffect(() => {
     globalPMTilesProtocol.init();
@@ -304,7 +323,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       // 270 Panorama button temporarily hidden
       const panoramaBtnHtml = '';
 
-      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 220px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);"><div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;"><img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 6px; flex-wrap: wrap;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; min-width: 80px; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 0; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66;">${lang === 'bs' ? '🧭 Navigacija' : '🧭 Navigate'}</button>${videoBtnHtml}${panoramaBtnHtml}</div></div>`;
+      const noAudioPoiIds = ['salt_square', 'palancinkara', 'slapovi', 'bingo_city_centar', 'mesa_selimovic'];
+      const hasAudio = !!(target as any).audio && !noAudioPoiIds.includes(target.id);
+      const audioBtnHtml = hasAudio
+        ? `<button onclick="window.playPoiAudio && window.playPoiAudio('${target.id}', '${title.replace(/'/g, "\\'")}', '${(target as any).audio}')" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 10px; color: white; padding: 7px 11px; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;" title="${lang === 'bs' ? 'Audio Vodič' : 'Audio Guide'}">🎧 Audio</button>`
+        : '';
+
+      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 230px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);"><div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;"><img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 5px; flex-wrap: wrap;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; min-width: 78px; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 4px; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66; display: flex; align-items: center; justify-content: center; gap: 3px;">${lang === 'bs' ? '🧭 Navigacija' : '🧭 Navigate'}</button>${audioBtnHtml}${videoBtnHtml}${panoramaBtnHtml}</div></div>`;
       const popup = new maplibregl.Popup({ offset: 25, closeButton: false, maxWidth: '240px' }).setHTML(popupHtml);
       marker.setPopup(popup);
       markersRef.current[target.id] = marker;

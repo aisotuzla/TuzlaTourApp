@@ -17,6 +17,7 @@ import ReloadPrompt from './components/ReloadPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
 import MapQuestView from "./components/MapQuestView";
 import { AppTab } from './types';
+import { QUEST_TARGETS } from './constants/questData';
 import { ImageProvider } from './hooks/ImageContext';
 import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
 import { AudioGuideProvider, useAudioGuide } from './contexts/AudioGuideContext';
@@ -71,6 +72,7 @@ const AppContent: React.FC = () => {
     isPlaying,
     isPaused,
     isMuted,
+    playNarration,
     pauseNarration,
     resumeNarration,
     stopNarration,
@@ -122,6 +124,28 @@ const AppContent: React.FC = () => {
       registration.then(r => r.remove()).catch(() => { });
     };
   }, [isDrawerOpen, lang, location.pathname, navigate]);
+
+  useEffect(() => {
+    (window as any).playPoiAudio = (poiId: string, poiTitle: string, audioUrl?: string) => {
+      const target = QUEST_TARGETS.find(t => t.id === poiId);
+      const audioSrc = audioUrl || target?.audio;
+      if (!audioSrc) return;
+      if (currentNarration?.id === poiId && isPlaying) {
+        pauseNarration();
+        return;
+      }
+      playNarration({
+        id: poiId,
+        title: poiTitle,
+        text: '',
+        lang,
+        audioSrc
+      });
+    };
+    return () => {
+      delete (window as any).playPoiAudio;
+    };
+  }, [lang, currentNarration, isPlaying, playNarration, pauseNarration]);
 
   return (
     <ImageProvider>

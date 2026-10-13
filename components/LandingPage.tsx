@@ -6,6 +6,9 @@ import { AppTab, Language } from '../types';
 import {
   ArrowRight,
   Play,
+  Pause,
+  Volume2,
+  VolumeX,
   ChevronRight,
   ArrowUp,
   QrCode,
@@ -16,10 +19,7 @@ import {
   Share2,
   ArrowDown,
   RotateCcw,
-  Loader2,
-  Landmark,
-  Map as MapIcon,
-  Smartphone
+  Loader2
 } from 'lucide-react';
 import { useImage } from '../hooks/ImageContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -51,14 +51,6 @@ const copy = {
     pannonicaBack: 'Back',
     pannonicaVisitSite: 'Visit panonika.ba',
     tapToOpen: 'Tap again to open',
-    questModalTitle: 'Search / Quest',
-    questModalSubtitle: 'Interactive exploration map with rewards, hidden history, and discounts across Tuzla.',
-    questModalStart: 'Start Quest',
-    questModalViewMap: 'View on Map',
-    questModalClose: 'Close',
-    questModalTarget1: 'Pannonian Lakes & Salt Waterfalls',
-    questModalTarget2: 'Freedom Square & Historic Center',
-    questModalTarget3: 'Salt Square & Neolithic Stilt Village',
   },
   bs: {
     heroScroll: 'Istražite Tuzlu',
@@ -124,40 +116,6 @@ const copy = {
   },
 } as const;
 
-const heroMarkers = [
-  {
-    id: AppTab.CITY_GUIDE,
-    title: { en: 'City Guide', bs: 'Gradski vodič', de: 'Stadtführer', tr: 'Şehir Rehberi' },
-    x: 78.5,
-    y: 27.2,
-    labelPosition: 'left' as const,
-    icon: Landmark,
-    accentGlow: 'rgba(56, 189, 248, 0.9)',
-    tagText: { en: 'Upper Lake', bs: 'Gornje jezero', de: 'Oberer See', tr: 'Üst Göl' }
-  },
-  {
-    id: AppTab.MAP,
-    title: { en: 'Map', bs: 'Mapa', de: 'Karte', tr: 'Harita' },
-    x: 35.5,
-    y: 48.2,
-    labelPosition: 'right' as const,
-    icon: MapIcon,
-    accentGlow: 'rgba(96, 165, 250, 0.9)',
-    tagText: { en: 'Middle Lake', bs: 'Srednje jezero', de: 'Mittlerer See', tr: 'Orta Göl' }
-  },
-  {
-    id: AppTab.QUEST,
-    title: { en: 'Quest', bs: 'Potraga', de: 'Quest', tr: 'Görev' },
-    x: 77.0,
-    y: 75.5,
-    labelPosition: 'left' as const,
-    icon: Smartphone,
-    accentGlow: 'rgba(6, 182, 212, 0.9)',
-    tagText: { en: 'Bottom Lake', bs: 'Donje jezero', de: 'Unterer See', tr: 'Alt Göl' }
-  },
-];
-
-
 const navCards = [
   { id: AppTab.CITY_GUIDE, title: { en: 'City Guide', bs: 'Gradski vodič', de: 'Stadtführer', tr: 'Şehir Rehberi' }, image: '/assets/Gallery/City Guide/GradTuzla-1.webp', color: 'blue' },
   { id: AppTab.FOOD, title: { en: 'Food', bs: 'Hrana', de: 'Essen & Trinken', tr: 'Yemek & İçecek' }, image: '/assets/Gallery/Food/foodprime.webp', color: 'orange' },
@@ -191,100 +149,44 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const [heroLoopCount, setHeroLoopCount] = useState(0);
   const [isHeroPlaying, setIsHeroPlaying] = useState(false);
   const [isHeroReady, setIsHeroReady] = useState(false);
-  const [isHeroMuted, setIsHeroMuted] = useState(false);
+  const [isHeroMuted, setIsHeroMuted] = useState(true);
   const [isBuffering, setIsBuffering] = useState(false);
   const [hasVideoEnded, setHasVideoEnded] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
 
-  const [activeMarkerId, setActiveMarkerId] = useState<string | null>(AppTab.CITY_GUIDE);
-  const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
-  const hasOpenedQuestModalRef = useRef(false);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (isQuestModalOpen) {
-          setIsQuestModalOpen(false);
-        }
-        if (activeMarkerId) {
-          setActiveMarkerId(null);
-        }
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeMarkerId, isQuestModalOpen]);
-
-  // Scroll triggers for hero hotspots & Search / Quest modal
-  useEffect(() => {
-    let lastStep = -1;
-
-    const getScrollTop = () => {
-      const mainEl = document.querySelector('main');
-      const mainScroll = mainEl ? mainEl.scrollTop : 0;
-      const winScroll = window.scrollY || document.documentElement.scrollTop || 0;
-      return Math.max(mainScroll, winScroll);
-    };
-
-    const handleScroll = () => {
-      const st = getScrollTop();
-
-      // Step 0: Initial Page Load / Top (st < 80px) -> City Guide (Gradski vodič)
-      if (st < 80) {
-        if (lastStep !== 0) {
-          lastStep = 0;
-          setActiveMarkerId(AppTab.CITY_GUIDE);
-        }
-      }
-      // Step 1: Scroll Step 1 (Down) (80px <= st < 220px) -> Map (Mapa)
-      else if (st >= 80 && st < 220) {
-        if (lastStep !== 1) {
-          lastStep = 1;
-          setActiveMarkerId(AppTab.MAP);
-        }
-      }
-      // Step 2: Scroll Step 2 (Down) (st >= 220px) -> Search / Quest (Potraga) popup modal
-      else {
-        if (lastStep !== 2) {
-          lastStep = 2;
-          setActiveMarkerId(AppTab.QUEST);
-          if (!hasOpenedQuestModalRef.current) {
-            hasOpenedQuestModalRef.current = true;
-            setIsQuestModalOpen(true);
-          }
-        }
-      }
-    };
-
-    // Evaluate scroll position on mount
-    handleScroll();
-
-    window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
-    const mainEl = document.querySelector('main');
-    if (mainEl) {
-      mainEl.addEventListener('scroll', handleScroll, { passive: true });
-    }
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll, { capture: true });
-      if (mainEl) {
-        mainEl.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, []);
   const cleanSrc = (src?: string) => {
     if (!src) return '';
     return src.replace(/^["']|["']$/g, '');
   };
 
   const isDev = import.meta.env.DEV;
-  const defaultWebSrc = "https://cki4usi56q35b3t6.public.blob.vercel-storage.com/TuzlaCompressed.mp4";
+  const localHeroVideo = "/assets/Gallery/QuestQRLocations/TuzlaCompressed.mp4";
+  const remoteHeroVideo = "https://cki4usi56q35b3t6.public.blob.vercel-storage.com/TuzlaCompressed.mp4";
+  const initialWebSrc = cleanSrc(isDev ? '' : import.meta.env.VITE_VERCEL_BLOB_HERO_WEB) || localHeroVideo;
 
-  const initialWebSrc = cleanSrc(isDev ? '' : import.meta.env.VITE_VERCEL_BLOB_HERO_WEB) || defaultWebSrc;
-  const preferredSrc = defaultWebSrc;
+  const [videoSrc, setVideoSrc] = useState(initialWebSrc);
 
-  const [videoSrc, setVideoSrc] = useState(preferredSrc);
+  // Attempt autoplay immediately (muted for mobile compatibility)
+  useEffect(() => {
+    if (heroVideoRef.current) {
+      heroVideoRef.current.defaultMuted = true;
+      heroVideoRef.current.muted = true;
+      setIsHeroMuted(true);
+      const playPromise = heroVideoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsHeroPlaying(true);
+            setIsHeroReady(true);
+          })
+          .catch((err) => {
+            console.warn("Autoplay was prevented (hero image visible as background/fallback):", err);
+          });
+      }
+    }
+  }, [videoSrc]);
 
   const toggleHeroVideo = () => {
     if (heroVideoRef.current) {
@@ -303,7 +205,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               setHeroLoopCount(0);
             })
             .catch((error) => {
-              console.warn("Autoplay with audio was blocked or interrupted, trying muted playback:", error);
+              console.warn("Autoplay with audio was blocked, continuing muted playback:", error);
               if (heroVideoRef.current) {
                 heroVideoRef.current.muted = true;
                 setIsHeroMuted(true);
@@ -327,7 +229,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
     }
   };
 
-
   const handleHeroVideoEnd = () => {
     setIsHeroPlaying(false);
     setHasVideoEnded(true);
@@ -343,15 +244,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   };
 
   const handleVideoError = () => {
-    const fallback = defaultWebSrc;
-    if (videoSrc !== fallback) {
-      console.warn(`Video failed to load from ${videoSrc}. Falling back to local asset: ${fallback}`);
-      setVideoSrc(fallback);
+    if (videoSrc !== remoteHeroVideo) {
+      console.warn(`Video failed to load from ${videoSrc}. Falling back to remote asset: ${remoteHeroVideo}`);
+      setVideoSrc(remoteHeroVideo);
       if (heroVideoRef.current) {
         heroVideoRef.current.load();
       }
     } else {
-      console.error("Local fallback video also failed to load.");
+      console.warn("Hero video failed to load. Background hero image remains as active fallback.");
+      setIsHeroPlaying(false);
+      setIsHeroReady(false);
       setIsBuffering(false);
     }
   };
@@ -376,7 +278,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   return (
     <div className="w-full bg-white">
       <style>{`
-        @media (max-width: 440px) {
+        @media (max-width: 480px) {
           .hero-section {
             padding: 0.5rem 0.25rem !important;
             height: auto !important;
@@ -385,10 +287,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           .hero-wrapper {
             width: 100% !important;
             height: auto !important;
-            max-width: 440px !important;
-            border-radius: 1.5rem !important;
+            max-width: 100% !important;
+            border-radius: 1.25rem !important;
             border: 2px solid rgba(96, 165, 250, 0.45) !important;
-            box-shadow: 0 0 25px rgba(59, 130, 246, 0.5) !important;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.45) !important;
           }
           .hero-image-img {
             width: 100% !important;
@@ -396,7 +298,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             display: block !important;
           }
         }
-        @media (min-width: 441px) {
+        @media (min-width: 481px) {
           .hero-section {
             padding: 2rem !important;
             height: auto !important;
@@ -432,97 +334,83 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
       {/* 1. HERO SECTION */}
       <section className="hero-section relative w-full flex flex-col items-center justify-center bg-white">
-        {/* Rounded wrapper with glowing blue border and interactive markers */}
+        {/* Rounded wrapper with glowing blue border, hero video, fallback image and interactive markers */}
         <div
-          className="hero-wrapper relative overflow-hidden bg-slate-950 flex select-none group/hero cursor-pointer"
-          onClick={() => setActiveMarkerId(null)}
+          className="hero-wrapper relative overflow-hidden bg-slate-950 flex select-none group/hero"
         >
+          {/* Background / Fallback Hero Image (preserves aspect-ratio and immediately visible if video doesn't play) */}
           <img
             src="/assets/Gallery/heroo.webp"
             alt="Tuzla Pannonica Lakes"
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            className="hero-image-img w-full h-auto block object-cover pointer-events-none"
+            className={`hero-image-img w-full h-auto block object-cover pointer-events-none transition-opacity duration-700 ${
+              isHeroPlaying ? 'opacity-0' : 'opacity-100'
+            }`}
             draggable={false}
           />
 
-          {/* Interactive Marker Hotspots */}
-          {heroMarkers.map((marker) => {
-            const isLeft = marker.labelPosition === 'left';
-            const labelText = (marker.title as any)[lang] || marker.title.en;
-            const isOpen = activeMarkerId === marker.id;
+          {/* Hero Video */}
+          <video
+            ref={heroVideoRef}
+            src={videoSrc}
+            autoPlay
+            playsInline
+            muted={isHeroMuted}
+            loop
+            preload="auto"
+            poster="/assets/Gallery/heroo.webp"
+            onPlay={() => {
+              setIsHeroPlaying(true);
+              setIsHeroReady(true);
+            }}
+            onPlaying={() => {
+              setIsHeroPlaying(true);
+              setIsHeroReady(true);
+            }}
+            onLoadedData={() => setIsHeroReady(true)}
+            onCanPlay={() => setIsHeroReady(true)}
+            onError={handleVideoError}
+            onEnded={handleHeroVideoEnd}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none ${
+              isHeroPlaying ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
 
-            return (
-              <div
-                key={marker.id}
-                className="absolute -translate-x-1/2 -translate-y-1/2 z-20"
-                style={{ left: `${marker.x}%`, top: `${marker.y}%` }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (marker.id === AppTab.QUEST) {
-                      setActiveMarkerId(marker.id);
-                      setIsQuestModalOpen(true);
-                    } else if (isOpen) {
-                      setActiveMarkerId(null);
-                      onNavigate?.(marker.id);
-                    } else {
-                      setActiveMarkerId(marker.id);
-                    }
-                  }}
-                  className="relative flex items-center justify-center cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded-full"
-                  aria-label={`${labelText} - ${t.explore}`}
-                  title={`${labelText} (${(marker.tagText as any)[lang] || marker.tagText.en})`}
-                >
-                  {/* Glowing hotspot indicator over the 3D pin in the artwork */}
-                  <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-105">
-                    <span className="absolute inset-0 rounded-full hero-hotspot-btn" />
-                  </div>
-
-                  {/* Interactive Label Pill - Revealed on 1st tap */}
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.85, x: isLeft ? 10 : -10 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.85, x: isLeft ? 10 : -10 }}
-                        transition={{ duration: 0.2 }}
-                        className={`absolute top-1/2 -translate-y-1/2 ${isLeft ? 'right-full mr-2 sm:mr-3.5' : 'left-full ml-2 sm:ml-3.5'
-                          } pointer-events-auto z-30`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (marker.id === AppTab.QUEST) {
-                            setIsQuestModalOpen(true);
-                          } else {
-                            setActiveMarkerId(null);
-                            onNavigate?.(marker.id);
-                          }
-                        }}
-                      >
-                        <div className="flex items-center gap-2 sm:gap-2.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-950/90 hover:bg-blue-950/95 backdrop-blur-md border border-cyan-400/80 shadow-[0_0_20px_rgba(34,211,238,0.55)] active:scale-95 transition-all duration-200 whitespace-nowrap cursor-pointer">
-                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-cyan-500/25 border border-cyan-400/40 flex items-center justify-center shrink-0">
-                            <marker.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-300" />
-                          </div>
-                          <div className="flex flex-col text-left">
-                            <span className="text-[11px] sm:text-xs md:text-sm font-black text-white uppercase tracking-wider font-quicksand drop-shadow-sm leading-tight">
-                              {labelText}
-                            </span>
-                          </div>
-                          <ArrowRight className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </button>
-              </div>
-            );
-          })}
-
-
+          {/* Video Audio & Playback Controls */}
+          <div className="absolute bottom-2.5 right-2.5 sm:bottom-3.5 sm:right-3.5 z-30 flex items-center gap-1.5 pointer-events-auto">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsHeroMuted((prev) => {
+                  const next = !prev;
+                  if (heroVideoRef.current) {
+                    heroVideoRef.current.muted = next;
+                  }
+                  return next;
+                });
+              }}
+              className="p-1.5 sm:p-2 rounded-full bg-slate-950/75 hover:bg-slate-900/95 text-white backdrop-blur-md border border-white/20 shadow-lg active:scale-90 transition-all"
+              title={isHeroMuted ? 'Unmute video' : 'Mute video'}
+              aria-label={isHeroMuted ? 'Unmute video' : 'Mute video'}
+            >
+              {isHeroMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-300" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleHeroVideo();
+              }}
+              className="p-1.5 sm:p-2 rounded-full bg-slate-950/75 hover:bg-slate-900/95 text-white backdrop-blur-md border border-white/20 shadow-lg active:scale-90 transition-all"
+              title={isHeroPlaying ? 'Pause video' : 'Play video'}
+              aria-label={isHeroPlaying ? 'Pause video' : 'Play video'}
+            >
+              {isHeroPlaying ? <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-0.5 text-blue-400" />}
+            </button>
+          </div>
         </div>
       </section>
 

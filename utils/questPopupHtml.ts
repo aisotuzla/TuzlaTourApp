@@ -27,9 +27,14 @@ export const generateQuestPopupHtml = (loc: any, lang: Language, isUnlocked: boo
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
-        <button onclick="window.setGlobalMapNavTarget ? window.setGlobalMapNavTarget('${loc.id}') : (window.startNavigationFromPopup && window.startNavigationFromPopup('${loc.name[lang] || loc.name.bs}', ${loc.coordinates ? loc.coordinates[0] : 0}, ${loc.coordinates ? loc.coordinates[1] : 0}))" style="width: 100%; padding: 12px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">
-          ${lang === 'bs' ? '🧭 GPS Navigacija' : '🧭 GPS Navigation'}
-        </button>
+        <div style="display: flex; gap: 6px; width: 100%;">
+          <button onclick="window.setGlobalMapNavTarget ? window.setGlobalMapNavTarget('${loc.id}') : (window.startNavigationFromPopup && window.startNavigationFromPopup('${loc.name[lang] || loc.name.bs}', ${loc.coordinates ? loc.coordinates[0] : 0}, ${loc.coordinates ? loc.coordinates[1] : 0}))" style="flex: 1; padding: 11px 8px; background: ${isUnlocked ? markerColor : '#1e293b'}; color: white; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            ${lang === 'bs' ? '🧭 Navigacija' : '🧭 Navigation'}
+          </button>
+          <button onclick="window.playPoiAudio && window.playPoiAudio('${loc.id}', '${(loc.name[lang] || loc.name.bs || '').replace(/'/g, "\\'")}', '${loc.audio || ''}')" style="padding: 11px 12px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(37,99,235,0.4); white-space: nowrap;" title="${lang === 'bs' ? 'Slušaj Audio Vodič' : 'Listen to Audio Guide'}">
+            🎧 Audio
+          </button>
+        </div>
         
         ${isUnlocked && (loc.video || loc.id === 'mesa_selimovic') ? `
           <button onclick="window.playQuestVideo && window.playQuestVideo('${loc.video || 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/MesaSelimovic.mp4'}', '${(loc.name[lang] || loc.name.bs || 'Meša Selimović').replace(/'/g, "\\'")}')" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; box-shadow: 0 4px 12px rgba(245,158,11,0.4);">
