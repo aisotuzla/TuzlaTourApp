@@ -130,8 +130,7 @@ const externalLinks = [
   { name: 'Airbnb', url: 'https://www.airbnb.ba/tuzla-bosnia-and-herzegovina/stays', logo: '/assets/Gallery/QuestQRLocations/airbnbng.webp' },
 ];
 
-const previewImages = Array.from({ length: 24 }, (_, i) => `/assets/Gallery/Photos/tuzla${i + 1}.webp`)
-  .filter(p => p !== '/assets/Gallery/Photos/tuzla2.webp');
+const previewImages = Array.from({ length: 25 }, (_, i) => `/assets/Gallery/Photos/tuzla${i + 1}.webp`);
 
 const pannonicaImageByLanguage: Record<Language, string> = {
   en: '/assets/PannonicaEN.webp',
@@ -161,10 +160,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
     return src.replace(/^["']|["']$/g, '');
   };
 
-  const isDev = import.meta.env.DEV;
-  const localHeroVideo = "/assets/Gallery/QuestQRLocations/TuzlaCompressed.mp4";
+  const localHeroVideo = "/assets/Gallery/tz.mp4";
   const remoteHeroVideo = "https://cki4usi56q35b3t6.public.blob.vercel-storage.com/TuzlaCompressed.mp4";
-  const initialWebSrc = cleanSrc(isDev ? '' : import.meta.env.VITE_VERCEL_BLOB_HERO_WEB) || localHeroVideo;
+  const initialWebSrc = localHeroVideo;
 
   const [videoSrc, setVideoSrc] = useState(initialWebSrc);
 
@@ -230,16 +228,39 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   };
 
   const handleHeroVideoEnd = () => {
-    setIsHeroPlaying(false);
-    setHasVideoEnded(true);
+    setHeroLoopCount((prev) => {
+      const next = prev + 1;
+      if (next < 2) {
+        // Finished 1st playback, start 2nd playback
+        if (heroVideoRef.current) {
+          heroVideoRef.current.currentTime = 0;
+          heroVideoRef.current.play().catch((err) => {
+            console.warn("Hero video 2nd playback error:", err);
+            setIsHeroPlaying(false);
+            setHasVideoEnded(true);
+          });
+        }
+        return next;
+      } else {
+        // Finished 2nd playback (played 2 times total)
+        setIsHeroPlaying(false);
+        setHasVideoEnded(true);
+        return next;
+      }
+    });
   };
 
-  const handleReplay = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleReplay = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setHeroLoopCount(0);
+    setHasVideoEnded(false);
     if (heroVideoRef.current) {
       heroVideoRef.current.currentTime = 0;
-      setHasVideoEnded(false);
-      toggleHeroVideo();
+      heroVideoRef.current.play().then(() => {
+        setIsHeroPlaying(true);
+      }).catch((err) => {
+        console.warn("Replay failed:", err);
+      });
     }
   };
 
@@ -278,138 +299,234 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   return (
     <div className="w-full bg-white">
       <style>{`
-        @media (max-width: 480px) {
-          .hero-section {
-            padding: 0.5rem 0.25rem !important;
-            height: auto !important;
-            min-height: auto !important;
-          }
-          .hero-wrapper {
-            width: 100% !important;
-            height: auto !important;
-            max-width: 100% !important;
-            border-radius: 1.25rem !important;
-            border: 2px solid rgba(96, 165, 250, 0.45) !important;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.45) !important;
-          }
-          .hero-image-img {
-            width: 100% !important;
-            height: auto !important;
-            display: block !important;
-          }
+        /* ---------------------------------------------------- */
+        /* STILOVI ZA RAČUNAR (DEFAULT)                          */
+        /* ---------------------------------------------------- */
+        
+        /* Samsung okvir na desktopu - 450px, dark blue frame sa silver linijom, tanji okvir */
+        .samsung-frame {
+            position: relative;
+            width: 450px; 
+            max-width: 100%;
+            height: 880px; 
+            background: linear-gradient(145deg, #091322, #030811); 
+            border-radius: 44px; 
+            border: 2px solid #b8c7db; /* Silver linija */
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2),
+                        0 25px 60px -12px rgba(2, 6, 23, 0.7),
+                        inset 0 0 0 1px #7e93b0;
+            padding: 8px; /* Tanji okvir */
+            transition: all 0.3s ease;
+            margin: 0 auto;
         }
-        @media (min-width: 481px) {
-          .hero-section {
-            padding: 2rem !important;
-            height: auto !important;
-            min-height: auto !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-          }
-          .hero-wrapper {
-            width: 880px !important;
-            height: auto !important;
-            max-width: 100% !important;
-            border-radius: 2.5rem !important;
-            border: 2px solid rgba(96, 165, 250, 0.45) !important;
-            box-shadow: 0 0 35px rgba(59, 130, 246, 0.6) !important;
-          }
-          .hero-image-img {
-            width: 100% !important;
-            height: auto !important;
-            display: block !important;
-          }
+
+        /* Unutrašnji ekran na desktopu - crna unutrašnjost */
+        .samsung-screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            border-radius: 36px; 
+            border: 1px solid rgba(184, 199, 219, 0.18);
+            overflow: hidden; 
+            z-index: 1;
         }
-        @media (min-width: 768px) {
-          .hero-section {
-            padding: 2.5rem 2rem !important;
-          }
-          .hero-wrapper {
-            width: 880px !important;
-            height: auto !important;
-          }
+
+        /* Video element */
+        .samsung-screen video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
+
+        /* Prednja selfie kamera na vrhu (Samsung punch-hole) */
+        .samsung-camera {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #0f223d 0%, #030813 75%);
+            border: 1px solid #1a3359;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.85);
+            z-index: 25;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mali crni krug u sredini kamere */
+        .samsung-camera-lens {
+            width: 5.5px;
+            height: 5.5px;
+            border-radius: 50%;
+            background-color: #000000;
+            box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.5);
+        }
+
+        /* ---------------------------------------------------- */
+        /* STILOVI ZA MOBILNE UREĐAJE (Responsive)              */
+        /* ---------------------------------------------------- */
+        
+        /* Ako je ekran uži od 768px (svi moderni telefoni) */
+        @media (max-width: 767px) {
+            .hero-pwa-section {
+                background-color: #000 !important;
+                padding: 0 !important;
+                min-height: 100vh !important;
+            }
+
+            /* Pretvaramo okvir u full-screen kontejner */
+            .samsung-frame {
+                width: 100vw !important;
+                height: 100vh !important;
+                height: 100svh !important;
+                border-radius: 0 !important;
+                border: none !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                background-color: transparent !important;
+            }
+
+            /* Ekran telefona zauzima 100% mobilnog ekrana */
+            .samsung-screen {
+                border-radius: 0 !important;
+                border: none !important;
+            }
+
+            /* Sakrivamo selfie kameru jer je korisnik na pravom telefonu */
+            .samsung-camera {
+                display: none !important;
+            }
         }
       `}</style>
 
-      {/* 1. HERO SECTION */}
-      <section className="hero-section relative w-full flex flex-col items-center justify-center bg-white">
-        {/* Rounded wrapper with glowing blue border, hero video, fallback image and interactive markers */}
-        <div
-          className="hero-wrapper relative overflow-hidden bg-slate-950 flex select-none group/hero"
-        >
-          {/* Background / Fallback Hero Image (preserves aspect-ratio and immediately visible if video doesn't play) */}
-          <img
-            src="/assets/Gallery/heroo.webp"
-            alt="Tuzla Pannonica Lakes"
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            className={`hero-image-img w-full h-auto block object-cover pointer-events-none transition-opacity duration-700 ${
-              isHeroPlaying ? 'opacity-0' : 'opacity-100'
-            }`}
-            draggable={false}
-          />
+      {/* 1. HERO SECTION - Samsung PWA Video Wrapper */}
+      <section className="hero-pwa-section relative w-full flex flex-col items-center justify-center bg-slate-100 py-6 md:py-12 overflow-hidden">
+        {/* Subtle ambient lighting on desktop */}
+        <div className="absolute inset-0 hidden md:block bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.12)_0%,_rgba(241,245,249,0.9)_70%)] pointer-events-none" />
 
-          {/* Hero Video */}
-          <video
-            ref={heroVideoRef}
-            src={videoSrc}
-            autoPlay
-            playsInline
-            muted={isHeroMuted}
-            loop
-            preload="auto"
-            poster="/assets/Gallery/heroo.webp"
-            onPlay={() => {
-              setIsHeroPlaying(true);
-              setIsHeroReady(true);
-            }}
-            onPlaying={() => {
-              setIsHeroPlaying(true);
-              setIsHeroReady(true);
-            }}
-            onLoadedData={() => setIsHeroReady(true)}
-            onCanPlay={() => setIsHeroReady(true)}
-            onError={handleVideoError}
-            onEnded={handleHeroVideoEnd}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none ${
-              isHeroPlaying ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
+        {/* Kontejner koji reaguje na vrstu uređaja */}
+        <div className="samsung-frame group/hero">
+          <div className="samsung-screen">
+            {/* Front selfie camera simulation - tamno plavi krug sa malim crnim krugom u centru */}
+            <div className="samsung-camera">
+              <div className="samsung-camera-lens" />
+            </div>
 
-          {/* Video Audio & Playback Controls */}
-          <div className="absolute bottom-2.5 right-2.5 sm:bottom-3.5 sm:right-3.5 z-30 flex items-center gap-1.5 pointer-events-auto">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsHeroMuted((prev) => {
-                  const next = !prev;
-                  if (heroVideoRef.current) {
-                    heroVideoRef.current.muted = next;
-                  }
-                  return next;
-                });
+            {/* Ended State: slaptz.png fits entire frame */}
+            {hasVideoEnded && (
+              <div className="absolute inset-0 z-20 bg-black flex items-center justify-center p-2">
+                <img
+                  src="/assets/Gallery/slaptz.png"
+                  alt="Tuzla Slap"
+                  className="w-full h-full object-contain select-none"
+                />
+                <button
+                  type="button"
+                  onClick={handleReplay}
+                  className="absolute bottom-4 right-4 z-30 flex items-center gap-2 px-3.5 py-2 rounded-full bg-slate-950/80 hover:bg-slate-900 text-white backdrop-blur-md border border-white/20 shadow-xl active:scale-95 transition-all cursor-pointer"
+                  title="Watch video again"
+                  aria-label="Watch video again"
+                >
+                  <RotateCcw className="w-4 h-4 text-amber-400" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider">Video</span>
+                </button>
+              </div>
+            )}
+            
+            {/* Fallback image */}
+            <img
+              src="/assets/Gallery/heroo.webp"
+              alt="Tuzla Hero Fallback"
+              loading="eager"
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none ${
+                isHeroPlaying ? 'opacity-0' : 'opacity-100'
+              }`}
+            />
+
+            {/* Video koji na mobilnom postaje Full Size - pušta se 2 puta */}
+            <video
+              ref={heroVideoRef}
+              autoPlay
+              muted={isHeroMuted}
+              playsInline
+              preload="auto"
+              poster="/assets/Gallery/heroo.webp"
+              onPlay={() => {
+                setIsHeroPlaying(true);
+                setIsHeroReady(true);
               }}
-              className="p-1.5 sm:p-2 rounded-full bg-slate-950/75 hover:bg-slate-900/95 text-white backdrop-blur-md border border-white/20 shadow-lg active:scale-90 transition-all"
-              title={isHeroMuted ? 'Unmute video' : 'Mute video'}
-              aria-label={isHeroMuted ? 'Unmute video' : 'Mute video'}
-            >
-              {isHeroMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-300" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />}
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleHeroVideo();
+              onPlaying={() => {
+                setIsHeroPlaying(true);
+                setIsHeroReady(true);
               }}
-              className="p-1.5 sm:p-2 rounded-full bg-slate-950/75 hover:bg-slate-900/95 text-white backdrop-blur-md border border-white/20 shadow-lg active:scale-90 transition-all"
-              title={isHeroPlaying ? 'Pause video' : 'Play video'}
-              aria-label={isHeroPlaying ? 'Pause video' : 'Play video'}
+              onLoadedData={() => setIsHeroReady(true)}
+              onCanPlay={() => setIsHeroReady(true)}
+              onError={handleVideoError}
+              onEnded={handleHeroVideoEnd}
+              className={`w-full h-full object-cover transition-opacity duration-700 ${
+                isHeroPlaying ? 'opacity-100' : 'opacity-0'
+              }`}
             >
-              {isHeroPlaying ? <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-0.5 text-blue-400" />}
-            </button>
+              <source src={videoSrc} type="video/mp4" />
+              Vaš browser ne podržava video element.
+            </video>
+
+            {/* Buffering Spinner */}
+            {isBuffering && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/60 backdrop-blur-[2px]">
+                <div className="p-4 rounded-2xl bg-black/80 border border-white/10 flex flex-col items-center gap-2">
+                  <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+                  <span className="text-[11px] font-black uppercase text-white tracking-widest">Loading...</span>
+                </div>
+              </div>
+            )}
+
+            {/* Video Audio & Playback Controls on Screen */}
+            {!hasVideoEnded && (
+              <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2 pointer-events-auto">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsHeroMuted((prev) => {
+                      const next = !prev;
+                      if (heroVideoRef.current) {
+                        heroVideoRef.current.muted = next;
+                      }
+                      return next;
+                    });
+                  }}
+                  className="p-2.5 rounded-full bg-slate-950/75 hover:bg-slate-900/95 text-white backdrop-blur-md border border-white/20 shadow-lg active:scale-90 transition-all cursor-pointer"
+                  title={isHeroMuted ? 'Unmute video' : 'Mute video'}
+                  aria-label={isHeroMuted ? 'Unmute video' : 'Mute video'}
+                >
+                  {isHeroMuted ? <VolumeX className="w-4 h-4 text-slate-300" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleHeroVideo();
+                  }}
+                  className="p-2.5 rounded-full bg-slate-950/75 hover:bg-slate-900/95 text-white backdrop-blur-md border border-white/20 shadow-lg active:scale-90 transition-all cursor-pointer"
+                  title={isHeroPlaying ? 'Pause video' : 'Play video'}
+                  aria-label={isHeroPlaying ? 'Pause video' : 'Play video'}
+                >
+                  {isHeroPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5 text-blue-400" />}
+                </button>
+              </div>
+            )}
+
+            {/* Mobile Scroll Indicator */}
+            <div className="absolute bottom-5 left-4 z-20 md:hidden flex items-center gap-1.5 text-white/90 pointer-events-none drop-shadow-md">
+              <ArrowDown className="w-3.5 h-3.5 animate-bounce text-cyan-300" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">{t.heroScroll}</span>
+            </div>
           </div>
         </div>
       </section>
@@ -529,110 +646,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
         </section>
 
-        {/* 4.5. SMARTPHONE VIDEO */}
-        <section className="py-10 flex flex-col items-center">
-          <div className="mb-10 text-center">
-            <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
-              {t.videoTitle}
-            </h2>
-            <div className="w-16 h-2 bg-blue-600 rounded-full mt-2 mx-auto" />
-          </div>
-          <div
-            onClick={toggleHeroVideo}
-            className="relative w-[340px] sm:w-[360px] h-[680px] sm:h-[720px] border-[14px] border-slate-900 rounded-[3rem] bg-black shadow-2xl overflow-hidden ring-4 ring-slate-800 cursor-pointer group select-none"
-          >
-            {/* Speaker notch */}
-            <div className="absolute top-0 inset-x-0 h-6 bg-slate-900 rounded-b-2xl w-32 mx-auto z-30 flex items-center justify-center">
-              <div className="w-12 h-1 bg-slate-800 rounded-full" />
-            </div>
-
-            {/* Video element */}
-            <video
-              ref={heroVideoRef}
-              muted
-              playsInline
-              className="absolute inset-0 h-full w-full object-cover z-0"
-              src={videoSrc}
-              onEnded={handleHeroVideoEnd}
-              onError={handleVideoError}
-              onWaiting={() => setIsBuffering(true)}
-              onPlaying={() => setIsBuffering(false)}
-              onCanPlay={() => {
-                setIsHeroReady(true);
-                setIsBuffering(false);
-              }}
-              preload="metadata"
-            />
-
-            {/* Buffering Spinner */}
-            {isBuffering && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/60 backdrop-blur-[2px]">
-                <div className="p-4 rounded-2xl bg-black/80 border border-white/10 flex flex-col items-center gap-2">
-                  <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
-                  <span className="text-[11px] font-black uppercase text-white tracking-widest">Loading...</span>
-                </div>
-              </div>
-            )}
-
-            {/* Black Poster overlay when paused or not started */}
-            <AnimatePresence>
-              {!isHeroPlaying && !hasVideoEnded && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 z-10 bg-slate-950 flex flex-col items-center justify-center p-6 select-none"
-                >
-                  {/* Subtle background ambient ring */}
-                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(37,99,235,0.15)_0%,_rgba(2,6,23,0.95)_70%)] pointer-events-none" />
-
-                  {/* Centered Play button */}
-                  <div className="relative z-20 flex flex-col items-center gap-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleHeroVideo();
-                      }}
-                      className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 border-2 border-cyan-300/40 shadow-[0_0_35px_rgba(37,99,235,0.6)] flex items-center justify-center text-white transition-all transform hover:scale-110 active:scale-95 cursor-pointer group/btn"
-                    >
-                      <Play className="w-8 h-8 fill-white ml-1 transition-transform group-hover/btn:scale-110" />
-                    </button>
-                    <div className="text-center">
-                      <span className="text-xs font-black uppercase tracking-widest text-cyan-300 drop-shadow block">
-                        Tuzla Virtual Tour
-                      </span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-0.5 block">
-                        {lang === 'bs' ? 'Dodirni za video' : 'Tap to Play'}
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Replay Overlay */}
-            <AnimatePresence>
-              {hasVideoEnded && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 z-10 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4 p-6"
-                >
-                  <button
-                    onClick={handleReplay}
-                    className="w-18 h-18 bg-gradient-to-tr from-amber-400 to-yellow-400 border-2 border-yellow-200 rounded-full flex items-center justify-center text-slate-950 shadow-[0_0_30px_rgba(251,191,36,0.6)] hover:scale-110 active:scale-95 transition-all"
-                  >
-                    <RotateCcw className="w-8 h-8" />
-                  </button>
-                  <span className="text-sm font-black uppercase tracking-widest text-white">
-                    Watch Again
-                  </span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </section>
 
         {/* 4.55. GIPS BUS TRACKING */}
         <div className="w-full flex flex-col items-center mt-2 mb-6">
