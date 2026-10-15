@@ -228,26 +228,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   };
 
   const handleHeroVideoEnd = () => {
-    setHeroLoopCount((prev) => {
-      const next = prev + 1;
-      if (next < 2) {
-        // Finished 1st playback, start 2nd playback
-        if (heroVideoRef.current) {
-          heroVideoRef.current.currentTime = 0;
-          heroVideoRef.current.play().catch((err) => {
-            console.warn("Hero video 2nd playback error:", err);
-            setIsHeroPlaying(false);
-            setHasVideoEnded(true);
-          });
-        }
-        return next;
-      } else {
-        // Finished 2nd playback (played 2 times total)
-        setIsHeroPlaying(false);
-        setHasVideoEnded(true);
-        return next;
-      }
-    });
+    // Stop playback after the first play completes
+    setIsHeroPlaying(false);
+    setHasVideoEnded(true);
   };
 
   const handleReplay = (e?: React.MouseEvent) => {
@@ -437,15 +420,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 </button>
               </div>
             )}
-            
+
             {/* Fallback image */}
             <img
-              src="/assets/Gallery/heroo.webp"
+              src="/assets/Gallery/slaptz.png"
               alt="Tuzla Hero Fallback"
               loading="eager"
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none ${
-                isHeroPlaying ? 'opacity-0' : 'opacity-100'
-              }`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none ${isHeroPlaying ? 'opacity-0' : 'opacity-100'
+                }`}
             />
 
             {/* Video koji na mobilnom postaje Full Size - pušta se 2 puta */}
@@ -453,24 +435,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               ref={heroVideoRef}
               autoPlay
               muted={isHeroMuted}
-              playsInline
-              preload="auto"
-              poster="/assets/Gallery/heroo.webp"
               onPlay={() => {
                 setIsHeroPlaying(true);
                 setIsHeroReady(true);
               }}
-              onPlaying={() => {
-                setIsHeroPlaying(true);
-                setIsHeroReady(true);
-              }}
               onLoadedData={() => setIsHeroReady(true)}
-              onCanPlay={() => setIsHeroReady(true)}
               onError={handleVideoError}
               onEnded={handleHeroVideoEnd}
-              className={`w-full h-full object-cover transition-opacity duration-700 ${
-                isHeroPlaying ? 'opacity-100' : 'opacity-0'
-              }`}
+              className={`w-full h-full object-cover transition-opacity duration-700 ${isHeroPlaying ? 'opacity-100' : 'opacity-0'
+                }`}
             >
               <source src={videoSrc} type="video/mp4" />
               Vaš browser ne podržava video element.
