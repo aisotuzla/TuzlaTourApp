@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Calendar as CalendarIcon, CheckCircle2, Circle, CreditCard, Headphones, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, CheckCircle2, Circle, Compass, CreditCard, Headphones, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { Language } from '../types';
 import { Preferences } from '@capacitor/preferences';
 import { EventCalendarView } from './EventCalendarView';
 import { MediaAudioGuideTab } from './MediaAudioGuideTab';
+import { ThreeDayPlanView } from './ThreeDayPlanView';
+import { PracticalTravelInfo } from './PracticalTravelInfo';
 
-type Mode = 'expenses' | 'tasks' | 'itinerary' | 'calendar' | 'threeDayPlan' | 'media';
+type Mode = 'expenses' | 'tasks' | 'itinerary' | 'calendar' | 'threeDayPlan' | 'practicalInfo' | 'media';
 
 type ExpenseItem = {
   id: number;
@@ -35,69 +37,6 @@ interface TaskManagerProps {
 
 const storageKey = 'tuzla_task_manager_v1';
 
-const threeDayPlanText = `Dan 1: Dolazak i Prvi Koraci
-
-✈️ Slijetanje (Aerodrom Tuzla):
-• Otvorite Tuzla Tour Guide aplikaciju
-• Koristite tab "Taksi/Prevoz" za direktan poziv lokalnog taksi servisa do centra grada
-
-🏨 Smještaj:
-• Otvorite tab "Smještaj" (Accommodation Link)
-• Odaberite hotel, napravite poziv direktno iz aplikacije
-• Koristite "Smart Navigation" mapu da stignete do odabrane lokacije
-
-🍽️ Ručak:
-• Otvorite tab "Hrana"
-• Pronađite obrok po želji ili naručite dostavu direktno na vašu lokaciju
-
-🗺️ Upoznavanje grada:
-• Otvorite tab "Potraga" (Interactive Quest Map)
-• Pratite mapu do historijskih atrakcija (Freedom Square itd.)
-• Završite "Potragu" na lokacijama kako biste otključali digitalne popuste
-• Čuvajte popuste u svom novčaniku
-
-🌙 Večera: Povratak u hotelski restoran za večeru.
-
-Dan 2: Panonsko osvježenje i Stari Grad
-
-☀️ Jutarnje osvježenje:
-• Otvorite "Mapu" i uputite se ka Panonskim jezerima
-• Savjet: Dođite što ranije dok je voda najčistija 
-• Radno vrijeme: 8:00 - 20:00
-• Cijena cjelodnevne ulaznice: 7.50 KM
-• Besplatno obiđite Muzej i Neolitsko sojeničko naselje
-
-🍽️ Ručak i Desert:
-• Ručajte u restoranu Panonski Lovac
-• Za Desert prošetajte do Palačinkare Bagi
-• Uključite navigaciju, skenirajte QR kod po dolasku
-• Ostvarite popust na porciju najboljih palačinaka u gradu!
-
-🏛️ Stari Grad:
-• Prošetajte do Trga Slobode i spomenika "Ismet i Meša"
-• Potražite QR kod na lokaciji za posebno iznenađenje u aplikaciji!
-
-🌙 Večera: Povratak u hotelski restoran za večeru.
-
-Dan 3: Priroda, Piknik i Shopping
-
-🌲 Priroda:
-• Otvorite tab "Mapa" i pokrenite navigaciju ka izletištu Ilinčica
-• Uživajte u adrenalinskom parku, šumi i hladovini
-• Preporuka za piknik: Ponesite hranu i piće sa sobom i uživajte u prirodi!
-
-🛍️ Shopping i Odmor:
-• Posjetite BCC (Bingo City Center) ili RK Tuzlanka
-• Opustite se uz kafu i obavite kupovinu lokalnih proizvoda
-• Skenirajte QR kodove na partner lokacijama za osvajanje nagrada!
-
-🌙 Polazak:
-• Pozovite Taxi ili potražite autobusku liniju "34" i "11" u aplikaciji klikom na red vožnje
-• Pronađite real-time lokaciju autobusa koji saobraća na relaciji Aerodrom - Centar i dočekajte ga na najbližem stajalištu.
-
-━━━━━━━━━━━━━━━━━━━━━
-
-HVALA NA POSJETI, DOĐITE NAM OPET!`;
 
 const copy = {
   en: {
@@ -342,6 +281,13 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               {lang === 'bs' ? '3 Dnevni plan' : lang === 'de' ? '3-Tage-Plan' : lang === 'tr' ? '3 Günlük Plan' : '3 Day Plan'}
             </button>
             <button
+              onClick={() => setView('practicalInfo')}
+              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'practicalInfo' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
+            >
+              <Compass className="h-5 w-5" />
+              {lang === 'bs' ? 'Praktične info' : lang === 'de' ? 'Praktische Infos' : lang === 'tr' ? 'Pratik Bilgiler' : 'Practical Info'}
+            </button>
+            <button
               onClick={() => setView('media')}
               className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${view === 'media' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md'}`}
             >
@@ -361,13 +307,17 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
           </div>
         ) : view === 'threeDayPlan' ? (
           <div className="p-6 sm:p-8 w-full">
-            <section className="w-full space-y-6">
-              <div className="rounded-[1.75rem] border border-blue-100 bg-white p-6 sm:p-8 shadow-sm">
-                <div className="whitespace-pre-wrap text-sm sm:text-base font-semibold leading-relaxed sm:leading-8 text-slate-700">
-                  {threeDayPlanText}
-                </div>
-              </div>
-            </section>
+            <ThreeDayPlanView
+              lang={lang}
+              onSwitchToPracticalInfo={() => setView('practicalInfo')}
+            />
+          </div>
+        ) : view === 'practicalInfo' ? (
+          <div className="p-6 sm:p-8 w-full">
+            <PracticalTravelInfo
+              lang={lang}
+              onSwitchToItinerary={() => setView('threeDayPlan')}
+            />
           </div>
         ) : view === 'media' ? (
           <div className="p-6 sm:p-8 w-full">
