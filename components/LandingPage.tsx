@@ -161,7 +161,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   };
 
   const localHeroVideo = "/assets/Gallery/tz.mp4";
-  const remoteHeroVideo = "https://cki4usi56q35b3t6.public.blob.vercel-storage.com/TuzlaCompressed.mp4";
+  const remoteHeroVideo = "https://cki4usi56q35b3t6.public.blob.vercel-storage.com/tz.mp4";
   const initialWebSrc = localHeroVideo;
 
   const [videoSrc, setVideoSrc] = useState(initialWebSrc);
