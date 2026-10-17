@@ -44,7 +44,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
       filters: {
         all: 'All Practical Info',
         flights: '✈️ Flights & TZL',
-        bus: '🚌 Line 11 Bus',
+        bus: '🚌 Bus Lines (34 & 11)',
         entry: '🛂 Entry & Customs',
         health: '🏥 Health & Insurance',
         simMoney: '💡 SIM, Wi-Fi & Money',
@@ -75,20 +75,38 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         wizzAirLink: 'Check Wizz Air Timetable',
       },
       bus: {
-        title: 'Airport Transit: Local Bus Line 11 to Tuzla',
-        badge: 'Line 11 • Dubrave Gornje',
-        walkTitle: '1. Walk to the Bus Stop (~800 m / ~10 min)',
-        walkDesc: 'Exit the TZL passenger terminal, follow the pedestrian path towards the airport security gate, and walk ~800 m to the main road at Dubrave Gornje.',
-        lineTitle: '2. Board Line 11 towards Tuzla Centar',
-        lineDesc: 'Line 11 connects Dubrave Gornje directly to Tuzla East and Central bus stations.',
+        title: 'Airport & Regional Transit: Bus Lines 34 & 11',
+        badge: 'Bus Transit • Lines 34 & 11',
+        priceNotice: 'Ticket Price: Depending on distance, bus fares range from 2.50 KM to 5.50 KM.',
         stats: [
-          { label: 'Travel Time', value: '~45–60 min' },
-          { label: 'Ticket Price', value: '4.50 BAM' },
-          { label: 'Payment', value: 'Cash only in BAM' },
-          { label: 'Frequency', value: 'Every ~2 hours' },
+          { label: 'Travel Time', value: '~35–55 min' },
+          { label: 'Ticket Price', value: '2.50 – 5.50 KM' },
+          { label: 'Payment', value: 'Cash only (KM)' },
+          { label: 'Airport Direct', value: 'Line 34 (Direct)' },
         ],
-        cashWarning: 'Crucial: Bus drivers accept CASH ONLY. Please carry exact change in BAM (KM), as drivers cannot accept cards or Euros.',
+        cashWarning: 'Crucial: Bus drivers accept CASH ONLY in KM. Fares range from 2.50 KM to 5.50 KM depending on distance. Please carry exact change, as drivers cannot accept cards or Euros.',
         taxiAlternative: 'Taxi Alternative: Official taxis wait directly outside arrivals. A trip to downtown Tuzla takes ~20–25 minutes and costs approximately 30–40 BAM (€15–20). Always confirm the fare or taximeter before departing.',
+        line34: {
+          title: 'Line 34: Tuzla (AS Istok) – B. Malta – Tuzla Airport (Dubrave)',
+          badge: 'Direct to Airport Terminal',
+          desc: 'This line operates directly to Tuzla International Airport in Dubrave (stops directly at the terminal).',
+          days: 'Working days, Saturday and Sunday (Daily departures):',
+          toAirportLabel: 'Departures from Tuzla (AS Istok) to Airport:',
+          toAirportTimes: ['07:00', '09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00', '23:00'],
+          fromAirportLabel: 'Departures from Airport to Tuzla (AS Istok):',
+          fromAirportTimes: ['06:00', '08:00', '10:00 (weekdays also 10:00)', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+        },
+        line11: {
+          title: 'Line 11: Tuzla (AS Istok) – Donje Dubrave – Kalesija (AS)',
+          badge: 'Via Dubrave (~800 m to Terminal)',
+          desc: 'Passes through Dubrave (stop Donje Dubrave) connecting Tuzla East Bus Station and Kalesija.',
+          walkDesc: 'Walk ~800 m (~10 min) from the airport terminal to the main road station in Dubrave.',
+          days: 'Working days (during the school year):',
+          toKalesijaLabel: 'Departures from Tuzla (AS Istok) to Kalesija via Dubrave:',
+          toKalesijaTimes: ['05:55', '07:15', '08:15', '10:15', '11:55', '13:15', '14:45', '15:35', '16:10', '17:20', '18:05', '18:55'],
+          toTuzlaLabel: 'Departures from Kalesija to Tuzla via Dubrave:',
+          toTuzlaTimes: ['05:30', '06:30', '07:15', '07:45', '08:55', '10:30', '11:40', '12:40', '13:30', '15:05', '16:50', '18:55'],
+        },
       },
       entry: {
         title: 'Entry Requirements & Border Procedures (EU & Non-EU)',
@@ -137,7 +155,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         wifiDesc: 'Free and fast Wi-Fi is widely available in almost all cafes, restaurants, hotels, and shopping malls (Bingo City Center, RK Tuzlanka, and Central City Square Trg Slobode).',
         moneyTitle: '💶 Currency, Cash & ATMs',
         peggedRate: 'Local Currency: Bosnian Convertible Mark (BAM / KM), pegged to the Euro at a fixed rate: 1 EUR = 1.95583 KM (roughly 1 KM ≈ €0.51).',
-        cashAdvice: 'Cash is Essential: While cards (Visa/Mastercard) are accepted in supermarkets, shopping malls, and large restaurants, smaller cafes, bakeries, street markets, local taxis, and bus Line 11 require CASH ONLY in KM.',
+        cashAdvice: 'Cash is Essential: While cards (Visa/Mastercard) are accepted in supermarkets, shopping malls, and large restaurants, smaller cafes, bakeries, street markets, local taxis, and bus lines 34 & 11 require CASH ONLY in KM (fares 2.50–5.50 KM).',
         atmAdvice: 'ATMs (Bankomati): Widely accessible throughout the city center (Raiffeisen, UniCredit, Intesa Sanpaolo, NLB). When withdrawing from foreign cards, always decline dynamic currency conversion ("Without Conversion") for the best bank rate.',
       },
     },
@@ -149,7 +167,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
       filters: {
         all: 'Sve praktične info',
         flights: '✈️ Letovi i Aerodrom TZL',
-        bus: '🚌 Autobus Linija 11',
+        bus: '🚌 Autobuske linije (34 i 11)',
         entry: '🛂 Ulazak i Carina',
         health: '🏥 Zdravstvo i Osiguranje',
         simMoney: '💡 SIM, Wi-Fi i Novac',
@@ -180,20 +198,38 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         wizzAirLink: 'Wizz Air Red Letenja',
       },
       bus: {
-        title: 'Aerodromski prevoz: Lokalni autobus Linija 11',
-        badge: 'Linija 11 • Dubrave Gornje',
-        walkTitle: '1. Pješke do stanice (~800 m / ~10 min)',
-        walkDesc: 'Izađite iz putničkog terminala aerodroma TZL, krenite pristupnim putem prema kapiji i izađite na glavnu cestu u Dubravama Gornjim.',
-        lineTitle: '2. Linija 11 u pravcu Tuzle (Centar / Stanica)',
-        lineDesc: 'Linija 11 vozi direktno do istočne i centralne autobuske stanice u Tuzli.',
+        title: 'Aerodromski i lokalni prevoz: Linije 34 i 11',
+        badge: 'Autobuski prevoz • Linije 34 i 11',
+        priceNotice: 'Cijena karte: U zavisnosti od udaljenosti / relacije cijena karte iznosi od 2.50 KM do 5.50 KM.',
         stats: [
-          { label: 'Vrijeme vožnje', value: '~45–60 min' },
-          { label: 'Cijena karte', value: '4.50 KM' },
+          { label: 'Vrijeme vožnje', value: '~35–55 min' },
+          { label: 'Cijena karte', value: '2.50 – 5.50 KM' },
           { label: 'Način plaćanja', value: 'Samo gotovina (KM)' },
-          { label: 'Interval', value: 'Svaka ~2 sata' },
+          { label: 'Aerodrom direktno', value: 'Linija 34 (Direktna)' },
         ],
-        cashWarning: 'Važno: Vozači autobusa primaju ISKLJUČIVO GOTOVINU u KM. Pripremite tačan iznos (4.50 KM) jer kartice i valute poput eura ne primaju.',
+        cashWarning: 'Važno: Vozači autobusa primaju ISKLJUČIVO GOTOVINU u KM. Cijena karte iznosi od 2.50 KM do 5.50 KM u zavisnosti od relacije. Pripremite sitan novac jer kartice i valute poput eura ne primaju.',
         taxiAlternative: 'Taksi alternativa: Zvanična taksi vozila čekaju ispred dolaznog terminala. Vožnja do centra traje ~20–25 minuta i košta oko 30–40 KM (€15–20). Dogovorite cijenu ili provjerite taksimetar prije polaska.',
+        line34: {
+          title: 'Linija 34: Tuzla (AS Istok) – B. Malta – Aerodrom Tuzla (Dubrave)',
+          badge: 'Direktno do aerodroma',
+          desc: 'Ova linija saobraća direktno do Aerodroma Tuzla u Dubravama (staje na samom aerodromu).',
+          days: 'Radni dani, subota i nedjelja (polasci):',
+          toAirportLabel: 'Polasci iz Tuzle (AS Istok) prema Aerodromu:',
+          toAirportTimes: ['07:00', '09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00', '23:00'],
+          fromAirportLabel: 'Polasci sa Aerodroma prema Tuzli (AS Istok):',
+          fromAirportTimes: ['06:00', '08:00', '10:00 (radnim danima i 10:00)', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+        },
+        line11: {
+          title: 'Linija 11: Tuzla (AS Istok) – Donje Dubrave – Kalesija (AS)',
+          badge: 'Preko Dubrava (~800 m do aerodroma)',
+          desc: 'Ova linija prolazi kroz Dubrave (stanica Donje Dubrave) na relaciji između Autobuske stanice Istok u Tuzli i Kalesije.',
+          walkDesc: 'Pješke ~800 m (~10 min) od putničkog terminala aerodroma TZL do stanice na glavnoj cesti u Dubravama.',
+          days: 'Radni dani (tokom školske godine):',
+          toKalesijaLabel: 'Polasci iz Tuzle (AS Istok) prema Kalesiji preko Dubrava:',
+          toKalesijaTimes: ['05:55', '07:15', '08:15', '10:15', '11:55', '13:15', '14:45', '15:35', '16:10', '17:20', '18:05', '18:55'],
+          toTuzlaLabel: 'Polasci iz Kalesije prema Tuzli preko Dubrava:',
+          toTuzlaTimes: ['05:30', '06:30', '07:15', '07:45', '08:55', '10:30', '11:40', '12:40', '13:30', '15:05', '16:50', '18:55'],
+        },
       },
       entry: {
         title: 'Uslovi ulaska i granične procedure (EU i Non-EU)',
@@ -242,19 +278,19 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         wifiDesc: 'Besplatan i brz Wi-Fi je standard u gotovo svim kafićima, restoranima, hotelima i tržnim centrima (BCC, RK Tuzlanka, Trg Slobode).',
         moneyTitle: '💶 Valuta, gotovina i bankomati',
         peggedRate: 'Lokalna valuta: Bosanska konvertibilna marka (BAM / KM), fiksno vezana za euro: 1 EUR = 1.95583 KM (oko 1 KM ≈ €0.51).',
-        cashAdvice: 'Gotovina je neophodna: Kartice (Visa/Mastercard) prolaze u tržnim centrima i supermarketima, ali pekare, kafići, pijace, taksisti i autobuska linija 11 primaju ISKLJUČIVO GOTOVINU u KM.',
-        atmAdvice: 'Bankomati: Široko dostupni u gradu (Raiffeisen, UniCredit, Intesa Sanpaolo, NLB). Prilikom podizanja novca sa inostranih kartica odaberite isplatu bez konverzije ("Without Conversion") za najpovoljniji kurs.',
+        cashAdvice: 'Gotovina je neophodna: Iako se kartice (Visa/Mastercard) prihvataju u supermarketima, tržnim centrima i većim restoranima, manji kafići, pekare, pijace, lokalni taksisti i autobuske linije 34 i 11 zahtijevaju ISKLJUČIVO GOTOVINU u KM (cijene 2.50–5.50 KM).',
+        atmAdvice: 'Bankomati: Široko dostupni u gradu (Raiffeisen, UniCredit, Intesa Sanpaolo, NLB). Prilikom podizanja novca sa inostranih kartica odaberite isplatu bez konverzije ("Without Conversion") radi najpovoljnijeg bankarskog kursa.',
       },
     },
     de: {
       title: 'Praktischer Reiseführer & Flughafen Tuzla',
-      subtitle: 'Wichtige Hinweise zu Flügen, Nahverkehr, Einreisebestimmungen, Zoll, Notfallkontakten und Finanzen in Tuzla.',
-      warningBanner: 'Die Einreisebestimmungen können sich kurzfristig ändern – erkundigen Sie sich 2–4 Wochen vor Reiseantritt bei Ihrer Botschaft oder dem Außenministerium von Bosnien und Herzegowina.',
-      showWarning: 'Reisehinweis anzeigen',
+      subtitle: 'Wichtige Informationen zu Flügen, Flughafentransfer, Einreisebestimmungen, Zoll, Gesundheit und Zahlungen in Tuzla.',
+      warningBanner: 'Einreisebestimmungen können sich kurzfristig ändern – bitte 2–4 Wochen vor Reiseantritt bei Ihrer Botschaft oder dem Außenministerium von Bosnien und Herzegowina überprüfen.',
+      showWarning: 'Offizielle Einreisehinweise anzeigen',
       filters: {
         all: 'Alle Infos',
         flights: '✈️ Flüge & TZL',
-        bus: '🚌 Bus Linie 11',
+        bus: '🚌 Buslinien (34 & 11)',
         entry: '🛂 Einreise & Zoll',
         health: '🏥 Gesundheit & Versicherung',
         simMoney: '💡 SIM, WLAN & Geld',
@@ -285,20 +321,38 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         wizzAirLink: 'Wizz Air Flugplan aufrufen',
       },
       bus: {
-        title: 'Flughafentransfer: Lokaler Bus Linie 11 nach Tuzla',
-        badge: 'Linie 11 • Dubrave Gornje',
-        walkTitle: '1. Fußweg zur Haltestelle (~800 m / ca. 10 Min.)',
-        walkDesc: 'Verlassen Sie das TZL-Terminal und gehen Sie ca. 800 m entlang der Zufahrtsstraße zur Hauptstraße in Dubrave Gornje.',
-        lineTitle: '2. Einstieg in die Linie 11 Richtung Tuzla Zentrum',
-        lineDesc: 'Linie 11 fährt direkt ins Zentrum und zum Busbahnhof Tuzla.',
+        title: 'Flughafentransfer & Regionalbusse: Linien 34 & 11',
+        badge: 'Buslinien • 34 (Direkt) & 11',
+        priceNotice: 'Fahrpreis: Je nach Entfernung beträgt der Fahrpreis zwischen 2.50 KM und 5.50 KM.',
         stats: [
-          { label: 'Fahrzeit', value: '~45–60 Min.' },
-          { label: 'Fahrpreis', value: '4.50 BAM (KM)' },
+          { label: 'Fahrzeit', value: '~35–55 Min.' },
+          { label: 'Fahrpreis', value: '2.50 – 5.50 KM' },
           { label: 'Zahlung', value: 'Nur Bargeld in KM' },
-          { label: 'Taktung', value: 'Ca. alle 2 Stunden' },
+          { label: 'Flughafen Direkt', value: 'Linie 34 (Direkt)' },
         ],
-        cashWarning: 'Sehr wichtig: Der Fahrer akzeptiert NUR BARGELD in Konvertibler Mark (KM/BAM). Bitte halten Sie das Geld passend bereit (keine Kartenzahlung, keine Euro).',
+        cashWarning: 'Sehr wichtig: Der Fahrer akzeptiert NUR BARGELD in KM (BAM). Der Fahrpreis liegt je nach Strecke zwischen 2.50 KM und 5.50 KM. Bitte halten Sie Bargeld passend bereit.',
         taxiAlternative: 'Taxi-Alternative: Taxis stehen direkt am Ankunftsbereich. Eine Fahrt ins Stadtzentrum dauert 20–25 Minuten und kostet etwa 30–40 BAM (15–20 €). Vereinbaren Sie den Preis vorab oder achten Sie auf das Taxameter.',
+        line34: {
+          title: 'Linie 34: Tuzla (AS Istok) – B. Malta – Flughafen Tuzla (Dubrave)',
+          badge: 'Direktverbindung zum Flughafen',
+          desc: 'Diese Linie fährt direkt zum Flughafen Tuzla in Dubrave (Haltestelle direkt am Terminal).',
+          days: 'Werktage, Samstag und Sonntag (Tägliche Abfahrten):',
+          toAirportLabel: 'Abfahrten ab Tuzla (AS Istok) zum Flughafen:',
+          toAirportTimes: ['07:00', '09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00', '23:00'],
+          fromAirportLabel: 'Abfahrten ab Flughafen nach Tuzla (AS Istok):',
+          fromAirportTimes: ['06:00', '08:00', '10:00 (werktags auch 10:00)', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+        },
+        line11: {
+          title: 'Linie 11: Tuzla (AS Istok) – Donje Dubrave – Kalesija (AS)',
+          badge: 'Über Dubrave (~800 m zum Terminal)',
+          desc: 'Fährt zwischen dem Ost-Busbahnhof Tuzla und Kalesija mit Halt in Dubrave (Station Donje Dubrave).',
+          walkDesc: 'Ca. 800 m (ca. 10 Min.) Fußweg vom Terminal zur Haltestelle an der Hauptstraße in Dubrave.',
+          days: 'Werktage (während des Schuljahres):',
+          toKalesijaLabel: 'Abfahrten ab Tuzla (AS Istok) nach Kalesija über Dubrave:',
+          toKalesijaTimes: ['05:55', '07:15', '08:15', '10:15', '11:55', '13:15', '14:45', '15:35', '16:10', '17:20', '18:05', '18:55'],
+          toTuzlaLabel: 'Abfahrten ab Kalesija nach Tuzla über Dubrave:',
+          toTuzlaTimes: ['05:30', '06:30', '07:15', '07:45', '08:55', '10:30', '11:40', '12:40', '13:30', '15:05', '16:50', '18:55'],
+        },
       },
       entry: {
         title: 'Einreisebestimmungen & Grenzformalitäten (EU & Nicht-EU)',
@@ -347,7 +401,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         wifiDesc: 'Freies WLAN steht in fast allen Cafés, Restaurants, Hotels und Shoppingmalls (Bingo City Center, RK Tuzlanka, Freiheitsplatz) gratis zur Verfügung.',
         moneyTitle: '💶 Währung, Bargeld & Geldautomaten',
         peggedRate: 'Währung: Konvertible Mark (BAM / KM), fester Wechselkurs zum Euro: 1 EUR = 1,95583 KM (1 KM ≈ 0,51 €).',
-        cashAdvice: 'Bargeld ist unverzichtbar: Während Supermärkte und Malls Karten akzeptieren, gilt für Bäcker, Taxis, Kioske, Cafés und den Bus Linie 11 reine BARGELDPFLICHT in KM.',
+        cashAdvice: 'Bargeld ist unverzichtbar: Während Supermärkte und Malls Karten akzeptieren, gilt für Bäcker, Taxis, Kioske, Cafés und die Buslinien 34 und 11 reine BARGELDPFLICHT in KM (Fahrpreis 2.50–5.50 KM).',
         atmAdvice: 'Geldautomaten (Bankomati): An vielen Ecken vorhanden (UniCredit, Raiffeisen, Intesa Sanpaolo). Bei Abhebungen immer „Abrechnung ohne Konvertierung“ wählen, um den offiziellen Bankkurs zu erhalten.',
       },
     },
@@ -359,7 +413,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
       filters: {
         all: 'Tüm Bilgiler',
         flights: '✈️ Uçuşlar & TZL',
-        bus: '🚌 Hat 11 Otobüsü',
+        bus: '🚌 Otobüs Hatları (34 ve 11)',
         entry: '🛂 Giriş & Gümrük',
         health: '🏥 Sağlık & Sigorta',
         simMoney: '💡 SIM, Wi-Fi & Para',
@@ -390,20 +444,38 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         wizzAirLink: 'Wizz Air Uçuş Tarifesi',
       },
       bus: {
-        title: 'Havalimanı Ulaşımı: Tuzla’ya 11 Numaralı Otobüs',
-        badge: 'Hat 11 • Dubrave Gornje',
-        walkTitle: '1. Durağa Yürüyüş (~800 m / ~10 dk)',
-        walkDesc: 'TZL terminalinden çıkıp anayol üzerindeki Dubrave Gornje durağına doğru yaklaşık 800 metre yürüyün.',
-        lineTitle: '2. Tuzla Merkez Yönüne Hat 11 Otobüsü',
-        lineDesc: '11 numaralı hat doğrudan Tuzla Doğu ve Merkez otogarına ulaşır.',
+        title: 'Havalimanı ve Şehirlerarası Otobüs Hatları (Hat 34 ve 11)',
+        badge: 'Otobüs Ulaşımı • Hat 34 & 11',
+        priceNotice: 'Bilet Ücreti: Mesafeye bağlı olarak 2.50 KM ile 5.50 KM arasında değişmektedir.',
         stats: [
-          { label: 'Yolculuk Süresi', value: '~45–60 dk' },
-          { label: 'Bilet Ücreti', value: '4.50 BAM (KM)' },
-          { label: 'Ödeme', value: 'Yalnızca nakit KM' },
-          { label: 'Sefer Aralığı', value: 'Yaklaşık 2 saatte bir' },
+          { label: 'Yolculuk Süresi', value: '~35–55 dk' },
+          { label: 'Bilet Ücreti', value: '2.50 – 5.50 KM' },
+          { label: 'Ödeme', value: 'Yalnızca nakit (KM)' },
+          { label: 'Havalimanı Direkt', value: 'Hat 34 (Direkt)' },
         ],
-        cashWarning: 'Önemli: Otobüs şoförü YALNIZCA NAKİT KM kabul eder. Kart veya Euro geçmediğinden yanınızda tam bozuk KM bulundurun.',
+        cashWarning: 'Önemli: Otobüs şoförü YALNIZCA NAKİT KM kabul eder. Mesafeye göre bilet ücreti 2.50 KM ile 5.50 KM arasındadır. Kart veya Euro geçmediğinden yanınızda tam bozuk KM bulundurun.',
         taxiAlternative: 'Taksi Seçeneği: Gelen yolcu çıkışında resmi taksiler beklemektedir. Tuzla merkezine yolculuk 20–25 dakika sürer ve yaklaşık 30–40 BAM (15–20 €) tutar.',
+        line34: {
+          title: 'Hat 34: Tuzla (AS Istok) – B. Malta – Tuzla Havalimanı (Dubrave)',
+          badge: 'Havalimanına Direkt',
+          desc: 'Bu hat doğrudan Dubrave’deki Tuzla Uluslararası Havalimanı’na sefer yapmaktadır (terminalde durur).',
+          days: 'Hafta içi, Cumartesi ve Pazar (Günlük kalkışlar):',
+          toAirportLabel: 'Tuzla’dan (AS Istok) Havalimanı’na kalkışlar:',
+          toAirportTimes: ['07:00', '09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00', '23:00'],
+          fromAirportLabel: 'Havalimanı’ndan Tuzla’ya (AS Istok) kalkışlar:',
+          fromAirportTimes: ['06:00', '08:00', '10:00 (hafta içi ayrıca 10:00)', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+        },
+        line11: {
+          title: 'Hat 11: Tuzla (AS Istok) – Donje Dubrave – Kalesija (AS)',
+          badge: 'Dubrave Üzerinden (~800 m)',
+          desc: 'Bu hat Tuzla Doğu Otogarı ile Kalesija arasında Dubrave (Donje Dubrave durağı) üzerinden geçer.',
+          walkDesc: 'Havalimanı terminalinden Dubrave anayol durağına yaklaşık 800 m (~10 dk) yürüyüş.',
+          days: 'Hafta içi günleri (Okul dönemi boyunca):',
+          toKalesijaLabel: 'Tuzla’dan (AS Istok) Dubrave üzerinden Kalesija’ya kalkışlar:',
+          toKalesijaTimes: ['05:55', '07:15', '08:15', '10:15', '11:55', '13:15', '14:45', '15:35', '16:10', '17:20', '18:05', '18:55'],
+          toTuzlaLabel: 'Kalesija’dan Dubrave üzerinden Tuzla’ya kalkışlar:',
+          toTuzlaTimes: ['05:30', '06:30', '07:15', '07:45', '08:55', '10:30', '11:40', '12:40', '13:30', '15:05', '16:50', '18:55'],
+        },
       },
       entry: {
         title: 'Giriş Koşulları ve Sınır İşlemleri (AB ve AB Dışı)',
@@ -422,7 +494,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         specialCasesTitle: 'Özel Ülke Statüleri',
         ukRule: '🇬🇧 İngiltere Vatandaşları: 90 güne kadar vizesiz. Geçerli bir pasaport zorunludur (UK kimlik kartı geçerli değildir).',
         balkansRule: '🇧🇦 / 🇷🇸 / 🇲🇪 / 🇲🇰 / 🇦🇱 Batı Balkanlar: Sırbistan, Karadağ, Kuzey Makedonya ve Arnavutluk vatandaşları biyometrik kimlikle vizesiz giriş yapabilir.',
-        kosovoRule: '🇽🇰 Kosova Damgası: Bosna-Hersek Kosova’yı resmen tanımamaktadır. Ancak yabancı pasaportlardaki Kosova damgaları ülkeye girişte herhangi bir engel oluşturmaz.',
+        kosovoRule: '🇽🇰 Kosovo Damgası: Bosna-Hersek Kosova’yı resmen tanımamaktadır. Ancak yabancı pasaportlardaki Kosova damgaları ülkeye girişte herhangi bir engel oluşturmaz.',
       },
       health: {
         title: 'Sağlık, Sigorta ve Acil Durumlar',
@@ -452,7 +524,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         wifiDesc: 'Kafeler, oteller, restoranlar ve alışveriş merkezlerinde (BCC, Özgürlük Meydanı) ücretsiz Wi-Fi yaygındır.',
         moneyTitle: '💶 Para Birimi, Nakit ve ATM',
         peggedRate: 'Para Birimi: Bosna Konvertibl Markı (BAM / KM). Euro’ya sabit kurludur: 1 EUR = 1.95583 KM.',
-        cashAdvice: 'Nakit Taşımak Şarttır: Süpermarketlerde kart geçse de fırınlar, küçük kafeler, taksiler ve 11 nolu otobüs YALNIZCA NAKİT KM kabul eder.',
+        cashAdvice: 'Nakit Taşımak Şarttır: Süpermarketlerde kart geçse de fırınlar, küçük kafeler, taksiler ve 34 ile 11 nolu otobüs hatları YALNIZCA NAKİT KM kabul eder (ücret 2.50–5.50 KM).',
         atmAdvice: 'ATM’ler: Şehir merkezinde çok sayıda bankamatik vardır. Çekerken dönüştürmesiz ("Without Conversion") seçeneğini tercih ediniz.',
       },
     },
@@ -624,9 +696,9 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
           </section>
         )}
 
-        {/* SECTION 2: Bus Line 11 & Transit */}
+        {/* SECTION 2: Bus Lines 34 & 11 Transit */}
         {(selectedFilter === 'all' || selectedFilter === 'bus') && (
-          <section className="rounded-[1.75rem] border border-blue-100 bg-white p-6 sm:p-8 shadow-sm">
+          <section className="rounded-[1.75rem] border border-blue-100 bg-white p-6 sm:p-8 shadow-sm space-y-6">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-100">
                 <Bus className="h-6 w-6" />
@@ -638,7 +710,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
             </div>
 
             {/* Quick Stats Grid */}
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {t.bus.stats.map((stat) => (
                 <div key={stat.label} className="rounded-2xl border border-amber-100 bg-amber-50/50 p-4 text-center">
                   <div className="text-xs font-bold uppercase tracking-wider text-amber-800">{stat.label}</div>
@@ -647,41 +719,143 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
               ))}
             </div>
 
-            {/* Step-by-step directions */}
-            <div className="mt-6 space-y-3">
-              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white font-black text-xs">
-                  1
+            {/* Price Distance Banner */}
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 flex items-center gap-3">
+              <Coins className="h-5 w-5 text-emerald-600 shrink-0" />
+              <p className="text-xs sm:text-sm font-bold text-emerald-950">
+                {t.bus.priceNotice}
+              </p>
+            </div>
+
+            {/* LINIJA 34 CARD */}
+            <div className="rounded-2xl border-2 border-emerald-200/80 bg-gradient-to-br from-emerald-50/40 via-white to-teal-50/30 p-5 sm:p-6 shadow-sm space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600 text-white font-black text-sm shadow-sm">
+                    34
+                  </span>
+                  <h4 className="text-base sm:text-lg font-black text-slate-900">
+                    {t.bus.line34.title}
+                  </h4>
                 </div>
-                <div>
-                  <h4 className="text-sm font-black text-slate-900">{t.bus.walkTitle}</h4>
-                  <p className="mt-1 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-                    {t.bus.walkDesc}
-                  </p>
-                </div>
+                <span className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-emerald-800 border border-emerald-200">
+                  {t.bus.line34.badge}
+                </span>
               </div>
 
-              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white font-black text-xs">
-                  2
+              <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+                {t.bus.line34.desc}
+              </p>
+
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-emerald-900 bg-emerald-100/70 rounded-xl px-3.5 py-2 border border-emerald-200">
+                <CalendarCheck className="h-4 w-4 text-emerald-700 shrink-0" />
+                <span>{t.bus.line34.days}</span>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {/* Outbound */}
+                <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm">
+                  <div className="flex items-center gap-2 text-xs font-black text-slate-800 mb-2.5">
+                    <Clock className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <span>{t.bus.line34.toAirportLabel}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {t.bus.line34.toAirportTimes.map((time, idx) => (
+                      <span key={idx} className="rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800 border border-emerald-200 shadow-2xs">
+                        {time}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-sm font-black text-slate-900">{t.bus.lineTitle}</h4>
-                  <p className="mt-1 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-                    {t.bus.lineDesc}
-                  </p>
+
+                {/* Inbound */}
+                <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm">
+                  <div className="flex items-center gap-2 text-xs font-black text-slate-800 mb-2.5">
+                    <Clock className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <span>{t.bus.line34.fromAirportLabel}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {t.bus.line34.fromAirportTimes.map((time, idx) => (
+                      <span key={idx} className="rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800 border border-emerald-200 shadow-2xs">
+                        {time}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* LINIJA 11 CARD */}
+            <div className="rounded-2xl border-2 border-blue-200/80 bg-gradient-to-br from-blue-50/40 via-white to-indigo-50/30 p-5 sm:p-6 shadow-sm space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white font-black text-sm shadow-sm">
+                    11
+                  </span>
+                  <h4 className="text-base sm:text-lg font-black text-slate-900">
+                    {t.bus.line11.title}
+                  </h4>
+                </div>
+                <span className="rounded-full bg-blue-100 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-blue-800 border border-blue-200">
+                  {t.bus.line11.badge}
+                </span>
+              </div>
+
+              <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+                {t.bus.line11.desc}
+              </p>
+
+              <div className="flex items-start gap-2.5 rounded-xl border border-slate-200/80 bg-white p-3 text-xs text-slate-600 font-medium">
+                <MapPin className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                <span>{t.bus.line11.walkDesc}</span>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-blue-900 bg-blue-100/70 rounded-xl px-3.5 py-2 border border-blue-200">
+                <CalendarCheck className="h-4 w-4 text-blue-700 shrink-0" />
+                <span>{t.bus.line11.days}</span>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {/* Outbound to Kalesija */}
+                <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm">
+                  <div className="flex items-center gap-2 text-xs font-black text-slate-800 mb-2.5">
+                    <Clock className="h-4 w-4 text-blue-600 shrink-0" />
+                    <span>{t.bus.line11.toKalesijaLabel}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {t.bus.line11.toKalesijaTimes.map((time, idx) => (
+                      <span key={idx} className="rounded-lg bg-blue-50 px-2 py-1 text-xs font-black text-blue-800 border border-blue-200 shadow-2xs">
+                        {time}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Inbound to Tuzla */}
+                <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm">
+                  <div className="flex items-center gap-2 text-xs font-black text-slate-800 mb-2.5">
+                    <Clock className="h-4 w-4 text-blue-600 shrink-0" />
+                    <span>{t.bus.line11.toTuzlaLabel}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {t.bus.line11.toTuzlaTimes.map((time, idx) => (
+                      <span key={idx} className="rounded-lg bg-blue-50 px-2 py-1 text-xs font-black text-blue-800 border border-blue-200 shadow-2xs">
+                        {time}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Cash Only Highlight */}
-            <div className="mt-4 rounded-2xl border border-red-200 bg-red-50/70 p-4 text-xs sm:text-sm font-bold text-red-900 flex items-start gap-3">
+            <div className="rounded-2xl border border-red-200 bg-red-50/70 p-4 text-xs sm:text-sm font-bold text-red-900 flex items-start gap-3">
               <Coins className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
               <div>{t.bus.cashWarning}</div>
             </div>
 
             {/* Taxi alternative */}
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs sm:text-sm text-slate-700 font-medium">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs sm:text-sm text-slate-700 font-medium">
               💡 {t.bus.taxiAlternative}
             </div>
           </section>
