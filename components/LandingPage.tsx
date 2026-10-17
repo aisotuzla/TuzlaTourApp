@@ -357,16 +357,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         /* Ako je ekran uži od 768px (svi moderni telefoni) */
         @media (max-width: 767px) {
             .hero-pwa-section {
-                background-color: #000 !important;
+                background-color: transparent !important;
                 padding: 0 !important;
-                min-height: 100vh !important;
+                height: calc(100vh - 56px - env(safe-area-inset-top, 0px)) !important;
+                height: calc(100dvh - 56px - env(safe-area-inset-top, 0px)) !important;
+                min-height: calc(100dvh - 56px - env(safe-area-inset-top, 0px)) !important;
             }
 
             /* Pretvaramo okvir u full-screen kontejner */
             .samsung-frame {
                 width: 100vw !important;
-                height: 100vh !important;
-                height: 100svh !important;
+                height: 100% !important;
+                min-height: 100% !important;
                 border-radius: 0 !important;
                 border: none !important;
                 padding: 0 !important;
@@ -376,8 +378,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
             /* Ekran telefona zauzima 100% mobilnog ekrana */
             .samsung-screen {
+                width: 100% !important;
+                height: 100% !important;
                 border-radius: 0 !important;
                 border: none !important;
+                background-color: transparent !important;
             }
 
             /* Sakrivamo selfie kameru jer je korisnik na pravom telefonu */
@@ -400,13 +405,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               <div className="samsung-camera-lens" />
             </div>
 
-            {/* Ended State: slaptz.png fits entire frame */}
+            {/* Ended State: slaptz.webp covers entire frame */}
             {hasVideoEnded && (
-              <div className="absolute inset-0 z-20 bg-black flex items-center justify-center p-2">
+              <div className="absolute inset-0 z-20 flex items-center justify-center">
                 <img
-                  src="/assets/Gallery/slaptz.png"
+                  src="/assets/slaptz.webp"
                   alt="Tuzla Slap"
-                  className="w-full h-full object-contain select-none"
+                  className="w-full h-full object-cover select-none"
                 />
                 <button
                   type="button"
@@ -423,7 +428,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
             {/* Fallback image */}
             <img
-              src="/assets/Gallery/slaptz.png"
+              src="/assets/slaptz.webp"
               alt="Tuzla Hero Fallback"
               loading="eager"
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none ${isHeroPlaying ? 'opacity-0' : 'opacity-100'
@@ -496,9 +501,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             )}
 
             {/* Mobile Scroll Indicator */}
-            <div className="absolute bottom-5 left-4 z-20 md:hidden flex items-center gap-1.5 text-white/90 pointer-events-none drop-shadow-md">
-              <ArrowDown className="w-3.5 h-3.5 animate-bounce text-cyan-300" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">{t.heroScroll}</span>
+            <div className="absolute bottom-5 left-4 z-30 md:hidden flex items-center gap-1.5 text-white pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              <ArrowDown className="w-4 h-4 animate-bounce text-cyan-300 drop-shadow" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-white drop-shadow">{t.heroScroll}</span>
             </div>
           </div>
         </div>
