@@ -32,7 +32,7 @@ android/**/*.jks
 .claude
 .cursor
 .kiro
-
+.deepsec
 
 
 # Editor directories and files
