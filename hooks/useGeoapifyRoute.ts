@@ -20,7 +20,7 @@ export interface UseGeoapifyRouteResult {
 const DEFAULT_GEOAPIFY_KEY =
   (import.meta as any).env?.VITE_GEOAPIFY_ROUTING_API ||
   (import.meta as any).env?.VITE_MAPQUESTVIEW_GEOAPIFY_API_KEY ||
-  '';
+  '63e8b34f44974d71bc70aad63e5b56ba';
 
 export function useGeoapifyRoute({
   origin, destination, enabled = true, apiKey = DEFAULT_GEOAPIFY_KEY, onReachDestination,
