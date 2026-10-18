@@ -1,4 +1,29 @@
+# Robots.txt for Tuzla Tour Guide
+# https://tuzlatour.vercel.app
+
 User-agent: *
 Allow: /
 
+# Dedicated AI Search & Citation Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Sitemaps and AI Knowledge File
 Sitemap: https://tuzlatour.vercel.app/sitemap.xml
+# LLMs context and structured knowledge file:
+# https://tuzlatour.vercel.app/llms.txt

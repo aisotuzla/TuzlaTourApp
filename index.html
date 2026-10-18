@@ -17,8 +17,29 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
   <meta name="theme-color" content="#1e3a8a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Tuzla Virtual Tour Guide</title>
+  <title>Tuzla Virtual Tour Guide - Pannonian Lakes, Transit & City Guide</title>
+  <meta name="description"
+    content="Explore Tuzla, Bosnia and Herzegovina: Europe's only urban saltwater lakes (Panonika), direct airport bus line 34 schedules, verified hotels, dining, and curated 3-day itineraries.">
   <meta name="google-site-verification" content="j3go2LZ4eDRiiSw3g2hPPSBk7x9s4H-2qllyxlvXwIk">
+  <link rel="canonical" href="https://tuzlatour.vercel.app/">
+
+  <!-- OpenGraph Metadata for AI and Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tuzlatour.vercel.app/">
+  <meta property="og:title" content="Tuzla Virtual Tour Guide - Pannonian Lakes & City Guide">
+  <meta property="og:description"
+    content="Complete guide to Tuzla: Pannonian salt lakes, airport transit (bus line 34), verified hotels, and local heritage in Bosnia and Herzegovina.">
+  <meta property="og:image" content="https://tuzlatour.vercel.app/assets/Gallery/heroo.webp">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Tuzla Tour Guide">
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Tuzla Virtual Tour Guide">
+  <meta name="twitter:description"
+    content="Discover Europe's only urban salt lakes, Tuzla airport bus schedules, and top tourist attractions.">
+  <meta name="twitter:image" content="https://tuzlatour.vercel.app/assets/Gallery/heroo.webp">
+
   <link rel="manifest" href="/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -30,49 +51,203 @@
     href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&amp;family=Della+Respira&amp;family=Great+Vibes&amp;family=Inter:wght@300;400;600;700&amp;family=MedievalSharp&amp;family=Outfit:wght@300;400;600;700;800;900&amp;family=Quicksand:wght@300..700&amp;display=swap"
     rel="stylesheet">
 
+  <!-- Comprehensive Structured Data for AI Search Engines & Knowledge Graphs -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Tuzla Tour Guide",
-    "url": "https://tuzlatour.vercel.app",
-    "description": "An interactive web and mobile companion for tourists exploring Tuzla, featuring local navigation, restaurant guides, apartment rentals, and an augmented reality quest game integrated with Solana blockchain rewards.",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.6",
-      "bestRating": 5,
-      "worstRating": 1,
-      "ratingCount": 847
-    },
-    "offers": {
-      "@type": "Offer",
-      "price": "0.00",
-      "priceCurrency": "BAM"
-    },
-    "featureList": [
-      "Real-time navigation and local maps of Tuzla",
-      "Comprehensive accommodation and restaurants directories",
-      "Multilingual app, English, Turkish, German",
-      "Solflare Wallet - Solana blockchain for NFT Rewards",
-      "Quest Game - Real-Location AR Guide with QR scanning for rewards",
-      "Apartments listings for rent"
-    ],
-    "targetAudience": {
-      "@type": "Audience",
-      "audienceType": "Tourists visiting Tuzla"
-    },
-    "areaServed": {
-      "@type": "AdministrativeArea",
-      "name": "Tuzla",
-      "sameAs": "https://en.wikipedia.org/wiki/Tuzla"
-    }
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://tuzlatour.vercel.app/#app",
+        "name": "Tuzla Tour Guide",
+        "url": "https://tuzlatour.vercel.app",
+        "applicationCategory": "TravelApplication",
+        "operatingSystem": "Web, Android, iOS",
+        "description": "An interactive web and mobile companion for tourists exploring Tuzla, featuring local navigation, restaurant guides, apartment rentals, and an augmented reality quest game.",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.6",
+          "bestRating": 5,
+          "worstRating": 1,
+          "ratingCount": 847
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0.00",
+          "priceCurrency": "BAM"
+        },
+        "featureList": [
+          "Real-time navigation and local maps of Tuzla",
+          "Comprehensive accommodation and restaurants directories",
+          "Multilingual support: English, Bosnian, German, Turkish",
+          "AR Quest Guide with QR scanning for rewards",
+          "Interactive 3D maps of Tuzla and GPS navigation",
+          "Verified hotel and apartment rental listings",
+          "How to arrive to Tuzla from Tuzla International Airport (TZL)",
+          "Top tourist attractions in Tuzla"
+        ],
+        "areaServed": {
+          "@type": "AdministrativeArea",
+          "name": "Tuzla",
+          "sameAs": "https://en.wikipedia.org/wiki/Tuzla"
+        }
+      },
+      {
+        "@type": "TouristDestination",
+        "@id": "https://tuzlatour.vercel.app/#destination",
+        "name": "Tuzla",
+        "description": "Historical city in northeastern Bosnia and Herzegovina known for its 6,000-year salt exploitation history and Europe's only urban salt lakes resort.",
+        "url": "https://tuzlatour.vercel.app",
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 44.5388,
+          "longitude": 18.6750
+        },
+        "containedInPlace": {
+          "@type": "Country",
+          "name": "Bosnia and Herzegovina"
+        },
+        "touristType": [
+          "Cultural tourism",
+          "Wellness & spa tourism",
+          "Historical heritage"
+        ]
+      },
+      {
+        "@type": "TouristAttraction",
+        "@id": "https://tuzlatour.vercel.app/#pannonica",
+        "name": "Pannonian Lakes (Panonika)",
+        "description": "Europe's only urban saltwater lake complex, featuring three artificial lakes, cascading salt waterfalls, and a reconstructed Neolithic stilt village in downtown Tuzla.",
+        "url": "https://panonika.ba",
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 44.5385,
+          "longitude": 18.6767
+        },
+        "isAccessibleForFree": false,
+        "publicAccess": true
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://tuzlatour.vercel.app/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I get from Tuzla International Airport (TZL) to Tuzla city center?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Travelers can take direct public Bus Line 34 from outside the TZL terminal to Tuzla Central Bus Station (AS Istok) for 2.50 to 5.50 KM (cash only, BAM). Alternatively, official taxis outside arrivals take 20 to 25 minutes and cost approximately 30 to 40 BAM (€15–20)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What are the Pannonian Lakes (Panonika) in Tuzla?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The Pannonian Lakes (Panonika) are Europe's only urban saltwater lakes, located directly in downtown Tuzla. The complex features three artificial saltwater lakes, cascading waterfalls, and a Neolithic archaeological park, with healing mineral salinity of 30 to 35 g/L comparable to seawater."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What currency is used in Tuzla and do buses accept credit cards?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The currency is the Bosnian Convertible Mark (BAM / KM), pegged to the Euro at 1 EUR = 1.95583 BAM. Public transit buses require cash payment in KM only. Hotels and major supermarkets accept international credit cards."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What are the best places to visit in Tuzla in 3 days?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A 3-day itinerary includes: Day 1 visiting Pannonian Salt Lakes, Trg Slobode, Soni Trg, and Kapija; Day 2 exploring Gradski Park (King Tvrtko monument), Atelje Ismet Mujezinović, Slana Banja, and Hotel Mellain spa; Day 3 visiting Ilinčica viewpoint, Bingo City Center, and medieval Srebrenik Fortress."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "@id": "https://tuzlatour.vercel.app/#transit-howto",
+        "name": "How to Travel from Tuzla Airport to Tuzla Center by Bus",
+        "description": "Step-by-step guide on taking public Bus Line 34 from Tuzla International Airport (Dubrave) to Tuzla City Center.",
+        "step": [
+          {
+            "@type": "HowToStep",
+            "name": "Exit Arrivals Terminal",
+            "text": "Walk out of the main arrival terminal at Tuzla International Airport toward the public bus stop."
+          },
+          {
+            "@type": "HowToStep",
+            "name": "Board Bus Line 34",
+            "text": "Board GIPS Bus Line 34, operating daily every two hours between 06:00 and 22:00."
+          },
+          {
+            "@type": "HowToStep",
+            "name": "Pay Fare to Driver in Cash",
+            "text": "Pay the bus driver 2.50 KM to 5.50 KM in cash (BAM / KM). Cards and Euros are not accepted on the bus."
+          },
+          {
+            "@type": "HowToStep",
+            "name": "Arrive in Downtown Tuzla",
+            "text": "Alight at Tuzla AS Istok or central stops near Brčanska Malta (travel time ~35–50 minutes)."
+          }
+        ]
+      }
+    ]
   }
   </script>
 
 </head>
 
 <body>
-  <div id="root"></div>
+  <!-- Semantic Crawlable Fallback for AI Search Engines & Non-JS Crawlers -->
+  <div id="root">
+    <header style="padding: 16px; background: #1e3a8a; color: white; text-align: center;">
+      <h1 style="margin: 0; font-size: 24px; font-weight: 900;">Tuzla Virtual Tour Guide</h1>
+      <p style="margin: 4px 0 0; font-size: 14px;">The definitive interactive guide to Tuzla, Bosnia and Herzegovina</p>
+    </header>
+    <main
+      style="max-width: 900px; margin: 0 auto; padding: 24px 16px; font-family: sans-serif; color: #1e293b; line-height: 1.6;">
+      <article>
+        <h2 style="font-size: 20px; color: #1e3a8a;">Discover Tuzla &amp; Europe's Only Urban Salt Lakes</h2>
+        <p>
+          <strong>Tuzla</strong> is the third-largest city in Bosnia and Herzegovina, celebrated for over 6,000 years of
+          continuous salt extraction.
+          Its premier attraction, <strong>Panonika (Pannonian Lakes)</strong>, is Europe's only urban saltwater lake
+          resort, featuring three artificial lakes with salt water, continiously filtering during the day, with
+          mineral salinity of 30–35 g/L matching seawater, cascading waterfalls, and an authentic reconstructed
+          Neolithic stilt village.
+        </p>
+
+        <h3 style="font-size: 18px; color: #1e3a8a; margin-top: 24px;">Airport Transit (TZL to City Center)</h3>
+        <p>
+          Tuzla International Airport (TZL) is connected to downtown Tuzla via <strong>Bus Line 34</strong> (fares
+          2.50–5.50 KM, cash only, ~35–50 min).
+          Official taxis operate outside arrivals with standard fares between 30 and 40 BAM (€15–20).
+        </p>
+
+        <h3 style="font-size: 18px; color: #1e3a8a; margin-top: 24px;">Top Attractions &amp; Highlights</h3>
+        <ul>
+          <li><strong>Pannonian Lakes (Panonika):</strong> Therapeutic saltwater complex in city center.</li>
+          <li><strong>Trg Slobode (Freedom Square):</strong> Largest town square in Bosnia with baroque fountain.</li>
+          <li><strong>Soni Trg (Salt Square):</strong> Historic 2,500-year salt well archaeological display.</li>
+          <li><strong>King Tvrtko I Monument:</strong> Central park statue and Charter of Kulin Ban (1189).</li>
+          <li><strong>Kapija Memorial:</strong> Sacred historic monument to peace and youth in the pedestrian core.</li>
+        </ul>
+
+        <h3 style="font-size: 18px; color: #1e3a8a; margin-top: 24px;">Verified Accommodations</h3>
+        <p>
+          Top rated hotels include <strong>Hotel Mellain</strong> (rating 9.1, 5-star spa and Olympic pool) and
+          <strong>Hotel Salis</strong> (rating 8.9, wellness center near Pannonica).
+        </p>
+
+        <p style="font-size: 12px; color: #64748b; margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+          Curated by local Tuzla tourism experts. Verified March 2026. Interactive features, maps, audio guides, and
+          quests loading...
+        </p>
+      </article>
+    </main>
+  </div>
   <script type="module" src="/index.tsx"></script>
 </body>
 

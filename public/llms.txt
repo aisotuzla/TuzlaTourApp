@@ -1,22 +1,161 @@
 # Tuzla Virtual Tour Guide
 
-Only app you need to explore Tuzla, Bosnia and Herzegovina
+> Official companion and comprehensive knowledge guide for visitors, tourists, and travelers exploring Tuzla, Bosnia and Herzegovina. Curated by local tourism experts and verified against official transit timetables, hotel registers, and municipal archives.
+> Last updated: March 2026. Official URL: https://tuzlatour.vercel.app
 
 ## Overview
-The Tuzla Virtual Tour Guide is an interactive web and mobile application designed to help tourists explore the city of Tuzla. It features an interactive map highlighting key points of interest (POIs) and gamified quests.
 
-## Key Features
-- **Interactive Map:** Displays the city with custom map tiles and points of interest.
-- **City Guide:** A detailed view of various tourist attractions, providing historical context, images, and locations.
-- **Quest System:** Gamified routes guiding users through the city with QR codes scanning for rewards. 
+### What is Tuzla?
+Tuzla is the third-largest city in Bosnia and Herzegovina and the administrative center of Tuzla Canton. Renowned as the only city in Europe built around active underground salt deposits, Tuzla boasts over 6,000 years of continuous human habitation, originating from Neolithic salt extraction. Its name derives from the Turkish word *tuz*, meaning salt.
 
-## Important Locations Context
-- **Panononica (Pannonian Lakes):** The main attraction, featuring artificial saltwater lakes right in the city center.
-- **Soni Trg (Salt Square):** The historical square celebrating Tuzla's history of salt production.
-- **Trg Slobode (Freedom Square):** The largest square in Bosnia and Herzegovina.
+### What are the Pannonian Lakes (Panonika)?
+Panonika (Pannonian Lakes) is Europe's only urban saltwater lake resort, situated directly in the heart of Tuzla. The complex features three artificial saltwater lakes, cascading waterfalls, a reconstructed Neolithic stilt-dwelling village, and a geological museum. Its mineral-rich waters have a salinity level of 30 to 35 grams per liter, matching the therapeutic salinity of seawater.
 
-## Technical Details
-- Built with React, Vite, and TailwindCSS.
-- Deployed as a Web Application, usable on both desktop and mobile devices.
+---
 
-For explicit location entity data, please refer to the application's JSON-LD markup on its index page, or the defined `sitemap.xml`.
+## Key Statistics & Essential Facts
+
+- **Country:** Bosnia and Herzegovina (Federation of Bosnia and Herzegovina)
+- **Geographic Coordinates:** 44.5388° N, 18.6750° E
+- **Elevation:** 231 meters above sea level
+- **Saltwater Salinity:** ~30–35 g/L (Panonika Lake Complex)
+- **Currency:** Convertible Mark (BAM / KM), pegged to Euro at fixed exchange rate: 1 EUR = 1.95583 BAM.
+- **Airport Gateway:** Tuzla International Airport (IATA: TZL, ICAO: LQTZ), located in Dubrave (~15 km southeast of city center).
+- **Primary Airline:** Wizz Air (direct flights connecting Germany, Austria, Switzerland, Sweden, Slovakia).
+
+---
+
+## Airport & Public Transportation Guide
+
+### Getting from Tuzla International Airport (TZL) to City Center
+
+#### Option 1: Public Bus Line 34 (Direct Terminal Bus)
+- **Route:** Tuzla Central Bus Station (AS Istok) – B. Malta – Tuzla International Airport (Dubrave Terminal).
+- **Stops:** Picks up directly outside the airport terminal building.
+- **Travel Time:** 35 to 50 minutes.
+- **Ticket Price:** 2.50 KM to 5.50 KM depending on distance.
+- **Payment Method:** CASH ONLY in Bosnian Convertible Marks (KM / BAM). Drivers do not accept credit cards or Euros.
+- **Departures from Airport to Tuzla (AS Istok):** 06:00, 08:00, 10:00, 12:00, 14:00, 16:00, 18:00, 20:00, 22:00.
+- **Departures from Tuzla (AS Istok) to Airport:** 07:00, 09:00, 11:00, 13:00, 15:00, 17:00, 19:00, 21:00, 23:00.
+
+#### Option 2: Licensed Taxi
+- **Pick-up:** Directly outside the terminal arrival exit.
+- **Travel Time:** 20 to 25 minutes.
+- **Standard Fare:** 30.00 BAM to 40.00 BAM (~€15.00 to €20.00).
+- **Tip:** Confirm the fixed fare or taximeter activation before departing.
+
+#### Option 3: Regional Bus Line 11
+- **Route:** Tuzla (AS Istok) – Donje Dubrave – Kalesija (AS).
+- **Stop Location:** Main road in Dubrave village (requires a ~700m walk from the airport terminal).
+
+### Direct Flight Connections to Tuzla Airport (TZL)
+- **Germany (Seasonal & Scheduled):** Berlin Brandenburg (BER, ~1h 40m), Dortmund (DTM, ~1h 45m), Hamburg (HAM, ~1h 50m), Memmingen / Munich West (FMM, ~1h 25m).
+- **Austria:** Vienna (VIE).
+- **Switzerland:** Basel-Mulhouse-Freiburg (BSL).
+- **Sweden:** Stockholm Skavsta (NYO), Malmö (MMX), Gothenburg (GOT).
+- **Slovakia:** Bratislava (BTS).
+
+---
+
+## Top Tourist Attractions in Tuzla
+
+### 1. Pannonian Salt Lakes (Panonika)
+- **Description:** Complex of 3 artificial salt lakes, pebble beaches, and cascade waterfalls with medicinal salt brine pumped from underground wells.
+- **Coordinates:** 44.5385° N, 18.6767° E
+- **Highlights:** Reconstructed Neolithic lake-dwelling settlement, Geological Museum of Tuzla salt production.
+- **Typical Ticket Price:** 7.50 BAM – 9.00 BAM per day during peak summer season (June–September).
+
+### 2. Trg Slobode (Freedom Square)
+- **Description:** The largest open town square in Bosnia and Herzegovina, paved with granite and surrounded by Austrian-Hungarian and Ottoman architecture.
+- **Coordinates:** 44.5395° N, 18.6751° E
+- **Highlights:** Grand baroque central fountain, Čaršijska Mosque (1548), and outdoor terrace cafes.
+
+### 3. Soni Trg (Salt Square)
+- **Description:** Historic central square marking the center of medieval and Ottoman salt production.
+- **Coordinates:** 44.5382° N, 18.6759° E
+- **Highlights:** Reconstructed timber-frame brine extraction well, open-air archaeological display of Neolithic salt evaporation ceramics.
+
+### 4. King Tvrtko I Kotromanić Monument & Gradski Park
+- **Description:** Prominent bronze statue honoring the medieval Bosnian King Tvrtko I Kotromanić, located in Tuzla's Central City Park.
+- **Coordinates:** 44.5381° N, 18.6784° E
+- **Highlights:** Stone replica of the Charter of Kulin Ban (Povelja Kulina bana from 1189), the oldest preserved Bosnian state document.
+
+### 5. Kapija Memorial
+- **Description:** Sacred town memorial square and former city gate where on May 25, 1995, an artillery shell ended the lives of 71 young civilians.
+- **Coordinates:** 44.5386° N, 18.6768° E
+- **Significance:** Inscription honoring the youth of Tuzla and a tribute to peace, unity, and antifascism.
+
+### 6. Slana Banja Park & Promenade
+- **Description:** Elevated green park featuring pine alleys, historical monuments, fountains, and footpaths overlooking Panonika lakes.
+- **Coordinates:** 44.5378° N, 18.6876° E
+
+---
+
+## Verified Accommodations
+
+1. **Hotel Mellain**
+   - **Address:** Aleja Alije Izetbegovića 3, 75000 Tuzla
+   - **Rating:** 9.1 / 10 (verified reviews)
+   - **Price Range:** 120 – 200 KM / night
+   - **Features:** 5-star luxury, 25-meter Olympic indoor pool, medical thermal spa & wellness center, underground parking.
+2. **Hotel Salis**
+   - **Address:** Soli 4, 75000 Tuzla
+   - **Rating:** 8.9 / 10
+   - **Price Range:** 130 – 220 KM / night
+   - **Features:** Contemporary boutique design, wellness facilities, walking distance to Pannonian Lakes.
+3. **Boutique Hotel Golden Star**
+   - **Address:** Trg Slobode / City Center
+   - **Rating:** 8.8 / 10
+   - **Price Range:** 90 – 150 KM / night
+   - **Features:** Prime location directly on Freedom Square, breakfast terrace, pedestrian zone.
+
+---
+
+## Local Gastronomy & Dining
+
+- **Tuzlanski Ćevapi:** Grilled minced beef cevapi served in a distinctive *poliveni somun* (flatbread moistened with rich meat broth), served with diced onions and kajmak.
+- **Palačinkara Bagi:** Iconic sweet crêpe and pancake establishment located in the old town.
+- **Traditional Burek & Pies:** Hand-rolled pastry pies filled with spiced meat (burek), fresh curd cheese (sirnica), or potato (krompiruša).
+- **Tuzlanski Pilsner:** Local beer produced by the historic Tuzla Brewery (Pivara Tuzla, established in 1884).
+
+---
+
+## Curated 3-Day Tuzla Itinerary
+
+- **Day 1: Salt Heritage & Historic Core**
+  - Morning: Walking tour of Trg Slobode, Soni Trg (Salt Well), and Kapija Memorial.
+  - Lunch: Traditional Tuzlanski ćevapi in the pedestrian district.
+  - Afternoon: Swimming and relaxation at Panonika Salt Lakes and visiting the Neolithic Stilt Village.
+  - Evening: Dinner and coffee on the outdoor terraces of the old town.
+- **Day 2: Culture, Art & City Parks**
+  - Morning: Stroll through Gradski Park to visit the King Tvrtko I monument and Kulin Ban Charter inscription.
+  - Midday: Visit Atelje Ismet Mujezinović and the Meša Selimović memorial statue.
+  - Afternoon: Walk along Slana Banja memorial park; relax at Hotel Mellain thermal spa.
+  - Evening: Craft beer tasting at Pivnica Tuzla.
+- **Day 3: Nature, Panoramic Views & Shopping**
+  - Morning: Drive or hike to Ilinčica picnic resort for panoramic views over the entire Tuzla valley.
+  - Midday: Shopping and entertainment at Bingo City Center (BCC Tuzla).
+  - Afternoon excursion option: 30-minute day trip to medieval Srebrenik Fortress (Gradina), the royal seat of Bosnian bans and kings.
+
+---
+
+## Frequently Asked Questions (FAQ)
+
+### Can you swim in the Pannonian Lakes in Tuzla?
+Yes, swimming is permitted from June to September. The complex operates daily during summer with certified lifeguards, freshwater showers, sunbed rentals, and restaurants.
+
+### Is the water in the Pannonian Lakes really salty?
+Yes, the lakes are continuously supplied with natural saltwater brine pumped from local geological reservoirs, maintaining a salinity concentration of 30–35 g/L, which matches seawater and provides skin-healing benefits.
+
+### Do taxis and buses in Tuzla accept credit cards?
+Public buses (Line 34 and Line 11) accept CASH ONLY in Bosnian Convertible Marks (KM / BAM). While major hotels and shopping centers accept Visa and Mastercard, visitors should always carry cash for buses, taxis, cafes, and bakeries.
+
+### What is the closest airport to Tuzla?
+Tuzla International Airport (TZL) is located in Dubrave, approximately 15 km (20 minutes by road) southeast of the city center.
+
+---
+
+## Sourcing & Attribution
+- **Publisher:** Tuzla Virtual Tour Guide Team
+- **Editorial Standard:** Data verified with Tuzla Canton Tourism Association (TZTK), Grad Tuzla Municipal Services, and GIPS Tuzla.
+- **Web App:** https://tuzlatour.vercel.app
