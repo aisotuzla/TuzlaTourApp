@@ -43,10 +43,10 @@ const TUZLA_HOTELS = [
   { name: 'Hotel Tehnograd', latitude: 44.541230, longitude: 18.705120, rating: '4.5', priceRange: '60-100 KM' },
 ];
 
-const GEOAPIFY_API_KEY = '765d67152f78438bacd2c66f73665a91';
-const VITE_PROTOMAPS_CARTO_API = '78417d24f3c5d515';
+const GEOAPIFY_API_KEY = import.meta.env.VITE_MAPQUESTVIEW_GEOAPIFY_API_KEY || import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || '';
+const PROTOMAPS_CARTO_API = import.meta.env.VITE_PROTOMAPS_CARTO_API || '';
 export const GEOAPIFY_MAPTILER_3D = `https://maps.geoapify.com/v1/styles/maptiler-3d/style.json?apiKey=${GEOAPIFY_API_KEY}`;
-export const CARTO_VOYAGER_STYLE = `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?apiKey=${VITE_PROTOMAPS_CARTO_API}`;
+export const CARTO_VOYAGER_STYLE = `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?apiKey=${PROTOMAPS_CARTO_API}`;
 export const OFFLINE_STYLE = '/maps/offline-vector-style.json';
 
 const MAP_LAYER_OPTIONS = [
@@ -352,8 +352,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     if (!map.current || !isLoaded) return;
     setIsRouteLoading(true);
     try {
-      const ROUTE_MAP_KEY = ['63e8b34f44974d71', 'bc70aad63e5b56ba'].join('');
-      const apiKey = (import.meta as any).env?.VITE_GEOAPIFY_ROUTING_API || (import.meta as any).env?.VITE_GEOAPIFY_STATIC_API || ROUTE_MAP_KEY;
+      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || import.meta.env.VITE_MAPQUESTVIEW_GEOAPIFY_API_KEY || '';
       const startLng = startLoc[0];
       const startLat = startLoc[1];
       const url = `https://api.geoapify.com/v1/routing?waypoints=${startLat},${startLng}|${target.lat},${target.lon}&mode=walk&details=instruction_details,elevation&apiKey=${apiKey}`;
