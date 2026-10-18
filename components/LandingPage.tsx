@@ -12,7 +12,6 @@ import {
   ChevronRight,
   ArrowUp,
   QrCode,
-  Home,
   X,
   Facebook,
   Linkedin,
@@ -697,28 +696,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           </div>
         </section>
 
-        {/* 5. EXPLORE MORE ENDING */}
-        <section className="py-12 border-t border-slate-100 text-center">
+        {/* BACK TO TOP BUTTON */}
+        <section className="py-8 border-t border-slate-100 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="space-y-8"
           >
-            <div className="inline-block p-4 bg-blue-50 rounded-3xl mb-4">
-              <Home className="w-8 h-8 text-blue-600" />
-            </div>
-            <h2 className="text-4xl font-black text-blue-900 uppercase tracking-tight font-quicksand">
-              {t.exploreMoreTitle}
-            </h2>
-            <p className="text-slate-500 max-w-lg mx-auto text-lg leading-relaxed font-medium">
-              {t.exploreMoreText}
-            </p>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="mt-8 px-12 py-5 bg-blue-600 text-white font-black rounded-[2rem] shadow-2xl hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm flex items-center gap-3 mx-auto font-quicksand"
+              className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-full shadow-md hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider text-xs flex items-center gap-2 mx-auto font-quicksand"
             >
-              <ArrowUp className="w-5 h-5" />
+              <ArrowUp className="w-4 h-4" />
               {t.backToTop}
             </button>
           </motion.div>

@@ -49,11 +49,13 @@ Panonika (Pannonian Lakes) is Europe's only urban saltwater lake resort, situate
 - **Stop Location:** Main road in Dubrave village (requires a ~700m walk from the airport terminal).
 
 ### Direct Flight Connections to Tuzla Airport (TZL)
-- **Germany (Seasonal & Scheduled):** Berlin Brandenburg (BER, ~1h 40m), Dortmund (DTM, ~1h 45m), Hamburg (HAM, ~1h 50m), Memmingen / Munich West (FMM, ~1h 25m).
-- **Austria:** Vienna (VIE).
-- **Switzerland:** Basel-Mulhouse-Freiburg (BSL).
-- **Sweden:** Stockholm Skavsta (NYO), Malmö (MMX), Gothenburg (GOT).
+- **Germany (Wizz Air):** Berlin Brandenburg (BER, ~1h 40m), Cologne/Bonn (CGN, ~1h 45m), Dortmund (DTM, ~1h 45m), Frankfurt Hahn (HHN, ~1h 40m), Hamburg (HAM, ~1h 50m), Karlsruhe/Baden-Baden (FKB, ~1h 35m - new), Memmingen / Munich West (FMM, ~1h 25m).
+- **Cyprus:** Larnaca (LCA).
+- **France:** Basel-Mulhouse-Freiburg (MLH), Paris Beauvais (BVA).
+- **Netherlands:** Eindhoven (EIN), Eindhoven / Maastricht (NLM), Maastricht (MST).
 - **Slovakia:** Bratislava (BTS).
+- **Sweden:** Gothenburg Landvetter (GOT), Malmö (MMX).
+- **Switzerland:** Basel-Mulhouse-Freiburg (BSL / MLH).
 
 ---
 

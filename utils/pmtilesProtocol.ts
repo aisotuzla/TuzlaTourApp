@@ -332,7 +332,7 @@ class RobustPMTilesProtocol {
 
         const resp = await instance.getZxy(z, x, y, abortController?.signal);
         if (resp && resp.data) {
-          let tileBytes = new Uint8Array(resp.data);
+          let tileBytes: Uint8Array = new Uint8Array(resp.data);
           // Decompress gzipped vector tiles if necessary
           if (tileBytes.length > 2 && tileBytes[0] === 0x1f && tileBytes[1] === 0x8b) {
             try {

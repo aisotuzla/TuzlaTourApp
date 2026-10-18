@@ -1,1 +1,2 @@
-// Polyfills are now handled by vite-plugin-node-polyfills in vite.config.ts
+// Polyfills are handled by vite-plugin-node-polyfills in vite.config.ts
+export {};

@@ -7,6 +7,18 @@ declare module '*.md?raw' {
   export default content;
 }
 
+declare module 'pako' {
+  export function inflate(data: Uint8Array | number[] | string, options?: any): Uint8Array;
+  export function deflate(data: Uint8Array | number[] | string, options?: any): Uint8Array;
+  const pako: {
+    inflate: typeof inflate;
+    deflate: typeof deflate;
+    [key: string]: any;
+  };
+  export default pako;
+}
+
+
 interface ImportMetaEnv {
   readonly VITE_GEMINI_API_KEY: string;
   readonly VITE_GEOCODING_API_KEY: string;

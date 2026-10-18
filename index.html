@@ -197,19 +197,23 @@
   }
   </script>
 
+  <!-- Visually hide crawlable fallback from users; bots still read it. React replaces #root on mount. -->
+  <style>
+    .seo-fallback { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+  </style>
 </head>
 
 <body>
   <!-- Semantic Crawlable Fallback for AI Search Engines & Non-JS Crawlers -->
   <div id="root">
-    <header style="padding: 16px; background: #1e3a8a; color: white; text-align: center;">
-      <h1 style="margin: 0; font-size: 24px; font-weight: 900;">Tuzla Virtual Tour Guide</h1>
-      <p style="margin: 4px 0 0; font-size: 14px;">The definitive interactive guide to Tuzla, Bosnia and Herzegovina</p>
+    <div class="seo-fallback" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); clip-path: inset(50%); white-space: nowrap; border: 0;">
+    <header>
+      <h1>Tuzla Virtual Tour Guide</h1>
+      <p>Explore Tuzla with AR Quest Game, interactive 3D maps, and GPS-guided city tours</p>
     </header>
-    <main
-      style="max-width: 900px; margin: 0 auto; padding: 24px 16px; font-family: sans-serif; color: #1e293b; line-height: 1.6;">
+    <main>
       <article>
-        <h2 style="font-size: 20px; color: #1e3a8a;">Discover Tuzla &amp; Europe's Only Urban Salt Lakes</h2>
+        <h2>Discover Tuzla &amp; Europe's Only Urban Salt Lakes</h2>
         <p>
           <strong>Tuzla</strong> is the third-largest city in Bosnia and Herzegovina, celebrated for over 6,000 years of
           continuous salt extraction.
@@ -219,14 +223,14 @@
           Neolithic stilt village.
         </p>
 
-        <h3 style="font-size: 18px; color: #1e3a8a; margin-top: 24px;">Airport Transit (TZL to City Center)</h3>
+        <h3>Airport Transit (TZL to City Center)</h3>
         <p>
           Tuzla International Airport (TZL) is connected to downtown Tuzla via <strong>Bus Line 34</strong> (fares
           2.50–5.50 KM, cash only, ~35–50 min).
           Official taxis operate outside arrivals with standard fares between 30 and 40 BAM (€15–20).
         </p>
 
-        <h3 style="font-size: 18px; color: #1e3a8a; margin-top: 24px;">Top Attractions &amp; Highlights</h3>
+        <h3>Top Attractions &amp; Highlights</h3>
         <ul>
           <li><strong>Pannonian Lakes (Panonika):</strong> Therapeutic saltwater complex in city center.</li>
           <li><strong>Trg Slobode (Freedom Square):</strong> Largest town square in Bosnia with baroque fountain.</li>
@@ -235,18 +239,18 @@
           <li><strong>Kapija Memorial:</strong> Sacred historic monument to peace and youth in the pedestrian core.</li>
         </ul>
 
-        <h3 style="font-size: 18px; color: #1e3a8a; margin-top: 24px;">Verified Accommodations</h3>
+        <h3>Verified Accommodations</h3>
         <p>
           Top rated hotels include <strong>Hotel Mellain</strong> (rating 9.1, 5-star spa and Olympic pool) and
           <strong>Hotel Salis</strong> (rating 8.9, wellness center near Pannonica).
         </p>
 
-        <p style="font-size: 12px; color: #64748b; margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-          Curated by local Tuzla tourism experts. Verified March 2026. Interactive features, maps, audio guides, and
-          quests loading...
+        <p>
+          Curated by local Tuzla tourism experts. Verified March 2026.
         </p>
       </article>
     </main>
+    </div>
   </div>
   <script type="module" src="/index.tsx"></script>
 </body>

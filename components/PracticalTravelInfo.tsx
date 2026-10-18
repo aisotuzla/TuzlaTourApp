@@ -37,7 +37,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
 
   const content = {
     en: {
-      title: 'Practical Travel Guide & Airport Info',
+      title: 'Practical Travel Guide for Tuzla',
       subtitle: 'Essential advice for flights, transit, border entry, local customs, emergency contacts, and daily logistics in Tuzla.',
       warningBanner: 'Entry rules can change at short notice — verify with your embassy or the B&H Ministry of Foreign Affairs 2–4 weeks before departure.',
       showWarning: 'Show travel entry advisory',
@@ -55,21 +55,26 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         title: 'Tuzla International Airport (TZL) & Flights',
         badge: 'Target Airport: TZL',
         description: 'Tuzla International Airport (TZL) is the primary gateway to northeastern Bosnia and Herzegovina, served almost exclusively by Wizz Air with convenient European connections.',
-        germanyHeading: '🇩🇪 Direct Flights from Germany (Wizz Air seasonal/scheduled)',
-        germanyDesc: 'Direct non-stop seasonal flights to TZL operate from four German airports, typically ~2–4 times weekly each, with an average flight time of ≈ 1h 40m:',
+        germanyHeading: '🇩🇪 Direct Flights from Germany (Wizz Air)',
+        germanyDesc: 'Direct non-stop flights to TZL operate from 7 German airports, typically ~2–4 times weekly each, with an average flight time of ≈ 1h 25m–1h 50m:',
         germanyAirports: [
           { code: 'BER', city: 'Berlin Brandenburg', freq: '~2–3 weekly', time: '≈ 1h 40m' },
+          { code: 'CGN', city: 'Cologne / Köln', freq: '~2–3 weekly', time: '≈ 1h 45m' },
           { code: 'DTM', city: 'Dortmund', freq: '~2–4 weekly', time: '≈ 1h 45m' },
+          { code: 'HHN', city: 'Frankfurt Hahn', freq: '~2–3 weekly', time: '≈ 1h 40m' },
           { code: 'HAM', city: 'Hamburg', freq: '~2–3 weekly', time: '≈ 1h 50m' },
+          { code: 'FKB', city: 'Karlsruhe / Baden-Baden', freq: 'NEW • ~2 weekly', time: '≈ 1h 35m' },
           { code: 'FMM', city: 'Memmingen / Munich West', freq: '~2–4 weekly', time: '≈ 1h 25m' },
         ],
-        otherCountriesHeading: '🇪🇺 Direct Flights from Other Countries',
-        otherCountriesDesc: 'Wizz Air regularly connects Tuzla with multiple European destinations:',
+        otherCountriesHeading: '🇪🇺 Direct Flights from Other European Countries',
+        otherCountriesDesc: 'Wizz Air regularly connects Tuzla with destinations across Europe:',
         otherCountriesList: [
-          { country: '🇸🇪 Sweden', routes: 'Stockholm (NYO), Malmö (MMX), Gothenburg (GOT)' },
-          { country: '🇦🇹 Austria', routes: 'Vienna (VIE)' },
-          { country: '🇨🇭 Switzerland', routes: 'Basel-Mulhouse-Freiburg (BSL)' },
+          { country: '🇨🇾 Cyprus', routes: 'Larnaca (LCA)' },
+          { country: '🇫🇷 France', routes: 'Basel-Mulhouse-Freiburg (MLH), Paris Beauvais (BVA)' },
+          { country: '🇳🇱 Netherlands', routes: 'Eindhoven (EIN), Eindhoven / Maastricht (NLM), Maastricht (MST)' },
           { country: '🇸🇰 Slovakia', routes: 'Bratislava (BTS)' },
+          { country: '🇸🇪 Sweden', routes: 'Gothenburg Landvetter (GOT), Malmö (MMX)' },
+          { country: '🇨🇭 Switzerland', routes: 'Basel-Mulhouse-Freiburg (BSL / MLH)' },
         ],
         timetableAdvisory: 'Flight frequencies and seasonal schedules change between summer and winter seasons. Always verify current operating dates directly on the official Wizz Air timetable.',
         wizzAirLink: 'Check Wizz Air Timetable',
@@ -95,6 +100,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
           toAirportTimes: ['07:00', '09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00', '23:00'],
           fromAirportLabel: 'Departures from Airport to Tuzla (AS Istok):',
           fromAirportTimes: ['06:00', '08:00', '10:00 (weekdays also 10:00)', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+          Buslink: "https://www.gipstk.com/red-voznje/34-aerodrom-tuzla-b-malta-tuzla-as-istok/",
         },
         line11: {
           title: 'Line 11: Tuzla (AS Istok) – Donje Dubrave – Kalesija (AS)',
@@ -106,6 +112,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
           toKalesijaTimes: ['05:55', '07:15', '08:15', '10:15', '11:55', '13:15', '14:45', '15:35', '16:10', '17:20', '18:05', '18:55'],
           toTuzlaLabel: 'Departures from Kalesija to Tuzla via Dubrave:',
           toTuzlaTimes: ['05:30', '06:30', '07:15', '07:45', '08:55', '10:30', '11:40', '12:40', '13:30', '15:05', '16:50', '18:55'],
+          link: "https://www.gipstk.com/11-tuzla-kalesija/",
         },
       },
       entry: {
@@ -160,7 +167,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
       },
     },
     bs: {
-      title: 'Praktični turistički vodič i Aerodrom Tuzla',
+      title: 'Praktični turistički vodič Tuzla',
       subtitle: 'Ključne informacije za letove, aerodromski prevoz, granične procedure, carinu, zdravstvo i plaćanje u Tuzli.',
       warningBanner: 'Pravila ulaska mogu se promijeniti u kratkom roku — provjerite sa svojom ambasadom ili Ministarstvom vanjskih poslova BiH 2–4 sedmice prije polaska.',
       showWarning: 'Prikaži službeno upozorenje za ulazak',
@@ -179,20 +186,25 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         badge: 'Ciljni aerodrom: TZL',
         description: 'Međunarodni aerodrom Tuzla (TZL) u Dubravama je glavna vazdušna luka sjeveroistočne Bosne i Hercegovine, a letove gotovo isključivo obavlja Wizz Air.',
         germanyHeading: '🇩🇪 Direktni letovi iz Njemačke (Wizz Air)',
-        germanyDesc: 'Wizz Air nudi direktne sezonske letove do TZL-a iz 4 njemačka grada, oko 2–4 puta sedmično po liniji, uz vrijeme leta ≈ 1h 40m:',
+        germanyDesc: 'Wizz Air nudi direktne letove do TZL-a iz 7 njemačkih gradova, oko 2–4 puta sedmično po liniji, uz vrijeme leta ≈ 1h 25m–1h 50m:',
         germanyAirports: [
           { code: 'BER', city: 'Berlin Brandenburg', freq: '~2–3 sedmično', time: '≈ 1h 40m' },
+          { code: 'CGN', city: 'Cologne / Köln', freq: '~2–3 sedmično', time: '≈ 1h 45m' },
           { code: 'DTM', city: 'Dortmund', freq: '~2–4 sedmično', time: '≈ 1h 45m' },
+          { code: 'HHN', city: 'Frankfurt Hahn', freq: '~2–3 sedmično', time: '≈ 1h 40m' },
           { code: 'HAM', city: 'Hamburg', freq: '~2–3 sedmično', time: '≈ 1h 50m' },
+          { code: 'FKB', city: 'Karlsruhe / Baden-Baden', freq: 'NOVO • ~2 sedmično', time: '≈ 1h 35m' },
           { code: 'FMM', city: 'Memmingen / Minhen Zapad', freq: '~2–4 sedmično', time: '≈ 1h 25m' },
         ],
         otherCountriesHeading: '🇪🇺 Letovi iz drugih evropskih zemalja',
         otherCountriesDesc: 'Wizz Air također povezuje Tuzlu sa destinacijama širom Evrope:',
         otherCountriesList: [
-          { country: '🇸🇪 Švedska', routes: 'Stockholm (NYO), Malmö (MMX), Göteborg (GOT)' },
-          { country: '🇦🇹 Austrija', routes: 'Beč (VIE)' },
-          { country: '🇨🇭 Švicarska', routes: 'Basel-Mulhouse-Freiburg (BSL)' },
+          { country: '🇨🇾 Kipar', routes: 'Larnaca (LCA)' },
+          { country: '🇫🇷 Francuska', routes: 'Basel-Mulhouse-Freiburg (MLH), Pariz Beauvais (BVA)' },
+          { country: '🇳🇱 Holandija', routes: 'Eindhoven (EIN), Eindhoven / Maastricht (NLM), Maastricht (MST)' },
           { country: '🇸🇰 Slovačka', routes: 'Bratislava (BTS)' },
+          { country: '🇸🇪 Švedska', routes: 'Göteborg Landvetter (GOT), Malmö (MMX)' },
+          { country: '🇨🇭 Švicarska', routes: 'Basel-Mulhouse-Freiburg (BSL / MLH)' },
         ],
         timetableAdvisory: 'Sezonski red letenja se mijenja između ljeta i zime. Obavezno provjerite tačne datume na zvaničnom Wizz Air redu letenja.',
         wizzAirLink: 'Wizz Air Red Letenja',
@@ -283,7 +295,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
       },
     },
     de: {
-      title: 'Praktischer Reiseführer & Flughafen Tuzla',
+      title: 'Praktischer Reiseführer Tuzla',
       subtitle: 'Wichtige Informationen zu Flügen, Flughafentransfer, Einreisebestimmungen, Zoll, Gesundheit und Zahlungen in Tuzla.',
       warningBanner: 'Einreisebestimmungen können sich kurzfristig ändern – bitte 2–4 Wochen vor Reiseantritt bei Ihrer Botschaft oder dem Außenministerium von Bosnien und Herzegowina überprüfen.',
       showWarning: 'Offizielle Einreisehinweise anzeigen',
@@ -302,20 +314,25 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         badge: 'Zielflughafen: TZL',
         description: 'Der Internationale Flughafen Tuzla (TZL) in Dubrave ist das Tor nach Nordost-Bosnien und wird fast ausschließlich von der Fluggesellschaft Wizz Air angeflogen.',
         germanyHeading: '🇩🇪 Direktflüge aus Deutschland (Wizz Air)',
-        germanyDesc: 'Direkte saisonale Non-Stop-Flüge nach TZL gibt es von 4 deutschen Flughäfen, ca. 2–4 Mal wöchentlich, Flugdauer ≈ 1h 40m:',
+        germanyDesc: 'Direkte Flüge nach TZL gibt es von 7 deutschen Flughäfen, ca. 2–4 Mal wöchentlich, Flugdauer ≈ 1h 25m–1h 50m:',
         germanyAirports: [
           { code: 'BER', city: 'Berlin Brandenburg', freq: '~2–3x wöchentlich', time: '≈ 1h 40m' },
+          { code: 'CGN', city: 'Köln / Bonn (CGN)', freq: '~2–3x wöchentlich', time: '≈ 1h 45m' },
           { code: 'DTM', city: 'Dortmund', freq: '~2–4x wöchentlich', time: '≈ 1h 45m' },
+          { code: 'HHN', city: 'Frankfurt-Hahn', freq: '~2–3x wöchentlich', time: '≈ 1h 40m' },
           { code: 'HAM', city: 'Hamburg', freq: '~2–3x wöchentlich', time: '≈ 1h 50m' },
+          { code: 'FKB', city: 'Karlsruhe / Baden-Baden', freq: 'NEU • ~2x wöchentlich', time: '≈ 1h 35m' },
           { code: 'FMM', city: 'Memmingen / München-West', freq: '~2–4x wöchentlich', time: '≈ 1h 25m' },
         ],
         otherCountriesHeading: '🇪🇺 Flüge aus weiteren Ländern',
         otherCountriesDesc: 'Wizz Air bedient Tuzla zudem aus folgenden Regionen:',
         otherCountriesList: [
-          { country: '🇸🇪 Schweden', routes: 'Stockholm (NYO), Malmö (MMX), Göteborg (GOT)' },
-          { country: '🇦🇹 Österreich', routes: 'Wien (VIE)' },
-          { country: '🇨🇭 Schweiz', routes: 'Basel-Mulhouse-Freiburg (BSL)' },
+          { country: '🇨🇾 Zypern', routes: 'Larnaka (LCA)' },
+          { country: '🇫🇷 Frankreich', routes: 'Basel-Mulhouse-Freiburg (MLH), Paris Beauvais (BVA)' },
+          { country: '🇳🇱 Niederlande', routes: 'Eindhoven (EIN), Eindhoven / Maastricht (NLM), Maastricht (MST)' },
           { country: '🇸🇰 Slowakei', routes: 'Bratislava (BTS)' },
+          { country: '🇸🇪 Schweden', routes: 'Göteborg Landvetter (GOT), Malmö (MMX)' },
+          { country: '🇨🇭 Schweiz', routes: 'Basel-Mulhouse-Freiburg (BSL / MLH)' },
         ],
         timetableAdvisory: 'Saisonflugpläne variieren zwischen Sommer und Winter. Bitte prüfen Sie die aktuellen Reisetage stets auf dem Wizz Air Flugplan.',
         wizzAirLink: 'Wizz Air Flugplan aufrufen',
@@ -406,7 +423,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
       },
     },
     tr: {
-      title: 'Pratik Seyahat Rehberi ve Tuzla Havalimanı',
+      title: 'Pratik Seyahat Rehberi Tuzla',
       subtitle: 'Tuzla için uçuşlar, havalimanı ulaşımı, sınır ve gümrük kuralları, sağlık sigortası ve günlük pratik bilgiler.',
       warningBanner: 'Giriş kuralları kısa sürede değişebilir — kalkıştan 2–4 hafta önce büyükelçiliğiniz veya BH Dışişleri Bakanlığı ile doğrulayın.',
       showWarning: 'Giriş uyarısını göster',
@@ -425,20 +442,25 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         badge: 'Hedef Havalimanı: TZL',
         description: 'Tuzla Uluslararası Havalimanı (TZL), Bosna-Hersek’in kuzeydoğusundaki ana kapıdır ve ağırlıklı olarak Wizz Air tarafından hizmet verilmektedir.',
         germanyHeading: '🇩🇪 Almanya’dan Direkt Uçuşlar (Wizz Air)',
-        germanyDesc: 'Wizz Air, Almanya’dan Tuzla Havalimanı’na haftada ~2–4 kez direkt sefer düzenlemektedir. Uçuş süresi yaklaşık 1s 40dk:',
+        germanyDesc: 'Wizz Air, Almanya’nın 7 havalimanından Tuzla’ya haftada ~2–4 kez direkt sefer düzenlemektedir. Uçuş süresi yaklaşık 1s 25dk–1s 50dk:',
         germanyAirports: [
           { code: 'BER', city: 'Berlin Brandenburg', freq: 'Haftada ~2–3', time: '≈ 1s 40dk' },
+          { code: 'CGN', city: 'Köln / Bonn (CGN)', freq: 'Haftada ~2–3', time: '≈ 1s 45dk' },
           { code: 'DTM', city: 'Dortmund', freq: 'Haftada ~2–4', time: '≈ 1s 45dk' },
+          { code: 'HHN', city: 'Frankfurt Hahn', freq: 'Haftada ~2–3', time: '≈ 1s 40dk' },
           { code: 'HAM', city: 'Hamburg', freq: 'Haftada ~2–3', time: '≈ 1s 50dk' },
+          { code: 'FKB', city: 'Karlsruhe / Baden-Baden', freq: 'YENİ • Haftada ~2', time: '≈ 1s 35dk' },
           { code: 'FMM', city: 'Memmingen / Münih Batı', freq: 'Haftada ~2–4', time: '≈ 1s 25dk' },
         ],
         otherCountriesHeading: '🇪🇺 Diğer Ülkelerden Direkt Seferler',
         otherCountriesDesc: 'Wizz Air ayrıca şu ülkelerden Tuzla’ya direkt uçuşlar sağlamaktadır:',
         otherCountriesList: [
-          { country: '🇸🇪 İsveç', routes: 'Stockholm (NYO), Malmö (MMX), Göteborg (GOT)' },
-          { country: '🇦🇹 Avusturya', routes: 'Viyana (VIE)' },
-          { country: '🇨🇭 İsviçre', routes: 'Basel-Mulhouse (BSL)' },
+          { country: '🇨🇾 Kıbrıs', routes: 'Larnaka (LCA)' },
+          { country: '🇫🇷 Fransa', routes: 'Basel-Mulhouse-Freiburg (MLH), Paris Beauvais (BVA)' },
+          { country: '🇳🇱 Hollanda', routes: 'Eindhoven (EIN), Eindhoven / Maastricht (NLM), Maastricht (MST)' },
           { country: '🇸🇰 Slovakya', routes: 'Bratislava (BTS)' },
+          { country: '🇸🇪 İsveç', routes: 'Göteborg Landvetter (GOT), Malmö (MMX)' },
+          { country: '🇨🇭 İsviçre', routes: 'Basel-Mulhouse-Freiburg (BSL / MLH)' },
         ],
         timetableAdvisory: 'Sezonluk uçuş takvimleri değişiklik gösterebilir. Güncel uçuş tarihlerini wizzair.com/timetable adresinden teyit ediniz.',
         wizzAirLink: 'Wizz Air Uçuş Tarifesi',
@@ -602,11 +624,10 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
             <button
               key={key}
               onClick={() => setSelectedFilter(key)}
-              className={`rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold transition-all ${
-                selectedFilter === key
-                  ? 'bg-cyan-400 text-slate-950 shadow-md shadow-cyan-400/20'
-                  : 'bg-white/10 text-white/80 hover:bg-white/20'
-              }`}
+              className={`rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold transition-all ${selectedFilter === key
+                ? 'bg-cyan-400 text-slate-950 shadow-md shadow-cyan-400/20'
+                : 'bg-white/10 text-white/80 hover:bg-white/20'
+                }`}
             >
               {t.filters[key]}
             </button>
