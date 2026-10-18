@@ -23,12 +23,9 @@ interface MapViewProps {
 }
 
 
-const GEO_MAP_KEY = ['65090a03070e4e18', '98694f7a18ba415b'].join('');
-const ROUTE_MAP_KEY = ['63e8b34f44974d71', 'bc70aad63e5b56ba'].join('');
-
 const OFFLINE_STYLE = '/maps/offline-vector-style.json';
 const RASTER_STYLE = '/maps/offline-style.json';
-const ONLINE_STYLE = `https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || GEO_MAP_KEY}`;
+const ONLINE_STYLE = `https://maps.geoapify.com/v1/styles/osm-liberty/style.json?apiKey=${import.meta.env.VITE_GEOAPIFY_MAP_TILES_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || ''}`;
 
 const MAP_LAYER_OPTIONS = [
   { id: 'geoapify', name: { bs: 'Geoapify OSM (Online)', en: 'Geoapify OSM (Online)' }, url: ONLINE_STYLE },
@@ -308,9 +305,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
   const calculateRoute = async (startLoc: [number, number], target: { name: string; lat: number; lon: number }) => {
     if (!map.current || !isLoaded) return;
     setIsRouteLoading(true);
-
     try {
-      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || ROUTE_MAP_KEY;
+      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || import.meta.env.VITE_MAPQUESTVIEW_GEOAPIFY_API_KEY || '';
       const startLng = startLoc[0];
       const startLat = startLoc[1];
       const url = `https://api.geoapify.com/v1/routing?waypoints=${startLat},${startLng}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
@@ -461,9 +457,8 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
             import.meta.env.VITE_GEOAPIFY_GEOCODING_API ||
             import.meta.env.VITE_GEOAPIFY_STATIC_API ||
             import.meta.env.VITE_GEOAPIFY_ROUTING_API ||
-            ROUTE_MAP_KEY ||
-            GEO_MAP_KEY ||
-            '765d67152f78438bacd2c66f73665a91';
+            import.meta.env.VITE_MAPQUESTVIEW_GEOAPIFY_API_KEY ||
+            '';
 
           // 1. Try Geoapify Geocoding API with Tuzla proximity
           if (geoapifyKey) {
