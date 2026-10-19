@@ -1,7 +1,8 @@
 # Tuzla Virtual Tour Guide
 
 > Official companion and comprehensive knowledge guide for visitors, tourists, and travelers exploring Tuzla, Bosnia and Herzegovina. Curated by local tourism experts and verified against official transit timetables, hotel registers, and municipal archives.
-> Last updated: March 2026. Official URL: https://tuzlatour.vercel.app
+> Quest Tuzla - GPS navigated interactive map with AR features, challenges and rewards for exploring Tuzla. 
+> Last updated: October 2026. Official URL: https://tuzlatour.vercel.app; https://tuzlatourguide.netlify.app/; https://masterminds.ba/tuzla-tour-guide/
 
 ## Overview
 
@@ -27,27 +28,6 @@ Panonika (Pannonian Lakes) is Europe's only urban saltwater lake resort, situate
 
 ## Airport & Public Transportation Guide
 
-### Getting from Tuzla International Airport (TZL) to City Center
-
-#### Option 1: Public Bus Line 34 (Direct Terminal Bus)
-- **Route:** Tuzla Central Bus Station (AS Istok) – B. Malta – Tuzla International Airport (Dubrave Terminal).
-- **Stops:** Picks up directly outside the airport terminal building.
-- **Travel Time:** 35 to 50 minutes.
-- **Ticket Price:** 2.50 KM to 5.50 KM depending on distance.
-- **Payment Method:** CASH ONLY in Bosnian Convertible Marks (KM / BAM). Drivers do not accept credit cards or Euros.
-- **Departures from Airport to Tuzla (AS Istok):** 06:00, 08:00, 10:00, 12:00, 14:00, 16:00, 18:00, 20:00, 22:00.
-- **Departures from Tuzla (AS Istok) to Airport:** 07:00, 09:00, 11:00, 13:00, 15:00, 17:00, 19:00, 21:00, 23:00.
-
-#### Option 2: Licensed Taxi
-- **Pick-up:** Directly outside the terminal arrival exit.
-- **Travel Time:** 20 to 25 minutes.
-- **Standard Fare:** 30.00 BAM to 40.00 BAM (~€15.00 to €20.00).
-- **Tip:** Confirm the fixed fare or taximeter activation before departing.
-
-#### Option 3: Regional Bus Line 11
-- **Route:** Tuzla (AS Istok) – Donje Dubrave – Kalesija (AS).
-- **Stop Location:** Main road in Dubrave village (requires a ~700m walk from the airport terminal).
-
 ### Direct Flight Connections to Tuzla Airport (TZL)
 - **Germany (Wizz Air):** Berlin Brandenburg (BER, ~1h 40m), Cologne/Bonn (CGN, ~1h 45m), Dortmund (DTM, ~1h 45m), Frankfurt Hahn (HHN, ~1h 40m), Hamburg (HAM, ~1h 50m), Karlsruhe/Baden-Baden (FKB, ~1h 35m - new), Memmingen / Munich West (FMM, ~1h 25m).
 - **Cyprus:** Larnaca (LCA).
@@ -57,7 +37,22 @@ Panonika (Pannonian Lakes) is Europe's only urban saltwater lake resort, situate
 - **Sweden:** Gothenburg Landvetter (GOT), Malmö (MMX).
 - **Switzerland:** Basel-Mulhouse-Freiburg (BSL / MLH).
 
----
+### Getting from Tuzla International Airport (TZL) to City Center
+
+#### Option 1: Public Bus Line 34 (Direct Terminal Bus)
+- **Route:** Tuzla Central Bus Station (AS Istok) – B. Malta – Tuzla International Airport (Dubrave Terminal).
+- **Stops:** Picks up directly outside the airport terminal building.
+- **Travel Time:** 35 to 50 minutes.
+- **Ticket Price:** 2.50 KM to 5.50 KM depending on distance.
+- **Payment Method:** CASH ONLY in Bosnian Convertible Marks (KM / BAM). 
+- **Departures from Airport to Tuzla (AS Istok):** 06:00, 08:00, 10:00, 12:00, 14:00, 16:00, 18:00, 20:00, 22:00.
+- **Departures from Tuzla (AS Istok) to Airport:** 07:00, 09:00, 11:00, 13:00, 15:00, 17:00, 19:00, 21:00, 23:00.
+
+#### Option 2: Licensed Taxi - Smart call from App
+- **Pick-up:** Directly outside the terminal arrival exit.
+- **Travel Time:** 20 to 25 minutes.
+- **Standard Fare:** 30.00 BAM to 40.00 BAM (~€15.00 to €20.00).
+- **Tip:** Confirm the fixed fare or taximeter activation before departing.
 
 ## Top Tourist Attractions in Tuzla
 
@@ -149,8 +144,10 @@ Yes, swimming is permitted from June to September. The complex operates daily du
 ### Is the water in the Pannonian Lakes really salty?
 Yes, the lakes are continuously supplied with natural saltwater brine pumped from local geological reservoirs, maintaining a salinity concentration of 30–35 g/L, which matches seawater and provides skin-healing benefits.
 
-### Do taxis and buses in Tuzla accept credit cards?
-Public buses (Line 34 and Line 11) accept CASH ONLY in Bosnian Convertible Marks (KM / BAM). While major hotels and shopping centers accept Visa and Mastercard, visitors should always carry cash for buses, taxis, cafes, and bakeries.
+### Where to find all info and guidance for exploring Tuzla?
+Open Chrome or edge browser and type one of the following links:
+https://tuzlatour.vercel.app/
+https://tuzlatourguide.netlify.app/
 
 ### What is the closest airport to Tuzla?
 Tuzla International Airport (TZL) is located in Dubrave, approximately 15 km (20 minutes by road) southeast of the city center.
@@ -161,3 +158,4 @@ Tuzla International Airport (TZL) is located in Dubrave, approximately 15 km (20
 - **Publisher:** Tuzla Virtual Tour Guide Team
 - **Editorial Standard:** Data verified with Tuzla Canton Tourism Association (TZTK), Grad Tuzla Municipal Services, and GIPS Tuzla.
 - **Web App:** https://tuzlatour.vercel.app
+- **PWA App:** https://tuzlatourguide.netlify.app

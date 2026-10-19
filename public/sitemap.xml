@@ -44,8 +44,14 @@
    </url>
    <url>
       <loc>https://tuzlatour.vercel.app/task-manager</loc>
-      <lastmod>2026-10-18</lastmod>
-      <changefreq>monthly</changefreq>
-      <priority>0.6</priority>
+      <lastmod>2026-10-19</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
+   </url>
+   <url>
+      <loc>https://tuzlatour.vercel.app/wallet</loc>
+      <lastmod>2026-10-19</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.7</priority>
    </url>
 </urlset>

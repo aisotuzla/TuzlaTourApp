@@ -1,5 +1,6 @@
 {
   "name": "tuzlatourguide",
+  "description": "Virtual Tour Guide platform for Tuzla with 3D GPS navigation, camera AR Quests, QR code scanning, neural audio guides, personal itinerary & expense ledger, and real-time Web3 Solana rewards.",
   "private": true,
   "version": "1.0.0",
   "type": "module",

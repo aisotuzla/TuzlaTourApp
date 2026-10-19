@@ -1,29 +1,70 @@
-# Robots.txt for Tuzla Tour Guide
-# https://tuzlatour.vercel.app
+# ==============================================================================
+# Robots.txt for Tuzla Tour Guide Platform
+# The Official Virtual Tour Guide, GPS Navigation, AR Quest & Web3 Rewards Companion
+# Official URLs:
+#   - Primary: https://tuzlatour.vercel.app
+#   - PWA Mirror: https://tuzlatourguide.netlify.app
+#   - Partner Portal: https://masterminds.ba/tuzla-tour-guide/
+# ==============================================================================
 
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /audio-stream/
 
-# Dedicated AI Search & Citation Crawlers
+# ------------------------------------------------------------------------------
+# Dedicated AI Search, Retrieval & Knowledge Citation Crawlers
+# We explicitly welcome AI agents to index verified travel facts, public transit
+# schedules (Bus line 34), attractions, AR quest features, and accommodations.
+# ------------------------------------------------------------------------------
 User-agent: GPTBot
 Allow: /
 
 User-agent: ChatGPT-User
 Allow: /
 
-User-agent: PerplexityBot
+User-agent: ClaudeBot
 Allow: /
 
-User-agent: ClaudeBot
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
 Allow: /
 
 User-agent: Google-Extended
 Allow: /
 
+User-agent: Googlebot
+Allow: /
+
 User-agent: Bingbot
 Allow: /
 
-# Sitemaps and AI Knowledge File
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# ------------------------------------------------------------------------------
+# Sitemaps & Machine-Readable Knowledge Base for LLMs
+# ------------------------------------------------------------------------------
 Sitemap: https://tuzlatour.vercel.app/sitemap.xml
-# LLMs context and structured knowledge file:
+Sitemap: https://tuzlatourguide.netlify.app/sitemap.xml
+
+# LLMs context and structured city knowledge file:
 # https://tuzlatour.vercel.app/llms.txt
+# https://tuzlatourguide.netlify.app/llms.txt

@@ -3,7 +3,6 @@ import {
   BookOpen,
   Calendar as CalendarIcon,
   CheckCircle2,
-  CheckSquare,
   Circle,
   Compass,
   CreditCard,
@@ -11,8 +10,8 @@ import {
   MapPin,
   Plus,
   Receipt,
-  ShoppingBag,
   Trash2,
+  TrendingUp,
 } from 'lucide-react';
 import { Language } from '../types';
 import { Preferences } from '@capacitor/preferences';
@@ -29,13 +28,6 @@ type ExpenseItem = {
   name: string;
   amount: number;
   date: string;
-};
-
-type TaskItem = {
-  id: number;
-  text: string;
-  completed: boolean;
-  type: 'Shop' | 'To-Do';
 };
 
 type ItineraryItem = {
@@ -55,102 +47,93 @@ const storageKey = 'tuzla_task_manager_v1';
 const copy = {
   en: {
     title: 'Personal Notebook',
+    subtitle: 'Your unified notebook for itinerary and travel expenses.',
     notebook: 'Notebook',
     all: 'All',
-    expenses: 'Ledger',
-    tasks: 'Tasks',
+    expenses: 'Expenses',
     expensePlaceholder: 'Item, e.g. Lunch at Restaurant Kapija',
-    amountPlaceholder: 'KM',
-    expenseTotal: 'Total',
+    amountPlaceholder: 'Amount (KM)',
+    expenseTotal: 'Total Expenses',
+    entriesCount: 'Entries',
+    avgExpense: 'Average',
     addExpense: 'Add',
-    taskPlaceholder: 'New task...',
-    shopping: 'Shop list',
-    addTask: 'Add',
-    emptyLedger: 'No expenses yet.',
-    emptyTasks: 'No tasks yet.',
-    addHint: 'Tap the plus button to add an entry.',
+    emptyLedger: 'No expenses recorded yet.',
+    addHint: 'Enter item details and tap Add to log an expense.',
     itinerary: 'Itinerary',
     emptyItinerary: 'No itinerary items yet. Add hotels or restaurants from Tourist Info!',
     quickOverview: 'Quick Overview',
   },
   bs: {
     title: 'Lični planer',
-    notebook: 'Notebook',
+    subtitle: 'Tvoja jedinstvena bilježnica za plan puta i evidenciju troškova.',
+    notebook: 'Planer',
     all: 'Sve',
-    expenses: 'Evidencija',
-    tasks: 'Zadaci',
-    expensePlaceholder: 'Stavka, npr. Čevapi u "Limenci"',
-    amountPlaceholder: 'KM',
-    expenseTotal: 'Ukupno',
+    expenses: 'Troškovi',
+    expensePlaceholder: 'Stavka, npr. Ćevapi u Limenci',
+    amountPlaceholder: 'Iznos (KM)',
+    expenseTotal: 'Ukupni troškovi',
+    entriesCount: 'Stavke',
+    avgExpense: 'Prosjek',
     addExpense: 'Dodaj',
-    taskPlaceholder: 'Novi zadatak...',
-    shopping: 'Lista kupovine',
-    addTask: 'Dodaj',
-    emptyLedger: 'Nema troškova još uvijek.',
-    emptyTasks: 'Nema zadataka još uvijek.',
-    addHint: 'Dodirni plus za novu stavku.',
+    emptyLedger: 'Nema zabilježenih troškova.',
+    addHint: 'Unesi stavku i iznos, pa pritisni Dodaj.',
     itinerary: 'Plan puta',
     emptyItinerary: 'Još nema stavki u planu. Dodaj hotele ili restorane iz Turističkih info!',
     quickOverview: 'Brzi pregled',
   },
   de: {
     title: 'Persönliches Notizbuch',
-    notebook: 'Notebook',
+    subtitle: 'Dein einheitliches Notizbuch für Reiseplan und Reisekosten.',
+    notebook: 'Notizbuch',
     all: 'Alle',
-    expenses: 'Ledger',
-    tasks: 'Aufgaben',
+    expenses: 'Ausgaben',
     expensePlaceholder: 'Eintrag, z. B. Kaffee in Sloboda',
-    amountPlaceholder: 'KM',
-    expenseTotal: 'Summe',
+    amountPlaceholder: 'Betrag (KM)',
+    expenseTotal: 'Gesamtausgaben',
+    entriesCount: 'Einträge',
+    avgExpense: 'Durchschnitt',
     addExpense: 'Hinzufügen',
-    taskPlaceholder: 'Neue Aufgabe...',
-    shopping: 'Einkaufsliste',
-    addTask: 'Hinzufügen',
-    emptyLedger: 'Noch keine Ausgaben.',
-    emptyTasks: 'Noch keine Aufgaben.',
-    addHint: 'Tippe auf das Plus, um einen Eintrag hinzuzufügen.',
+    emptyLedger: 'Noch keine Ausgaben erfasst.',
+    addHint: 'Eintrag und Betrag eingeben, dann Hinzufügen tippen.',
     itinerary: 'Reiseplan',
     emptyItinerary: 'Noch keine Reiseplan-Einträge. Füge Hotels oder Restaurants aus Tourist Info hinzu!',
     quickOverview: 'Schnellübersicht',
   },
   tr: {
     title: 'Kişisel Not Defteri',
-    notebook: 'Notebook',
+    subtitle: 'Güzergah ve seyahat harcamalarınız için kişisel not defteriniz.',
+    notebook: 'Not Defteri',
     all: 'Tümü',
-    expenses: 'Muhasebe',
-    tasks: 'Görevler',
+    expenses: 'Harcamalar',
     expensePlaceholder: 'Kalem, örn. Sloboda\'da kahve',
-    amountPlaceholder: 'KM',
-    expenseTotal: 'Toplam',
+    amountPlaceholder: 'Tutar (KM)',
+    expenseTotal: 'Toplam Harcama',
+    entriesCount: 'Kayıt',
+    avgExpense: 'Ortalama',
     addExpense: 'Ekle',
-    taskPlaceholder: 'Yeni görev...',
-    shopping: 'Alışveriş listesi',
-    addTask: 'Ekle',
-    emptyLedger: 'Henüz masraf yok.',
-    emptyTasks: 'Henüz görev yok.',
-    addHint: 'Yeni giriş eklemek için artı düğmesine dokunun.',
+    emptyLedger: 'Henüz kayıtlı harcama yok.',
+    addHint: 'Harcama adı ve tutarını girip Ekle düğmesine dokunun.',
     itinerary: 'Güzergah',
-    emptyItinerary: 'Henüz güzergah öğesi yok. Otellerden veya restoranlardan ekleyin!',
+    emptyItinerary: 'Henüz güzergah öğesi yok. Turistik bilgilerden ekleyin!',
     quickOverview: 'Hızlı Bakış',
   },
 } as const;
 
-const readState = async (): Promise<{ expenses: ExpenseItem[]; tasks: TaskItem[]; itinerary: ItineraryItem[] }> => {
+const readState = async (): Promise<{ expenses: ExpenseItem[]; itinerary: ItineraryItem[] }> => {
   if (typeof window === 'undefined') {
-    return { expenses: [], tasks: [], itinerary: [] };
+    return { expenses: [], itinerary: [] };
   }
 
   try {
     const { value: raw } = await Preferences.get({ key: storageKey });
-    if (!raw) return { expenses: [], tasks: [], itinerary: [] };
-    const parsed = JSON.parse(raw) as { expenses?: ExpenseItem[]; tasks?: TaskItem[]; itinerary?: ItineraryItem[] };
+    if (!raw) return { expenses: [], itinerary: [] };
+    const parsed = JSON.parse(raw) as { expenses?: ExpenseItem[]; itinerary?: ItineraryItem[] };
     return {
       expenses: Array.isArray(parsed.expenses) ? parsed.expenses : [],
-      tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
       itinerary: Array.isArray(parsed.itinerary) ? parsed.itinerary : [],
     };
   } catch {
-    return { expenses: [], tasks: [], itinerary: [] };
+    return { expenses: [], itinerary: [] };
   }
 };
 
@@ -160,20 +143,16 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
   const [notebookSubTab, setNotebookSubTab] = useState<NotebookSubTab>('all');
 
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
-  const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [itinerary, setItinerary] = useState<ItineraryItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const [expName, setExpName] = useState('');
   const [expAmount, setExpAmount] = useState('');
-  const [taskText, setTaskText] = useState('');
-  const [isShopping, setIsShopping] = useState(false);
 
   useEffect(() => {
     const loadInitialState = async () => {
       const state = await readState();
       setExpenses(state.expenses);
-      setTasks(state.tasks);
       setItinerary(state.itinerary);
       setIsLoaded(true);
     };
@@ -183,11 +162,9 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
   // Sync with Preferences when state changes
   useEffect(() => {
     if (typeof window === 'undefined' || !isLoaded) return;
-    const data = JSON.stringify({ expenses, tasks, itinerary });
-
-    // Fire and forget
+    const data = JSON.stringify({ expenses, itinerary });
     Preferences.set({ key: storageKey, value: data });
-  }, [expenses, tasks, itinerary, isLoaded]);
+  }, [expenses, itinerary, isLoaded]);
 
   // Listen for itinerary updates from other components (external updates to Preferences)
   useEffect(() => {
@@ -204,48 +181,30 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
     [expenses]
   );
 
+  const averageExpense = useMemo(() => {
+    if (expenses.length === 0) return '0.00';
+    return (expenses.reduce((acc, curr) => acc + curr.amount, 0) / expenses.length).toFixed(2);
+  }, [expenses]);
+
   const addExpense = () => {
     const amount = Number.parseFloat(expAmount);
-    if (!expName.trim() || Number.isNaN(amount)) return;
+    if (!expName.trim() || Number.isNaN(amount) || amount <= 0) return;
 
     setExpenses((prev) => [
-      ...prev,
       {
         id: Date.now(),
         name: expName.trim(),
         amount,
         date: new Date().toLocaleDateString(),
       },
+      ...prev,
     ]);
     setExpName('');
     setExpAmount('');
   };
 
-  const addTask = () => {
-    if (!taskText.trim()) return;
-
-    setTasks((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        text: taskText.trim(),
-        completed: false,
-        type: isShopping ? 'Shop' : 'To-Do',
-      },
-    ]);
-    setTaskText('');
-  };
-
-  const toggleTask = (id: number) => {
-    setTasks((prev) => prev.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)));
-  };
-
   const deleteExpense = (id: number) => {
     setExpenses((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const deleteTask = (id: number) => {
-    setTasks((prev) => prev.filter((item) => item.id !== id));
   };
 
   const toggleItinerary = (id: number) => {
@@ -256,43 +215,54 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
     setItinerary((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // Render components for sections
+  // Render Itinerary section
   const renderItineraryContent = () => (
     <div className="space-y-3">
       {itinerary.length === 0 ? (
-        <div className="rounded-[1.5rem] border border-dashed border-blue-200 bg-white p-6 text-sm text-slate-500 text-center">
+        <div className="rounded-[1.5rem] border border-dashed border-blue-200 bg-white p-6 sm:p-8 text-sm text-slate-500 text-center">
           {t.emptyItinerary}
         </div>
       ) : (
         itinerary.map((item) => (
-          <div key={item.id} className="flex items-center justify-between rounded-[1.5rem] border border-blue-100 bg-white p-4 shadow-sm transition-all hover:border-blue-200">
+          <div
+            key={item.id}
+            className="flex items-center justify-between rounded-2xl sm:rounded-[1.5rem] border border-blue-100 bg-white p-3.5 sm:p-4 shadow-sm transition-all hover:border-blue-200"
+          >
             <button
               onClick={() => toggleItinerary(item.id)}
-              className="flex items-center gap-3 text-left flex-1 min-w-0 pr-2"
+              className="flex items-center gap-3 text-left flex-1 min-w-0 pr-2 min-h-[44px]"
             >
               {item.checked ? (
-                <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-500 shrink-0" />
               ) : (
-                <Circle className="h-5 w-5 text-blue-300 shrink-0" />
+                <Circle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-300 shrink-0" />
               )}
               <div className="min-w-0">
-                <div className={`text-base font-black truncate ${item.checked ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+                <div
+                  className={`text-sm sm:text-base font-black truncate ${
+                    item.checked ? 'text-slate-400 line-through' : 'text-slate-900'
+                  }`}
+                >
                   {item.name}
                 </div>
                 <div className="text-xs text-slate-500 truncate">{item.address}</div>
               </div>
             </button>
             <div className="flex items-center gap-2 shrink-0">
-              <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest ${
-                item.type === 'Hotel' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
-                item.type === 'Restaurant' ? 'bg-green-50 text-green-700 border border-green-100' :
-                'bg-yellow-50 text-yellow-700 border border-yellow-100'
-              }`}>
+              <span
+                className={`rounded-full px-2.5 py-1 text-[9px] sm:text-[10px] font-black uppercase tracking-widest ${
+                  item.type === 'Hotel'
+                    ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                    : item.type === 'Restaurant'
+                    ? 'bg-green-50 text-green-700 border border-green-100'
+                    : 'bg-yellow-50 text-yellow-700 border border-yellow-100'
+                }`}
+              >
                 {item.type}
               </span>
               <button
                 onClick={() => deleteItinerary(item.id)}
-                className="rounded-full border border-red-100 bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+                className="w-10 h-10 flex items-center justify-center rounded-full border border-red-100 bg-red-50 text-red-600 transition-colors hover:bg-red-100 active:scale-95"
                 aria-label="Delete itinerary item"
               >
                 <Trash2 className="h-4 w-4" />
@@ -304,125 +274,99 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
     </div>
   );
 
-  const renderTasksContent = () => (
-    <div className="space-y-4">
-      <div className="rounded-[1.5rem] border border-blue-100 bg-blue-50/60 p-4">
-        <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
-          <input
-            value={taskText}
-            onChange={(e) => setTaskText(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') addTask(); }}
-            placeholder={t.taskPlaceholder}
-            className="rounded-2xl border border-blue-100 bg-white px-5 py-3 text-base font-medium text-slate-900 outline-none focus:border-blue-400"
-          />
-          <button
-            onClick={() => setIsShopping((prev) => !prev)}
-            className={`inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-black transition-all ${
-              isShopping ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'bg-white text-slate-700 border border-blue-100'
-            }`}
-          >
-            <ShoppingBag className="h-4 w-4" />
-            {t.shopping}
-          </button>
-          <button
-            onClick={addTask}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-500/25 transition-transform hover:-translate-y-0.5 active:scale-95"
-          >
-            <Plus className="h-4 w-4" />
-            {t.addTask}
-          </button>
-        </div>
-        <p className="mt-2 text-xs font-medium text-slate-500">{t.addHint}</p>
-      </div>
-
-      <div className="space-y-3">
-        {tasks.length === 0 ? (
-          <div className="rounded-[1.5rem] border border-dashed border-blue-200 bg-white p-6 text-sm text-slate-500 text-center">
-            {t.emptyTasks}
-          </div>
-        ) : (
-          tasks.map((task) => (
-            <div key={task.id} className="flex items-center justify-between rounded-[1.5rem] border border-blue-100 bg-white p-4 shadow-sm transition-all hover:border-blue-200">
-              <button
-                onClick={() => toggleTask(task.id)}
-                className="flex items-center gap-3 text-left flex-1 min-w-0 pr-2"
-              >
-                {task.completed ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
-                ) : (
-                  <Circle className="h-5 w-5 text-blue-300 shrink-0" />
-                )}
-                <div className="min-w-0">
-                  <div className={`text-base font-black truncate ${task.completed ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
-                    {task.text}
-                  </div>
-                  <div className="text-xs text-slate-500">{task.type}</div>
-                </div>
-              </button>
-              <button
-                onClick={() => deleteTask(task.id)}
-                className="rounded-full border border-red-100 bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100 shrink-0"
-                aria-label="Delete task"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  );
-
+  // Render Expanded Expenses section
   const renderExpensesContent = () => (
     <div className="space-y-4">
-      <div className="rounded-[1.5rem] border border-blue-100 bg-blue-50/60 p-4">
-        <div className="grid gap-3 sm:grid-cols-[1fr_120px_auto]">
+      {/* Expanded Expense Summary Banner */}
+      <div className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-[linear-gradient(135deg,_#1e3a8a_0%,_#2563eb_60%,_#38bdf8_100%)] p-5 sm:p-6 text-white shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-cyan-200">
+              <Receipt className="h-4 w-4" />
+              {t.expenseTotal}
+            </div>
+            <div className="mt-1 text-3xl sm:text-4xl font-black tracking-tight">{total} KM</div>
+          </div>
+
+          <div className="flex items-center gap-3 self-start sm:self-auto">
+            <div className="rounded-xl bg-white/15 px-3.5 py-2 backdrop-blur-xs border border-white/20">
+              <div className="text-[10px] font-black uppercase tracking-wider text-cyan-100">{t.entriesCount}</div>
+              <div className="text-lg font-black text-white">{expenses.length}</div>
+            </div>
+            <div className="rounded-xl bg-white/15 px-3.5 py-2 backdrop-blur-xs border border-white/20">
+              <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-cyan-100">
+                <TrendingUp className="h-3 w-3" />
+                {t.avgExpense}
+              </div>
+              <div className="text-lg font-black text-white">{averageExpense} KM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Touch-optimized Add Expense Form */}
+      <div className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-blue-50/70 p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col gap-3">
           <input
             value={expName}
             onChange={(e) => setExpName(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') addExpense(); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') addExpense();
+            }}
             placeholder={t.expensePlaceholder}
-            className="rounded-2xl border border-blue-100 bg-white px-5 py-3 text-base font-medium text-slate-900 outline-none focus:border-blue-400"
+            className="w-full rounded-2xl border border-blue-100 bg-white px-4 py-3.5 text-base font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           />
-          <input
-            value={expAmount}
-            onChange={(e) => setExpAmount(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') addExpense(); }}
-            placeholder={t.amountPlaceholder}
-            type="number"
-            inputMode="decimal"
-            className="rounded-2xl border border-blue-100 bg-white px-5 py-3 text-base font-medium text-slate-900 outline-none focus:border-blue-400"
-          />
-          <button
-            onClick={addExpense}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-500/25 transition-transform hover:-translate-y-0.5 active:scale-95"
-          >
-            <Plus className="h-4 w-4" />
-            {t.addExpense}
-          </button>
+          <div className="flex gap-2.5">
+            <div className="relative flex-1 sm:max-w-[180px]">
+              <input
+                value={expAmount}
+                onChange={(e) => setExpAmount(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') addExpense();
+                }}
+                placeholder={t.amountPlaceholder}
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                min="0"
+                className="w-full rounded-2xl border border-blue-100 bg-white px-4 py-3.5 text-base font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+            <button
+              onClick={addExpense}
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3.5 text-sm sm:text-base font-black text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-700 active:scale-95"
+            >
+              <Plus className="h-5 w-5" />
+              <span>{t.addExpense}</span>
+            </button>
+          </div>
         </div>
         <p className="mt-2 text-xs font-medium text-slate-500">{t.addHint}</p>
       </div>
 
+      {/* Expenses History List */}
       <div className="space-y-3">
         {expenses.length === 0 ? (
-          <div className="rounded-[1.5rem] border border-dashed border-blue-200 bg-white p-6 text-sm text-slate-500 text-center">
+          <div className="rounded-2xl sm:rounded-[1.5rem] border border-dashed border-blue-200 bg-white p-6 sm:p-8 text-sm text-slate-500 text-center">
             {t.emptyLedger}
           </div>
         ) : (
           expenses.map((expense) => (
-            <div key={expense.id} className="flex items-center justify-between rounded-[1.5rem] border border-blue-100 bg-white p-4 shadow-sm transition-all hover:border-blue-200">
-              <div className="min-w-0 flex-1 pr-2">
-                <div className="text-base font-black text-slate-900 truncate">{expense.name}</div>
-                <div className="text-xs text-slate-500">{expense.date}</div>
+            <div
+              key={expense.id}
+              className="flex items-center justify-between rounded-2xl sm:rounded-[1.5rem] border border-blue-100 bg-white p-3.5 sm:p-4 shadow-sm transition-all hover:border-blue-200"
+            >
+              <div className="min-w-0 flex-1 pr-3">
+                <div className="text-sm sm:text-base font-black text-slate-900 truncate">{expense.name}</div>
+                <div className="text-xs text-slate-400">{expense.date}</div>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <div className="rounded-full bg-blue-50 px-3.5 py-1 text-sm font-black text-blue-700">
+              <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+                <div className="rounded-full bg-blue-50 px-3.5 py-1.5 text-sm sm:text-base font-black text-blue-700 border border-blue-100/70">
                   {expense.amount.toFixed(2)} KM
                 </div>
                 <button
                   onClick={() => deleteExpense(expense.id)}
-                  className="rounded-full border border-red-100 bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+                  className="w-10 h-10 flex items-center justify-center rounded-full border border-red-100 bg-red-50 text-red-600 transition-colors hover:bg-red-100 active:scale-95"
                   aria-label="Delete expense"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -432,21 +376,16 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
           ))
         )}
       </div>
-
-      <div className="rounded-[1.5rem] border border-blue-100 bg-[linear-gradient(135deg,_rgba(59,130,246,0.1),_rgba(255,255,255,0.95))] p-5">
-        <div className="text-xs font-black uppercase tracking-[0.28em] text-blue-500">{t.expenseTotal}</div>
-        <div className="mt-1 text-3xl font-black text-blue-900">{total} KM</div>
-      </div>
     </div>
   );
 
   const renderQuickOverviewAside = () => (
-    <aside className="rounded-[1.75rem] border border-blue-100 bg-[linear-gradient(180deg,_#ffffff_0%,_#eff6ff_100%)] p-5 shadow-sm h-fit">
-      <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.28em] text-blue-500">
+    <aside className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-[linear-gradient(180deg,_#ffffff_0%,_#eff6ff_100%)] p-5 shadow-sm h-fit space-y-4">
+      <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-blue-600">
         <CreditCard className="h-4 w-4" />
         {t.quickOverview}
       </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-1">
         <div className="rounded-2xl bg-white p-4 border border-blue-50 shadow-xs">
           <div className="text-xs font-bold uppercase tracking-widest text-slate-400">
             {lang === 'bs' ? 'Plan puta' : lang === 'tr' ? 'Güzergah' : lang === 'de' ? 'Reiseplan' : 'Itinerary'}
@@ -455,90 +394,96 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         </div>
         <div className="rounded-2xl bg-white p-4 border border-blue-50 shadow-xs">
           <div className="text-xs font-bold uppercase tracking-widest text-slate-400">
-            {lang === 'bs' ? 'Zadaci' : lang === 'tr' ? 'Görevler' : lang === 'de' ? 'Aufgaben' : 'Tasks'}
-          </div>
-          <div className="mt-1 text-2xl font-black text-blue-900">{tasks.length}</div>
-        </div>
-        <div className="rounded-2xl bg-white p-4 border border-blue-50 shadow-xs">
-          <div className="text-xs font-bold uppercase tracking-widest text-slate-400">
-            {lang === 'bs' ? 'Shop stavke' : lang === 'tr' ? 'Alışveriş' : lang === 'de' ? 'Einkaufsliste' : 'Shop items'}
+            {lang === 'bs' ? 'Ukupno troškovi' : lang === 'tr' ? 'Toplam Masraf' : lang === 'de' ? 'Gesamtausgaben' : 'Total Spent'}
           </div>
           <div className="mt-1 text-2xl font-black text-blue-900">
-            {tasks.filter((task) => task.type === 'Shop').length}
+            {total} <span className="text-sm font-semibold text-slate-500">KM</span>
           </div>
-        </div>
-        <div className="rounded-2xl bg-white p-4 border border-blue-50 shadow-xs">
-          <div className="text-xs font-bold uppercase tracking-widest text-slate-400">
-            {lang === 'bs' ? 'Troškovi' : lang === 'tr' ? 'Masraflar' : lang === 'de' ? 'Ausgaben' : 'Expenses'}
-          </div>
-          <div className="mt-1 text-2xl font-black text-blue-900">{expenses.length} <span className="text-sm font-semibold text-slate-500">({total} KM)</span></div>
         </div>
       </div>
     </aside>
   );
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 pb-32">
-      <section className="overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-[0_24px_60px_rgba(37,99,235,0.12)]">
-        <div className="bg-[linear-gradient(135deg,_#0f172a_0%,_#1d4ed8_55%,_#38bdf8_100%)] px-6 py-8 text-white sm:px-8">
-          <div className="flex items-center gap-3 text-sm font-black uppercase tracking-[0.28em] text-cyan-100">
-            <BookOpen className="h-5 w-5" />
-            {lang === 'bs' ? 'Lični organizer' : lang === 'tr' ? 'Kişisel Organizatör' : lang === 'de' ? 'Persönlicher Organizer' : 'Personal Organizer'}
-          </div>
-          <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">{t.title}</h1>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/80">
-            {lang === 'en'
-              ? 'Your unified notebook for itinerary, tasks, shopping, and travel ledger.'
+    <div className="mx-auto max-w-6xl px-3 sm:px-6 py-4 sm:py-8 pb-32">
+      <section className="overflow-hidden rounded-2xl sm:rounded-[2rem] border border-blue-100 bg-white shadow-[0_24px_60px_rgba(37,99,235,0.12)]">
+        {/* Header Hero */}
+        <div className="bg-[linear-gradient(135deg,_#0f172a_0%,_#1d4ed8_55%,_#38bdf8_100%)] px-4 py-6 sm:px-8 sm:py-8 text-white">
+          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-black uppercase tracking-[0.25em] text-cyan-100">
+            <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
+            {lang === 'bs'
+              ? 'Lični organizer'
+              : lang === 'tr'
+              ? 'Kişisel Organizatör'
               : lang === 'de'
-                ? 'Dein einheitliches Notizbuch für Reiseplan, Aufgaben, Einkäufe und Reisekosten.'
-                : lang === 'tr'
-                  ? 'Güzergah, görevler, alışveriş ve seyahat harcamalarınız için tek not defteri.'
-                  : 'Tvoja jedinstvena bilježnica za plan puta, zadatke, kupovinu i evidenciju troškova.'}
+              ? 'Persönlicher Organizer'
+              : 'Personal Organizer'}
+          </div>
+          <h1 className="mt-2 sm:mt-3 text-3xl font-black tracking-tight sm:text-5xl">{t.title}</h1>
+          <p className="mt-2 sm:mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-white/80">
+            {t.subtitle}
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          {/* Mode Switcher Buttons - Horizontally Scrollable on Mobile */}
+          <div className="mt-5 sm:mt-6 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:flex-wrap sm:pb-0">
             <button
               onClick={() => setView('notebook')}
-              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${
-                view === 'notebook' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+                view === 'notebook'
+                  ? 'bg-white text-blue-900 shadow-lg'
+                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
               }`}
             >
-              <BookOpen className="h-5 w-5" />
+              <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
               {t.notebook}
             </button>
             <button
               onClick={() => setView('calendar')}
-              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${
-                view === 'calendar' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+                view === 'calendar'
+                  ? 'bg-white text-blue-900 shadow-lg'
+                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
               }`}
             >
-              <CalendarIcon className="h-5 w-5" />
-              {lang === 'bs' ? 'Kalendar događaja' : lang === 'de' ? 'Veranstaltungskalender' : lang === 'tr' ? 'Etkinlik Takvimi' : 'Calendar of Events'}
+              <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              {lang === 'bs'
+                ? 'Kalendar događaja'
+                : lang === 'de'
+                ? 'Veranstaltungskalender'
+                : lang === 'tr'
+                ? 'Etkinlik Takvimi'
+                : 'Calendar of Events'}
             </button>
             <button
               onClick={() => setView('threeDayPlan')}
-              className={`rounded-2xl px-6 py-4 text-base font-black transition-all ${
-                view === 'threeDayPlan' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+              className={`shrink-0 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+                view === 'threeDayPlan'
+                  ? 'bg-white text-blue-900 shadow-lg'
+                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
               }`}
             >
               {lang === 'bs' ? '3 Dnevni plan' : lang === 'de' ? '3-Tage-Plan' : lang === 'tr' ? '3 Günlük Plan' : '3 Day Plan'}
             </button>
             <button
               onClick={() => setView('practicalInfo')}
-              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${
-                view === 'practicalInfo' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+                view === 'practicalInfo'
+                  ? 'bg-white text-blue-900 shadow-lg'
+                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
               }`}
             >
-              <Compass className="h-5 w-5" />
+              <Compass className="h-4 w-4 sm:h-5 sm:w-5" />
               {lang === 'bs' ? 'Praktične info' : lang === 'de' ? 'Praktische Infos' : lang === 'tr' ? 'Pratik Bilgiler' : 'Practical Info'}
             </button>
             <button
               onClick={() => setView('media')}
-              className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all ${
-                view === 'media' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+                view === 'media'
+                  ? 'bg-white text-blue-900 shadow-lg'
+                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
               }`}
             >
-              <Headphones className="h-5 w-5" />
+              <Headphones className="h-4 w-4 sm:h-5 sm:w-5" />
               {lang === 'bs' ? 'Media' : 'Media'}
             </button>
           </div>
@@ -549,34 +494,34 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : view === 'calendar' ? (
-          <div className="p-6 sm:p-8">
+          <div className="p-4 sm:p-8">
             <EventCalendarView lang={lang} />
           </div>
         ) : view === 'threeDayPlan' ? (
-          <div className="p-6 sm:p-8 w-full">
+          <div className="p-4 sm:p-8 w-full">
             <ThreeDayPlanView
               lang={lang}
               onSwitchToPracticalInfo={() => setView('practicalInfo')}
             />
           </div>
         ) : view === 'practicalInfo' ? (
-          <div className="p-6 sm:p-8 w-full">
+          <div className="p-4 sm:p-8 w-full">
             <PracticalTravelInfo
               lang={lang}
               onSwitchToItinerary={() => setView('threeDayPlan')}
             />
           </div>
         ) : view === 'media' ? (
-          <div className="p-6 sm:p-8 w-full">
+          <div className="p-4 sm:p-8 w-full">
             <MediaAudioGuideTab lang={lang} />
           </div>
         ) : view === 'notebook' ? (
-          <div className="p-6 sm:p-8 space-y-6">
-            {/* Notebook Sub-tabs navigation */}
-            <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-slate-100/80 p-1.5 w-fit border border-slate-200/60">
+          <div className="p-4 sm:p-8 space-y-6">
+            {/* Notebook Sub-tabs navigation: Mobile segmented control style */}
+            <div className="grid grid-cols-3 sm:flex sm:w-fit items-center gap-1 sm:gap-2 rounded-2xl bg-slate-100/90 p-1.5 border border-slate-200/60">
               <button
                 onClick={() => setNotebookSubTab('all')}
-                className={`rounded-xl px-4 py-2 text-sm font-black transition-all ${
+                className={`flex items-center justify-center rounded-xl py-2.5 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${
                   notebookSubTab === 'all'
                     ? 'bg-white text-blue-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -586,57 +531,60 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               </button>
               <button
                 onClick={() => setNotebookSubTab('itinerary')}
-                className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-black transition-all ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 sm:py-2 px-2 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${
                   notebookSubTab === 'itinerary'
                     ? 'bg-white text-blue-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <MapPin className="h-4 w-4 text-blue-600" />
-                {t.itinerary} ({itinerary.length})
+                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 shrink-0" />
+                <span className="truncate">{t.itinerary} ({itinerary.length})</span>
               </button>
               <button
                 onClick={() => setNotebookSubTab('expenses')}
-                className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-black transition-all ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 sm:py-2 px-2 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${
                   notebookSubTab === 'expenses'
                     ? 'bg-white text-blue-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <Receipt className="h-4 w-4 text-amber-600" />
-                {t.expenses} ({total} KM)
+                <Receipt className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-600 shrink-0" />
+                <span className="truncate">{t.expenses} ({total} KM)</span>
               </button>
             </div>
 
-            {/* Display content based on active subtab */}
+            {/* Sub-tab content */}
             {notebookSubTab === 'all' ? (
               <div className="space-y-6">
-                {/* Quick stats counter */}
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-4">
-                    <div className="text-xs font-bold uppercase tracking-widest text-blue-600/70">{t.itinerary}</div>
-                    <div className="mt-1 text-2xl font-black text-blue-900">{itinerary.length}</div>
+                {/* Quick stats counter: 2-column wide layout */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between rounded-2xl border border-blue-100 bg-blue-50/60 p-4 sm:p-5">
+                    <div>
+                      <div className="text-xs font-bold uppercase tracking-widest text-blue-600">{t.itinerary}</div>
+                      <div className="mt-1 text-2xl sm:text-3xl font-black text-blue-900">{itinerary.length}</div>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-blue-100/70 flex items-center justify-center text-blue-600">
+                      <MapPin className="h-6 w-6" />
+                    </div>
                   </div>
-                  <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-4">
-                    <div className="text-xs font-bold uppercase tracking-widest text-emerald-600/70">{t.tasks}</div>
-                    <div className="mt-1 text-2xl font-black text-emerald-900">{tasks.length}</div>
-                  </div>
-                  <div className="rounded-2xl border border-amber-100 bg-amber-50/50 p-4">
-                    <div className="text-xs font-bold uppercase tracking-widest text-amber-600/70">{t.shopping}</div>
-                    <div className="mt-1 text-2xl font-black text-amber-900">{tasks.filter((item) => item.type === 'Shop').length}</div>
-                  </div>
-                  <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-4">
-                    <div className="text-xs font-bold uppercase tracking-widest text-indigo-600/70">{t.expenseTotal}</div>
-                    <div className="mt-1 text-2xl font-black text-indigo-900">{total} KM</div>
+
+                  <div className="flex items-center justify-between rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 sm:p-5">
+                    <div>
+                      <div className="text-xs font-bold uppercase tracking-widest text-indigo-600">{t.expenseTotal}</div>
+                      <div className="mt-1 text-2xl sm:text-3xl font-black text-indigo-900">{total} KM</div>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-100/70 flex items-center justify-center text-indigo-600">
+                      <Receipt className="h-6 w-6" />
+                    </div>
                   </div>
                 </div>
 
-                {/* 3 Unified Sections */}
-                <div className="grid gap-6 lg:grid-cols-3">
+                {/* 2-Column Unified Sections: 50% Itinerary, 50% Expenses */}
+                <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
                   {/* Itinerary Column */}
-                  <div className="rounded-[1.75rem] border border-blue-100 bg-white p-5 shadow-xs space-y-4">
+                  <div className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-white p-4 sm:p-6 shadow-xs space-y-4">
                     <div className="flex items-center justify-between pb-3 border-b border-blue-50">
-                      <div className="flex items-center gap-2 font-black text-blue-900 text-lg">
+                      <div className="flex items-center gap-2 font-black text-blue-900 text-lg sm:text-xl">
                         <MapPin className="h-5 w-5 text-blue-600" />
                         {t.itinerary}
                       </div>
@@ -647,24 +595,10 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                     {renderItineraryContent()}
                   </div>
 
-                  {/* Tasks Column */}
-                  <div className="rounded-[1.75rem] border border-blue-100 bg-white p-5 shadow-xs space-y-4">
+                  {/* Expenses Column - Expanded full half-width on desktop */}
+                  <div className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-white p-4 sm:p-6 shadow-xs space-y-4">
                     <div className="flex items-center justify-between pb-3 border-b border-blue-50">
-                      <div className="flex items-center gap-2 font-black text-blue-900 text-lg">
-                        <CheckSquare className="h-5 w-5 text-emerald-600" />
-                        {t.tasks}
-                      </div>
-                      <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-black text-emerald-700">
-                        {tasks.length}
-                      </span>
-                    </div>
-                    {renderTasksContent()}
-                  </div>
-
-                  {/* Expenses Column */}
-                  <div className="rounded-[1.75rem] border border-blue-100 bg-white p-5 shadow-xs space-y-4">
-                    <div className="flex items-center justify-between pb-3 border-b border-blue-50">
-                      <div className="flex items-center gap-2 font-black text-blue-900 text-lg">
+                      <div className="flex items-center gap-2 font-black text-blue-900 text-lg sm:text-xl">
                         <Receipt className="h-5 w-5 text-amber-600" />
                         {t.expenses}
                       </div>
@@ -676,12 +610,19 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                   </div>
                 </div>
               </div>
+            ) : notebookSubTab === 'expenses' ? (
+              /* Dedicated Expanded Expenses Tab View */
+              <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1fr_320px]">
+                <div className="space-y-4">
+                  {renderExpensesContent()}
+                </div>
+                {renderQuickOverviewAside()}
+              </div>
             ) : (
-              <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+              /* Dedicated Itinerary Tab View */
+              <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1fr_320px]">
                 <div>
-                  {notebookSubTab === 'itinerary' && renderItineraryContent()}
-                  
-                  {notebookSubTab === 'expenses' && renderExpensesContent()}
+                  {renderItineraryContent()}
                 </div>
                 {renderQuickOverviewAside()}
               </div>
@@ -694,7 +635,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         href="https://tuzla.bingocitycenter.ba"
         target="_blank"
         rel="noopener noreferrer"
-        className="block mt-6 overflow-hidden rounded-[1.5rem] border border-blue-100 shadow-sm transition-transform hover:scale-[1.02]"
+        className="block mt-6 overflow-hidden rounded-2xl sm:rounded-[1.5rem] border border-blue-100 shadow-sm transition-transform hover:scale-[1.01]"
       >
         <img
           src="/assets/BCC.webp"

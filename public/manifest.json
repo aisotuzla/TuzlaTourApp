@@ -1,7 +1,7 @@
 {
-  "name": "Tuzla Tour Guide",
+  "name": "Tuzla Tour Guide - AR Quests, GPS Navigation & Web3 Rewards",
   "short_name": "Tuzla Guide",
-  "description": "Tour Guide application for Tuzla city with interactive maps, gamified quests, QR scanner, GPS support and real-location rewards.",
+  "description": "Interactive virtual tour guide for Tuzla, Bosnia and Herzegovina. Features 3D GPS navigation, camera AR Quests with QR code scanning, neural audio guides, personal itinerary planner with expense ledger, verified hotel and dining directories, and real-time Web3 rewards on Solana.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -18,12 +18,18 @@
     "travel",
     "navigation",
     "entertainment",
-    "music",
+    "lifestyle",
     "education"
   ],
-  "lang": "bs",
+  "lang": "en",
   "dir": "ltr",
   "icons": [
+    {
+      "src": "/resources/TuzlaTourAppLogo96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/resources/TuzlaTourAppLogo192x192.png",
       "sizes": "192x192",
@@ -45,21 +51,9 @@
   ],
   "shortcuts": [
     {
-      "name": "Audio Guide",
-      "short_name": "Audio",
-      "description": "Listen to Tuzla audio tour guide",
-      "url": "/?tab=history",
-      "icons": [
-        {
-          "src": "/resources/TuzlaTourAppLogo96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Tuzla Quest",
-      "short_name": "Quest",
+      "name": "AR Quest & Scavenger Hunt",
+      "short_name": "AR Quest",
+      "description": "Explore Tuzla landmarks in Augmented Reality, scan QR codes and earn rewards",
       "url": "/?tab=quest",
       "icons": [
         {
@@ -71,9 +65,52 @@
       ]
     },
     {
-      "name": "Map",
-      "short_name": "Map",
+      "name": "3D GPS Map & Navigation",
+      "short_name": "GPS Map",
+      "description": "Navigate Tuzla with live 3D vector maps, routing, and offline support",
       "url": "/?tab=map",
+      "icons": [
+        {
+          "src": "/resources/TuzlaTourAppLogo96x96.png",
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Neural Audio Guides",
+      "short_name": "Audio Guide",
+      "description": "Listen to spoken multilingual audio guides about Tuzla's 6,000-year history",
+      "url": "/?tab=history",
+      "icons": [
+        {
+          "src": "/resources/TuzlaTourAppLogo96x96.png",
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Personal Itinerary & Expenses",
+      "short_name": "Itinerary",
+      "description": "Organize your stay, check off visited places, and track travel expenses",
+      "url": "/?tab=task-manager",
+      "icons": [
+        {
+          "src": "/resources/TuzlaTourAppLogo96x96.png",
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Web3 Wallet & Rewards",
+      "short_name": "Rewards",
+      "description": "Connect Solana wallet, view NFT achievements and redeem partner discount coupons",
+      "url": "/?tab=wallet",
       "icons": [
         {
           "src": "/resources/TuzlaTourAppLogo96x96.png",

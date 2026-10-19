@@ -352,7 +352,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     if (!map.current || !isLoaded) return;
     setIsRouteLoading(true);
     try {
-      const ROUTE_MAP_KEY = ['63e8b34f44974d71', 'bc70aad63e5b56ba'].join('');
+      const ROUTE_MAP_KEY = (import.meta as any).env?.VITE_GEOAPIFY_ROUTING_API || '';
       const apiKey = (import.meta as any).env?.VITE_GEOAPIFY_ROUTING_API || (import.meta as any).env?.VITE_GEOAPIFY_STATIC_API || ROUTE_MAP_KEY;
       const startLng = startLoc[0];
       const startLat = startLoc[1];

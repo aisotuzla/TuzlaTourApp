@@ -24,7 +24,7 @@ interface MapViewProps {
 
 
 const GEO_MAP_KEY = ['65090a03070e4e18', '98694f7a18ba415b'].join('');
-const ROUTE_MAP_KEY = ['63e8b34f44974d71', 'bc70aad63e5b56ba'].join('');
+const ROUTE_MAP_KEY = import.meta.env.VITE_GEOAPIFY_ROUTING_API || '';
 
 const OFFLINE_STYLE = '/maps/offline-vector-style.json';
 const RASTER_STYLE = '/maps/offline-style.json';

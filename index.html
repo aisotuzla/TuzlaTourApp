@@ -17,7 +17,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
   <meta name="theme-color" content="#1e3a8a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Tuzla Virtual Tour Guide - Pannonian Lakes, Transit & City Guide</title>
+  <title>Tuzla Tour Guide Platform</title>
   <meta name="description"
     content="Explore Tuzla, Bosnia and Herzegovina: Europe's only urban saltwater lakes (Panonika), direct airport bus line 34 schedules, verified hotels, dining, and curated 3-day itineraries.">
   <meta name="google-site-verification" content="j3go2LZ4eDRiiSw3g2hPPSBk7x9s4H-2qllyxlvXwIk">
@@ -28,7 +28,7 @@
   <meta property="og:url" content="https://tuzlatour.vercel.app/">
   <meta property="og:title" content="Tuzla Virtual Tour Guide - Pannonian Lakes & City Guide">
   <meta property="og:description"
-    content="Complete guide to Tuzla: Pannonian salt lakes, airport transit (bus line 34), verified hotels, and local heritage in Bosnia and Herzegovina.">
+    content="Complete digital guide to Tuzla: Pannonian salt lakes, airport transit (bus line 34), verified hotels, and local heritage in Bosnia and Herzegovina.">
   <meta property="og:image" content="https://tuzlatour.vercel.app/assets/Gallery/heroo.webp">
   <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="Tuzla Tour Guide">
@@ -37,7 +37,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Tuzla Virtual Tour Guide">
   <meta name="twitter:description"
-    content="Discover Europe's only urban salt lakes, Tuzla airport bus schedules, and top tourist attractions.">
+    content="Discover Europe's only urban salt lakes, Explore Tuzla through AR Quests and maps, visit top tourist attractions and earn rewards.">
   <meta name="twitter:image" content="https://tuzlatour.vercel.app/assets/Gallery/heroo.webp">
 
   <link rel="manifest" href="/manifest.json">
@@ -199,57 +199,71 @@
 
   <!-- Visually hide crawlable fallback from users; bots still read it. React replaces #root on mount. -->
   <style>
-    .seo-fallback { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+    .seo-fallback {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      clip-path: inset(50%) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
   </style>
 </head>
 
 <body>
   <!-- Semantic Crawlable Fallback for AI Search Engines & Non-JS Crawlers -->
   <div id="root">
-    <div class="seo-fallback" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); clip-path: inset(50%); white-space: nowrap; border: 0;">
-    <header>
-      <h1>Tuzla Virtual Tour Guide</h1>
-      <p>Explore Tuzla with AR Quest Game, interactive 3D maps, and GPS-guided city tours</p>
-    </header>
-    <main>
-      <article>
-        <h2>Discover Tuzla &amp; Europe's Only Urban Salt Lakes</h2>
-        <p>
-          <strong>Tuzla</strong> is the third-largest city in Bosnia and Herzegovina, celebrated for over 6,000 years of
-          continuous salt extraction.
-          Its premier attraction, <strong>Panonika (Pannonian Lakes)</strong>, is Europe's only urban saltwater lake
-          resort, featuring three artificial lakes with salt water, continiously filtering during the day, with
-          mineral salinity of 30–35 g/L matching seawater, cascading waterfalls, and an authentic reconstructed
-          Neolithic stilt village.
-        </p>
+    <div class="seo-fallback"
+      style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); clip-path: inset(50%); white-space: nowrap; border: 0;">
+      <header>
+        <h1>Tuzla Virtual Tour Guide</h1>
+        <p>Explore Tuzla with AR Quest Game, interactive 3D maps, and GPS-guided city tours</p>
+      </header>
+      <main>
+        <article>
+          <h2>Discover Tuzla &amp; Europe's Only Urban Salt Lakes</h2>
+          <p>
+            <strong>Tuzla</strong> is the third-largest city in Bosnia and Herzegovina, celebrated for over 6,000 years
+            of
+            continuous salt extraction.
+            Its premier attraction, <strong>Panonika (Pannonian Lakes)</strong>, is Europe's only urban saltwater lake
+            resort, featuring three artificial lakes with salt water, continiously filtering during the day, with
+            mineral salinity of 30–35 g/L matching seawater, cascading waterfalls, and an authentic reconstructed
+            Neolithic stilt village.
+          </p>
 
-        <h3>Airport Transit (TZL to City Center)</h3>
-        <p>
-          Tuzla International Airport (TZL) is connected to downtown Tuzla via <strong>Bus Line 34</strong> (fares
-          2.50–5.50 KM, cash only, ~35–50 min).
-          Official taxis operate outside arrivals with standard fares between 30 and 40 BAM (€15–20).
-        </p>
+          <h3>Airport Transit (TZL to City Center)</h3>
+          <p>
+            Tuzla International Airport (TZL) is connected to downtown Tuzla via <strong>Bus Line 34</strong> (fares
+            2.50–5.50 KM, cash only, ~35–50 min).
+            Official taxis operate outside arrivals with standard fares between 30 and 40 BAM (€15–20).
+          </p>
 
-        <h3>Top Attractions &amp; Highlights</h3>
-        <ul>
-          <li><strong>Pannonian Lakes (Panonika):</strong> Therapeutic saltwater complex in city center.</li>
-          <li><strong>Trg Slobode (Freedom Square):</strong> Largest town square in Bosnia with baroque fountain.</li>
-          <li><strong>Soni Trg (Salt Square):</strong> Historic 2,500-year salt well archaeological display.</li>
-          <li><strong>King Tvrtko I Monument:</strong> Central park statue and Charter of Kulin Ban (1189).</li>
-          <li><strong>Kapija Memorial:</strong> Sacred historic monument to peace and youth in the pedestrian core.</li>
-        </ul>
+          <h3>Top Attractions &amp; Highlights</h3>
+          <ul>
+            <li><strong>Pannonian Lakes (Panonika):</strong> Therapeutic saltwater complex in city center.</li>
+            <li><strong>Trg Slobode (Freedom Square):</strong> Largest town square in Bosnia with baroque fountain.</li>
+            <li><strong>Soni Trg (Salt Square):</strong> Historic 2,500-year salt well archaeological display.</li>
+            <li><strong>King Tvrtko I Monument:</strong> Central park statue and Charter of Kulin Ban (1189).</li>
+            <li><strong>Kapija Memorial:</strong> Sacred historic monument to peace and youth in the pedestrian core.
+            </li>
+          </ul>
 
-        <h3>Verified Accommodations</h3>
-        <p>
-          Top rated hotels include <strong>Hotel Mellain</strong> (rating 9.1, 5-star spa and Olympic pool) and
-          <strong>Hotel Salis</strong> (rating 8.9, wellness center near Pannonica).
-        </p>
+          <h3>Verified Accommodations</h3>
+          <p>
+            Top rated hotels include <strong>Hotel Mellain</strong> (rating 9.1, 5-star spa and Olympic pool) and
+            <strong>Hotel Salis</strong> (rating 8.9, wellness center near Pannonica).
+          </p>
 
-        <p>
-          Curated by local Tuzla tourism experts. Verified March 2026.
-        </p>
-      </article>
-    </main>
+          <p>
+            Curated by local Tuzla tourism experts. Verified March 2026.
+          </p>
+        </article>
+      </main>
     </div>
   </div>
   <script type="module" src="/index.tsx"></script>
