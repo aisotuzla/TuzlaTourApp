@@ -100,7 +100,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
           toAirportTimes: ['07:00', '09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00', '23:00'],
           fromAirportLabel: 'Departures from Airport to Tuzla (AS Istok):',
           fromAirportTimes: ['06:00', '08:00', '10:00 (weekdays also 10:00)', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
-          Buslink: "https://www.gipstk.com/red-voznje/34-aerodrom-tuzla-b-malta-tuzla-as-istok/",
+          link: "https://www.gipstk.com/red-voznje/34-aerodrom-tuzla-b-malta-tuzla-as-istok/",
         },
         line11: {
           title: 'Line 11: Tuzla (AS Istok) – Donje Dubrave – Kalesija (AS)',

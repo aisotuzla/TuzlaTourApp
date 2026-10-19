@@ -22,7 +22,7 @@ import { ThreeDayPlanView } from './ThreeDayPlanView';
 import { PracticalTravelInfo } from './PracticalTravelInfo';
 
 type Mode = 'notebook' | 'calendar' | 'threeDayPlan' | 'practicalInfo' | 'media';
-type NotebookSubTab = 'all' | 'itinerary' | 'tasks' | 'expenses';
+type NotebookSubTab = 'all' | 'itinerary' | 'expenses';
 
 type ExpenseItem = {
   id: number;
@@ -596,17 +596,6 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                 {t.itinerary} ({itinerary.length})
               </button>
               <button
-                onClick={() => setNotebookSubTab('tasks')}
-                className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-black transition-all ${
-                  notebookSubTab === 'tasks'
-                    ? 'bg-white text-blue-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <CheckSquare className="h-4 w-4 text-emerald-600" />
-                {t.tasks} ({tasks.length})
-              </button>
-              <button
                 onClick={() => setNotebookSubTab('expenses')}
                 className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-black transition-all ${
                   notebookSubTab === 'expenses'
@@ -691,7 +680,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
                 <div>
                   {notebookSubTab === 'itinerary' && renderItineraryContent()}
-                  {notebookSubTab === 'tasks' && renderTasksContent()}
+                  
                   {notebookSubTab === 'expenses' && renderExpensesContent()}
                 </div>
                 {renderQuickOverviewAside()}
