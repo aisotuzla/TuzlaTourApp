@@ -6,6 +6,13 @@ export interface HistoryPageNarration {
   audioSrc?: Record<Language, string>;
 }
 
+export const HISTORY_AUDIO_SOURCES: Record<Language, string> = {
+  bs: '/audio/HistoryBA.mp3',
+  en: '/audio/HistoryEN.mp3',
+  de: '/audio/HistoryDE.mp3',
+  tr: '/audio/HistoryTR.mp3',
+};
+
 export const HISTORY_RAW_DOCUMENTS: Record<Language, string> = {
   bs: '',
   en: '',
@@ -27,6 +34,7 @@ export const HISTORY_NARRATIONS: Record<number, HistoryPageNarration> = {
       de: 'Tuzla ist eine der ältesten Siedlungen Europas mit einer über 6.000-jährigen Geschichte.',
       tr: 'Tuzla, 6.000 yılı aşkın kesintisiz yaşamıyla Avrupa\'nın en eski yerleşim yerlerinden biridir.',
     },
+    audioSrc: HISTORY_AUDIO_SOURCES,
   },
   1: {
     title: {
@@ -41,12 +49,6 @@ export const HISTORY_NARRATIONS: Record<number, HistoryPageNarration> = {
       de: 'Das moderne Tuzla ist ein Symbol für Multikulturalismus, industrielle Entwicklung und einzigartige Salzseen.',
       tr: 'Modern Tuzla, çok kültürlülüğün, sanayi ve eğitim gelişiminin ve eşsiz tuz göllerinin sembolüdür.',
     },
-    audioSrc: {
-      bs: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/HistoryBA.mp3',
-      en: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/HistoryEN.mp3',
-      de: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/HistoryDE.mp3',
-      tr: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/HistoryTR.mp3',
-    },
+    audioSrc: HISTORY_AUDIO_SOURCES,
   },
-
 };

@@ -21,17 +21,15 @@ const History: React.FC<HistoryProps> = ({ lang }) => {
   const { openGallery } = useImage();
   const { currentNarration, isPlaying, isPaused, playNarration, stopNarration } = useAudioGuide();
 
-  const handleToggleAudio = () => {
-    const pageData = HISTORY_NARRATIONS[0];
-    if (!pageData) return;
-
+  const handleToggleAudio = (index: number = 0) => {
+    const pageData = HISTORY_NARRATIONS[index] || HISTORY_NARRATIONS[0];
     const narrationId = 'history-full';
     if (currentNarration?.id === narrationId && isPlaying) {
       stopNarration();
     } else {
-      const title = pageData.title[lang] || pageData.title.en;
-      const text = pageData.text[lang] || pageData.text.en;
-      const audioSrc = pageData.audioSrc?.[lang] || pageData.audioSrc?.en;
+      const title = pageData?.title[lang] || pageData?.title.en || (lang === 'bs' ? 'Historija Tuzle' : 'Tuzla History');
+      const text = pageData?.text[lang] || pageData?.text.en || '';
+      const audioSrc = pageData?.audioSrc?.[lang] || pageData?.audioSrc?.en || `/audio/History${lang === 'bs' ? 'BA' : lang.toUpperCase()}.mp3`;
       playNarration({
         id: narrationId,
         title,
@@ -76,7 +74,7 @@ const History: React.FC<HistoryProps> = ({ lang }) => {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleToggleAudio();
+                  handleToggleAudio(index);
                 }}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg backdrop-blur-md transition-all active:scale-95 cursor-pointer ${
                   isCurrentPlaying

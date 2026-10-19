@@ -60,7 +60,7 @@ const CityGuide: React.FC<CityGuideProps> = ({ lang }) => {
     if (currentNarration?.id === audioId && isPlaying) {
       stopNarration();
     } else {
-      const audioSrc = lang === 'bs' ? 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/CityGuideBA.mp3' : 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/CityGuideEN.mp3';
+      const audioSrc = lang === 'bs' ? '/audio/CityGuideBA.mp3' : '/audio/CityGuideEN.mp3';
       const title = lang === 'bs' ? 'Tuzla Gradski Vodič' : 'Tuzla City Guide';
       playNarration({
         id: audioId,
