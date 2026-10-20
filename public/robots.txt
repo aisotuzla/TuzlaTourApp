@@ -1,11 +1,11 @@
 # ==============================================================================
 # Robots.txt for Tuzla Tour Guide Platform
-# The Official Virtual Tour Guide, GPS Navigation, AR Quest & Web3 Rewards Companion
+# The Official Virtual Tour Guide, Multilingual platform with AR Quest, GPS Navigation-3D Maps, Digital Tour Info & Web3 Rewards Companion
 # Official URLs:
 #   - Primary: https://tuzlatour.vercel.app
 #   - PWA Mirror: https://tuzlatourguide.netlify.app
-#   - Partner Portal: https://masterminds.ba/tuzla-tour-guide/
-# ==============================================================================
+#   - Partner: https://aiso-tuzla.lovable.app
+#========================================================================================================
 
 User-agent: *
 Allow: /
