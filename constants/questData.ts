@@ -25,17 +25,17 @@ export interface RoutePoiPreset {
 }
 
 export const QUEST_TARGETS: QuestTarget[] = [
-  { id: 'trg_slobode', name: { en: 'Freedom Square', bs: 'Trg slobode' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRTrgSlobode.png', Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp', audio: '/audio/FreedomSquare.mp3' },
-  { id: 'salt_square', name: { en: 'Salt Square', bs: 'Solni trg' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRsonitrg.png', Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp' },
-  { id: 'palancinkara', name: { en: 'Pancake Bagi', bs: 'Palančikara Bagi' }, Html5Qrcode: '/assets/Gallery/Food/QuestQRLocations/QRpalacinkara.webp', Image: '/assets/Gallery/Food/bagi.webp' },
-  { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRBanja.png', Image: '/assets/Gallery/Photos/tuzla24.webp', audio: '/audio/SaltPark.mp3' },
-  { id: 'kapija', name: { en: 'Kapija', bs: 'Kapija' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRkapija.png', Image: '/assets/Gallery/QuestQRLocations/kapija.webp', audio: '/audio/Kapija.mp3' },
-  { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRslapovi.png', Image: '/assets/Gallery/QuestQRLocations/tzslapovi.webp', audio: "/audio/slapovi.mp3" },
-  { id: 'atelje_ismet', name: { en: 'Atelje Ismet Mujezinovic', bs: 'Atelje Ismet Mujezinović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRAtelje.png', Image: '/assets/Gallery/QuestQRLocations/atelje.webp', audio: '/audio/Atelier.mp3' },
-  { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRBingoCityCenter.png', Image: '/assets/icons/Bingo-supermarket.webp', audio: '/audio/bingocitycentar.mp3', website: 'https://tuzla.bingocitycenter.ba/' },
-  { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRMesaStatue.png', Image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/MesaSelimovic.mp4', panorama: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/mesa360.webp', panoramaHaov: 270 },
-  { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRtvrtko.png', Image: '/assets/Photos/tuzla12.webp', audio: '/audio/tvrtkoPark.mp3' },
-  { id: 'panonika', name: { en: 'Pannonian Lakes', bs: 'Panonska jezera' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QRpanonika.png', Image: '/assets/Gallery/QuestQRLocations/panonsko jezero.png', audio: '/audio/Panonica.mp3' },
+  { id: 'trg_slobode', name: { en: 'Freedom Square', bs: 'Trg slobode' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRTrgSlobode.png', Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp', audio: '/audio/FreedomSquare.mp3' },
+  { id: 'salt_square', name: { en: 'Salt Square', bs: 'Solni trg' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRsonitrg.png', Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp' },
+  { id: 'palancinkara', name: { en: 'Pancake Bagi', bs: 'Palančikara Bagi' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpalacinkara.webp', Image: '/assets/Gallery/Food/bagi.webp' },
+  { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRBanja.png', Image: '/assets/Gallery/Photos/tuzla24.webp', audio: '/audio/SaltPark.mp3' },
+  { id: 'kapija', name: { en: 'Kapija', bs: 'Kapija' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRkapija.png', Image: '/assets/Gallery/QuestQRLocations/kapija.webp', audio: '/audio/Kapija.mp3' },
+  { id: 'slapovi', name: { en: 'Waterfalls', bs: 'Slapovi' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRslapovi.png', Image: '/assets/Gallery/QuestQRLocations/tzslapovi.webp', audio: "/audio/slapovi.mp3" },
+  { id: 'atelje_ismet', name: { en: 'Atelje Ismet Mujezinovic', bs: 'Atelje Ismet Mujezinović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRAtelje.png', Image: '/assets/Gallery/QuestQRLocations/atelje.webp', audio: '/audio/Atelier.mp3' },
+  { id: 'bingo_city_centar', name: { en: 'Bingo City Center', bs: 'Bingo City Centar' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRBingoCityCenter.png', Image: '/assets/icons/Bingo-supermarket.webp', audio: '/audio/bingocitycentar.mp3', website: 'https://tuzla.bingocitycenter.ba/' },
+  { id: 'mesa_selimovic', name: { en: 'Mesa Selimovic', bs: 'Meša Selimović' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRMesaStatue.png', Image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp', video: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/MesaSelimovic.mp4', panorama: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/mesa360.webp', panoramaHaov: 270 },
+  { id: 'tvrtko_park', name: { en: 'King Tvrtko Park', bs: 'Park Kralja Tvrtka I' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRtvrtko.png', Image: '/assets/Gallery/QuestQRLocations/ParkKraljaTvrtka.webp', audio: '/audio/tvrtkoPark.mp3' },
+  { id: 'panonika', name: { en: 'Pannonian Lakes', bs: 'Panonska jezera' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpanonika.png', Image: '/assets/Gallery/QuestQRLocations/panonsko jezero.png', audio: '/audio/Panonica.mp3' },
 ];
 
 export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [

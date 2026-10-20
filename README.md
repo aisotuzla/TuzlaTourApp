@@ -102,7 +102,7 @@ Potraga vodi korisnika kroz 4 faze otkrivanja grada. Validacija lokacije vrši s
 #### 7. 🍽️ Ugostiteljstvo, Smještaj i Tranzit (`Food.tsx`, `Accommodation.tsx`, `PracticalTravelInfo.tsx`)
 
 - **Provjereni smještaj:** Hoteli (Hotel Mellain, Hotel Salis, Golden Star) i apartmani s direktnim kontaktima, cijenama i navigacijom.
-- **Tuzlanska gastronomija:** Tradicionalni tuzlanski ćevapi u polivenom somunu, pite ispod sača, Palačinkara Bagi, Tuzlansko pivo.
+- **Tuzlanska gastronomija:** Tradicionalni tuzlanski ćevapi u polivenoj lepini, pite ispod sača uz Tuzlansko pivo.
 - **Vodič za aerodrom (TZL):** Tačan red vožnje autobuske linije 34, licencirani taksi servisi i avionske linije za evropske gradove.
 
 ### FINAL - JEDINA APPLIKACIJA KOJA ĆE VAM TREBATI ###

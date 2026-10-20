@@ -832,55 +832,69 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[7000] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-6"
+            className="fixed inset-0 z-[7000] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-0 sm:p-6"
           >
-            <div className="w-full max-w-2xl bg-black border border-white/15 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col">
-              <div className="p-4 sm:p-5 flex items-center justify-between border-b border-white/10 bg-white/5">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
-                    <Play className="w-4 h-4 fill-amber-400" />
+            {(() => {
+              const isVertical = playingQuestVideo.url.includes('MesaSelimovic');
+              return (
+                <div className={`w-full bg-black border-0 sm:border border-white/15 overflow-hidden shadow-2xl flex flex-col h-full sm:h-auto ${
+                  isVertical
+                    ? 'sm:max-w-[420px] sm:max-h-[92vh] rounded-none sm:rounded-[2.5rem]'
+                    : 'sm:max-w-2xl rounded-none sm:rounded-[2.5rem]'
+                }`}>
+                  <div className="p-3.5 sm:p-4 flex items-center justify-between border-b border-white/10 bg-white/5 shrink-0">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
+                        <Play className="w-4 h-4 fill-amber-400" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider block">
+                          {lang === 'bs' ? 'Cinematic Video' : 'Cinematic Video'}
+                        </span>
+                        <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-tight truncate max-w-[200px] sm:max-w-xs">
+                          {playingQuestVideo.title}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setPlayingQuestVideo(null)}
+                      className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+                      aria-label="Close"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
                   </div>
-                  <div>
-                    <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider block">
-                      {lang === 'bs' ? 'Cinematic Video' : 'Cinematic Video'}
+
+                  <div className={`relative w-full bg-black flex items-center justify-center overflow-hidden ${
+                    isVertical
+                      ? 'flex-1 sm:flex-none sm:aspect-[9/16] sm:max-h-[75vh]'
+                      : 'flex-1 sm:flex-none aspect-video sm:max-h-[60vh]'
+                  }`}>
+                    <video
+                      src={playingQuestVideo.url}
+                      autoPlay
+                      controls
+                      playsInline
+                      preload="auto"
+                      className={`w-full h-full ${isVertical ? 'object-cover sm:object-contain' : 'object-contain'}`}
+                    />
+                  </div>
+
+                  <div className="p-3.5 sm:p-4 border-t border-white/10 bg-white/5 flex items-center justify-between shrink-0">
+                    <span className="text-[11px] sm:text-xs font-bold text-slate-400 truncate max-w-[170px] sm:max-w-none">
+                      {lang === 'bs' ? 'Tuzla Tour Video Vodič' : 'Tuzla Tour Video Guide'}
                     </span>
-                    <h3 className="text-base font-black text-white uppercase tracking-tight">
-                      {playingQuestVideo.title}
-                    </h3>
+                    <button
+                      onClick={() => setPlayingQuestVideo(null)}
+                      className="px-5 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
+                    >
+                      {lang === 'bs' ? 'Zatvori' : 'Close'}
+                    </button>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => setPlayingQuestVideo(null)}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="relative w-full aspect-video sm:max-h-[60vh] bg-black flex items-center justify-center">
-                <video
-                  src={playingQuestVideo.url}
-                  autoPlay
-                  controls
-                  playsInline
-                  preload="auto"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-
-              <div className="p-4 border-t border-white/10 bg-white/5 flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400">
-                  {lang === 'bs' ? 'Tuzla Tour Audio-Vizuelni Vodič' : 'Tuzla Tour Audio-Visual Guide'}
-                </span>
-                <button
-                  onClick={() => setPlayingQuestVideo(null)}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
-                >
-                  {lang === 'bs' ? 'Zatvori Video' : 'Close Video'}
-                </button>
-              </div>
-            </div>
+              );
+            })()}
           </motion.div>
         )}
       </AnimatePresence>
