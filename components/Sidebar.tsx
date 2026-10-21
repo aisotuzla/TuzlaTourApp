@@ -13,7 +13,8 @@ import {
   Bed,
   X,
   History as HistoryIcon,
-  Heart
+  Heart,
+  Bus
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -141,6 +142,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
       inactiveClass: 'bg-gradient-to-r from-blue-300 via-indigo-300 to-sky-300 text-slate-950 hover:from-blue-400 hover:to-indigo-400 font-bold',
       inactiveIconClass: 'text-blue-950',
       inactiveBorderClass: 'border-blue-500/80',
+      activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black',
+      activeGlow: 'shadow-[0_8px_25px_rgba(245,158,11,0.6)]',
+      activeBorder: 'border-yellow-300'
+    },
+    {
+      id: AppTab.TASK_MANAGER,
+      icon: Bus,
+      label: { en: 'Bus Lines', bs: 'Autobuske Linije', de: 'Buslinien', tr: 'Otob\u00fcs Hatlar\u0131' },
+      inactiveClass: 'bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-500 text-white hover:from-blue-500 hover:to-indigo-500 font-bold',
+      inactiveIconClass: 'text-white',
+      inactiveBorderClass: 'border-blue-600/80',
       activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black',
       activeGlow: 'shadow-[0_8px_25px_rgba(245,158,11,0.6)]',
       activeBorder: 'border-yellow-300'
