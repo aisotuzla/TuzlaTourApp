@@ -33,7 +33,6 @@ const WalletShell = React.lazy(() => import('./components/Wallet'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
-const BusTab = React.lazy(() => import('./components/BusTab'));
 const getTabFromPath = (path: string): AppTab => {
   switch (path) {
     case '/': return AppTab.LANDING;
@@ -46,7 +45,6 @@ const getTabFromPath = (path: string): AppTab => {
     case '/food': return AppTab.FOOD;
     case '/accommodation': return AppTab.ACCOMMODATION;
     case '/ar': return AppTab.AR;
-    case '/bus': return AppTab.TASK_MANAGER;
     default: return AppTab.LANDING;
   }
 };
@@ -63,7 +61,6 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.FOOD: return '/food';
     case AppTab.ACCOMMODATION: return '/accommodation';
     case AppTab.AR: return '/ar';
-    case AppTab.TASK_MANAGER: return '/bus';
     default: return '/';
   }
 };
@@ -262,7 +259,7 @@ const AppContent: React.FC = () => {
                       }}
                     />
                   } />
-                  <Route path="/bus" element={<BusTab lang={lang} />} />
+
                 </Routes>
               </Suspense>
             </ErrorBoundary>

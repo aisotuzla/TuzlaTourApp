@@ -12,6 +12,7 @@ import {
   Receipt,
   Trash2,
   TrendingUp,
+  Bus,
 } from 'lucide-react';
 import { Language } from '../types';
 import { Preferences } from '@capacitor/preferences';
@@ -19,8 +20,9 @@ import { EventCalendarView } from './EventCalendarView';
 import { MediaAudioGuideTab } from './MediaAudioGuideTab';
 import { ThreeDayPlanView } from './ThreeDayPlanView';
 import { PracticalTravelInfo } from './PracticalTravelInfo';
+import { TransportTab } from './TransportTab';
 
-type Mode = 'notebook' | 'calendar' | 'threeDayPlan' | 'practicalInfo' | 'media';
+type Mode = 'notebook' | 'transport' | 'calendar' | 'threeDayPlan' | 'practicalInfo' | 'media';
 type NotebookSubTab = 'all' | 'itinerary' | 'expenses';
 
 type ExpenseItem = {
@@ -438,6 +440,17 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               {t.notebook}
             </button>
             <button
+              onClick={() => setView('transport')}
+              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+                view === 'transport'
+                  ? 'bg-white text-blue-900 shadow-lg'
+                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+              }`}
+            >
+              <Bus className="h-4 w-4 sm:h-5 sm:w-5" />
+              {lang === 'bs' ? 'Transport' : lang === 'de' ? 'Transport' : lang === 'tr' ? 'Ulaşım' : 'Transport'}
+            </button>
+            <button
               onClick={() => setView('calendar')}
               className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
                 view === 'calendar'
@@ -492,6 +505,10 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         {!isLoaded ? (
           <div className="flex justify-center items-center py-20 min-h-[300px]">
             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : view === 'transport' ? (
+          <div className="p-4 sm:p-8 w-full">
+            <TransportTab lang={lang} />
           </div>
         ) : view === 'calendar' ? (
           <div className="p-4 sm:p-8">

@@ -62,9 +62,9 @@ export class AdaptiveLowPassFilter {
     return 0.1;                     // Far: very heavy smoothing
   }
 
-  update(lat: number, lng: number, distance: number) {
+  update(lat: number, lng: number, distance: number): { lat: number; lng: number } {
     const alpha = this.getAlpha(distance);
-    if (this.smoothedLat === null) {
+    if (this.smoothedLat === null || this.smoothedLng === null) {
       this.smoothedLat = lat;
       this.smoothedLng = lng;
     } else {
