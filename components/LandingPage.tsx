@@ -614,7 +614,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 onClick={() => openGallery(previewImages, idx)}
                 className="relative aspect-square rounded-2xl overflow-hidden border-2 border-blue-400/60 shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:scale-[1.02] transition-all duration-500 active:scale-95 group"
               >
-                <img src={src} alt="Tuzla Photo" className="h-full w-full object-cover" loading="lazy" />
+                <img src={src} alt={`Tuzla Photo ${idx + 1}`} className="h-full w-full object-cover" loading="lazy" />
                 <div className="absolute inset-0 bg-blue-600/0 hover:bg-blue-600/10 transition-colors" />
               </button>
             ))}
@@ -656,11 +656,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
           <div className="flex flex-col items-center gap-8">
             <div className="flex justify-center flex-wrap gap-4 sm:gap-6">
-              <a href="https://x.com/AISO_tuzla" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#1DA1F2] hover:bg-[#1DA1F2]/10 transition-colors relative group">
+              <a href="https://x.com/AISO_tuzla" aria-label="Follow us on X (Twitter)" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#1DA1F2] hover:bg-[#1DA1F2]/10 transition-colors relative group">
                 <img src="/assets/x.svg" alt="X" className="w-6 h-6" />
                 <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Twitter (X)</span>
               </a>
-              <a href="https://bsky.app/profile/aisotuzla.bsky.social" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#0285FF] hover:bg-[#0285FF]/10 transition-colors relative group">
+              <a href="https://bsky.app/profile/aisotuzla.bsky.social" aria-label="Follow us on Bluesky" className="p-4 rounded-full bg-slate-100 text-slate-400 hover:text-[#0285FF] hover:bg-[#0285FF]/10 transition-colors relative group">
                 <img src="/assets/bluesky.svg" alt="Bluesky" className="w-6 h-6" />
                 <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] uppercase font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Bluesky</span>
               </a>

@@ -1,5 +1,5 @@
 # ==============================================================================
-# Robots.txt for Tuzla Tour Guide Platform
+# Robots.txt for Tuzla Tour Guide
 # The Official Virtual Tour Guide, Multilingual platform with AR Quest, GPS Navigation-3D Maps, Digital Tour Info & Web3 Rewards Companion
 # Official URLs:
 #   - Primary: https://tuzlatour.vercel.app

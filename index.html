@@ -17,7 +17,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
   <meta name="theme-color" content="#1e3a8a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Tuzla Tour Guide Platform</title>
+  <title>Tuzla Tour Guide</title>
   <meta name="description"
     content="Explore Tuzla, Bosnia and Herzegovina: Europe's only urban saltwater lakes (Panonika), direct airport bus line 34 schedules, verified hotels, dining, and curated 3-day itineraries.">
   <meta name="google-site-verification" content="j3go2LZ4eDRiiSw3g2hPPSBk7x9s4H-2qllyxlvXwIk">
@@ -231,8 +231,22 @@
           </p>
 
           <p>
-            Curated by local Tuzla tourism experts. Verified March 2026.
+            Curated by local Tuzla tourism experts.
+            Verified <time id="seo-verified-date"></time>.
           </p>
+          <script>
+            (function() {
+              var d = new Date();
+              var months = ['January','February','March','April','May','June',
+                            'July','August','September','October','November','December'];
+              var el = document.getElementById('seo-verified-date');
+              if (el) {
+                var text = months[d.getMonth()] + ' ' + d.getFullYear();
+                el.textContent = text;
+                el.setAttribute('datetime', d.toISOString().slice(0, 7));
+              }
+            })();
+          </script>
         </article>
       </main>
     </div>

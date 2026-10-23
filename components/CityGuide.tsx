@@ -111,7 +111,7 @@ const CityGuide: React.FC<CityGuideProps> = ({ lang }) => {
                   className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent pointer-events-none" />
 
                 {/* Interactive Action Controls - Bottom Bar */}
                 <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2 pointer-events-auto">
