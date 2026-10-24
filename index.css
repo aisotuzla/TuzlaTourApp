@@ -61,12 +61,12 @@ body {
 .history-card-3d {
     background: rgb(83, 31, 1);
     box-shadow:
-        0 1px 1px rgba(0, 0, 0, 0.11),
-        0 2px 2px rgba(0, 0, 0, 0.11),
-        0 4px 4px rgba(0, 0, 0, 0.11),
-        0 8px 8px rgba(0, 0, 0, 0.11),
-        0 16px 16px rgba(0, 0, 0, 0.11),
-        0 32px 32px rgba(0, 0, 0, 0.11);
+        0 1px 1px rgba(0, 0, 0, 0.044),
+        0 2px 2px rgba(0, 0, 0, 0.044),
+        0 4px 4px rgba(0, 0, 0, 0.044),
+        0 8px 8px rgba(0, 0, 0, 0.044),
+        0 16px 16px rgba(0, 0, 0, 0.044),
+        0 32px 32px rgba(0, 0, 0, 0.044);
     transform: perspective(1000px) rotateX(1deg);
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -74,12 +74,12 @@ body {
 .history-card-3d:hover {
     transform: perspective(1000px) rotateX(0deg) translateY(-10px) scale(1.02);
     box-shadow:
-        0 2px 2px rgba(0, 0, 0, 0.15),
-        0 4px 4px rgba(0, 0, 0, 0.15),
-        0 8px 8px rgba(0, 0, 0, 0.15),
-        0 16px 16px rgba(0, 0, 0, 0.15),
-        0 32px 32px rgba(0, 0, 0, 0.15),
-        0 64px 64px rgba(0, 0, 0, 0.15);
+        0 2px 2px rgba(0, 0, 0, 0.06),
+        0 4px 4px rgba(0, 0, 0, 0.06),
+        0 8px 8px rgba(0, 0, 0, 0.06),
+        0 16px 16px rgba(0, 0, 0, 0.06),
+        0 32px 32px rgba(0, 0, 0, 0.06),
+        0 64px 64px rgba(0, 0, 0, 0.06);
 }
 
 /* Custom Scrollbar */

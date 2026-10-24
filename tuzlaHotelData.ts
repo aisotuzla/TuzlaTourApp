@@ -147,24 +147,6 @@ export const tuzlaHotelData: HotelData[] = [
     amenities: ['WiFi', 'Restaurant', 'Bar', 'AC', 'City Center'],
   },
   {
-    name: 'Hotel Royal',
-    description: {
-      en: 'Elegant motel located near the main bus station, offering a high-quality restaurant and comfortable stay.',
-      bs: 'Elegantni motel smješten u blizini glavne autobuske stanice, nudi vrhunski restoran i udoban boravak.',
-      de: 'Elegantes Motel in der Nähe des Busbahnhofs mit einem erstklassigen Restaurant und komfortablem Aufenthalt.',
-    },
-    rating: 8.2,
-    user_ratings_total: 156,
-    address: 'Bosne Srebrene 105/A, 75000 Tuzla',
-    phone: '+387 35 277 111',
-    latitude: 44.5332,
-    longitude: 18.6572,
-    website: 'https://www.royalmotel.ba/',
-    image: '/assets/Gallery/Accommodation/royal.webp',
-    priceRange: '70–130 KM',
-    amenities: ['WiFi', 'Restaurant', 'Parking', 'AC'],
-  },
-  {
     name: 'Hotel Minero',
     description: {
       en: 'Quiet hotel with restaurant and free parking, ideal for business travelers and families.',

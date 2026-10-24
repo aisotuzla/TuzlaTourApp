@@ -48,7 +48,7 @@ const History: React.FC<HistoryProps> = ({ lang }) => {
         return (
           <div
             key={index}
-            className={`relative w-full rounded-3xl overflow-hidden shadow-2xl border transition-all duration-300 bg-slate-100 group cursor-pointer history-card-3d ${
+            className={`relative w-full rounded-3xl overflow-hidden shadow-md border transition-all duration-300 bg-slate-100 group cursor-pointer history-card-3d ${
               isCurrentPlaying
                 ? 'border-amber-400 ring-4 ring-amber-300/30 shadow-[0_0_25px_rgba(251,191,36,0.4)]'
                 : 'border-blue-400/60 shadow-[0_0_12px_rgba(59,130,246,0.35)]'
@@ -66,7 +66,7 @@ const History: React.FC<HistoryProps> = ({ lang }) => {
               loading="lazy"
             />
             {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-black/[0.16] via-transparent to-transparent pointer-events-none" />
 
             {/* Sound Button in bottom left corner */}
             <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2">
