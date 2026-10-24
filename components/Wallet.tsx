@@ -24,7 +24,10 @@ import {
     CircleCheck,
     ChevronDown,
     ChevronUp,
-    Gift
+    Gift,
+    Sparkles,
+    RefreshCw,
+    Loader2
 } from 'lucide-react';
 
 // Legacy trail data remains only for backwards-compatible saved data; it is not rendered.
@@ -122,9 +125,9 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { ConnectionProvider, WalletProvider, useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { clusterApiUrl, LAMPORTS_PER_SOL, Transaction, TransactionInstruction, PublicKey, SystemProgram } from '@solana/web3.js';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
-import { QUEST_TARGETS, QUEST_TARGET_COORDS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, isPoiRewardUnlocked } from '../constants/questData';
+import { QUEST_TARGETS, QUEST_TARGET_COORDS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, isPoiRewardUnlocked, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
 import { Preferences } from '@capacitor/preferences';
 
@@ -189,8 +192,16 @@ const WalletContent: React.FC<{
         : '0.00';
 
     // Solana hooks
-    const { publicKey, connected: solConnected, disconnect } = useWallet();
+    const { publicKey, connected: solConnected, disconnect, sendTransaction } = useWallet();
     const { connection } = useConnection();
+
+    // Solana Devnet NFT Reward Testing State
+    const [claimedTxSig, setClaimedTxSig] = useState<string | null>(null);
+    const [isMinting, setIsMinting] = useState(false);
+    const [mintError, setMintError] = useState<string | null>(null);
+    const [isAirdropping, setIsAirdropping] = useState(false);
+    const [airdropMessage, setAirdropMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [dzekoImgSrc, setDzekoImgSrc] = useState<string>(SOLANA_DEVNET_NFT_REWARD.ipfsUrl);
 
     // Load Scan History Ledger on init
     useEffect(() => {
@@ -234,6 +245,104 @@ const WalletContent: React.FC<{
         navigator.clipboard.writeText(publicKey.toBase58());
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
+    };
+
+    // Load saved NFT reward claim state
+    useEffect(() => {
+        const loadClaimedNft = async () => {
+            const { value } = await Preferences.get({ key: 'tuzla_dzeko_nft_claimed' });
+            if (value) {
+                setClaimedTxSig(value);
+            }
+        };
+        loadClaimedNft();
+    }, []);
+
+    // Airdrop 1 SOL on Devnet for testing gas fees
+    const handleRequestAirdrop = async () => {
+        if (!publicKey || !connection) return;
+        setIsAirdropping(true);
+        setAirdropMessage(null);
+        try {
+            const sig = await connection.requestAirdrop(publicKey, 1 * LAMPORTS_PER_SOL);
+            await connection.confirmTransaction(sig, 'confirmed');
+            setAirdropMessage({ type: 'success', text: '1 SOL Devnet Airdrop confirmed! 🚀' });
+            const lamports = await connection.getBalance(publicKey);
+            setSolBalance(lamports / LAMPORTS_PER_SOL);
+        } catch (err: any) {
+            console.warn('Devnet airdrop failed:', err);
+            setAirdropMessage({
+                type: 'error',
+                text: 'Faucet rate-limited. If needed, request SOL at faucet.solana.com'
+            });
+        } finally {
+            setIsAirdropping(false);
+        }
+    };
+
+    // Mint / Claim Devnet NFT Reward
+    const handleClaimDevnetNft = async () => {
+        if (!publicKey || !connection || !sendTransaction) {
+            setMintError('Please connect your Solflare or Solana wallet first.');
+            return;
+        }
+        setIsMinting(true);
+        setMintError(null);
+        try {
+            if (network !== 'devnet') {
+                setNetwork('devnet');
+            }
+
+            // Solana Memo Program ID: MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr
+            const memoProgramId = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
+            const memoText = `TuzlaTour NFT Mint: Edin Dzeko #11 | IPFS: ${SOLANA_DEVNET_NFT_REWARD.ipfsUrl}`;
+
+            const tx = new Transaction();
+            // Self transfer 0 lamports to ensure wallet compatibility
+            tx.add(
+                SystemProgram.transfer({
+                    fromPubkey: publicKey,
+                    toPubkey: publicKey,
+                    lamports: 0,
+                })
+            );
+            // Append memo instruction with metadata link
+            tx.add(
+                new TransactionInstruction({
+                    keys: [{ pubkey: publicKey, isSigner: true, isWritable: true }],
+                    programId: memoProgramId,
+                    data: Buffer.from(memoText, 'utf-8'),
+                })
+            );
+
+            const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+            tx.recentBlockhash = blockhash;
+            tx.feePayer = publicKey;
+
+            const sig = await sendTransaction(tx, connection);
+            await connection.confirmTransaction({
+                signature: sig,
+                blockhash,
+                lastValidBlockHeight,
+            }, 'confirmed');
+
+            setClaimedTxSig(sig);
+            await Preferences.set({ key: 'tuzla_dzeko_nft_claimed', value: sig });
+
+            try {
+                const confetti = (await import('canvas-confetti')).default;
+                confetti({
+                    particleCount: 100,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            } catch (_) { }
+        } catch (err: any) {
+            console.error('Error minting NFT reward on Solana Devnet:', err);
+            setMintError(err?.message || 'Transaction rejected or failed. Ensure your wallet is connected to Devnet with SOL.');
+        } finally {
+            setIsMinting(false);
+        }
     };
 
     const shortAddress = (addr: string) => `${addr.slice(0, 4)}...${addr.slice(-4)}`;
@@ -447,6 +556,201 @@ const WalletContent: React.FC<{
                                 ) : (
                                     <div className="w-full h-full [&>.wallet-adapter-button]:w-full [&>.wallet-adapter-button]:h-full [&>.wallet-adapter-button]:justify-center [&>.wallet-adapter-button]:bg-gradient-to-r [&>.wallet-adapter-button]:from-purple-600 [&>.wallet-adapter-button]:to-indigo-600 [&>.wallet-adapter-button]:rounded-x4 [&>.wallet-adapter-button]:text-xs [&>.wallet-adapter-button]:font-black [&>.wallet-adapter-button]:uppercase [&>.wallet-adapter-button]:tracking-widest [&>.wallet-adapter-button]:shadow-lg [&>.wallet-adapter-button]:shadow-purple-500/20 hover:[&>.wallet-adapter-button]:scale-[0.98] [&>.wallet-adapter-button]:transition-all">
                                         <WalletMultiButton />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* ── Solana Devnet NFT Collectible & Reward Card ── */}
+                        <div id="nft-rewards" className="p-5 sm:p-7 bg-gradient-to-b from-slate-900 via-purple-950 to-slate-950 border-2 border-purple-500/60 rounded-[2.2rem] shadow-[0_0_35px_rgba(168,85,247,0.35)] text-white relative overflow-hidden flex flex-col gap-6">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+
+                            {/* Header */}
+                            <div className="flex justify-between items-start gap-3 relative z-10">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-purple-500/20 border border-purple-400/40 shadow-inner shrink-0 text-2xl">
+                                        ⚽
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-purple-500/30 text-purple-300 border border-purple-400/30">
+                                                Solana Devnet NFT
+                                            </span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                                                Genesis #11
+                                            </span>
+                                        </div>
+                                        <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-tight mt-1 flex items-center gap-1.5">
+                                            {SOLANA_DEVNET_NFT_REWARD.name}
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Player Card Showcase */}
+                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center bg-slate-950/70 border border-purple-400/30 rounded-3xl p-4 sm:p-5 relative z-10 backdrop-blur-sm">
+                                {/* Left: Card Visual */}
+                                <div className="sm:col-span-5 flex flex-col items-center">
+                                    <div className="relative group w-full max-w-[200px] aspect-[3/4] rounded-2xl overflow-hidden border-2 border-purple-400 shadow-2xl shadow-purple-900/50 transition-transform duration-500 hover:scale-105 bg-slate-900 flex items-center justify-center">
+                                        <img
+                                            src={dzekoImgSrc}
+                                            alt={SOLANA_DEVNET_NFT_REWARD.name}
+                                            onError={() => {
+                                                if (dzekoImgSrc !== SOLANA_DEVNET_NFT_REWARD.fallbackIpfsUrl) {
+                                                    setDzekoImgSrc(SOLANA_DEVNET_NFT_REWARD.fallbackIpfsUrl);
+                                                }
+                                            }}
+                                            className="w-full h-full object-contain"
+                                            loading="lazy"
+                                        />
+                                        {/* Holographic gloss overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 via-transparent to-amber-300/20 pointer-events-none" />
+                                        <div className="absolute bottom-2 inset-x-2 py-1 px-2 bg-slate-950/80 backdrop-blur-md rounded-lg text-center border border-white/10">
+                                            <p className="text-[10px] font-black text-amber-300 tracking-wider uppercase">
+                                                Edin Džeko #11
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <a
+                                        href={SOLANA_DEVNET_NFT_REWARD.ipfsUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-2.5 inline-flex items-center gap-1.5 text-[10px] font-bold text-purple-300 hover:text-white transition-colors"
+                                    >
+                                        <ExternalLink size={12} />
+                                        <span>IPFS Gateway Source</span>
+                                    </a>
+                                </div>
+
+                                {/* Right: Metadata & Stats */}
+                                <div className="sm:col-span-7 flex flex-col gap-3">
+                                    <div>
+                                        <h4 className="text-sm font-black text-purple-200 uppercase tracking-tight">
+                                            {SOLANA_DEVNET_NFT_REWARD.title}
+                                        </h4>
+                                        <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                                            {SOLANA_DEVNET_NFT_REWARD.description[lang] || SOLANA_DEVNET_NFT_REWARD.description.en}
+                                        </p>
+                                    </div>
+
+                                    {/* Attributes Matrix */}
+                                    <div className="grid grid-cols-2 gap-2 text-[10px] font-medium pt-2 border-t border-purple-500/20">
+                                        <div className="bg-purple-900/40 rounded-xl p-2 border border-purple-400/20">
+                                            <span className="text-purple-300 text-[9px] uppercase block font-bold">Pozicija / Role</span>
+                                            <span className="text-white font-black">{SOLANA_DEVNET_NFT_REWARD.position}</span>
+                                        </div>
+                                        <div className="bg-purple-900/40 rounded-xl p-2 border border-purple-400/20">
+                                            <span className="text-purple-300 text-[9px] uppercase block font-bold">Rarity</span>
+                                            <span className="text-amber-300 font-black">{SOLANA_DEVNET_NFT_REWARD.rarity}</span>
+                                        </div>
+                                        <div className="bg-purple-900/40 rounded-xl p-2 border border-purple-400/20">
+                                            <span className="text-purple-300 text-[9px] uppercase block font-bold">Network</span>
+                                            <span className="text-emerald-400 font-black">Solana Devnet</span>
+                                        </div>
+                                        <div className="bg-purple-900/40 rounded-xl p-2 border border-purple-400/20">
+                                            <span className="text-purple-300 text-[9px] uppercase block font-bold">Standard</span>
+                                            <span className="text-white font-black">Memo & IPFS CID</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Minting / Claim Action State */}
+                            <div className="space-y-3 relative z-10">
+                                {claimedTxSig ? (
+                                    <div className="bg-emerald-950/70 border border-emerald-400/40 rounded-2xl p-4 space-y-3">
+                                        <div className="flex items-center gap-2 text-emerald-400">
+                                            <CheckCircle2 size={18} />
+                                            <span className="text-xs font-black uppercase tracking-wider">
+                                                NFT Nagrada Uspješno Zabilježena na Solana Devnetu!
+                                            </span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-300 font-mono break-all bg-slate-950/80 p-2.5 rounded-xl border border-emerald-500/20">
+                                            TX: {claimedTxSig}
+                                        </p>
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            <a
+                                                href={`https://explorer.solana.com/tx/${claimedTxSig}?cluster=devnet`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex-1 py-2.5 px-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-lg"
+                                            >
+                                                <ExternalLink size={14} />
+                                                Pregledaj na Solana Exploreru ↗
+                                            </a>
+                                            <button
+                                                onClick={handleClaimDevnetNft}
+                                                disabled={isMinting}
+                                                className="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 active:scale-95"
+                                                title="Ponovo testiraj minting na Devnetu"
+                                            >
+                                                <RefreshCw size={14} className={isMinting ? 'animate-spin' : ''} />
+                                                <span>Ponovi Test</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {/* Mint error feedback */}
+                                        {mintError && (
+                                            <div className="p-3 bg-rose-950/80 border border-rose-500/40 rounded-xl text-rose-300 text-xs flex items-center gap-2">
+                                                <AlertCircle size={16} className="shrink-0" />
+                                                <span className="break-words">{mintError}</span>
+                                            </div>
+                                        )}
+
+                                        {/* Airdrop feedback */}
+                                        {airdropMessage && (
+                                            <div className={`p-3 rounded-xl text-xs flex items-center gap-2 border ${airdropMessage.type === 'success' ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-300' : 'bg-amber-950/80 border-amber-500/40 text-amber-300'}`}>
+                                                {airdropMessage.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+                                                <span>{airdropMessage.text}</span>
+                                            </div>
+                                        )}
+
+                                        {solConnected && publicKey ? (
+                                            <div className="space-y-2">
+                                                {/* Devnet SOL notice & Airdrop button if balance is low */}
+                                                {(solBalance === null || solBalance < 0.005) && (
+                                                    <div className="flex items-center justify-between p-3 bg-amber-500/10 border border-amber-400/30 rounded-xl text-amber-200 text-xs">
+                                                        <span>Za testnu transakciju potreban je besplatan Devnet SOL.</span>
+                                                        <button
+                                                            onClick={handleRequestAirdrop}
+                                                            disabled={isAirdropping}
+                                                            className="px-3 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[10px] uppercase tracking-wider rounded-lg transition-all active:scale-95 flex items-center gap-1 shrink-0 ml-2"
+                                                        >
+                                                            {isAirdropping ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                                            <span>{isAirdropping ? 'Šaljem...' : 'Preuzmi 1 Devnet SOL 🪂'}</span>
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                {/* Main Mint Action Button */}
+                                                <button
+                                                    onClick={handleClaimDevnetNft}
+                                                    disabled={isMinting}
+                                                    className="w-full py-4 bg-gradient-to-r from-purple-500 via-indigo-500 to-pink-500 hover:from-purple-400 hover:via-indigo-400 hover:to-pink-400 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-purple-900/40 transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                                                >
+                                                    {isMinting ? (
+                                                        <>
+                                                            <Loader2 size={16} className="animate-spin" />
+                                                            <span>Čekam potvrdu u Solflare novčaniku...</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Sparkles size={16} />
+                                                            <span>{lang === 'bs' ? 'Preuzmi NFT na Solana Devnetu ⚽' : 'Claim & Mint NFT on Solana Devnet ⚽'}</span>
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="p-3 bg-slate-950/60 border border-white/10 rounded-xl text-center">
+                                                <p className="text-xs text-purple-300 font-bold mb-1">
+                                                    Povežite Solflare novčanik iznad kako biste testirali preuzimanje ove NFT nagrade na Solana Devnetu.
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

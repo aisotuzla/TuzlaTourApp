@@ -3,7 +3,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Lock, Play, X, Trophy } from 'lucide-react';
 import { Language } from '../types';
-import { QUEST_TARGETS, NFT_REWARD_IDS } from '../constants/questData';
+import { QUEST_TARGETS, NFT_REWARD_IDS, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
 import { Preferences } from '@capacitor/preferences';
 
@@ -202,8 +202,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
   const unlockedItems = QUEST_TARGETS.filter((item) => unlockedRewards.includes(item.id));
   const lockedItems = QUEST_TARGETS.filter((item) => !unlockedRewards.includes(item.id));
-  const NFT_IPFS =
-    'https://bafybeibd5ee6pjvkhn3kuitcclb5zjqdwo23yvprfwsaabcctylesvspsi.ipfs.dweb.link?filename=kenan-alajbegovic.webp';
+  const NFT_IPFS = SOLANA_DEVNET_NFT_REWARD.ipfsUrl;
 
   return (
     <>
@@ -325,15 +324,20 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                           {isNFTItem && (
                             <button
                               onClick={() => {
-                                window.open(NFT_IPFS, '_blank', 'noopener,noreferrer');
+                                if ((window as any).mintNFTReward) {
+                                  (window as any).mintNFTReward(NFT_IPFS);
+                                  onClose();
+                                } else {
+                                  window.open(NFT_IPFS, '_blank', 'noopener,noreferrer');
+                                }
                               }}
-                              className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm text-white flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"
+                              className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm text-white flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer"
                               style={{
                                 background: 'linear-gradient(135deg, #7c3aed, #a855f7, #ec4899)',
                                 boxShadow: '0 8px 25px rgba(168,85,247,0.5)',
                               }}
                             >
-                              🎖️ {lang === 'bs' ? 'Mint NFT Nagradu → Solflare' : 'Mint NFT Reward → Solflare'}
+                              🎖️ {lang === 'bs' ? 'Preuzmi NFT: Edin Džeko #11 → Solflare' : 'Mint NFT: Edin Džeko #11 → Solflare'}
                             </button>
                           )}
                         </div>

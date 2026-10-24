@@ -75,7 +75,7 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
               <img
                 src={rewardUrl}
                 alt="NFT Reward"
-                className="w-full h-40 object-cover rounded-xl border border-amber-400/30 shadow-md"
+                className="w-full h-56 object-contain rounded-xl border border-amber-400/30 shadow-md bg-slate-950/60"
               />
             </div>
           )}

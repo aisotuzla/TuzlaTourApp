@@ -14,7 +14,7 @@ import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
 import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
-import { QUEST_TARGETS, POI_COLORS, ROUTE_POI_PRESETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
+import { QUEST_TARGETS, POI_COLORS, ROUTE_POI_PRESETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData.ts';
 import { NavigationHud } from './NavigationHud.tsx';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import ARGuide from './ARGuide.tsx';
@@ -99,7 +99,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
   useEffect(() => {
     if (activeVictoryModal === 'phase2') {
-      setShowCelebration({ phase: 2, rewardUrl: 'https://black-known-amphibian-995.mypinata.cloud/ipfs/bafybeiagaakoykbdpfi2u6qvm7uaijzirgrvat5xvuowwn63ceq5mvjmru/components/players/kenan-alajbegovic.webp' });
+      setShowCelebration({ phase: 2, rewardUrl: SOLANA_DEVNET_NFT_REWARD.ipfsUrl });
     } else if (activeVictoryModal === 'phase3') {
       setShowCelebration({ phase: 3 });
     } else {
@@ -575,9 +575,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
               <h3 className="text-2xl font-black text-white">Osvojili ste NFT Karticu!</h3>
               <div className="w-full bg-slate-950/80 border border-purple-400/40 rounded-2xl p-4 flex flex-col items-center space-y-2 relative overflow-hidden shadow-inner">
                 <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-purple-600/80 text-[8px] font-black text-white uppercase">Solana Devnet</div>
-                <img src="/assets/Gallery/Photos/tuzla12.webp" alt="Bosnia Football Squad NFT" className="w-24 h-24 rounded-xl object-cover border-2 border-purple-400 shadow-md" />
-                <h4 className="font-extrabold text-sm text-purple-200">Bosnia Football Squad Collectible</h4>
-                <p className="text-[10px] text-purple-300 font-mono">Sent to Solflare Wallet (Solana Devnet)</p>
+                <img src={SOLANA_DEVNET_NFT_REWARD.ipfsUrl} alt="Edin Džeko NFT Card" className="w-28 h-36 rounded-xl object-contain border-2 border-purple-400 shadow-lg bg-black/40" />
+                <h4 className="font-extrabold text-sm text-purple-200">Edin Džeko #11 — Dijamant Collectible</h4>
+                <p className="text-[10px] text-purple-300 font-mono">Dostupno za preuzimanje u Solflare Novčaniku (Solana Devnet)</p>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed font-medium">Čestitamo! Otključali ste Park Kralja Tvrtka, Palančikara Bagi i Solni Trg.</p>
               <button onClick={() => handleCloseVictoryModal('phase2')} className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95">Preuzmi & Nastavi na Fazu 3 🚀</button>

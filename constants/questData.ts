@@ -115,6 +115,25 @@ export function getCurrentQuestPhase(unlockedRewards: string[]): number {
 
 export const NFT_REWARD_IDS: string[] = ["panonika"];
 
+export const SOLANA_DEVNET_NFT_REWARD = {
+  id: 'dzeko-bih-01',
+  name: 'Edin Džeko — Dijamant Kapiten #11',
+  title: 'Bosnia Football Squad Devnet NFT',
+  description: {
+    en: 'Official digital collectible card of Bosnian football legend Edin Džeko. Awarded to quests and explorers completing Phase 2 on Solana Devnet.',
+    bs: 'Zvanična digitalna kolekcionarska NFT kartica bosanske fudbalske legende Edina Džeke. Nagrada za istraživače Faze 2 na Solana Devnet mreži.',
+    de: 'Offizielle digitale Sammelkarte der bosnischen Fußballlegende Edin Džeko. Belohnung für Entdecker der Phase 2 im Solana Devnet.',
+    tr: 'Bosna futbol efsanesi Edin Džeko için resmi dijital koleksiyon kartı. Solana Devnet Faz 2 ödülü.',
+  } as Record<Language, string>,
+  ipfsUrl: 'https://black-known-amphibian-995.mypinata.cloud/ipfs/bafkreicuysgvhuk6g4rvohkrk4wtctysutifek5xcdluuluiuc2c7z47qe?filename=Pi_dzeko.webp',
+  fallbackIpfsUrl: 'https://dweb.link/ipfs/bafkreicuysgvhuk6g4rvohkrk4wtctysutifek5xcdluuluiuc2c7z47qe?filename=Pi_dzeko.webp',
+  player: 'Edin Džeko',
+  number: '11',
+  position: 'Kapiten / Napadač (Striker)',
+  rarity: 'Legendary Genesis',
+  network: 'devnet' as const,
+};
+
 export const QUEST_GAME_RULES: Record<Language, { title: string; text: string }> = {
   bs: {
     title: 'Pravila igre potrage',

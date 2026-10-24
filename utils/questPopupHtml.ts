@@ -1,11 +1,11 @@
 // src/utils/questPopupHtml.ts
 import { Language } from '../types';
-import { POI_COLORS, NFT_REWARD_IDS } from '../constants/questData';
+import { POI_COLORS, NFT_REWARD_IDS, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData';
 
 export const generateQuestPopupHtml = (loc: any, lang: Language, isUnlocked: boolean, isQuest: boolean) => {
     const markerColor = POI_COLORS[loc.id as keyof typeof POI_COLORS] || '#cbd5e1';
     const previewImg = loc.image;
-    const NFT_IPFS = 'https://bafybeibd5ee6pjvkhn3kuitcclb5zjqdwo23yvprfwsaabcctylesvspsi.ipfs.dweb.link?filename=kenan-alajbegovic.webp';
+    const NFT_IPFS = SOLANA_DEVNET_NFT_REWARD.ipfsUrl;
     const isNFTReward = NFT_REWARD_IDS.includes(loc.id);
 
     return `

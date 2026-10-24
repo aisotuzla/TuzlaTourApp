@@ -142,10 +142,16 @@ const AppContent: React.FC = () => {
         audioSrc
       });
     };
+
+    (window as any).mintNFTReward = () => {
+      navigate('/wallet');
+    };
+
     return () => {
       delete (window as any).playPoiAudio;
+      delete (window as any).mintNFTReward;
     };
-  }, [lang, currentNarration, isPlaying, playNarration, pauseNarration]);
+  }, [lang, currentNarration, isPlaying, playNarration, pauseNarration, navigate]);
 
   return (
     <ImageProvider>
