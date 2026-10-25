@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { Language, Location } from '../types';
 import { LOCATIONS, TRANSLATIONS } from '../constants';
 import {
-  Camera, Info, X, MapPin, Compass, Navigation, ChevronLeft, ChevronRight, Target, CheckCircle2, Sparkles,
+  Camera, Info, X, MapPin, Compass, Navigation, ChevronLeft, ChevronRight, Target, CheckCircle2, Sparkles, Footprints,
 } from 'lucide-react';
 import {
   getARProjection, ARStage, DeviceOrientation, WGS84Location, smoothHeading, smoothAngle,
@@ -17,6 +17,8 @@ import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { useGeoapifyRoute } from '../hooks/useGeoapifyRoute';
 import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher';
 import { ARPolylineCanvas } from './ARPolylineCanvas';
+import { ARBreadcrumbCanvas } from './ARBreadcrumbCanvas';
+import { RoutePoint } from '../hooks/useBreadcrumbsTrail';
 import { QrScannerModal } from './QrScannerModal';
 
 interface ARGuideProps {
@@ -26,6 +28,7 @@ interface ARGuideProps {
   initialTarget?: Location | null;
   unlockedRewards?: string[];
   onRewardFound?: (id: string) => void;
+  initialTrailActive?: boolean;
 }
 
 export interface ARGuidePOI {
@@ -129,7 +132,9 @@ const ARMarker: React.FC<{
   domRef: React.RefObject<HTMLDivElement | null>;
   distRef: React.RefObject<HTMLSpanElement | null>;
   currentDistState: React.MutableRefObject<number>;
-}> = ({ poi, lang, isFocusedTarget, isDarkened, isUnlocked, onSelect, domRef, distRef, currentDistState }) => {
+  isTrailActive?: boolean;
+  onToggleTrail?: (poi: ARGuidePOI) => void;
+}> = ({ poi, lang, isFocusedTarget, isDarkened, isUnlocked, onSelect, domRef, distRef, currentDistState, isTrailActive, onToggleTrail }) => {
   const customColor = poi.color || '#3b82f6';
   const name = poi.name[lang] || poi.name.en;
 
@@ -194,6 +199,26 @@ const ARMarker: React.FC<{
           <span ref={distRef} className={`text-[11px] font-extrabold ${isDarkened ? 'text-slate-400' : 'text-amber-300'}`}>
             ...
           </span>
+          {isFocusedTarget && onToggleTrail && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleTrail(poi);
+              }}
+              title={isTrailActive ? (lang === 'bs' ? 'Isključi AR stazu' : 'Turn off AR trail') : (lang === 'bs' ? 'Aktiviraj AR stazu' : 'Activate AR trail')}
+              className="ml-1 px-1.5 py-0.5 rounded-full flex items-center gap-1 text-[9px] font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95 shadow-md border"
+              style={{
+                backgroundColor: isTrailActive ? customColor : 'rgba(15, 23, 42, 0.85)',
+                borderColor: customColor,
+                color: isTrailActive ? '#020617' : '#ffffff',
+                boxShadow: isTrailActive ? `0 0 10px ${customColor}` : undefined,
+              }}
+            >
+              <Footprints className="w-2.5 h-2.5" style={{ color: isTrailActive ? '#020617' : customColor }} />
+              <span>{isTrailActive ? '✓ Staza' : 'Staza'}</span>
+            </button>
+          )}
         </div>
       </button>
     </div>
@@ -207,6 +232,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
   initialTarget = null,
   unlockedRewards = [],
   onRewardFound,
+  initialTrailActive = true,
 }) => {
   const { policy } = useQuestRuntimePolicy(features);
   const t = AR_LOCALIZATION[lang] || AR_LOCALIZATION.en;
@@ -223,9 +249,11 @@ export const ARGuide: React.FC<ARGuideProps> = ({
   const [isForeground, setIsForeground] = useState(true);
 
   const [targetPoi, setTargetPoi] = useState<Location | null>(initialTarget);
+  const [isTrailActive, setIsTrailActive] = useState<boolean>(initialTrailActive);
   const [selectedLocation, setSelectedLocation] = useState<{ loc: Location; dist: number } | null>(null);
   const [localUnlockedRewards, setLocalUnlockedRewards] = useState<string[]>(unlockedRewards);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const gpsTrackRef = useRef<RoutePoint[]>([]);
 
   // Sync unlockedRewards from prop updates
   useEffect(() => {
@@ -313,6 +341,18 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       },
     });
 
+  // Target POI's phase color for the breadcrumb trail and polyline path
+  const currentTargetColor = useMemo(() => {
+    if (!targetPoi) return '#f59e0b';
+    return (targetPoi as any).color || POI_COLORS[targetPoi.id] || '#f59e0b';
+  }, [targetPoi]);
+
+  // Transformed Geoapify polyline for breadcrumbs trail
+  const breadcrumbRoute: RoutePoint[] = useMemo(() => {
+    if (!fullPolyline || fullPolyline.length === 0) return [];
+    return fullPolyline.map((p) => ({ lat: p[0], lng: p[1] }));
+  }, [fullPolyline]);
+
   useEffect(() => {
     const handleVisibility = () => setIsForeground(document.visibilityState === 'visible');
     document.addEventListener('visibilitychange', handleVisibility);
@@ -392,6 +432,12 @@ export const ARGuide: React.FC<ARGuideProps> = ({
 
     userLocationRef.current = newLoc;
     setUserLocationState(newLoc);
+
+    const pt: RoutePoint = { lat: newLoc.lat, lng: newLoc.lng };
+    const track = gpsTrackRef.current;
+    if (track.length === 0 || track[track.length - 1].lat !== pt.lat || track[track.length - 1].lng !== pt.lng) {
+      gpsTrackRef.current = [...track.slice(-15), pt];
+    }
   }, [rawGeoPosition, targetPoi]);
 
   // Tilt-Compensated 3-Axis Sensor Fusion for rock-solid compass heading
@@ -654,7 +700,35 @@ export const ARGuide: React.FC<ARGuideProps> = ({
             userLocation={userLocationState}
             orientation={orientationState}
             maxHorizonMeters={40}
+            color={currentTargetColor}
             isActive={viewMode === 'AR' && isForeground}
+          />
+        )}
+
+        {/* 2D AR GAMIFIED BREADCRUMB TRAIL OVERLAY (FLOWING CHEVRONS TOWARD TARGET POI) */}
+        {permissionGranted && isTrailActive && targetPoi && (
+          <ARBreadcrumbCanvas
+            target={{
+              id: targetPoi.id,
+              name: targetPoi.name[lang] || targetPoi.name.en || targetPoi.name.bs,
+              lat: targetPoi.coordinates[0],
+              lng: targetPoi.coordinates[1],
+              color: currentTargetColor,
+            }}
+            route={breadcrumbRoute}
+            heading={{
+              compassHeading: orientationState.alpha,
+              gpsTrack: gpsTrackRef.current.length > 0
+                ? gpsTrackRef.current
+                : userLocationState
+                ? [{ lat: userLocationState.lat, lng: userLocationState.lng }]
+                : [],
+            }}
+            orientation={orientationState}
+            isActive={viewMode === 'AR' && isForeground && isTrailActive}
+            onTargetLocked={() => {
+              if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
+            }}
           />
         )}
 
@@ -685,6 +759,15 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                   isFocusedTarget={isFocused}
                   isDarkened={isDarkened}
                   isUnlocked={isUnlocked}
+                  isTrailActive={isTrailActive && isFocused}
+                  onToggleTrail={(selectedPoi) => {
+                    if (targetPoi?.id === selectedPoi.id) {
+                      setIsTrailActive((prev) => !prev);
+                    } else {
+                      handleStartQuestTarget(selectedPoi);
+                      setIsTrailActive(true);
+                    }
+                  }}
                   onSelect={(selectedPoi, dist) => {
                     const matchedLoc =
                       LOCATIONS.find((l) => l.id === selectedPoi.id) || ({ ...selectedPoi } as unknown as Location);
@@ -854,6 +937,23 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                   {t.totalRemaining}
                 </p>
               </div>
+
+              {/* Small button to activate/toggle trail feature next to target POI using its color */}
+              <button
+                onClick={() => setIsTrailActive((prev) => !prev)}
+                title={isTrailActive ? (lang === 'bs' ? 'Isključi AR stazu' : 'Disable AR Trail') : (lang === 'bs' ? 'Aktiviraj AR stazu sa strelicama' : 'Activate AR Breadcrumb Trail')}
+                className="px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md active:scale-95 border shrink-0"
+                style={{
+                  backgroundColor: isTrailActive ? currentTargetColor : 'rgba(15, 23, 42, 0.85)',
+                  borderColor: currentTargetColor,
+                  color: isTrailActive ? '#090d16' : '#ffffff',
+                  boxShadow: isTrailActive ? `0 0 16px ${currentTargetColor}bb` : `0 0 6px ${currentTargetColor}44`,
+                }}
+              >
+                <Footprints className="w-3.5 h-3.5" style={{ color: isTrailActive ? '#090d16' : currentTargetColor }} />
+                <span className="font-extrabold">{isTrailActive ? (lang === 'bs' ? 'Staza Uključena' : 'Trail On') : (lang === 'bs' ? 'AR Staza' : 'AR Trail')}</span>
+              </button>
+
               <button
                 onClick={handleClearQuestTarget}
                 title={t.endNavigation}
@@ -885,13 +985,28 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-2 pt-1">
+              <div className="grid grid-cols-3 gap-2 pt-1">
                 <button
                   onClick={() => handleStartQuestTarget(selectedLocation.loc)}
                   className="py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-wider"
                 >
                   <Target className="w-3.5 h-3.5" />
                   {t.startGuide}
+                </button>
+                <button
+                  onClick={() => {
+                    handleStartQuestTarget(selectedLocation.loc);
+                    setIsTrailActive(true);
+                  }}
+                  className="py-2 text-slate-950 font-black rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-wider border"
+                  style={{
+                    backgroundColor: POI_COLORS[selectedLocation.loc.id] || '#f59e0b',
+                    borderColor: POI_COLORS[selectedLocation.loc.id] || '#f59e0b',
+                    boxShadow: `0 0 12px ${(POI_COLORS[selectedLocation.loc.id] || '#f59e0b')}88`,
+                  }}
+                >
+                  <Footprints className="w-3.5 h-3.5 text-slate-950" />
+                  {lang === 'bs' ? 'AR Staza' : 'AR Trail'}
                 </button>
                 <button
                   onClick={() => onNavigate?.(selectedLocation.loc)}

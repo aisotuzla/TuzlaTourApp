@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { globalPMTilesProtocol, ensureTuzlaOfflineMapDownloaded } from '../utils/pmtilesProtocol.ts';
@@ -90,6 +90,24 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const isGrandFinaleDone = isPhase3Done && GRAND_FINALE_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
   const currentPhase = !isPhase1Done ? 1 : !isPhase2Done ? 2 : !isPhase3Done ? 3 : 4;
 
+  const currentNavTargetColor = useMemo(() => {
+    if (!selectedNavTarget) return '#10b981';
+    const target = QUEST_TARGETS.find(
+      (q) =>
+        q.id === selectedNavTarget.name ||
+        q.name.bs === selectedNavTarget.name ||
+        q.name.en === selectedNavTarget.name
+    );
+    const matchedLoc = LOCATIONS.find(
+      (l) =>
+        l.id === selectedNavTarget.name ||
+        l.name.bs === selectedNavTarget.name ||
+        l.name.en === selectedNavTarget.name
+    );
+    const targetId = target?.id || matchedLoc?.id || '';
+    return POI_COLORS[targetId] || '#10b981';
+  }, [selectedNavTarget]);
+
   useEffect(() => {
     if (isGrandFinaleDone && !dismissedModals.includes('finale')) setActiveVictoryModal('finale');
     else if (isPhase3Done && !dismissedModals.includes('phase3')) setActiveVictoryModal('phase3');
@@ -154,6 +172,14 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         (popups[i] as HTMLElement).remove();
       }
       handleStartNavigation(name, lat, lon);
+    };
+    (window as any).startArTrailFromPopup = (poiId: string, name: string, lat: number, lon: number) => {
+      const popups = document.getElementsByClassName('maplibregl-popup');
+      for (let i = 0; i < popups.length; i++) {
+        (popups[i] as HTMLElement).remove();
+      }
+      handleStartNavigation(name, lat, lon);
+      setShowARGuide(true);
     };
     (window as any).playQuestVideo = (videoUrl: string, title?: string) => {
       setPlayingQuestVideo({ url: videoUrl, title: title || (lang === 'bs' ? 'Cinematic Video' : 'Cinematic Video') });
@@ -329,7 +355,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         ? `<button onclick="window.playPoiAudio && window.playPoiAudio('${target.id}', '${title.replace(/'/g, "\\'")}', '${(target as any).audio}')" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 10px; color: white; padding: 7px 11px; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;" title="${lang === 'bs' ? 'Audio Vodič' : 'Audio Guide'}">🎧 Audio</button>`
         : '';
 
-      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 230px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);"><div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;"><img src="${imageUrl}" alt="${title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 5px; flex-wrap: wrap;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; min-width: 78px; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 4px; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66; display: flex; align-items: center; justify-content: center; gap: 3px;">${lang === 'bs' ? '🧭 Navigacija' : '🧭 Navigate'}</button>${audioBtnHtml}${videoBtnHtml}${panoramaBtnHtml}</div></div>`;
+      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 230px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);"><div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;"><img src="${imageUrl}" alt="${title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 5px; flex-wrap: wrap;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; min-width: 78px; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 4px; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66; display: flex; align-items: center; justify-content: center; gap: 3px;">${lang === 'bs' ? '🧭 Navigacija' : '🧭 Navigate'}</button><button onclick="window.startArTrailFromPopup('${target.id}', '${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="background: ${customPoiColor}25; border: 1.5px solid ${customPoiColor}; border-radius: 10px; color: ${customPoiColor}; padding: 7px 8px; font-weight: 900; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}44; display: flex; align-items: center; justify-content: center; gap: 3px;" title="${lang === 'bs' ? 'AR Staza' : 'AR Trail'}">👣 AR</button>${audioBtnHtml}${videoBtnHtml}${panoramaBtnHtml}</div></div>`;
       const popup = new maplibregl.Popup({ offset: 25, closeButton: false, maxWidth: '240px' }).setHTML(popupHtml);
       marker.setPopup(popup);
       markersRef.current[target.id] = marker;
@@ -545,6 +571,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
               initialTarget={selectedNavTarget ? LOCATIONS.find(location => location.name.bs === selectedNavTarget.name || location.name.en === selectedNavTarget.name || location.id === selectedNavTarget.name) : null}
               unlockedRewards={unlockedRewards}
               onRewardFound={onRewardFound}
+              initialTrailActive={true}
               onNavigate={(poi) => {
                 setShowARGuide(false);
                 handleStartNavigation(poi.name[lang] || poi.name.bs, poi.coordinates[0], poi.coordinates[1]);
@@ -811,7 +838,18 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         )}
       </AnimatePresence>
 
-      <NavigationHud isNavigating={isNavigating} selectedNavTarget={selectedNavTarget} lang={lang} routeDistance={routeDistance} routeTime={routeTime} isRouteLoading={isRouteLoading} onEndNavigation={handleEndNavigation} />
+      <NavigationHud
+        isNavigating={isNavigating}
+        selectedNavTarget={selectedNavTarget}
+        lang={lang}
+        routeDistance={routeDistance}
+        routeTime={routeTime}
+        isRouteLoading={isRouteLoading}
+        onEndNavigation={handleEndNavigation}
+        targetColor={currentNavTargetColor}
+        isArTrailActive={showARGuide}
+        onActivateArTrail={() => setShowARGuide(true)}
+      />
       <QrScannerModal
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}

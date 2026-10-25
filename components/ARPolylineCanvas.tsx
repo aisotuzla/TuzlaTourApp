@@ -8,6 +8,7 @@ export interface ARPolylineCanvasProps {
   maxHorizonMeters?: number; // Horizon clipping distance (default 40m)
   isActive?: boolean; // If false (viewMode !== 'AR'), loop is stopped completely to save CPU/battery
   className?: string;
+  color?: string; // Optional custom color from target POI phase color
 }
 
 export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
@@ -17,6 +18,7 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
   maxHorizonMeters = 40,
   isActive = true,
   className = 'absolute inset-0 pointer-events-none z-10 w-full h-full',
+  color,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -137,12 +139,14 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
           // Quadratic opacity falloff within 40m horizon
           const normDist = avgDistance / maxHorizonMeters;
           const opacity = Math.max(0.35, 1.0 - 0.55 * (normDist * normDist));
+          const glowColor = color || '#00F0FF';
 
           // Ambient Glow Layer
           ctx.save();
           ctx.lineWidth = thickness + 4;
-          ctx.strokeStyle = `rgba(0, 240, 255, ${opacity * 0.4})`;
-          ctx.shadowColor = '#00F0FF';
+          ctx.strokeStyle = color ? `${color}` : `rgba(0, 240, 255, ${opacity * 0.4})`;
+          ctx.globalAlpha = color ? opacity * 0.5 : 1;
+          ctx.shadowColor = glowColor;
           ctx.shadowBlur = 18;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
@@ -153,8 +157,14 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
           ctx.save();
           ctx.lineWidth = thickness;
           const gradient = ctx.createLinearGradient(p1.pxX, p1.pxY, p2.pxX, p2.pxY);
-          gradient.addColorStop(0, `rgba(0, 240, 255, ${opacity})`);
-          gradient.addColorStop(1, `rgba(59, 130, 246, ${opacity})`);
+          if (color) {
+            gradient.addColorStop(0, color);
+            gradient.addColorStop(1, `${color}bb`);
+            ctx.globalAlpha = opacity;
+          } else {
+            gradient.addColorStop(0, `rgba(0, 240, 255, ${opacity})`);
+            gradient.addColorStop(1, `rgba(59, 130, 246, ${opacity})`);
+          }
           ctx.strokeStyle = gradient;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
@@ -180,7 +190,8 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
 
           ctx.save();
           ctx.lineWidth = Math.max(2, thickness * 0.6);
-          ctx.strokeStyle = `rgba(147, 197, 253, ${distantOpacity})`;
+          ctx.strokeStyle = color ? `${color}` : `rgba(147, 197, 253, ${distantOpacity})`;
+          ctx.globalAlpha = color ? distantOpacity : 1;
           ctx.setLineDash([8, 8]);
           ctx.lineDashOffset = dashOffsetRef.current;
           ctx.lineCap = 'round';

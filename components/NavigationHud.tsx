@@ -11,6 +11,9 @@ interface NavigationHudProps {
   routeTime: number | null;
   isRouteLoading: boolean;
   onEndNavigation: () => void;
+  targetColor?: string;
+  onActivateArTrail?: () => void;
+  isArTrailActive?: boolean;
 }
 
 export const NavigationHud: React.FC<NavigationHudProps> = ({
@@ -21,6 +24,9 @@ export const NavigationHud: React.FC<NavigationHudProps> = ({
   routeTime,
   isRouteLoading,
   onEndNavigation,
+  targetColor = '#10b981',
+  onActivateArTrail,
+  isArTrailActive = false,
 }) => {
   return (
     <AnimatePresence>
@@ -38,23 +44,51 @@ export const NavigationHud: React.FC<NavigationHudProps> = ({
             className="w-full max-w-[380px] pointer-events-auto cursor-grab active:cursor-grabbing bg-slate-950 border border-emerald-500/30 rounded-2xl p-4 shadow-2xl flex flex-col gap-3"
           >
             {/* Header Info */}
-            <div className="flex items-start justify-between">
-              <div className="flex gap-2.5">
-                <div className="p-2.5 bg-emerald-600/20 text-emerald-400 rounded-xl flex items-center justify-center border border-emerald-500/20">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex gap-2.5 items-center flex-1 min-w-0">
+                <div
+                  className="p-2.5 rounded-xl flex items-center justify-center border shrink-0"
+                  style={{
+                    backgroundColor: `${targetColor}25`,
+                    borderColor: `${targetColor}40`,
+                    color: targetColor,
+                  }}
+                >
                   <Route size={20} className="animate-pulse" />
                 </div>
-                <div>
-                  <span className="text-[9px] uppercase font-black tracking-widest text-emerald-400">
+                <div className="flex-1 min-w-0">
+                  <span
+                    className="text-[9px] uppercase font-black tracking-widest block truncate"
+                    style={{ color: targetColor }}
+                  >
                     {lang === 'bs' ? 'U Toku je Pješačka Ruta' : 'Walking Route in Progress'}
                   </span>
-                  <h4 className="text-sm font-black text-white line-clamp-1 mt-0.5">
-                    {selectedNavTarget.name}
-                  </h4>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <h4 className="text-sm font-black text-white truncate max-w-[170px]">
+                      {selectedNavTarget.name}
+                    </h4>
+                    {onActivateArTrail && (
+                      <button
+                        onClick={onActivateArTrail}
+                        title={lang === 'bs' ? 'Aktiviraj AR Stazu' : 'Activate AR Trail'}
+                        className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1 transition-all border shadow-sm active:scale-95 shrink-0"
+                        style={{
+                          backgroundColor: isArTrailActive ? targetColor : 'rgba(255, 255, 255, 0.08)',
+                          borderColor: targetColor,
+                          color: isArTrailActive ? '#090d16' : targetColor,
+                          boxShadow: isArTrailActive ? `0 0 10px ${targetColor}88` : undefined,
+                        }}
+                      >
+                        <Footprints size={11} style={{ color: isArTrailActive ? '#090d16' : targetColor }} />
+                        <span>{isArTrailActive ? (lang === 'bs' ? 'AR Uključena' : 'AR Trail On') : (lang === 'bs' ? 'AR Staza' : 'AR Trail')}</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
               <button
                 onClick={onEndNavigation}
-                className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all"
+                className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all shrink-0"
               >
                 <X size={16} />
               </button>
