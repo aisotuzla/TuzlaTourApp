@@ -117,7 +117,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
   useEffect(() => {
     if (activeVictoryModal === 'phase2') {
-      setShowCelebration({ phase: 2, rewardUrl: SOLANA_DEVNET_NFT_REWARD.ipfsUrl });
+      setShowCelebration({ phase: 2, rewardUrl: SOLANA_DEVNET_NFT_REWARD.image || SOLANA_DEVNET_NFT_REWARD.ipfsUrl });
     } else if (activeVictoryModal === 'phase3') {
       setShowCelebration({ phase: 3 });
     } else {
@@ -602,7 +602,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
               <h3 className="text-2xl font-black text-white">Osvojili ste NFT Karticu!</h3>
               <div className="w-full bg-slate-950/80 border border-purple-400/40 rounded-2xl p-4 flex flex-col items-center space-y-2 relative overflow-hidden shadow-inner">
                 <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-purple-600/80 text-[8px] font-black text-white uppercase">Solana Devnet</div>
-                <img src={SOLANA_DEVNET_NFT_REWARD.ipfsUrl} alt="Edin Džeko NFT Card" className="w-28 h-36 rounded-xl object-contain border-2 border-purple-400 shadow-lg bg-black/40" />
+                <img src={SOLANA_DEVNET_NFT_REWARD.image || SOLANA_DEVNET_NFT_REWARD.ipfsUrl} alt="Edin Džeko NFT Card" className="w-28 h-36 rounded-xl object-contain border-2 border-purple-400 shadow-lg bg-black/40" />
                 <h4 className="font-extrabold text-sm text-purple-200">Edin Džeko #11 — Dijamant Collectible</h4>
                 <p className="text-[10px] text-purple-300 font-mono">Dostupno za preuzimanje u Solflare Novčaniku (Solana Devnet)</p>
               </div>

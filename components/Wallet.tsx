@@ -201,7 +201,7 @@ const WalletContent: React.FC<{
     const [mintError, setMintError] = useState<string | null>(null);
     const [isAirdropping, setIsAirdropping] = useState(false);
     const [airdropMessage, setAirdropMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-    const [dzekoImgSrc, setDzekoImgSrc] = useState<string>(SOLANA_DEVNET_NFT_REWARD.ipfsUrl);
+    const [dzekoImgSrc, setDzekoImgSrc] = useState<string>(SOLANA_DEVNET_NFT_REWARD.image || SOLANA_DEVNET_NFT_REWARD.ipfsUrl);
 
     // Load Scan History Ledger on init
     useEffect(() => {
@@ -597,8 +597,10 @@ const WalletContent: React.FC<{
                                             src={dzekoImgSrc}
                                             alt={SOLANA_DEVNET_NFT_REWARD.name}
                                             onError={() => {
-                                                if (dzekoImgSrc !== SOLANA_DEVNET_NFT_REWARD.fallbackIpfsUrl) {
-                                                    setDzekoImgSrc(SOLANA_DEVNET_NFT_REWARD.fallbackIpfsUrl);
+                                                if (dzekoImgSrc !== SOLANA_DEVNET_NFT_REWARD.fallbackIpfsUrl && dzekoImgSrc !== SOLANA_DEVNET_NFT_REWARD.ipfsUrl) {
+                                                    setDzekoImgSrc(SOLANA_DEVNET_NFT_REWARD.ipfsUrl);
+                                                } else if (dzekoImgSrc !== SOLANA_DEVNET_NFT_REWARD.image) {
+                                                    setDzekoImgSrc(SOLANA_DEVNET_NFT_REWARD.image);
                                                 }
                                             }}
                                             className="w-full h-full object-contain"
@@ -619,7 +621,7 @@ const WalletContent: React.FC<{
                                         className="mt-2.5 inline-flex items-center gap-1.5 text-[10px] font-bold text-purple-300 hover:text-white transition-colors"
                                     >
                                         <ExternalLink size={12} />
-                                        <span>IPFS Gateway Source</span>
+                                        <span>IPFS: {SOLANA_DEVNET_NFT_REWARD.ipfsCid.slice(0, 6)}...{SOLANA_DEVNET_NFT_REWARD.ipfsCid.slice(-6)}</span>
                                     </a>
                                 </div>
 
