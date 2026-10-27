@@ -592,7 +592,7 @@ const WalletContent: React.FC<{
                             <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center bg-slate-950/70 border border-purple-400/30 rounded-3xl p-4 sm:p-5 relative z-10 backdrop-blur-sm">
                                 {/* Left: Card Visual */}
                                 <div className="sm:col-span-5 flex flex-col items-center">
-                                    <div className="relative group w-full max-w-[200px] aspect-[3/4] rounded-2xl overflow-hidden border-2 border-purple-400 shadow-2xl shadow-purple-900/50 transition-transform duration-500 hover:scale-105 bg-slate-900 flex items-center justify-center">
+                                    <div className="relative group w-full max-w-[200px] aspect-[4/4] rounded-2xl overflow-hidden border-2 border-purple-400 shadow-2xl shadow-purple-900/50 transition-transform duration-500 hover:scale-105 bg-slate-900 flex items-center justify-center">
                                         <img
                                             src={dzekoImgSrc}
                                             alt={SOLANA_DEVNET_NFT_REWARD.name}
@@ -1369,11 +1369,10 @@ const WalletContent: React.FC<{
                         {(() => {
                             const isVertical = playingVideo.includes('Mesa');
                             return (
-                                <div className={`w-full bg-black border-0 sm:border border-white/15 overflow-hidden shadow-2xl flex flex-col h-full sm:h-auto ${
-                                    isVertical
-                                        ? 'sm:max-w-[420px] sm:max-h-[92vh] rounded-none sm:rounded-[2.5rem]'
-                                        : 'sm:max-w-2xl rounded-none sm:rounded-[2.5rem]'
-                                }`}>
+                                <div className={`w-full bg-black border-0 sm:border border-white/15 overflow-hidden shadow-2xl flex flex-col h-full sm:h-auto ${isVertical
+                                    ? 'sm:max-w-[420px] sm:max-h-[92vh] rounded-none sm:rounded-[2.5rem]'
+                                    : 'sm:max-w-2xl rounded-none sm:rounded-[2.5rem]'
+                                    }`}>
                                     <div className="p-3.5 sm:p-4 flex items-center justify-between border-b border-white/10 bg-white/5 shrink-0">
                                         <div className="flex items-center gap-2.5">
                                             <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
@@ -1401,11 +1400,10 @@ const WalletContent: React.FC<{
                                         </button>
                                     </div>
 
-                                    <div className={`relative w-full bg-black flex items-center justify-center overflow-hidden ${
-                                        isVertical
-                                            ? 'flex-1 sm:flex-none sm:aspect-[9/16] sm:max-h-[75vh]'
-                                            : 'flex-1 sm:flex-none aspect-video sm:max-h-[60vh]'
-                                    }`}>
+                                    <div className={`relative w-full bg-black flex items-center justify-center overflow-hidden ${isVertical
+                                        ? 'flex-1 sm:flex-none sm:aspect-[9/16] sm:max-h-[75vh]'
+                                        : 'flex-1 sm:flex-none aspect-video sm:max-h-[60vh]'
+                                        }`}>
                                         {playingVideoError ? (
                                             <div className="text-center p-6 space-y-2">
                                                 <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
