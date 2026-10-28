@@ -3,6 +3,7 @@ import { ZoomIn } from 'lucide-react';
 import type { FC } from 'react';
 
 import { AppTab, Language } from '../types';
+import { TRANSLATIONS } from '../constants';
 import {
   ArrowRight,
   Play,
@@ -18,7 +19,9 @@ import {
   Share2,
   ArrowDown,
   RotateCcw,
-  Loader2
+  Loader2,
+  MapPin,
+  Trophy
 } from 'lucide-react';
 import { useImage } from '../hooks/ImageContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -541,6 +544,68 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           </div>
         </section>
 
+        {/* 2.3 QUEST GAME BANNER - "Discover Tuzla - Quest" */}
+        {(() => {
+          const tr = (TRANSLATIONS as any)[lang] || (TRANSLATIONS as any).en;
+          return (
+            <section className="mt-8 mb-4">
+              <button
+                onClick={() => onNavigate?.(AppTab.MAP)}
+                className="group relative w-full rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden border-2 border-blue-400/60 shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] transition-all duration-500 hover:-translate-y-1 hover:border-blue-400 cursor-pointer text-left"
+                style={{ minHeight: '100px' }}
+              >
+                {/* Background gradient matching blue cards */}
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-950 via-slate-900 to-blue-900" />
+
+                {/* Animated / Ambient pattern overlay */}
+                <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
+                  backgroundImage: `radial-gradient(circle at 15% 50%, rgba(59,130,246,0.35) 0%, transparent 60%),
+                    radial-gradient(circle at 85% 50%, rgba(255,247,28,0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 50%, rgba(37,99,235,0.2) 0%, transparent 70%)`
+                }} />
+
+                {/* Floating QR code decorative elements */}
+                <div className="absolute top-2 right-6 opacity-10 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none">
+                  <QrCode className="w-16 h-16 text-blue-300" />
+                </div>
+                <div className="absolute bottom-2 left-6 opacity-10 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none">
+                  <MapPin className="w-10 h-10 text-blue-400" />
+                </div>
+
+                {/* Content */}
+                <div className="relative z-10 px-5 py-4 sm:px-8 sm:py-5 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+                  {/* Left: Tag + Title + Description */}
+                  <div className="flex-1 min-w-0 flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.0 py-0.4 rounded-full bg-blue-500/20 border border-blue-400/40 text-[8px] font-black uppercase tracking-[0.2em] text-blue-200 backdrop-blur-sm">
+                        {tr.questCardTag}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
+                      Discover Tuzla — <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF71C] to-[#D3B300]">Quest</span>
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-blue-100/80 leading-normal max-w-xl">
+                      {tr.questCardLine}
+                    </p>
+                  </div>
+
+                  {/* Right: Golden to Yellow Button (#D3B300 to #FFF71C) */}
+                  <div className="shrink-0 flex items-center pt-1 md:pt-0">
+                    <span className="px-4 py-2 rounded-full bg-gradient-to-r from-[#D3B300] to-[#FFF71C] text-slate-950 text-xs sm:text-sm font-black uppercase tracking-wider shadow-[0_0_15px_rgba(255,247,28,0.35)] group-hover:shadow-[0_0_25px_rgba(255,247,28,0.7)] group-hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2">
+                      <span>{tr.questCardCta}</span>
+                      <ArrowRight className="w-4 h-4 text-slate-950 group-hover:translate-x-1 transition-transform duration-300" />
+                    </span>
+                  </div>
+                </div>
+
+                {/* Bottom blue shimmer line matching other cards */}
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+              </button>
+            </section>
+          );
+        })()}
 
         {/* 2.5. Pannonica Special */}
         <div className="w-full mt-8 relative rounded-[2.5rem] overflow-hidden shadow-2xl border-2 border-blue-400/40 transition-all duration-300 group">

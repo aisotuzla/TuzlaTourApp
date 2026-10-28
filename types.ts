@@ -170,6 +170,9 @@ export interface TranslationSet {
   questNextTarget: string;
   questComplete: string;
   questAllPhasesUnlocked: string;
+  questCardTag: string;
+  questCardLine: string;
+  questCardCta: string;
 }
 
 export enum AppTab {

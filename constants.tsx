@@ -397,6 +397,9 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     questNextTarget: 'Next real-location target',
     questComplete: 'Quest complete',
     questAllPhasesUnlocked: 'All three phases are successfully unlocked.',
+    questCardTag: 'Discover Tuzla - Quest',
+    questCardLine: 'Visit the spots, scan QR codes across the town and win rewards.',
+    questCardCta: 'Start the Quest',
   },
   bs: {
     welcome: 'Dobrodošli u Tuzlu',
@@ -520,6 +523,9 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     questNextTarget: 'Sljedeća lokacija',
     questComplete: 'Potraga završena',
     questAllPhasesUnlocked: 'Sve tri faze su uspješno otključane.',
+    questCardTag: 'Otkrij Tuzlu - Potraga',
+    questCardLine: 'Posjeti lokacije, skeniraj QR kodove kroz grad i osvoji nagrade.',
+    questCardCta: 'Započni Potragu',
   },
   de: {
     welcome: 'Willkommen in Tuzla!',
@@ -643,6 +649,9 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     questNextTarget: 'Nächstes Ziel',
     questComplete: 'Quest abgeschlossen',
     questAllPhasesUnlocked: 'Alle drei Phasen wurden erfolgreich freigeschaltet.',
+    questCardTag: 'Entdecke Tuzla - Quest',
+    questCardLine: 'Besuche die Orte, scanne QR-Codes in der Stadt und gewinne Belohnungen.',
+    questCardCta: 'Quest starten',
   },
   tr: {
     welcome: 'Tuzla\'ya Hoşgeldiniz',
@@ -766,6 +775,9 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     questNextTarget: 'Sonraki hedef konum',
     questComplete: 'Görev tamamlandı',
     questAllPhasesUnlocked: 'Üç aşamanın tamamı başarıyla açıldı.',
+    questCardTag: 'Tuzla\'yı Keşfet - Görev',
+    questCardLine: 'Noktaları ziyaret et, şehirde QR kodları tara ve ödüller kazan.',
+    questCardCta: 'Göreve Başla',
   },
 };
 
