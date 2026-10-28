@@ -374,59 +374,97 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     setRouteDistance(null); setRouteTime(null);
   };
 
-  const calculateRoute = async (startLoc: [number, number], target: { name: string; lat: number; lon: number }) => {
-    if (!map.current || !isLoaded) return;
-    setIsRouteLoading(true);
+  const drawRouteOnMap = (geojsonData: any) => {
+    if (!map.current) return;
     try {
-      const ROUTE_MAP_KEY = (import.meta as any).env?.VITE_GEOAPIFY_ROUTING_API || '';
-      const apiKey = (import.meta as any).env?.VITE_GEOAPIFY_ROUTING_API || (import.meta as any).env?.VITE_GEOAPIFY_STATIC_API || ROUTE_MAP_KEY;
-      const startLng = startLoc[0];
-      const startLat = startLoc[1];
-      const url = `https://api.geoapify.com/v1/routing?waypoints=${startLat},${startLng}|${target.lat},${target.lon}&mode=walk&details=instruction_details,elevation&apiKey=${apiKey}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Routing API request failed');
-      const data = await res.json();
-      if (!data || !data.features || data.features.length === 0) throw new Error('No route found');
-      const routeFeature = data.features[0];
-      setRouteDistance(routeFeature.properties.distance);
-      setRouteTime(routeFeature.properties.time);
-      if (!map.current) return;
-      if (map.current.getSource('route-source')) {
-        (map.current.getSource('route-source') as maplibregl.GeoJSONSource).setData(data);
+      const source = map.current.getSource('route-source') as maplibregl.GeoJSONSource | undefined;
+      if (source) {
+        source.setData(geojsonData);
       } else {
-        map.current.addSource('route-source', { type: 'geojson', data: data });
+        map.current.addSource('route-source', { type: 'geojson', data: geojsonData });
+      }
+
+      if (!map.current.getLayer('route-layer-casing')) {
         map.current.addLayer({
           id: 'route-layer-casing',
           type: 'line',
           source: 'route-source',
           layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#581c87', 'line-width': 10, 'line-opacity': 0.7 }
+          paint: { 'line-color': '#581c87', 'line-width': 10, 'line-opacity': 0.75 }
         });
+      }
+
+      if (!map.current.getLayer('route-layer')) {
         map.current.addLayer({
           id: 'route-layer',
           type: 'line',
           source: 'route-source',
           layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#a855f7', 'line-width': 5, 'line-opacity': 0.95 }
+          paint: { 'line-color': '#a855f7', 'line-width': 6, 'line-opacity': 0.98 }
         });
       }
-      // Fly into user location to start navigation view
-      if (map.current) {
-        map.current.flyTo({
-          center: [startLng, startLat],
-          zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
-          pitch: 60,
-          bearing: -15,
-          duration: 2000
-        });
+    } catch (err) {
+      console.warn('Error drawing route on map:', err);
+    }
+  };
+
+  const calculateRoute = async (startLoc: [number, number], target: { name: string; lat: number; lon: number }) => {
+    if (!map.current || !isLoaded) return;
+    setIsRouteLoading(true);
+
+    const startLng = startLoc[0];
+    const startLat = startLoc[1];
+    const distMeters = getDistance(startLat, startLng, target.lat, target.lon);
+
+    // Guaranteed direct fallback route line so purple navigation line is NEVER missing
+    const fallbackGeoJson = {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: { distance: distMeters, time: distMeters / 1.4 },
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [startLng, startLat],
+            [target.lon, target.lat]
+          ]
+        }
+      }]
+    };
+
+    try {
+      // If distance is reasonable (< 80km), fetch actual pedestrian walking streets
+      if (distMeters < 80000) {
+        const ROUTE_MAP_KEY = (import.meta as any).env?.VITE_GEOAPIFY_ROUTING_API || '63e8b34f44974d71bc70aad63e5b56ba';
+        const apiKey = (import.meta as any).env?.VITE_GEOAPIFY_ROUTING_API || (import.meta as any).env?.VITE_GEOAPIFY_STATIC_API || ROUTE_MAP_KEY;
+        const url = `https://api.geoapify.com/v1/routing?waypoints=${startLat},${startLng}|${target.lat},${target.lon}&mode=walk&details=instruction_details,elevation&apiKey=${apiKey}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.features && data.features.length > 0) {
+            const routeFeature = data.features[0];
+            setRouteDistance(routeFeature.properties?.distance ?? distMeters);
+            setRouteTime(routeFeature.properties?.time ?? (distMeters / 1.4));
+            drawRouteOnMap(data);
+            if (map.current) {
+              map.current.flyTo({
+                center: [startLng, startLat],
+                zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+                pitch: 60,
+                bearing: -15,
+                duration: 2000
+              });
+            }
+            return;
+          }
+        }
       }
+      throw new Error('Fallback direct line required');
     } catch (error) {
-      console.warn('Geoapify route fallback triggered:', error);
-      const startLng = startLoc[0];
-      const startLat = startLoc[1];
-      const distMeters = getDistance(startLat, startLng, target.lat, target.lon);
+      console.warn('Geoapify route fallback triggered, drawing direct navigation purple line:', error);
       setRouteDistance(distMeters);
       setRouteTime(distMeters / 1.4);
+      drawRouteOnMap(fallbackGeoJson);
       if (map.current) {
         map.current.flyTo({
           center: [startLng, startLat],
@@ -436,14 +474,18 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
           duration: 2000
         });
       }
-    } finally { setIsRouteLoading(false); }
+    } finally {
+      setIsRouteLoading(false);
+    }
   };
 
   useEffect(() => {
     if (isNavigating && selectedNavTarget && isLoaded) {
       const start = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
       calculateRoute(start, selectedNavTarget);
-    } else { clearRoute(); }
+    } else {
+      clearRoute();
+    }
   }, [isNavigating, selectedNavTarget, isLoaded]);
 
   const { position: rawGeoPosition } = useGeolocationWatcher({

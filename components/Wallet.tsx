@@ -561,7 +561,99 @@ const WalletContent: React.FC<{
                             </div>
                         </div>
 
-                        {/* ── Solana Devnet NFT Collectible & Reward Card ── */}
+                        {/* QR Scanner Trigger Card */}
+                        <div className="p-5 sm:p-6 bg-white border border-blue-500 rounded-[2rem] shadow-[0_0_25px_rgba(59,130,246,0.35)] relative overflow-hidden flex flex-col gap-5">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+
+                            {/* Header */}
+                            <div className="flex justify-between items-start gap-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0">
+                                        <QrCode size={24} className="text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">{t.explorationTitle}</p>
+                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t.qrLocationScannerTitle}</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Content */}
+                            <div className="flex-1 bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center">
+                                <p className="text-xs text-slate-500 leading-relaxed">
+                                    {t.qrScannerDesc}
+                                </p>
+                            </div>
+
+                            {/* Standardized Action Button */}
+                            <button
+                                onClick={startScanner}
+                                className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                            >
+                                <QrCode size={16} />
+                                {t.startScanner}
+                            </button>
+                        </div>
+
+                        {/* Currency Converter */}
+                        <div className="p-5 sm:p-6 bg-white border border-emerald-100 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col gap-5">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+
+                            {/* Header */}
+                            <div className="flex justify-between items-start gap-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0">
+                                        <ArrowLeftRight size={24} className="text-emerald-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Exchange</p>
+                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t.currencyConverterTitle}</h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setConversionMode(m => m === 'BAM_TO_EUR' ? 'EUR_TO_BAM' : 'BAM_TO_EUR');
+                                        setBamValue('');
+                                    }}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all active:scale-95 shrink-0"
+                                    title="Swap currency"
+                                >
+                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">
+                                        {conversionMode === 'BAM_TO_EUR' ? 'BAM → EUR' : 'EUR → BAM'}
+                                    </span>
+                                    <ArrowLeftRight size={10} className="text-slate-400 ml-1" />
+                                </button>
+                            </div>
+
+                            {/* Content */}
+                            <div className="flex-1 bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
+                                <div>
+                                    <label className="text-[10px] font-bold text-emerald-600 uppercase block mb-1">
+                                        {conversionMode === 'BAM_TO_EUR' ? t.enterBamLabel : t.enterEurLabel}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={bamValue}
+                                        onChange={(e) => setBamValue(e.target.value)}
+                                        placeholder="0.00"
+                                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 font-black focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                                    />
+                                </div>
+                                <div className="pt-3 border-t border-slate-200 flex justify-between items-end">
+                                    <div>
+                                        <p className="text-[10px] font-bold text-emerald-600 uppercase mb-0.5">
+                                            {conversionMode === 'BAM_TO_EUR' ? t.estimatedEurLabel : t.estimatedBamLabel}
+                                        </p>
+                                        <p className="text-[9px] text-slate-400">{t.conversionRateText}</p>
+                                    </div>
+                                    <p className="text-xl font-black text-emerald-700 leading-none">
+                                        {conversionMode === 'BAM_TO_EUR' ? `€ ${convertedValue}` : `KM ${convertedValue}`}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ── Solana Devnet NFT Collectible & Reward Card (Edin Džeko Airdrop) ── */}
                         <div id="nft-rewards" className="p-5 sm:p-7 bg-gradient-to-b from-slate-900 via-purple-950 to-slate-950 border-2 border-purple-500/60 rounded-[2.2rem] shadow-[0_0_35px_rgba(168,85,247,0.35)] text-white relative overflow-hidden flex flex-col gap-6">
                             <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
                             <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
@@ -755,98 +847,6 @@ const WalletContent: React.FC<{
                                         )}
                                     </div>
                                 )}
-                            </div>
-                        </div>
-
-                        {/* QR Scanner Trigger Card */}
-                        <div className="p-5 sm:p-6 bg-white border border-blue-500 rounded-[2rem] shadow-[0_0_25px_rgba(59,130,246,0.35)] relative overflow-hidden flex flex-col gap-5">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
-
-                            {/* Header */}
-                            <div className="flex justify-between items-start gap-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0">
-                                        <QrCode size={24} className="text-blue-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">{t.explorationTitle}</p>
-                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t.qrLocationScannerTitle}</h3>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Content */}
-                            <div className="flex-1 bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center">
-                                <p className="text-xs text-slate-500 leading-relaxed">
-                                    {t.qrScannerDesc}
-                                </p>
-                            </div>
-
-                            {/* Standardized Action Button */}
-                            <button
-                                onClick={startScanner}
-                                className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                            >
-                                <QrCode size={16} />
-                                {t.startScanner}
-                            </button>
-                        </div>
-
-                        {/* Currency Converter */}
-                        <div className="p-5 sm:p-6 bg-white border border-emerald-100 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col gap-5">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-
-                            {/* Header */}
-                            <div className="flex justify-between items-start gap-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0">
-                                        <ArrowLeftRight size={24} className="text-emerald-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Exchange</p>
-                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t.currencyConverterTitle}</h3>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => {
-                                        setConversionMode(m => m === 'BAM_TO_EUR' ? 'EUR_TO_BAM' : 'BAM_TO_EUR');
-                                        setBamValue('');
-                                    }}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all active:scale-95 shrink-0"
-                                    title="Swap currency"
-                                >
-                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">
-                                        {conversionMode === 'BAM_TO_EUR' ? 'BAM → EUR' : 'EUR → BAM'}
-                                    </span>
-                                    <ArrowLeftRight size={10} className="text-slate-400 ml-1" />
-                                </button>
-                            </div>
-
-                            {/* Content */}
-                            <div className="flex-1 bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
-                                <div>
-                                    <label className="text-[10px] font-bold text-emerald-600 uppercase block mb-1">
-                                        {conversionMode === 'BAM_TO_EUR' ? t.enterBamLabel : t.enterEurLabel}
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={bamValue}
-                                        onChange={(e) => setBamValue(e.target.value)}
-                                        placeholder="0.00"
-                                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 font-black focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
-                                    />
-                                </div>
-                                <div className="pt-3 border-t border-slate-200 flex justify-between items-end">
-                                    <div>
-                                        <p className="text-[10px] font-bold text-emerald-600 uppercase mb-0.5">
-                                            {conversionMode === 'BAM_TO_EUR' ? t.estimatedEurLabel : t.estimatedBamLabel}
-                                        </p>
-                                        <p className="text-[9px] text-slate-400">{t.conversionRateText}</p>
-                                    </div>
-                                    <p className="text-xl font-black text-emerald-700 leading-none">
-                                        {conversionMode === 'BAM_TO_EUR' ? `€ ${convertedValue}` : `KM ${convertedValue}`}
-                                    </p>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -1239,11 +1239,11 @@ const WalletContent: React.FC<{
                                     {t.gradskiParkingTuzla}
                                 </button>
                                 <button
-                                    onClick={() => window.open('https://dentist-tuzla.onhercules.app/dentist-tourism/', '_blank')}
-                                    className="w-full h-16 bg-white text-blue-600 border-2 border-blue-500 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-slate-50"
+                                    onClick={() => window.open('https://zmajevi.vercel.app', '_blank')}
+                                    className="w-full h-16 bg-white text-purple-600 border-2 border-purple-500 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-purple-50"
                                 >
-                                    <Stethoscope size={18} />
-                                    {t.dentalTourism}
+                                    <Sparkles size={18} className="text-purple-600" />
+                                    NFT Zmajevi
                                 </button>
                                 <button
                                     onClick={() => window.open('https://aiso-tuzla.lovable.app/', '_blank')}

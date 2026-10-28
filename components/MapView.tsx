@@ -305,40 +305,20 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     setRouteTime(null);
   };
 
-  const calculateRoute = async (startLoc: [number, number], target: { name: string; lat: number; lon: number }) => {
-    if (!map.current || !isLoaded) return;
-    setIsRouteLoading(true);
-
+  const drawRouteOnMap = (geojsonData: any) => {
+    if (!map.current) return;
     try {
-      const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || ROUTE_MAP_KEY;
-      const startLng = startLoc[0];
-      const startLat = startLoc[1];
-      const url = `https://api.geoapify.com/v1/routing?waypoints=${startLat},${startLng}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
-
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Routing API request failed');
-
-      const data = await res.json();
-      if (!data || !data.features || data.features.length === 0) {
-        throw new Error('No route found');
-      }
-
-      const routeFeature = data.features[0];
-      const distance = routeFeature.properties.distance;
-      const time = routeFeature.properties.time;
-
-      setRouteDistance(distance);
-      setRouteTime(time);
-
-      if (map.current.getSource('route-source')) {
-        const source = map.current.getSource('route-source') as maplibregl.GeoJSONSource;
-        source.setData(data);
+      const source = map.current.getSource('route-source') as maplibregl.GeoJSONSource | undefined;
+      if (source) {
+        source.setData(geojsonData);
       } else {
         map.current.addSource('route-source', {
           type: 'geojson',
-          data: data
+          data: geojsonData
         });
+      }
 
+      if (!map.current.getLayer('route-layer-casing')) {
         map.current.addLayer({
           id: 'route-layer-casing',
           type: 'line',
@@ -350,10 +330,12 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
           paint: {
             'line-color': '#581c87',
             'line-width': 10,
-            'line-opacity': 0.7
+            'line-opacity': 0.75
           }
         });
+      }
 
+      if (!map.current.getLayer('route-layer')) {
         map.current.addLayer({
           id: 'route-layer',
           type: 'line',
@@ -364,30 +346,78 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
           },
           paint: {
             'line-color': '#a855f7',
-            'line-width': 5,
-            'line-opacity': 0.95
+            'line-width': 6,
+            'line-opacity': 0.98
           }
         });
       }
+    } catch (err) {
+      console.warn('Error drawing route on map:', err);
+    }
+  };
 
-      // Fly to user location to start navigation view
-      if (map.current) {
-        map.current.flyTo({
-          center: [startLng, startLat],
-          zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
-          pitch: 55,
-          bearing: -15,
-          duration: 2000
-        });
+  const calculateRoute = async (startLoc: [number, number], target: { name: string; lat: number; lon: number }) => {
+    if (!map.current || !isLoaded) return;
+    setIsRouteLoading(true);
+
+    const startLng = startLoc[0];
+    const startLat = startLoc[1];
+    const distMeters = getDistance(startLat, startLng, target.lat, target.lon);
+
+    // Guaranteed direct fallback route line so purple navigation line is NEVER missing
+    const fallbackGeoJson = {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: { distance: distMeters, time: distMeters / 1.4 },
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [startLng, startLat],
+            [target.lon, target.lat]
+          ]
+        }
+      }]
+    };
+
+    try {
+      // If distance is reasonable (< 80km), fetch actual pedestrian walking streets
+      if (distMeters < 80000) {
+        const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || '63e8b34f44974d71bc70aad63e5b56ba';
+        const url = `https://api.geoapify.com/v1/routing?waypoints=${startLat},${startLng}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
+
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.features && data.features.length > 0) {
+            const routeFeature = data.features[0];
+            const distance = routeFeature.properties.distance;
+            const time = routeFeature.properties.time;
+
+            setRouteDistance(distance);
+            setRouteTime(time);
+            drawRouteOnMap(data);
+
+            if (map.current) {
+              map.current.flyTo({
+                center: [startLng, startLat],
+                zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+                pitch: 55,
+                bearing: -15,
+                duration: 2000
+              });
+            }
+            return;
+          }
+        }
       }
-
+      throw new Error('Fallback direct line required');
     } catch (error) {
-      console.warn('Geoapify route calculation failed, using fallback direct distance:', error);
-      const startLng = startLoc[0];
-      const startLat = startLoc[1];
-      const distMeters = getDistance(startLat, startLng, target.lat, target.lon);
+      console.warn('Geoapify route fallback triggered, drawing direct navigation purple line:', error);
       setRouteDistance(distMeters);
       setRouteTime(distMeters / 1.4);
+      drawRouteOnMap(fallbackGeoJson);
+
       if (map.current) {
         map.current.flyTo({
           center: [startLng, startLat],
