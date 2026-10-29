@@ -550,7 +550,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           return (
             <section className="mt-8 mb-4">
               <button
-                onClick={() => onNavigate?.(AppTab.MAP)}
+                onClick={() => onNavigate?.(AppTab.QUEST)}
                 className="group relative w-full rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden border-2 border-blue-400/60 shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] transition-all duration-500 hover:-translate-y-1 hover:border-blue-400 cursor-pointer text-left"
                 style={{ minHeight: '100px' }}
               >
