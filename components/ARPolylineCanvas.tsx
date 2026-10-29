@@ -24,6 +24,7 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dashOffsetRef = useRef<number>(0);
   const animFrameIdRef = useRef<number | null>(null);
+  const lastFrameTimeRef = useRef<number>(0);
 
   // ResizeObserver to handle Zero Layout Shifts dynamically
   const dimensionsRef = useRef<{ width: number; height: number; dpr: number }>({
@@ -65,7 +66,7 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
     };
   }, []);
 
-  // 60 FPS Canvas Render Loop (Only active when isActive === true)
+  // 30 FPS Canvas Render Loop (Only active when isActive === true)
   useEffect(() => {
     if (!isActive) {
       if (animFrameIdRef.current) {
@@ -87,7 +88,16 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const render = () => {
+    const targetFps = 30;
+    const frameInterval = 1000 / targetFps;
+
+    const render = (timestamp: number) => {
+      const elapsed = timestamp - lastFrameTimeRef.current;
+      if (elapsed < frameInterval) {
+        animFrameIdRef.current = requestAnimationFrame(render);
+        return;
+      }
+      lastFrameTimeRef.current = timestamp;
       animFrameIdRef.current = requestAnimationFrame(render);
 
       const { width: displayWidth, height: displayHeight, dpr } = dimensionsRef.current;

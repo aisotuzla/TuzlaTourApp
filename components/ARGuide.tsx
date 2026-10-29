@@ -253,6 +253,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
   const [selectedLocation, setSelectedLocation] = useState<{ loc: Location; dist: number } | null>(null);
   const [localUnlockedRewards, setLocalUnlockedRewards] = useState<string[]>(unlockedRewards);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [isStationary, setIsStationary] = useState<boolean>(false);
   const gpsTrackRef = useRef<RoutePoint[]>([]);
 
   // Sync unlockedRewards from prop updates
@@ -324,6 +325,8 @@ export const ARGuide: React.FC<ARGuideProps> = ({
     name: string;
   } | null>(null);
   const lastFrameTimeRef = useRef<number>(0);
+  const lastMovementTimeRef = useRef<number>(Date.now());
+  const lastPositionRef = useRef<{ lat: number; lng: number } | null>(null);
 
   const markerRefs = useRef<
     Record<string, { dom: HTMLDivElement | null; dist: HTMLSpanElement | null; currentDist: number }>
@@ -371,7 +374,10 @@ export const ARGuide: React.FC<ARGuideProps> = ({
           facingMode: { ideal: 'environment' },
           width: { ideal: policy.arFx.cameraWidth },
           height: { ideal: policy.arFx.cameraHeight },
-          frameRate: { ideal: policy.arFx.cameraIdealFps, max: policy.arFx.cameraMaxFps },
+          frameRate: { 
+            ideal: isStationary ? 15 : policy.arFx.cameraIdealFps, 
+            max: isStationary ? 20 : policy.arFx.cameraMaxFps 
+          },
         },
       });
       streamRef.current = mediaStream;
@@ -381,7 +387,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       console.warn('Camera start failed:', err);
       setCameraActive(false);
     }
-  }, [policy.arFx, t.cameraUnavailable]);
+  }, [policy.arFx, t.cameraUnavailable, isStationary]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -438,7 +444,32 @@ export const ARGuide: React.FC<ARGuideProps> = ({
     if (track.length === 0 || track[track.length - 1].lat !== pt.lat || track[track.length - 1].lng !== pt.lng) {
       gpsTrackRef.current = [...track.slice(-15), pt];
     }
-  }, [rawGeoPosition, targetPoi]);
+
+    // Stationary detection: check if user has moved significantly
+    if (lastPositionRef.current) {
+      const prevLat = lastPositionRef.current.lat;
+      const prevLng = lastPositionRef.current.lng;
+      const movementDistance = Math.sqrt(
+        Math.pow((rawLat - prevLat) * 111000, 2) + 
+        Math.pow((rawLng - prevLng) * 111000 * Math.cos((rawLat * Math.PI) / 180), 2)
+      );
+      
+      if (movementDistance > 1.5) {
+        lastMovementTimeRef.current = Date.now();
+        lastPositionRef.current = { lat: rawLat, lng: rawLng };
+        if (isStationary) setIsStationary(false);
+      } else {
+        lastPositionRef.current = { lat: rawLat, lng: rawLng };
+        const stationaryDuration = Date.now() - lastMovementTimeRef.current;
+        if (stationaryDuration > 5000 && !isStationary) {
+          setIsStationary(true);
+        }
+      }
+    } else {
+      lastPositionRef.current = { lat: rawLat, lng: rawLng };
+      lastMovementTimeRef.current = Date.now();
+    }
+  }, [rawGeoPosition, targetPoi, isStationary]);
 
   // Tilt-Compensated 3-Axis Sensor Fusion for rock-solid compass heading
   useEffect(() => {
