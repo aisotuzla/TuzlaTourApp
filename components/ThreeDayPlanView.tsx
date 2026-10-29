@@ -8,7 +8,6 @@ import {
   ExternalLink,
   MapPin,
   Plane,
-  Sparkles,
   Utensils,
   Hotel,
   Sun,
@@ -912,7 +911,6 @@ export const ThreeDayPlanView: React.FC<ThreeDayPlanViewProps> = ({
             onClick={onSwitchToPracticalInfo}
             className="inline-flex items-center gap-2 shrink-0 rounded-xl bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-black text-white shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-colors"
           >
-            <Sparkles className="h-4 w-4 text-cyan-300" />
             {t.openPracticalGuideBtn}
           </button>
         )}

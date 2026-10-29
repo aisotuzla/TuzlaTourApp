@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Sparkles, X, ExternalLink, Award } from 'lucide-react';
+import { Trophy, X, ExternalLink, Award } from 'lucide-react';
 
 interface CelebrationOverlayProps {
   phase: number;
@@ -45,7 +45,6 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
 
           <div className="space-y-1 mb-4">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400 text-[10px] font-black uppercase tracking-widest">
-              <Sparkles className="w-3 h-3" />
               <span>Čestitamo! / Congratulations!</span>
             </div>
             <h2 className="text-xl font-black text-white">

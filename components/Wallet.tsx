@@ -25,7 +25,6 @@ import {
     ChevronDown,
     ChevronUp,
     Gift,
-    Sparkles,
     RefreshCw,
     Loader2
 } from 'lucide-react';
@@ -813,7 +812,7 @@ const WalletContent: React.FC<{
                                                             disabled={isAirdropping}
                                                             className="px-3 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[10px] uppercase tracking-wider rounded-lg transition-all active:scale-95 flex items-center gap-1 shrink-0 ml-2"
                                                         >
-                                                            {isAirdropping ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                                            {isAirdropping && <Loader2 size={12} className="animate-spin" />}
                                                             <span>{isAirdropping ? 'Šaljem...' : 'Preuzmi 1 Devnet SOL 🪂'}</span>
                                                         </button>
                                                     </div>
@@ -831,10 +830,7 @@ const WalletContent: React.FC<{
                                                             <span>Čekam potvrdu u Solflare novčaniku...</span>
                                                         </>
                                                     ) : (
-                                                        <>
-                                                            <Sparkles size={16} />
-                                                            <span>{lang === 'bs' ? 'Preuzmi NFT na Solana Devnetu ⚽' : 'Claim & Mint NFT on Solana Devnet ⚽'}</span>
-                                                        </>
+                                                        <span>{lang === 'bs' ? 'Preuzmi NFT na Solana Devnetu ⚽' : 'Claim & Mint NFT on Solana Devnet ⚽'}</span>
                                                     )}
                                                 </button>
                                             </div>
@@ -1242,7 +1238,6 @@ const WalletContent: React.FC<{
                                     onClick={() => window.open('https://zmajevi.vercel.app', '_blank')}
                                     className="w-full h-16 bg-white text-purple-600 border-2 border-purple-500 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-purple-50"
                                 >
-                                    <Sparkles size={18} className="text-purple-600" />
                                     NFT Zmajevi
                                 </button>
                                 <button

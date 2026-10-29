@@ -15,7 +15,6 @@ import {
   Copy,
   Trash2,
   X,
-  Sparkles,
   AlertCircle
 } from 'lucide-react';
 import { Language } from '../types';

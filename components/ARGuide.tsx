@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { Language, Location } from '../types';
 import { LOCATIONS, TRANSLATIONS } from '../constants';
 import {
-  Camera, Info, X, MapPin, Compass, Navigation, ChevronLeft, ChevronRight, Target, CheckCircle2, Sparkles, Footprints,
+  Camera, Info, X, MapPin, Compass, Navigation, ChevronLeft, ChevronRight, Target, CheckCircle2, Footprints,
 } from 'lucide-react';
 import {
   getARProjection, ARStage, DeviceOrientation, WGS84Location, smoothHeading, smoothAngle,
@@ -872,7 +872,6 @@ export const ARGuide: React.FC<ARGuideProps> = ({
         <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-30 pointer-events-none gap-2">
           {/* Active Phase Pill */}
           <div className="pointer-events-auto bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-amber-400/50 flex items-center gap-2 shadow-xl">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />
             <span className="text-amber-300 text-[10px] font-black uppercase tracking-wider truncate max-w-[160px] sm:max-w-none">
               {currentPhaseTitle}
             </span>
@@ -1034,7 +1033,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                     const matchedLoc = LOCATIONS.find((l) => l.id === poi.id);
                     if (matchedLoc && onNavigate) onNavigate(matchedLoc);
                   }}
-                  className={`min-w-[160px] max-w-[210px] shrink-0 snap-start p-2 rounded-xl border backdrop-blur-xl transition-all cursor-pointer flex items-center justify-between gap-2 shadow-lg active:scale-95 relative overflow-hidden ${
+                  className={`h-8 min-w-[150px] max-w-[210px] shrink-0 snap-start px-2 rounded-xl border backdrop-blur-xl transition-all cursor-pointer flex items-center justify-between gap-2 shadow-lg active:scale-95 relative overflow-hidden ${
                     isSelected
                       ? 'bg-amber-500/30 border-amber-400 shadow-amber-500/20'
                       : isDarkened
@@ -1044,14 +1043,14 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                       : 'bg-slate-950/95 border-amber-400/40 shadow-md shadow-amber-500/10'
                   }`}
                 >
-                  <div className="flex items-center gap-2 overflow-hidden relative z-10">
+                  <div className="flex items-center gap-1.5 overflow-hidden relative z-10">
                     <div
-                      className="w-7 h-7 rounded-lg flex items-center justify-center font-black text-[10px] text-white shadow-md shrink-0 border border-white/10"
+                      className="w-5 h-5 rounded-md flex items-center justify-center font-black text-[9px] text-white shadow-sm shrink-0 border border-white/10"
                       style={{ backgroundColor: isDarkened ? '#334155' : poi.color }}
                     >
                       {isDarkened ? '✓' : isUnlocked ? '★' : '🎯'}
                     </div>
-                    <div className="truncate">
+                    <div className="truncate flex flex-col justify-center">
                       <h5
                         className={`text-[11px] font-black truncate leading-tight ${
                           isDarkened ? 'text-slate-400' : 'text-white'
@@ -1060,15 +1059,15 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                         {poi.name[lang] || poi.name.en}
                       </h5>
                       <span
-                        className={`text-[9px] font-bold truncate block ${
+                        className={`text-[8.5px] font-bold truncate leading-none ${
                           isDarkened ? 'text-emerald-400' : isUnlocked ? 'text-amber-300' : 'text-slate-300'
                         }`}
                       >
                         {isDarkened
-                          ? (lang === 'bs' ? `Faza ${poi.phase} završena` : `Phase ${poi.phase} done`)
+                          ? (t.completedPhaseBadge || (lang === 'bs' ? 'Završeno' : 'Done'))
                           : isUnlocked
                           ? (lang === 'bs' ? 'Otključano' : 'Unlocked')
-                          : (lang === 'bs' ? `Faza ${poi.phase} cilj` : `Phase ${poi.phase} goal`)}
+                          : (lang === 'bs' ? 'Cilj' : lang === 'de' ? 'Ziel' : lang === 'tr' ? 'Hedef' : 'Goal')}
                       </span>
                     </div>
                   </div>

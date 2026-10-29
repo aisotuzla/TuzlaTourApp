@@ -18,7 +18,6 @@ import {
   Lock,
   Compass,
   MapPin,
-  Sparkles,
   ArrowRight
 } from 'lucide-react';
 import { Language } from '../types';

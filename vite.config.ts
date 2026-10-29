@@ -64,6 +64,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'assets/bluesky.svg',
           'assets/Gallery/City Guide/GradTuzla-1.webp',
           'assets/Gallery/Food/foodprime.webp',
+          'assets/Gallery/QuestQRLocations/jelo.webp',
+          'assets/Gallery/QuestQRLocations/mapa.webp',
           'assets/Gallery/Accommodation/mellain.webp',
           'assets/Gallery/QuestQRLocations/tztzlogo.webp',
           'assets/Gallery/QuestQRLocations/Zastava_tuzle.webp',
