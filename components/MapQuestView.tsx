@@ -19,6 +19,7 @@ import { NavigationHud } from './NavigationHud.tsx';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import ARGuide from './ARGuide.tsx';
 import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
+import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
 
 export interface MapQuestViewProps {
   lang: Language; features: AppFeatures; unlockedRewards: string[];
@@ -43,7 +44,7 @@ const TUZLA_HOTELS = [
   { name: 'Hotel Tehnograd', latitude: 44.541230, longitude: 18.705120, rating: '4.5', priceRange: '60-100 KM' },
 ];
 
-const GEOAPIFY_API_KEY = '765d67152f78438bacd2c66f73665a91';
+const GEOAPIFY_API_KEY = getGeoapifyGeneralKey();
 const VITE_PROTOMAPS_CARTO_API = '78417d24f3c5d515';
 export const GEOAPIFY_MAPTILER_3D = `https://maps.geoapify.com/v1/styles/maptiler-3d/style.json?apiKey=${GEOAPIFY_API_KEY}`;
 export const CARTO_VOYAGER_STYLE = `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?apiKey=${VITE_PROTOMAPS_CARTO_API}`;
@@ -435,8 +436,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     try {
       // If distance is reasonable (< 80km), fetch actual pedestrian walking streets
       if (distMeters < 80000) {
-        const ROUTE_MAP_KEY = (import.meta as any).env?.VITE_GEOAPIFY_ROUTING_API || '63e8b34f44974d71bc70aad63e5b56ba';
-        const apiKey = (import.meta as any).env?.VITE_GEOAPIFY_ROUTING_API || (import.meta as any).env?.VITE_GEOAPIFY_STATIC_API || ROUTE_MAP_KEY;
+        const apiKey = getGeoapifyRoutingKey();
         const url = `https://api.geoapify.com/v1/routing?waypoints=${startLat},${startLng}|${target.lat},${target.lon}&mode=walk&details=instruction_details,elevation&apiKey=${apiKey}`;
         const res = await fetch(url);
         if (res.ok) {

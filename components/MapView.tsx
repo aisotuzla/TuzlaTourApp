@@ -14,6 +14,7 @@ import { Hotel as HotelIcon } from 'lucide-react';
 import { QUEST_TARGETS } from '../constants/questData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapSheetDrawer, SheetSnapState, SheetTarget } from './MapSheetDrawer';
+import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
 
 
 interface MapViewProps {
@@ -24,7 +25,7 @@ interface MapViewProps {
 
 
 const GEO_MAP_KEY = ['65090a03070e4e18', '98694f7a18ba415b'].join('');
-const ROUTE_MAP_KEY = import.meta.env.VITE_GEOAPIFY_ROUTING_API || '';
+const ROUTE_MAP_KEY = getGeoapifyRoutingKey();
 
 const OFFLINE_STYLE = '/maps/offline-vector-style.json';
 const RASTER_STYLE = '/maps/offline-style.json';
@@ -383,7 +384,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     try {
       // If distance is reasonable (< 80km), fetch actual pedestrian walking streets
       if (distMeters < 80000) {
-        const apiKey = import.meta.env.VITE_GEOAPIFY_ROUTING_API || import.meta.env.VITE_GEOAPIFY_STATIC_API || '63e8b34f44974d71bc70aad63e5b56ba';
+        const apiKey = getGeoapifyRoutingKey();
         const url = `https://api.geoapify.com/v1/routing?waypoints=${startLat},${startLng}|${target.lat},${target.lon}&mode=walk&apiKey=${apiKey}`;
 
         const res = await fetch(url);
@@ -487,13 +488,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
       if (isOnline) {
         try {
           let geoMatches: any[] = [];
-          const geoapifyKey =
-            import.meta.env.VITE_GEOAPIFY_GEOCODING_API ||
-            import.meta.env.VITE_GEOAPIFY_STATIC_API ||
-            import.meta.env.VITE_GEOAPIFY_ROUTING_API ||
-            ROUTE_MAP_KEY ||
-            GEO_MAP_KEY ||
-            '765d67152f78438bacd2c66f73665a91';
+          const geoapifyKey = getGeoapifyGeneralKey();
 
           // 1. Try Geoapify Geocoding API with Tuzla proximity
           if (geoapifyKey) {
