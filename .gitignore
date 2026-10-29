@@ -48,7 +48,9 @@ android/**/*.jks
 pannellum-2.5.7/
 docs
 .env
+.env.*
 .env*.local
+*.env
 .deepsec
 # Local Gemini/Tooling files
 .gemini/

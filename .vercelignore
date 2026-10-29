@@ -16,8 +16,21 @@ node_modules/
 
 
 
+# Secrets and Environment Variables
+.env
+.env.*
+.env.local
+.env*.local
+*.env
+
 # Dev/tooling
 .agent/
+.agents/
+.claude/
+.cursor/
+.deepsec/
 .idea/
+.vscode/
 scratch/
 dev-dist/
+
