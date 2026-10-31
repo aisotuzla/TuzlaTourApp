@@ -174,7 +174,7 @@ export function useBatterySaver(config: Partial<BatterySaverConfig> = {}): {
 
     const syncBattery = () => {
       if (!batteryRef.current || cancelled) return;
-      const level = normalizeBatteryLevel(batteryRef.current.level);
+      const level = normalizeBatteryLevel(batteryRef.current.level ?? null);
       const charging = batteryRef.current.charging === true;
       if (!cancelled) {
         setBatteryLevel(level);

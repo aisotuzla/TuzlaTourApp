@@ -172,6 +172,10 @@ const WalletContent: React.FC<{
         { number: 2, ids: PHASE_2_POIS },
         { number: 3, ids: PHASE_3_POIS }
     ], []);
+    const isPhase1Complete = useMemo(() => {
+        return PHASE_1_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
+    }, [unlockedRewards]);
+
     const currentTarget = useMemo(() => {
         const nextId = questPhases.flatMap(phase => phase.ids).find(id => !isPoiRewardUnlocked(id, unlockedRewards));
         return nextId ? QUEST_TARGETS.find(target => target.id === nextId) : undefined;
@@ -683,7 +687,7 @@ const WalletContent: React.FC<{
                             <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center bg-slate-950/70 border border-purple-400/30 rounded-3xl p-4 sm:p-5 relative z-10 backdrop-blur-sm">
                                 {/* Left: Card Visual */}
                                 <div className="sm:col-span-5 flex flex-col items-center">
-                                    <div className="relative group w-full max-w-[200px] aspect-[4/4] rounded-2xl overflow-hidden border-2 border-purple-400 shadow-2xl shadow-purple-900/50 transition-transform duration-500 hover:scale-105 bg-slate-900 flex items-center justify-center">
+                                    <div className="relative group w-full max-w-[200px] h-[196px] rounded-2xl overflow-hidden border-2 border-purple-400 shadow-2xl shadow-purple-900/50 transition-transform duration-500 hover:scale-105 bg-slate-900 flex items-center justify-center">
                                         <img
                                             src={dzekoImgSrc}
                                             alt={SOLANA_DEVNET_NFT_REWARD.name}
@@ -699,11 +703,26 @@ const WalletContent: React.FC<{
                                         />
                                         {/* Holographic gloss overlay */}
                                         <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 via-transparent to-amber-300/20 pointer-events-none" />
-                                        <div className="absolute bottom-2 inset-x-2 py-1 px-2 bg-slate-950/80 backdrop-blur-md rounded-lg text-center border border-white/10">
+                                        <div className="absolute bottom-2 inset-x-2 py-1 px-2 bg-slate-950/80 backdrop-blur-md rounded-lg text-center border border-white/10 z-10">
                                             <p className="text-[10px] font-black text-amber-300 tracking-wider uppercase">
                                                 Edin Džeko #11
                                             </p>
                                         </div>
+
+                                        {/* Darkened & Blurred Locked Overlay (lifted when Phase 1 is complete) */}
+                                        {!isPhase1Complete && (
+                                            <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-md z-20 flex flex-col items-center justify-center p-3 text-center transition-all duration-500 border border-purple-500/30">
+                                                <div className="w-10 h-10 rounded-full bg-purple-950/90 border-2 border-purple-400/80 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.5)] mb-2">
+                                                    <Lock className="w-5 h-5 text-purple-300 animate-pulse" />
+                                                </div>
+                                                <span className="text-[11px] font-black text-white uppercase tracking-wider">
+                                                    {lang === 'bs' ? 'ZAKLJUČANO' : lang === 'de' ? 'GESPERRT' : lang === 'tr' ? 'KİLİTLİ' : 'LOCKED'}
+                                                </span>
+                                                <span className="text-[9px] font-bold text-purple-300/90 mt-1 leading-tight">
+                                                    {lang === 'bs' ? 'Završite Fazu 1 za otključavanje' : lang === 'de' ? 'Phase 1 abschließen zum Freischalten' : lang === 'tr' ? 'Kilidi açmak için Aşama 1\'i tamamlayın' : 'Complete Phase 1 to unlock'}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                     <a
                                         href={SOLANA_DEVNET_NFT_REWARD.ipfsUrl}
@@ -821,14 +840,19 @@ const WalletContent: React.FC<{
                                                 {/* Main Mint Action Button */}
                                                 <button
                                                     onClick={handleClaimDevnetNft}
-                                                    disabled={isMinting}
-                                                    className="w-full py-4 bg-gradient-to-r from-purple-500 via-indigo-500 to-pink-500 hover:from-purple-400 hover:via-indigo-400 hover:to-pink-400 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-purple-900/40 transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                                                    disabled={isMinting || !isPhase1Complete}
+                                                    className="w-full py-4 bg-gradient-to-r from-purple-500 via-indigo-500 to-pink-500 hover:from-purple-400 hover:via-indigo-400 hover:to-pink-400 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-purple-900/40 transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
                                                     {isMinting ? (
                                                         <>
                                                             <Loader2 size={16} className="animate-spin" />
                                                             <span>Čekam potvrdu u Solflare novčaniku...</span>
                                                         </>
+                                                    ) : !isPhase1Complete ? (
+                                                        <span className="flex items-center gap-1.5">
+                                                            <Lock size={14} />
+                                                            {lang === 'bs' ? 'Otključava se završetkom Faze 1' : 'Unlocks by Completing Phase 1'}
+                                                        </span>
                                                     ) : (
                                                         <span>{lang === 'bs' ? 'Preuzmi NFT na Solana Devnetu ⚽' : 'Claim & Mint NFT on Solana Devnet ⚽'}</span>
                                                     )}
@@ -837,7 +861,9 @@ const WalletContent: React.FC<{
                                         ) : (
                                             <div className="p-3 bg-slate-950/60 border border-white/10 rounded-xl text-center">
                                                 <p className="text-xs text-purple-300 font-bold mb-1">
-                                                    Povežite Solflare novčanik iznad kako biste testirali preuzimanje ove NFT nagrade na Solana Devnetu.
+                                                    {!isPhase1Complete
+                                                        ? (lang === 'bs' ? 'Završite Fazu 1 potrage kako biste otključali ovu kolekcionarsku NFT karticu.' : 'Complete Phase 1 of the quest to unlock this collectible NFT card.')
+                                                        : 'Povežite Solflare novčanik iznad kako biste testirali preuzimanje ove NFT nagrade na Solana Devnetu.'}
                                                 </p>
                                             </div>
                                         )}

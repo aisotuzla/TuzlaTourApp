@@ -7,6 +7,7 @@ interface BatterySaverToggleProps {
   lang: Language;
   className?: string;
   showDetailedStats?: boolean;
+  compact?: boolean;
 }
 
 const BATTERY_LOCALIZATION: Record<Language, any> = {
@@ -112,6 +113,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
   lang,
   className = '',
   showDetailedStats = false,
+  compact = false,
 }) => {
   const t = BATTERY_LOCALIZATION[lang] || BATTERY_LOCALIZATION.en;
   const { state, actions, recommendations } = useBatterySaver();
@@ -192,21 +194,32 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
         )}
 
         {/* Battery Toggle Button */}
-        <button
-          onClick={() => setShowModal(true)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all ${className}`}
-          style={{
-            borderColor: activeSaver ? '#ef4444' : '#3b82f6',
-            backgroundColor: activeSaver ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
-          }}
-          title={activeSaver ? t.saverActive : t.normalMode}
-        >
-          {getBatteryIconComponent()}
-          <span className={`font-semibold text-sm ${getBatteryColor()}`}>
-            {formatBatteryPercentage(state.batteryLevel)}
-          </span>
-          {activeSaver && <Zap className="w-4 h-4 text-amber-500" />}
-        </button>
+        {compact ? (
+          <button
+            onClick={() => setShowModal(true)}
+            className={`w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/60 text-emerald-400 flex items-center justify-center shadow-lg hover:bg-emerald-500/30 active:scale-95 transition-all shrink-0 ${className}`}
+            title={activeSaver ? `${t.saverActive} (${formatBatteryPercentage(state.batteryLevel)})` : `${t.batterySaver} (${formatBatteryPercentage(state.batteryLevel)})`}
+            aria-label={t.batterySaver}
+          >
+            {getBatteryIconComponent()}
+          </button>
+        ) : (
+          <button
+            onClick={() => setShowModal(true)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all ${className}`}
+            style={{
+              borderColor: activeSaver ? '#ef4444' : '#3b82f6',
+              backgroundColor: activeSaver ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+            }}
+            title={activeSaver ? t.saverActive : t.normalMode}
+          >
+            {getBatteryIconComponent()}
+            <span className={`font-semibold text-sm ${getBatteryColor()}`}>
+              {formatBatteryPercentage(state.batteryLevel)}
+            </span>
+            {activeSaver && <Zap className="w-4 h-4 text-amber-500" />}
+          </button>
+        )}
 
         {/* Battery Saver Modal */}
         {showModal && (

@@ -11,7 +11,6 @@ import {
   Volume2,
   VolumeX,
   ChevronRight,
-  ArrowUp,
   QrCode,
   X,
   Facebook,
@@ -689,30 +688,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
         </section>
 
 
-        {/* 4.55. GIPS BUS TRACKING */}
-        <div className="w-full flex flex-col items-center mt-2 mb-6">
-          <a
-            href="https://www.gipstk.com/red-voznje/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex flex-col items-center gap-3 hover:scale-105 active:scale-95 transition-transform duration-300"
-          >
-            <div className="w-[180px] h-[90px] bg-white rounded-2xl shadow-lg border border-blue-100 flex items-center justify-center overflow-hidden group-hover:shadow-blue-200 group-hover:shadow-xl transition-shadow duration-300">
-              <img
-                src="/assets/Gallery/gipslogo.png"
-                alt="GIPS Logo"
-                className="w-full h-full object-contain p-3"
-              />
-            </div>
-            <span className="text-sm font-bold text-blue-700 uppercase tracking-wider text-center px-4">
-              {t.gipsLabel}
-            </span>
-          </a>
-        </div>
-
-        {/* 4.6. SOCIAL & COMMUNITY */}
+        {/* 4.6. SOCIAL & COMMUNITY (DIRECTLY BELOW GALLERY) */}
         <section className="pt-8 pb-4">
-          <div className="mb-10 text-center flex flex-col items-center">
+          <div className="mb-8 text-center flex flex-col items-center">
             <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
               {t.communityTitle}
             </h2>
@@ -743,6 +721,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               </button>
             </div>
 
+            {/* AISO TUZLA LINK */}
             <div className="flex flex-wrap justify-center items-center gap-8 text-sm font-bold uppercase tracking-widest">
               <a
                 href="https://aiso-tuzla.lovable.app"
@@ -758,24 +737,47 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 <span>AISO Tuzla</span>
               </a>
             </div>
-          </div>
-        </section>
 
-        {/* BACK TO TOP BUTTON */}
-        <section className="py-8 border-t border-slate-100 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-full shadow-md hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider text-xs flex items-center gap-2 mx-auto font-quicksand"
-            >
-              <ArrowUp className="w-4 h-4" />
-              {t.backToTop}
-            </button>
-          </motion.div>
+            {/* GIPS & POVRATAK NA VRH SIDE-BY-SIDE BENEATH AISO TUZLA */}
+            <div className="w-full flex flex-wrap justify-center items-end gap-6 sm:gap-10 mt-2 mb-6">
+              {/* GIPS BUS TRACKING */}
+              <a
+                href="https://www.gipstk.com/red-voznje/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col items-center justify-between p-3 rounded-3xl hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:scale-[1.02] transition-all duration-500 active:scale-95 bg-white/0 hover:bg-white/50 w-[240px]"
+              >
+                <div className="w-[240px] h-[150px] bg-white rounded-2xl shadow-lg border border-blue-100 flex items-center justify-center overflow-hidden group-hover:shadow-blue-200 group-hover:shadow-xl transition-shadow duration-300">
+                  <img
+                    src="/assets/Gallery/gipslogo.png"
+                    alt="GIPS Logo"
+                    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <span className="mt-3 text-xs font-bold text-blue-700 uppercase tracking-wider text-center group-hover:text-blue-900 transition-colors">
+                  {t.gipsLabel}
+                </span>
+              </a>
+
+              {/* POVRATAK NA VRH VIA IMAGE */}
+              <button
+                type="button"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="group flex flex-col items-center justify-between p-3 rounded-3xl hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:scale-[1.02] transition-all duration-500 active:scale-95 bg-white/0 hover:bg-white/50 cursor-pointer w-[240px]"
+                title={t.backToTop}
+                aria-label={t.backToTop}
+              >
+                <img
+                  src="/assets/Gallery/ilovebos.webp"
+                  alt="I Love Bosnia - Povratak na vrh"
+                  className="w-[240px] h-[150px] object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-500 rounded-2xl"
+                />
+                <span className="mt-3 text-xs font-bold uppercase tracking-wider text-blue-700 group-hover:text-blue-900 transition-colors">
+                  {t.backToTop}
+                </span>
+              </button>
+            </div>
+          </div>
         </section>
       </div>
 

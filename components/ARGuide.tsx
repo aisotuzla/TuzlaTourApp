@@ -20,6 +20,7 @@ import { ARPolylineCanvas } from './ARPolylineCanvas';
 import { ARBreadcrumbCanvas } from './ARBreadcrumbCanvas';
 import { RoutePoint } from '../hooks/useBreadcrumbsTrail';
 import { QrScannerModal } from './QrScannerModal';
+import { BatterySaverToggle } from './BatterySaverToggle';
 
 interface ARGuideProps {
   lang: Language;
@@ -693,12 +694,15 @@ export const ARGuide: React.FC<ARGuideProps> = ({
               <p className="text-[10px] text-slate-300 font-medium truncate">{t.arSensorsDesc}</p>
             </div>
           </div>
-          <button
-            onClick={requestPermission}
-            className="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-xs font-black rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-wider shrink-0"
-          >
-            {t.startArTour}
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <BatterySaverToggle lang={lang} compact={true} />
+            <button
+              onClick={requestPermission}
+              className="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-xs font-black rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-wider shrink-0"
+            >
+              {t.startArTour}
+            </button>
+          </div>
         </div>
       )}
 
@@ -911,7 +915,8 @@ export const ARGuide: React.FC<ARGuideProps> = ({
             </span>
           </div>
 
-          <div className="flex gap-2 pointer-events-auto ml-auto">
+          <div className="flex items-center gap-2 pointer-events-auto ml-auto">
+            <BatterySaverToggle lang={lang} compact={true} />
             <button
               onClick={() => setViewMode(viewMode === 'AR' ? 'HORIZON' : 'AR')}
               className="bg-blue-600/90 p-2 rounded-xl border border-white/20 text-white shadow-xl backdrop-blur-md transition-all active:scale-95 flex items-center gap-1 px-2.5"

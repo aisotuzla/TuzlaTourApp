@@ -430,15 +430,4 @@ export function estimateBatteryLife(
   };
 }
 
-// ============================================================================
-// Default Export
-// ============================================================================
-
-export {
-  BATTERY_CONFIG_MAX_PERFORMANCE,
-  BATTERY_CONFIG_BALANCED,
-  BATTERY_CONFIG_BATTERY_SAVER,
-  BATTERY_CONFIG_AGGRESSIVE,
-};
-
 export default BATTERY_CONFIG_BALANCED;
