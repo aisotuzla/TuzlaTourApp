@@ -21,11 +21,7 @@ interface TransportationProps {
   lang: Language;
 }
 
-<<<<<<< HEAD
-type TransportSection = 'bus' | 'flights' | 'taxi' | 'rentacar';
-=======
 type TransportSection = 'flights' | 'bus' | 'taxi' | 'rentacar' | 'internationalBus';
->>>>>>> 518f660bd2795b83b1401455a2f2799e481c4328
 
 interface BusStopInfo {
   name: string;
@@ -532,128 +528,6 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
     }
   ];
 
-<<<<<<< HEAD
-  const t = {
-    en: {
-      title: 'Tuzla Transit Hub',
-      subtitle: 'Complete public transit, GIPS live tracking, airport connections, verified taxi dispatch and car rental.',
-      busesTab: 'Buses (GIPS)',
-      flightsTab: 'Flights (TZL)',
-      taxiTab: 'Taxis (Call)',
-      rentacarTab: 'Rent a Car',
-      gipsBannerTitle: 'Official City & Regional Bus Network',
-      gipsBannerDesc: 'GIPS d.d. Tuzla operates city lines (Ka, Kb, 2) at 1.50 BAM (€0.77) and airport connections (11, 34) at 2.50–5.50 BAM. Cash only on board.',
-      gipsLiveCta: 'Live Bus Tracking & Online Timetable',
-      selectLine: 'Select Bus Line:',
-      routeTimeline: 'Route & Key Stops',
-      timetableHeader: 'Official Timetable & Departures',
-      workdays: 'Workday & Saturday',
-      sunday: 'Sunday & Holidays',
-      departuresCount: 'scheduled departures daily',
-      cashNotice: 'Driver accepts Cash BAM (KM) only upon boarding. Please have exact change.',
-      openGipsWeb: 'View on GIPS Portal',
-      flightsHeader: 'Direct International Flights at TZL',
-      flightsSub: 'Tuzla International Airport (TZL) is Northeastern Bosnia\'s primary aviation hub, connecting major European metropolises.',
-      bookWizz: 'Book on WizzAir.com',
-      airportSite: 'Official TZL Airport Website',
-      taxiHeader: 'Licensed Radio Taxi Dispatch',
-      taxiSub: 'Official taxis in Tuzla operate with calibrated taximeters. Standard airport to city center fare is ~30–40 BAM (€15–20).',
-      callNow: 'Call Dispatch Now',
-      rentacarHeader: 'Car Rental at TZL Terminal',
-      rentacarSub: 'Car rental desks are located inside the arrivals hall of Tuzla Airport. Advance booking is recommended during peak season.',
-      callAgency: 'Call Agency',
-      emailAgency: 'Send Email'
-    },
-    bs: {
-      title: 'Prevoz u Tuzli',
-      subtitle: 'Glavni saobraćajni vodič: GIPS linije i red vožnje, aerodromski transferi, provjerene taksi službe i rent-a-car.',
-      busesTab: 'Autobusi (GIPS)',
-      flightsTab: 'Letovi (TZL)',
-      taxiTab: 'Taksi (Poziv)',
-      rentacarTab: 'Rent a Car',
-      gipsBannerTitle: 'Zvanična mreža gradskog prevoza',
-      gipsBannerDesc: 'GIPS d.d. Tuzla upravlja gradskim linijama (Ka, Kb, 2) po cijeni od 1.50 KM i aerodromskim linijama (11, 34) od 2.50 do 5.50 KM. Plaćanje je isključivo u gotovini kod vozača.',
-      gipsLiveCta: 'Prati autobus uživo / GIPS red vožnje',
-      selectLine: 'Odaberite autobusku liniju:',
-      routeTimeline: 'Trasa i ključna stajališta',
-      timetableHeader: 'Zvanični red vožnje i polasci',
-      workdays: 'Radni dan i Subota',
-      sunday: 'Nedjelja i Praznici',
-      departuresCount: 'redovnih polazaka dnevno',
-      cashNotice: 'Karta se kupuje kod vozača isključivo u gotovini (KM). Pripremite tačan iznos.',
-      openGipsWeb: 'Otvori na GIPS portalu',
-      flightsHeader: 'Direktni letovi sa Aerodroma Tuzla (TZL)',
-      flightsSub: 'Međunarodni aerodrom Tuzla (Dubrave) povezuje Tuzlu i regiju sa vodećim evropskim gradovima preko Wizz Air letova.',
-      bookWizz: 'Rezerviši let na WizzAir.com',
-      airportSite: 'Zvanična stranica Aerodroma Tuzla',
-      taxiHeader: 'Licencirane taksi službe u Tuzli',
-      taxiSub: 'Zvanični taksi prevoznici voze po taksimetru. Standardna vožnja između aerodroma i centra grada košta 30–40 KM (€15–20).',
-      callNow: 'Pozovi dispečera',
-      rentacarHeader: 'Rent-a-car agencije na aerodromu TZL',
-      rentacarSub: 'Šalteri rent-a-car agencija nalaze se u zoni dolazaka terminala aerodroma. Preporučuje se rezervacija unaprijed.',
-      callAgency: 'Pozovi agenciju',
-      emailAgency: 'Pošalji e-mail'
-    },
-    de: {
-      title: 'Verkehr & Mobilität Tuzla',
-      subtitle: 'Kompletter Nahverkehrsführer: GIPS-Buslinien mit Fahrplan, Flughafen TZL, lizenzierte Taxis und Mietwagen.',
-      busesTab: 'Busse (GIPS)',
-      flightsTab: 'Flüge (TZL)',
-      taxiTab: 'Taxis (Anruf)',
-      rentacarTab: 'Mietwagen',
-      gipsBannerTitle: 'Offizielles Liniennetz GIPS Tuzla',
-      gipsBannerDesc: 'GIPS d.d. Tuzla bedient Stadtlinien (Ka, Kb, 2) für 1.50 BAM sowie Flughafenbusse (11, 34) für 2.50–5.50 BAM. Barzahlung im Bus.',
-      gipsLiveCta: 'Live-Busverfolgung & GIPS Fahrplan',
-      selectLine: 'Buslinie wählen:',
-      routeTimeline: 'Strecke & wichtige Haltestellen',
-      timetableHeader: 'Offizieller Fahrplan & Abfahrten',
-      workdays: 'Werktag & Samstag',
-      sunday: 'Sonntag & Feiertage',
-      departuresCount: 'geplante Abfahrten täglich',
-      cashNotice: 'Fahrkarten werden beim Fahrer ausschließlich in bar (BAM) bezahlt.',
-      openGipsWeb: 'Auf GIPS-Portal ansehen',
-      flightsHeader: 'Direktflüge ab Flughafen Tuzla (TZL)',
-      flightsSub: 'Der Flughafen Tuzla verbindet Nordostbosnien direkt mit zahlreichen Großstädten in Deutschland, der Schweiz, Schweden u.a.',
-      bookWizz: 'Auf WizzAir.com buchen',
-      airportSite: 'Flughafen Tuzla Website',
-      taxiHeader: 'Lizenzierte Taxiunternehmen in Tuzla',
-      taxiSub: 'Taxis fahren mit geeichten Taxametern. Eine Fahrt vom Flughafen ins Zentrum kostet ca. 30–40 BAM (15–20 €).',
-      callNow: 'Taxi jetzt anrufen',
-      rentacarHeader: 'Mietwagen am Flughafen TZL',
-      rentacarSub: 'Mietwagenschalter befinden sich direkt in der Ankunftshalle des Flughafens Tuzla.',
-      callAgency: 'Agentur anrufen',
-      emailAgency: 'E-Mail senden'
-    },
-    tr: {
-      title: 'Tuzla Ulaşım Rehberi',
-      subtitle: 'Şehir içi GIPS otobüs hatları, canlı takip, TZL Havalimanı uçuşları, resmi taksiler ve araç kiralama.',
-      busesTab: 'Otobüsler (GIPS)',
-      flightsTab: 'Uçuşlar (TZL)',
-      taxiTab: 'Taksiler (Ara)',
-      rentacarTab: 'Araç Kiralama',
-      gipsBannerTitle: 'Resmi Şehir İçi Otobüs Ağı',
-      gipsBannerDesc: 'GIPS d.d. Tuzla şehir hatları (Ka, Kb, 2) 1.50 KM, havalimanı ekspres hatları (11, 34) 2.50–5.50 KM\'dir. Sadece nakit KM kabul edilir.',
-      gipsLiveCta: 'Canlı Otobüs Takibi / GIPS Seferleri',
-      selectLine: 'Otobüs Hattı Seçin:',
-      routeTimeline: 'Güzergah ve Duraklar',
-      timetableHeader: 'Resmi Hareket Saatleri',
-      workdays: 'Hafta İçi ve Cumartesi',
-      sunday: 'Pazar ve Tatil Günleri',
-      departuresCount: 'günlük tarifeli sefer',
-      cashNotice: 'Biletler otobüse binerken şoförden sadece nakit KM ile alınır.',
-      openGipsWeb: 'GIPS Sitesinde Aç',
-      flightsHeader: 'Tuzla Havalimanı (TZL) Direkt Uçuşları',
-      flightsSub: 'Tuzla Uluslararası Havalimanı (Dubrave), Wizz Air ile Avrupa\'nın ana merkezlerine doğrudan uçuşlar sunar.',
-      bookWizz: 'WizzAir.com\'dan Bilet Al',
-      airportSite: 'Tuzla Havalimanı Resmi Sitesi',
-      taxiHeader: 'Tuzla Lisanslı Taksi Durakları',
-      taxiSub: 'Resmi taksiler taksimetre ile çalışır. Havalimanı ile şehir merkezi arası yaklaşık 30–40 KM (15–20 €) tutar.',
-      callNow: 'Hemen Taksi Çağır',
-      rentacarHeader: 'TZL Havalimanında Araç Kiralama',
-      rentacarSub: 'Kiralama ofisleri Tuzla Havalimanı gelen yolcu terminalindedir. Önceden rezervasyon önerilir.',
-      callAgency: 'Acenteyi Ara',
-      emailAgency: 'E-posta Gönder'
-=======
   // International Bus Lines from Transturist Tuzla (transturist.ba)
   const INTERNATIONAL_BUS_LINES = [
     {
@@ -926,7 +800,6 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       domesticBusDesc: 'Sarajevo\'ya Kladanj-Olovo üzerinden direkt bağlantı, günde birkaç sefer.',
       viewTimetable: 'Tüm Seferleri Gör & Rezervasyon Yap',
       transturistOfficial: 'Transturist Resmi Web Sitesi'
->>>>>>> 518f660bd2795b83b1401455a2f2799e481c4328
     }
   } as const;
 
@@ -944,14 +817,6 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
             <Compass className="w-3.5 h-3.5" />
             <span>Tuzla Transit Hub</span>
           </div>
-<<<<<<< HEAD
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight uppercase">
-            {currentT.title}
-          </h1>
-          <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed font-medium">
-            {currentT.subtitle}
-          </p>
-=======
           <span className="mt-2 text-xs font-bold text-blue-700 uppercase tracking-wider text-center group-hover:text-blue-900 transition-colors">
             {translations.gipsLabel}
           </span>
@@ -1011,7 +876,6 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
             <Bus className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>{translations.internationalBus}</span>
           </button>
->>>>>>> 518f660bd2795b83b1401455a2f2799e481c4328
         </div>
       </div>
 
@@ -1020,11 +884,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('bus')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
-            activeSection === 'bus'
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'bus'
               ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-          }`}
+            }`}
         >
           <Bus className="w-4 h-4 shrink-0" />
           <span>{currentT.busesTab}</span>
@@ -1033,11 +896,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('flights')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
-            activeSection === 'flights'
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'flights'
               ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-          }`}
+            }`}
         >
           <Plane className="w-4 h-4 shrink-0" />
           <span>{currentT.flightsTab}</span>
@@ -1046,11 +908,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('taxi')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
-            activeSection === 'taxi'
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'taxi'
               ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-          }`}
+            }`}
         >
           <Car className="w-4 h-4 shrink-0" />
           <span>{currentT.taxiTab}</span>
@@ -1059,11 +920,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('rentacar')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
-            activeSection === 'rentacar'
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'rentacar'
               ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-          }`}
+            }`}
         >
           <KeyRound className="w-4 h-4 shrink-0" />
           <span>{currentT.rentacarTab}</span>
@@ -1126,11 +986,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
                     key={line.id}
                     type="button"
                     onClick={() => setSelectedBusLine(line.lineNumber)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all text-center relative ${
-                      isSelected
+                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all text-center relative ${isSelected
                         ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500/30'
                         : 'border-slate-200 bg-slate-50/50 hover:bg-slate-100/70 hover:border-slate-300'
-                    }`}
+                      }`}
                   >
                     <span className={`text-xl font-black ${isSelected ? 'text-blue-700' : 'text-slate-800'}`}>
                       {line.lineNumber}
@@ -1230,22 +1089,20 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
                   <button
                     type="button"
                     onClick={() => setScheduleType('workday')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
-                      scheduleType === 'workday'
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${scheduleType === 'workday'
                         ? 'bg-white text-blue-900 shadow-sm'
                         : 'text-slate-600 hover:text-slate-900'
-                    }`}
+                      }`}
                   >
                     {currentT.workdays}
                   </button>
                   <button
                     type="button"
                     onClick={() => setScheduleType('weekend')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
-                      scheduleType === 'weekend'
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${scheduleType === 'weekend'
                         ? 'bg-white text-blue-900 shadow-sm'
                         : 'text-slate-600 hover:text-slate-900'
-                    }`}
+                      }`}
                   >
                     {currentT.sunday}
                   </button>
@@ -1542,7 +1399,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
 
             <div className="flex items-center justify-between pt-2">
               <div className="text-xs text-slate-500">
-                <span className="font-semibold">Duration:</span> {INTERNATIONAL_BUS_LINES[0].duration} | 
+                <span className="font-semibold">Duration:</span> {INTERNATIONAL_BUS_LINES[0].duration} |
                 <span className="font-semibold">Price:</span> {INTERNATIONAL_BUS_LINES[0].price}
               </div>
               <div className="text-xs text-slate-400 font-medium">
