@@ -81,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
     {
       id: AppTab.TRANSPORTATION,
       icon: Bus,
-      label: { en: 'Transportation', bs: 'Transport', de: 'Transport', tr: 'Ulaşım' },
+      label: { en: 'Transportation', bs: 'Prevoz', de: 'Transport', tr: 'Ulaşım' },
       isSubItem: true,
       inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-800 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
       inactiveIconClass: 'text-blue-600',

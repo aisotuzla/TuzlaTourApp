@@ -662,27 +662,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           </div>
         </section>
 
-        {/* 3.5. GIPS BUS TRACKING */}
-        <div className="w-full flex justify-center my-8">
-          <a
-            href="https://www.gipstk.com/red-voznje/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex flex-col items-center justify-between p-3 rounded-3xl hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:scale-[1.02] transition-all duration-500 active:scale-95 bg-white/0 hover:bg-white/50 w-[240px]"
-          >
-            <div className="w-[240px] h-[150px] bg-white rounded-2xl shadow-lg border border-blue-100 flex items-center justify-center overflow-hidden group-hover:shadow-blue-200 group-hover:shadow-xl transition-shadow duration-300">
-              <img
-                src="/assets/Gallery/gipslogo.png"
-                alt="GIPS Logo"
-                className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <span className="mt-3 text-xs font-bold text-blue-700 uppercase tracking-wider text-center group-hover:text-blue-900 transition-colors">
-              {t.gipsLabel}
-            </span>
-          </a>
-        </div>
-
         {/* 4. PHOTO ALBUM */}
         <section>
           <div className="mb-10">
@@ -752,7 +731,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 <img
                   src="/assets/Gallery/ilovebos.webp"
                   alt="AISO Logo"
-                  className="w-20 h-16 object-contain pointer-events-none group-hover:scale-110 transition-transform"
+                  className="w-20 h-14 object-contain pointer-events-none group-hover:scale-150 transition-transform"
                 />
                 <span>AISO Tuzla</span>
               </a>
