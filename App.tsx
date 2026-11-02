@@ -29,6 +29,7 @@ import ARGuide from './components/ARGuide';
 const MapView = React.lazy(() => import('./components/MapView'));
 const History = React.lazy(() => import('./components/History'));
 const CityGuide = React.lazy(() => import('./components/CityGuide'));
+const Transportation = React.lazy(() => import('./components/Transportation'));
 const WalletShell = React.lazy(() => import('./components/Wallet'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
@@ -38,6 +39,7 @@ const getTabFromPath = (path: string): AppTab => {
     case '/': return AppTab.LANDING;
     case '/city-guide': return AppTab.CITY_GUIDE;
     case '/history': return AppTab.HISTORY;
+    case '/transportation': return AppTab.TRANSPORTATION;
     case '/map': return AppTab.MAP;
     case '/quest': return AppTab.QUEST;
     case '/wallet': return AppTab.WALLET;
@@ -54,6 +56,7 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.LANDING: return '/';
     case AppTab.CITY_GUIDE: return '/city-guide';
     case AppTab.HISTORY: return '/history';
+    case AppTab.TRANSPORTATION: return '/transportation';
     case AppTab.MAP: return '/map';
     case AppTab.QUEST: return '/quest';
     case AppTab.WALLET: return '/wallet';
@@ -224,6 +227,7 @@ const AppContent: React.FC = () => {
                   <Route path="/" element={<LandingPage lang={lang} onNavigate={navigateToTab} />} />
                   <Route path="/city-guide" element={<CityGuide lang={lang} />} />
                   <Route path="/history" element={<History lang={lang} />} />
+                  <Route path="/transportation" element={<Transportation lang={lang} />} />
                   <Route path="/map" element={
                     <MapView lang={lang} features={features} unlockedRewards={unlockedRewards} />
                   } />

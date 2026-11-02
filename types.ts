@@ -179,6 +179,7 @@ export enum AppTab {
   LANDING = 'landing',
   CITY_GUIDE = 'cityGuide',
   HISTORY = 'history',
+  TRANSPORTATION = 'transportation',
   FOOD = 'food',
   ACCOMMODATION = 'accommodation',
   MAP = 'map',

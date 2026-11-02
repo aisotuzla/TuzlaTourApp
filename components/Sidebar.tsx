@@ -13,7 +13,8 @@ import {
   Bed,
   X,
   History as HistoryIcon,
-  Heart
+  Heart,
+  Bus
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -69,6 +70,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
       id: AppTab.HISTORY,
       icon: HistoryIcon,
       label: { en: 'History', bs: 'Historija', de: 'Geschichte', tr: 'Tarih' },
+      isSubItem: true,
+      inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-800 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
+      inactiveIconClass: 'text-blue-600',
+      inactiveBorderClass: 'border-blue-100/60',
+      activeClass: 'bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-400 text-slate-950 font-black',
+      activeGlow: 'shadow-[0_6px_18px_rgba(245,158,11,0.4)]',
+      activeBorder: 'border-amber-300'
+    },
+    {
+      id: AppTab.TRANSPORTATION,
+      icon: Bus,
+      label: { en: 'Transportation', bs: 'Transport', de: 'Transport', tr: 'Ulaşım' },
       isSubItem: true,
       inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-800 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
       inactiveIconClass: 'text-blue-600',
@@ -242,21 +255,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
                   </motion.button>
                 );
               })}
-
-              <div className="pt-6 mt-2 flex flex-row items-center gap-6 px-4">
-                {/* Minimalist Taxi Button - Large Icon, Aligned Left */}
-                <button
-                  onClick={() => window.confirm("Taxi 1525?") && (window.location.href = 'tel:1525')}
-                  className="flex flex-col items-center group active:scale-95 transition-transform"
-                >
-                  <img
-                    src="/assets/Gallery/QuestQRLocations/Taxi1525.webp"
-                    alt="Taxi 1525"
-                    className="w-24 h-24 object-contain mb-1 transition-transform group-hover:scale-105"
-                  />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-900/60 group-hover:text-blue-600">Taxi 1525</span>
-                </button>
-              </div>
             </div>
 
             {/* Footer */}
