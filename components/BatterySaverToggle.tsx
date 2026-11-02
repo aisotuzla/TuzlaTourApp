@@ -150,7 +150,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
     return <BatteryFull className="w-5 h-5" />;
   };
 
-  const activeSaver = state.manualMode || state.autoMode;
+  const activeSaver = state.isSaverActive;
 
   if (!showDetailedStats) {
     return (
@@ -165,7 +165,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
               </div>
               <p className="text-slate-600 mb-4">
                 {lang === 'bs' 
-                  ? `Nivo baterije je kritično nisk ${formatBatteryPercentage(state.batteryLevel)}. Preporučujemo da omogućite štednju baterije.`
+                  ? `Nivo baterije je kritično nizak ${formatBatteryPercentage(state.batteryLevel)}. Preporučujemo da omogućite štednju baterije.`
                   : lang === 'de'
                     ? `Akku-Stand ist kritisch niedrig (${formatBatteryPercentage(state.batteryLevel)}). Bitte aktivieren Sie den Akku-Sparmodus.`
                     : lang === 'tr'
@@ -197,25 +197,31 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
         {compact ? (
           <button
             onClick={() => setShowModal(true)}
-            className={`w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/60 text-emerald-400 flex items-center justify-center shadow-lg hover:bg-emerald-500/30 active:scale-95 transition-all shrink-0 ${className}`}
-            title={activeSaver ? `${t.saverActive} (${formatBatteryPercentage(state.batteryLevel)})` : `${t.batterySaver} (${formatBatteryPercentage(state.batteryLevel)})`}
+            className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-lg active:scale-95 transition-all shrink-0 border ${
+              activeSaver
+                ? 'bg-amber-500/25 border-amber-400 text-amber-300 ring-2 ring-amber-400/40 shadow-[0_0_12px_rgba(251,191,36,0.35)]'
+                : 'bg-slate-900/60 border-white/20 text-slate-300 hover:text-white hover:border-white/40'
+            } ${className}`}
+            title={activeSaver ? `${t.saverActive} (15 FPS)` : `${t.batterySaver} (30 FPS)`}
             aria-label={t.batterySaver}
           >
-            {getBatteryIconComponent()}
+            {activeSaver ? <Zap className="w-5 h-5 text-amber-400 animate-pulse" /> : getBatteryIconComponent()}
           </button>
         ) : (
           <button
             onClick={() => setShowModal(true)}
             className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all ${className}`}
             style={{
-              borderColor: activeSaver ? '#ef4444' : '#3b82f6',
-              backgroundColor: activeSaver ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+              borderColor: activeSaver ? '#f59e0b' : '#3b82f6',
+              backgroundColor: activeSaver ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.1)',
             }}
             title={activeSaver ? t.saverActive : t.normalMode}
           >
-            {getBatteryIconComponent()}
-            <span className={`font-semibold text-sm ${getBatteryColor()}`}>
-              {formatBatteryPercentage(state.batteryLevel)}
+            {activeSaver ? <Zap className="w-4 h-4 text-amber-500" /> : getBatteryIconComponent()}
+            <span className={`font-semibold text-sm ${activeSaver ? 'text-amber-500' : getBatteryColor()}`}>
+              {state.isBatteryApiSupported && state.batteryLevel !== null
+                ? formatBatteryPercentage(state.batteryLevel)
+                : (activeSaver ? (lang === 'bs' ? 'Štednja 15 FPS' : 'Eco 15 FPS') : (lang === 'bs' ? 'Standard 30 FPS' : '30 FPS'))}
             </span>
             {activeSaver && <Zap className="w-4 h-4 text-amber-500" />}
           </button>
@@ -227,7 +233,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
             <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  {getBatteryIconComponent()}
+                  {activeSaver ? <Zap className="w-6 h-6 text-amber-500" /> : getBatteryIconComponent()}
                   <h3 className="text-lg font-bold text-slate-800">{t.batterySaver}</h3>
                 </div>
                 <button
@@ -240,29 +246,49 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
 
               {/* Battery Status */}
               <div className="bg-slate-50 rounded-lg p-4 mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-slate-600">{t.batteryLevel}</span>
-                  <span className={`font-bold ${getBatteryColor()}`}>
-                    {formatBatteryPercentage(state.batteryLevel)}
-                  </span>
-                </div>
-                <div className="w-full bg-slate-200 rounded-full h-2 mb-2">
-                  <div
-                    className={`h-2 rounded-full transition-all ${getBatteryColor().replace('text-', 'bg-')}`}
-                    style={{ width: `${(state.batteryLevel || 0) * 100}%` }}
-                  />
-                </div>
-                {state.isCharging && (
-                  <p className="text-sm text-green-600 flex items-center gap-1">
-                    <BatteryCharging className="w-4 h-4" />
-                    {t.charging}
-                  </p>
+                {state.isBatteryApiSupported && state.batteryLevel !== null ? (
+                  <>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-slate-600">{t.batteryLevel}</span>
+                      <span className={`font-bold ${getBatteryColor()}`}>
+                        {formatBatteryPercentage(state.batteryLevel)}
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-2">
+                      <div
+                        className={`h-2 rounded-full transition-all ${getBatteryColor().replace('text-', 'bg-')}`}
+                        style={{ width: `${(state.batteryLevel || 0) * 100}%` }}
+                      />
+                    </div>
+                    {state.isCharging && (
+                      <p className="text-sm text-green-600 flex items-center gap-1">
+                        <BatteryCharging className="w-4 h-4" />
+                        {t.charging}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <div className="mb-2">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold text-slate-700">{t.batteryLevel}</span>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        activeSaver ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {activeSaver ? (lang === 'bs' ? 'Štednja aktivna' : 'Saver Active') : (lang === 'bs' ? 'Standard 30 FPS' : 'Standard 30 FPS')}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-tight">
+                      {lang === 'bs'
+                        ? 'Preglednik (npr. iOS Safari) štiti privatnost i ne otkriva hardverski nivo baterije. Ručna štednja direktno rasterećuje kameru, GPS i animacije.'
+                        : 'Browser privacy protects battery percentage. Manual power saver directly throttles camera, GPS and AR animation loop.'}
+                    </p>
+                  </div>
                 )}
-                <p className="text-sm text-slate-500 flex items-center gap-1">
+                <p className="text-sm text-slate-500 flex items-center gap-1 mt-2">
                   {state.isStationary ? (
                     <>
                       <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                      {t.stationery}
+                      {t.stationery} (Eco)
                     </>
                   ) : (
                     <>
@@ -282,14 +308,17 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                   }}
                   className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
                     !activeSaver 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-slate-200 bg-white'
+                      ? 'border-blue-500 bg-blue-50 shadow-sm' 
+                      : 'border-slate-200 bg-white hover:border-slate-300'
                   }`}
                 >
-                  <div className={`w-6 h-6 rounded-full transition-colors ${
-                    !activeSaver ? 'bg-blue-500' : 'bg-slate-300'
-                  }`} />
+                  <div className={`w-6 h-6 rounded-full transition-colors flex items-center justify-center ${
+                    !activeSaver ? 'bg-blue-500 text-white' : 'bg-slate-300'
+                  }`}>
+                    {!activeSaver && <Check className="w-3.5 h-3.5" />}
+                  </div>
                   <span className="font-semibold text-sm">{t.normalMode}</span>
+                  <span className="text-[10px] text-slate-500">30 FPS AR</span>
                 </button>
                 <button
                   onClick={() => {
@@ -298,14 +327,15 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                   }}
                   className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
                     activeSaver 
-                      ? 'border-amber-500 bg-amber-50' 
-                      : 'border-slate-200 bg-white'
+                      ? 'border-amber-500 bg-amber-50 shadow-sm' 
+                      : 'border-slate-200 bg-white hover:border-slate-300'
                   }`}
                 >
                   <Zap className={`w-6 h-6 transition-colors ${
-                    activeSaver ? 'text-amber-500' : 'text-slate-400'
+                    activeSaver ? 'text-amber-500 fill-amber-500' : 'text-slate-400'
                   }`} />
                   <span className="font-semibold text-sm">{t.saveBattery}</span>
+                  <span className="text-[10px] text-amber-700">15 FPS / Eco</span>
                 </button>
               </div>
 
@@ -315,7 +345,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-slate-600">{t.cameraFps}</span>
-                    <span className="font-mono text-slate-800">{recommendations.cameraFps} FPS</span>
+                    <span className="font-mono text-slate-800">{recommendations.cameraFps} FPS ({recommendations.cameraWidth}x{recommendations.cameraHeight})</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-600">{t.animations}</span>
@@ -324,13 +354,13 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                   <div className="flex justify-between">
                     <span className="text-slate-600">{t.gpsAccuracy}</span>
                     <span className="font-mono text-slate-800">
-                      {recommendations.enableHighAccuracyGPS ? 'High' : 'Normal'}
+                      {recommendations.enableHighAccuracyGPS ? 'High' : 'Eco Throttled'}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-600">{t.effects}</span>
                     <span className="font-mono text-slate-800">
-                      {recommendations.enableGlowEffects ? 'Enabled' : 'Disabled'}
+                      {recommendations.enableGlowEffects ? 'Enabled' : 'Disabled (Eco)'}
                     </span>
                   </div>
                 </div>
@@ -354,10 +384,14 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
     <div className={`bg-white rounded-xl shadow-lg p-4 border ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          {getBatteryIconComponent()}
+          {activeSaver ? <Zap className="w-5 h-5 text-amber-500" /> : getBatteryIconComponent()}
           <div>
             <h3 className="font-bold text-slate-800">{t.batterySaver}</h3>
-            <p className="text-sm text-slate-500">{formatBatteryPercentage(state.batteryLevel)}</p>
+            <p className="text-sm text-slate-500">
+              {state.isBatteryApiSupported && state.batteryLevel !== null
+                ? formatBatteryPercentage(state.batteryLevel)
+                : (activeSaver ? 'Eco 15 FPS' : 'Standard 30 FPS')}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -373,12 +407,14 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
       </div>
 
       {/* Battery Status Bar */}
-      <div className="w-full bg-slate-200 rounded-full h-2 mb-4">
-        <div
-          className={`h-2 rounded-full transition-all ${getBatteryColor().replace('text-', 'bg-')}`}
-          style={{ width: `${(state.batteryLevel || 0) * 100}%` }}
-        />
-      </div>
+      {state.isBatteryApiSupported && state.batteryLevel !== null && (
+        <div className="w-full bg-slate-200 rounded-full h-2 mb-4">
+          <div
+            className={`h-2 rounded-full transition-all ${getBatteryColor().replace('text-', 'bg-')}`}
+            style={{ width: `${(state.batteryLevel || 0) * 100}%` }}
+          />
+        </div>
+      )}
 
       {/* Status Indicators */}
       <div className="grid grid-cols-2 gap-4 text-sm">
@@ -404,10 +440,10 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
       <div className="mt-4 pt-4 border-t border-slate-100">
         <h4 className="font-semibold text-slate-700 mb-2">{t.recommendations}</h4>
         <div className="text-sm text-slate-600 space-y-1">
-          <p>{t.cameraFps}: {recommendations.cameraFps} FPS</p>
+          <p>{t.cameraFps}: {recommendations.cameraFps} FPS ({recommendations.cameraWidth}x{recommendations.cameraHeight})</p>
           <p>{t.animations}: {recommendations.animationFps} FPS</p>
-          <p>{t.gpsAccuracy}: {recommendations.enableHighAccuracyGPS ? 'High' : 'Normal'}</p>
-          <p>{t.effects}: {recommendations.enableGlowEffects ? 'Enabled' : 'Disabled'}</p>
+          <p>{t.gpsAccuracy}: {recommendations.enableHighAccuracyGPS ? 'High' : 'Eco Throttled'}</p>
+          <p>{t.effects}: {recommendations.enableGlowEffects ? 'Enabled' : 'Disabled (Eco)'}</p>
         </div>
       </div>
 
@@ -421,7 +457,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
             </div>
             <p className="text-slate-600 mb-4">
               {lang === 'bs' 
-                ? `Nivo baterije je kritično nisk ${formatBatteryPercentage(state.batteryLevel)}.`
+                ? `Nivo baterije je kritično nizak ${formatBatteryPercentage(state.batteryLevel)}.`
                 : lang === 'de'
                   ? `Akku-Stand ist kritisch niedrig (${formatBatteryPercentage(state.batteryLevel)}).`
                   : lang === 'tr'

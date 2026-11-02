@@ -159,19 +159,19 @@ const makeMapFx = (qualityLevel: QuestQualityLevel): QuestPolicyMapFx => {
 const makeArFx = (qualityLevel: QuestQualityLevel): QuestPolicyArFx => {
   if (qualityLevel === 'utility') {
     return {
-      targetFps: 14,
+      targetFps: 15,
       cameraOnMeters: 6,
       cameraOffMeters: 9,
       cameraWidth: 480,
       cameraHeight: 360,
       cameraIdealFps: 15,
-      cameraMaxFps: 20,
+      cameraMaxFps: 15,
     };
   }
 
   if (qualityLevel === 'balanced') {
     return {
-      targetFps: 22,
+      targetFps: 24,
       cameraOnMeters: 8,
       cameraOffMeters: 12,
       cameraWidth: 640,

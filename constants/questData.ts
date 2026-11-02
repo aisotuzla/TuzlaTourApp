@@ -12,6 +12,7 @@ export interface QuestTarget {
   website?: string;
   panorama?: string;
   panoramaHaov?: number;
+  rewardHtml?: string;
 }
 
 export interface RoutePoiPreset {
@@ -25,7 +26,7 @@ export interface RoutePoiPreset {
 }
 
 export const QUEST_TARGETS: QuestTarget[] = [
-  { id: 'trg_slobode', name: { en: 'Freedom Square', bs: 'Trg slobode' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRTrgSlobode.png', Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp', audio: '/audio/FreedomSquare.mp3' },
+  { id: 'trg_slobode', name: { en: 'Freedom Square', bs: 'Trg slobode' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRTrgSlobode.png', Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp', audio: '/audio/FreedomSquare.mp3', rewardHtml: '/assets/PoveljaKulinaBana.html' },
   { id: 'salt_square', name: { en: 'Salt Square', bs: 'Solni trg' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRsonitrg.png', Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp' },
   { id: 'palancinkara', name: { en: 'Pancake Bagi', bs: 'Palančikara Bagi' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpalacinkara.webp', Image: '/assets/Gallery/Food/bagi.webp' },
   { id: 'slana_banja', name: { en: 'Slana Banja', bs: 'Slana Banja' }, Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRBanja.png', Image: '/assets/Gallery/Photos/tuzla24.webp', audio: '/audio/SaltPark.mp3' },

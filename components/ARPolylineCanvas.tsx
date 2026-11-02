@@ -9,6 +9,7 @@ export interface ARPolylineCanvasProps {
   isActive?: boolean; // If false (viewMode !== 'AR'), loop is stopped completely to save CPU/battery
   className?: string;
   color?: string; // Optional custom color from target POI phase color
+  targetFps?: number; // Target frame rate (30 FPS normal, 15 FPS saver)
 }
 
 export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
@@ -19,6 +20,7 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
   isActive = true,
   className = 'absolute inset-0 pointer-events-none z-10 w-full h-full',
   color,
+  targetFps = 30,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -88,8 +90,8 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const targetFps = 30;
-    const frameInterval = 1000 / targetFps;
+    const effectiveFps = targetFps || 30;
+    const frameInterval = 1000 / effectiveFps;
 
     const render = (timestamp: number) => {
       const elapsed = timestamp - lastFrameTimeRef.current;

@@ -662,6 +662,27 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
           </div>
         </section>
 
+        {/* 3.5. GIPS BUS TRACKING */}
+        <div className="w-full flex justify-center my-8">
+          <a
+            href="https://www.gipstk.com/red-voznje/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex flex-col items-center justify-between p-3 rounded-3xl hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:scale-[1.02] transition-all duration-500 active:scale-95 bg-white/0 hover:bg-white/50 w-[240px]"
+          >
+            <div className="w-[240px] h-[150px] bg-white rounded-2xl shadow-lg border border-blue-100 flex items-center justify-center overflow-hidden group-hover:shadow-blue-200 group-hover:shadow-xl transition-shadow duration-300">
+              <img
+                src="/assets/Gallery/gipslogo.png"
+                alt="GIPS Logo"
+                className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <span className="mt-3 text-xs font-bold text-blue-700 uppercase tracking-wider text-center group-hover:text-blue-900 transition-colors">
+              {t.gipsLabel}
+            </span>
+          </a>
+        </div>
+
         {/* 4. PHOTO ALBUM */}
         <section>
           <div className="mb-10">
@@ -687,8 +708,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
         </section>
 
-
-        {/* 4.6. SOCIAL & COMMUNITY (DIRECTLY BELOW GALLERY) */}
+        {/* 4.6. SOCIAL & COMMUNITY */}
         <section className="pt-8 pb-4">
           <div className="mb-8 text-center flex flex-col items-center">
             <h2 className="text-[28px] font-black text-blue-900 tracking-tight uppercase font-quicksand">
@@ -730,53 +750,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 className="flex items-center gap-2 group hover:text-blue-600 transition-colors border-b-2 border-transparent hover:border-blue-600 pb-1 text-slate-600"
               >
                 <img
-                  src="/assets/icons/aisologo.webp"
+                  src="/assets/Gallery/ilovebos.webp"
                   alt="AISO Logo"
-                  className="w-6 h-6 object-contain pointer-events-none group-hover:scale-110 transition-transform"
+                  className="w-16 h-16 object-contain pointer-events-none group-hover:scale-110 transition-transform"
                 />
                 <span>AISO Tuzla</span>
               </a>
             </div>
 
-            {/* GIPS & POVRATAK NA VRH SIDE-BY-SIDE BENEATH AISO TUZLA */}
-            <div className="w-full flex flex-wrap justify-center items-end gap-6 sm:gap-10 mt-2 mb-6">
-              {/* GIPS BUS TRACKING */}
-              <a
-                href="https://www.gipstk.com/red-voznje/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col items-center justify-between p-3 rounded-3xl hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:scale-[1.02] transition-all duration-500 active:scale-95 bg-white/0 hover:bg-white/50 w-[240px]"
-              >
-                <div className="w-[240px] h-[150px] bg-white rounded-2xl shadow-lg border border-blue-100 flex items-center justify-center overflow-hidden group-hover:shadow-blue-200 group-hover:shadow-xl transition-shadow duration-300">
-                  <img
-                    src="/assets/Gallery/gipslogo.png"
-                    alt="GIPS Logo"
-                    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <span className="mt-3 text-xs font-bold text-blue-700 uppercase tracking-wider text-center group-hover:text-blue-900 transition-colors">
-                  {t.gipsLabel}
-                </span>
-              </a>
-
-              {/* POVRATAK NA VRH VIA IMAGE */}
-              <button
-                type="button"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="group flex flex-col items-center justify-between p-3 rounded-3xl hover:shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:scale-[1.02] transition-all duration-500 active:scale-95 bg-white/0 hover:bg-white/50 cursor-pointer w-[240px]"
-                title={t.backToTop}
-                aria-label={t.backToTop}
-              >
-                <img
-                  src="/assets/Gallery/ilovebos.webp"
-                  alt="I Love Bosnia - Povratak na vrh"
-                  className="w-[240px] h-[150px] object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-500 rounded-2xl"
-                />
-                <span className="mt-3 text-xs font-bold uppercase tracking-wider text-blue-700 group-hover:text-blue-900 transition-colors">
-                  {t.backToTop}
-                </span>
-              </button>
-            </div>
           </div>
         </section>
       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AppFeatures } from '../utils/platform';
 import {
   QuestQualityLevel,
@@ -40,10 +40,17 @@ type NavigatorWithBattery = Navigator & {
 
 const readInitialMode = (): QuestQualityMode => {
   if (typeof window === 'undefined') return 'auto';
-  return sanitizeQualityMode(window.localStorage.getItem(STORAGE_KEY));
+  const savedQuality = window.localStorage.getItem(STORAGE_KEY);
+  if (savedQuality) return sanitizeQualityMode(savedQuality);
+  const legacySaver = window.localStorage.getItem('tuzla.batterySaver.manualMode');
+  if (legacySaver === 'true') return 'saver';
+  return 'auto';
 };
 
 const readConnectionSignals = (): Pick<QuestRuntimeSignals, 'saveData' | 'effectiveConnectionType'> => {
+  if (typeof navigator === 'undefined') {
+    return { saveData: false, effectiveConnectionType: null };
+  }
   const nav = navigator as NavigatorWithBattery;
   return {
     saveData: Boolean(nav.connection?.saveData),
@@ -58,11 +65,45 @@ export const useQuestRuntimePolicy = (features: AppFeatures): UseQuestRuntimePol
   const [activeLevel, setActiveLevel] = useState<QuestQualityLevel>(features.isAndroidLight ? 'balanced' : 'cinematic');
   const lastSwitchAtRef = useRef<number>(Date.now());
 
-  useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, mode);
-  }, [mode]);
+  const setMode = useCallback((newMode: QuestQualityMode) => {
+    setModeState(newMode);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(STORAGE_KEY, newMode);
+      window.localStorage.setItem('tuzla.batterySaver.manualMode', newMode === 'saver' ? 'true' : 'false');
+      window.dispatchEvent(new CustomEvent('tuzla:quality-mode-changed', { detail: { mode: newMode } }));
+    }
+  }, []);
 
+  // Listen for cross-component / cross-tab quality mode changes
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleModeEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ mode: QuestQualityMode }>;
+      if (customEvent.detail?.mode) {
+        setModeState(sanitizeQualityMode(customEvent.detail.mode));
+      } else {
+        setModeState(readInitialMode());
+      }
+    };
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY || e.key === 'tuzla.batterySaver.manualMode') {
+        setModeState(readInitialMode());
+      }
+    };
+
+    window.addEventListener('tuzla:quality-mode-changed', handleModeEvent);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('tuzla:quality-mode-changed', handleModeEvent);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
+
+  // Safe battery monitoring (iOS Safari, Firefox, and Chrome)
+  useEffect(() => {
+    if (typeof navigator === 'undefined') return;
     const nav = navigator as NavigatorWithBattery;
     if (typeof nav.getBattery !== 'function') return;
 
@@ -70,34 +111,41 @@ export const useQuestRuntimePolicy = (features: AppFeatures): UseQuestRuntimePol
     let cancelled = false;
 
     const syncBattery = () => {
-      if (!batteryRef) return;
+      if (!batteryRef || cancelled) return;
       const level = normalizeBatteryLevel(typeof batteryRef.level === 'number' ? batteryRef.level : null);
       const saving = batteryRef.charging === false && typeof level === 'number' && level <= 0.2;
       setBatteryState({ level, saving });
     };
 
-    nav.getBattery()
-      .then((battery) => {
-        if (cancelled) return;
-        batteryRef = battery;
-        syncBattery();
-        batteryRef.addEventListener('levelchange', syncBattery);
-        batteryRef.addEventListener('chargingchange', syncBattery);
-      })
-      .catch(() => {
-        // No-op: battery API is optional.
-      });
+    try {
+      nav.getBattery()
+        .then((battery) => {
+          if (cancelled || !battery) return;
+          batteryRef = battery;
+          syncBattery();
+          batteryRef.addEventListener('levelchange', syncBattery);
+          batteryRef.addEventListener('chargingchange', syncBattery);
+        })
+        .catch(() => {
+          // Graceful fallback: battery API blocked or unsupported
+        });
+    } catch {
+      // Graceful fallback for security / permission restrictions
+    }
 
     return () => {
       cancelled = true;
       if (batteryRef) {
-        batteryRef.removeEventListener('levelchange', syncBattery);
-        batteryRef.removeEventListener('chargingchange', syncBattery);
+        try {
+          batteryRef.removeEventListener('levelchange', syncBattery);
+          batteryRef.removeEventListener('chargingchange', syncBattery);
+        } catch {}
       }
     };
   }, []);
 
   useEffect(() => {
+    if (typeof navigator === 'undefined') return;
     const nav = navigator as NavigatorWithBattery;
     if (!nav.connection || typeof (nav.connection as EventTarget).addEventListener !== 'function') return;
 
@@ -140,6 +188,6 @@ export const useQuestRuntimePolicy = (features: AppFeatures): UseQuestRuntimePol
   return {
     policy,
     mode,
-    setMode: setModeState,
+    setMode,
   };
 };

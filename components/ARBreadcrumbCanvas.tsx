@@ -10,6 +10,7 @@ export interface ARBreadcrumbCanvasProps {
   isActive?: boolean;
   onTargetLocked?: (target: PoiTarget) => void;
   className?: string;
+  targetFps?: number;
 }
 
 export const ARBreadcrumbCanvas: React.FC<ARBreadcrumbCanvasProps> = ({
@@ -20,6 +21,7 @@ export const ARBreadcrumbCanvas: React.FC<ARBreadcrumbCanvasProps> = ({
   isActive = true,
   onTargetLocked,
   className = 'absolute inset-0 pointer-events-none z-15 w-full h-full',
+  targetFps = 30,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -64,6 +66,7 @@ export const ARBreadcrumbCanvas: React.FC<ARBreadcrumbCanvasProps> = ({
     heading,
     orientation,
     isActive,
+    targetFps,
     onTargetLocked,
   });
 

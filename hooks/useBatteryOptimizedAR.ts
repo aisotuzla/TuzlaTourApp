@@ -118,7 +118,7 @@ export function useBatteryOptimizedAR(
 
   // Calculate optimized state
   const state: BatteryOptimizedARState = useMemo(() => {
-    const isLow = batteryState.isLow || batteryState.isCritical;
+    const isLow = batteryState.isLow || batteryState.isCritical || batteryState.isSaverActive || batteryState.manualMode;
     const isCritical = batteryState.isCritical;
     
     return {
@@ -133,13 +133,13 @@ export function useBatteryOptimizedAR(
       cameraWidth: isCritical 
         ? 480 
         : isLow 
-          ? 640 
+          ? 480 
           : fullConfig.baseCameraWidth,
       
       cameraHeight: isCritical 
         ? 360 
         : isLow 
-          ? 480 
+          ? 360 
           : fullConfig.baseCameraHeight,
       
       animationFps: isCritical 
@@ -153,13 +153,13 @@ export function useBatteryOptimizedAR(
       gpsInterval: isCritical 
         ? 5000 
         : isLow 
-          ? 2000 
+          ? 2500 
           : isStationary 
             ? 3000 
             : fullConfig.baseGpsInterval,
       
       isStationary,
-      isLowBattery: batteryState.isLow,
+      isLowBattery: batteryState.isLow || batteryState.isSaverActive,
       isCriticalBattery: batteryState.isCritical,
       isCharging: batteryState.isCharging,
     };
@@ -167,6 +167,8 @@ export function useBatteryOptimizedAR(
     batteryState.isLow, 
     batteryState.isCritical, 
     batteryState.isCharging,
+    batteryState.isSaverActive,
+    batteryState.manualMode,
     isStationary,
     fullConfig
   ]);

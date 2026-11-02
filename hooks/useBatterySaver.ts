@@ -46,10 +46,12 @@ export interface BatterySaverState {
   batteryLevel: number | null;         // Current battery level (0-1)
   isCharging: boolean;                 // Whether device is charging
   isCritical: boolean;                 // Battery is critically low
-  isLow: boolean;                       // Battery is low
+  isLow: boolean;                      // Battery is low
   isStationary: boolean;               // User is not moving
-  manualMode: boolean;                  // User has manually enabled battery saver
+  manualMode: boolean;                 // User has manually enabled battery saver
   autoMode: boolean;                   // Battery saver auto-activated due to low battery
+  isSaverActive: boolean;              // Master flag: true if manualMode, autoMode, isCritical, or isLow
+  isBatteryApiSupported: boolean;      // True if browser supports navigator.getBattery (false on iOS/Safari)
 }
 
 export interface BatterySaverActions {
@@ -92,7 +94,7 @@ const DEFAULT_CONFIG: BatterySaverConfig = {
   cameraFpsCritical: 10,
   
   gpsIntervalNormal: 1000,
-  gpsIntervalLowBattery: 2000,
+  gpsIntervalLowBattery: 2500,
   gpsIntervalCritical: 5000,
   
   animationFpsNormal: 30,
@@ -124,7 +126,12 @@ const normalizeBatteryLevel = (value: number | null): number | null => {
   return Math.min(1, Math.max(0, value));
 };
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const readInitialSaverMode = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  const qMode = window.localStorage.getItem('tuzla.quest.quality-mode');
+  if (qMode === 'saver') return true;
+  return window.localStorage.getItem('tuzla.batterySaver.manualMode') === 'true';
+};
 
 /**
  * Hook for managing battery saver mode
@@ -139,34 +146,51 @@ export function useBatterySaver(config: Partial<BatterySaverConfig> = {}): {
   
   const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
   const [isCharging, setIsCharging] = useState<boolean>(false);
-  const [manualMode, setManualMode] = useState<boolean>(false);
+  const [manualMode, setManualMode] = useState<boolean>(readInitialSaverMode);
   const [isStationary, setIsStationary] = useState<boolean>(false);
+  const [isBatteryApiSupported, setIsBatteryApiSupported] = useState<boolean>(() => {
+    return typeof navigator !== 'undefined' && 'getBattery' in navigator && typeof (navigator as any).getBattery === 'function';
+  });
   
   const batteryRef = useRef<BatteryLike | null>(null);
   const lastPositionRef = useRef<{ lat: number; lng: number; timestamp: number } | null>(null);
   
-  // Load saved manual mode preference from localStorage
+  // Listen for quality-mode and storage events to stay completely in sync with useQuestRuntimePolicy
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedMode = window.localStorage.getItem('tuzla.batterySaver.manualMode');
-      if (savedMode !== null) {
-        setManualMode(savedMode === 'true');
+    if (typeof window === 'undefined') return;
+
+    const handleModeEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ mode: string }>;
+      if (customEvent.detail?.mode) {
+        setManualMode(customEvent.detail.mode === 'saver');
+      } else {
+        setManualMode(readInitialSaverMode());
       }
-    }
+    };
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'tuzla.quest.quality-mode' || e.key === 'tuzla.batterySaver.manualMode') {
+        setManualMode(readInitialSaverMode());
+      }
+    };
+
+    window.addEventListener('tuzla:quality-mode-changed', handleModeEvent);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('tuzla:quality-mode-changed', handleModeEvent);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
-  // Save manual mode preference to localStorage
+  // Battery API monitoring with safe fallback for iOS Safari and restricted contexts
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('tuzla.batterySaver.manualMode', String(manualMode));
+    if (typeof navigator === 'undefined') {
+      setIsBatteryApiSupported(false);
+      return;
     }
-  }, [manualMode]);
-
-  // Battery API monitoring
-  useEffect(() => {
     const nav = navigator as NavigatorWithBattery;
     if (typeof nav.getBattery !== 'function') {
-      // Battery API not available, use fallback values
+      setIsBatteryApiSupported(false);
       return;
     }
 
@@ -179,26 +203,34 @@ export function useBatterySaver(config: Partial<BatterySaverConfig> = {}): {
       if (!cancelled) {
         setBatteryLevel(level);
         setIsCharging(charging);
+        setIsBatteryApiSupported(true);
       }
     };
 
-    nav.getBattery()
-      .then((battery) => {
-        if (cancelled) return;
-        batteryRef.current = battery;
-        syncBattery();
-        battery.addEventListener('levelchange', syncBattery);
-        battery.addEventListener('chargingchange', syncBattery);
-      })
-      .catch(() => {
-        // Battery API failed or not supported
-      });
+    try {
+      nav.getBattery()
+        .then((battery) => {
+          if (cancelled || !battery) return;
+          batteryRef.current = battery;
+          setIsBatteryApiSupported(true);
+          syncBattery();
+          battery.addEventListener('levelchange', syncBattery);
+          battery.addEventListener('chargingchange', syncBattery);
+        })
+        .catch(() => {
+          if (!cancelled) setIsBatteryApiSupported(false);
+        });
+    } catch {
+      if (!cancelled) setIsBatteryApiSupported(false);
+    }
 
     return () => {
       cancelled = true;
       if (batteryRef.current) {
-        batteryRef.current.removeEventListener('levelchange', syncBattery);
-        batteryRef.current.removeEventListener('chargingchange', syncBattery);
+        try {
+          batteryRef.current.removeEventListener('levelchange', syncBattery);
+          batteryRef.current.removeEventListener('chargingchange', syncBattery);
+        } catch {}
       }
     };
   }, []);
@@ -218,7 +250,6 @@ export function useBatterySaver(config: Partial<BatterySaverConfig> = {}): {
     );
 
     if (distanceMoved > fullConfig.stationaryThreshold) {
-      // User has moved significantly
       lastPositionRef.current = { lat, lng, timestamp };
       if (isStationary) setIsStationary(false);
     } else {
@@ -230,71 +261,107 @@ export function useBatterySaver(config: Partial<BatterySaverConfig> = {}): {
     }
   }, [fullConfig.stationaryThreshold, fullConfig.stationaryDuration, isStationary]);
 
-  // Calculate state
+  // Calculate master state
+  const isCritical = batteryLevel !== null && batteryLevel <= fullConfig.criticalBatteryThreshold;
+  const isLow = batteryLevel !== null && batteryLevel <= fullConfig.lowBatteryThreshold;
+  const autoMode = batteryLevel !== null && !manualMode && (isLow || isCritical);
+  const isSaverActive = manualMode || autoMode || isCritical || isLow;
+
   const state: BatterySaverState = {
     batteryLevel,
     isCharging,
-    isCritical: batteryLevel !== null && batteryLevel <= fullConfig.criticalBatteryThreshold,
-    isLow: batteryLevel !== null && batteryLevel <= fullConfig.lowBatteryThreshold,
+    isCritical,
+    isLow,
     isStationary,
     manualMode,
-    autoMode: batteryLevel !== null && !manualMode && 
-              (batteryLevel <= fullConfig.lowBatteryThreshold || batteryLevel <= fullConfig.criticalBatteryThreshold),
+    autoMode,
+    isSaverActive,
+    isBatteryApiSupported,
   };
 
-  // Actions
+  // Actions synchronize directly across app
+  const enableBatterySaver = useCallback(() => {
+    setManualMode(true);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('tuzla.batterySaver.manualMode', 'true');
+      window.localStorage.setItem('tuzla.quest.quality-mode', 'saver');
+      window.dispatchEvent(new CustomEvent('tuzla:quality-mode-changed', { detail: { mode: 'saver' } }));
+    }
+  }, []);
+
+  const disableBatterySaver = useCallback(() => {
+    setManualMode(false);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('tuzla.batterySaver.manualMode', 'false');
+      window.localStorage.setItem('tuzla.quest.quality-mode', 'auto');
+      window.dispatchEvent(new CustomEvent('tuzla:quality-mode-changed', { detail: { mode: 'auto' } }));
+    }
+  }, []);
+
+  const toggleBatterySaver = useCallback(() => {
+    setManualMode(prev => {
+      const next = !prev;
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('tuzla.batterySaver.manualMode', String(next));
+        window.localStorage.setItem('tuzla.quest.quality-mode', next ? 'saver' : 'auto');
+        window.dispatchEvent(new CustomEvent('tuzla:quality-mode-changed', { detail: { mode: next ? 'saver' : 'auto' } }));
+      }
+      return next;
+    });
+  }, []);
+
   const actions: BatterySaverActions = {
-    enableBatterySaver: useCallback(() => setManualMode(true), []),
-    disableBatterySaver: useCallback(() => setManualMode(false), []),
-    toggleBatterySaver: useCallback(() => setManualMode(prev => !prev), []),
+    enableBatterySaver,
+    disableBatterySaver,
+    toggleBatterySaver,
   };
 
-  // Generate recommendations based on current state
+  // Generate recommendations based on active saver state and stationary detection
   const recommendations: BatterySaverRecommendations = {
-    // Camera settings
-    cameraFps: state.isCritical 
+    // Camera settings: 15 FPS when saver active or stationary, 30 FPS normal
+    cameraFps: isCritical 
       ? fullConfig.cameraFpsCritical 
-      : state.isLow 
+      : isSaverActive 
         ? fullConfig.cameraFpsLowBattery 
-        : state.isStationary 
+        : isStationary 
           ? Math.min(fullConfig.cameraFpsLowBattery, fullConfig.cameraFpsNormal) 
           : fullConfig.cameraFpsNormal,
     
-    cameraWidth: state.isCritical ? 480 : state.isLow ? 640 : 960,
-    cameraHeight: state.isCritical ? 360 : state.isLow ? 480 : 720,
+    cameraWidth: isCritical ? 480 : isSaverActive ? 480 : 960,
+    cameraHeight: isCritical ? 360 : isSaverActive ? 360 : 720,
     
     // GPS settings
-    enableHighAccuracyGPS: !state.isLow && !state.isCritical && !state.isStationary,
-    gpsUpdateInterval: state.isCritical 
+    enableHighAccuracyGPS: !isSaverActive && !isStationary,
+    gpsUpdateInterval: isCritical 
       ? fullConfig.gpsIntervalCritical 
-      : state.isLow 
+      : isSaverActive 
         ? fullConfig.gpsIntervalLowBattery 
         : fullConfig.gpsIntervalNormal,
     
-    // Animation settings
-    animationFps: state.isCritical 
+    // Animation settings: 15 FPS saver, 30 FPS normal
+    animationFps: isCritical 
       ? fullConfig.animationFpsCritical 
-      : state.isLow 
+      : isSaverActive 
         ? fullConfig.animationFpsLowBattery 
         : fullConfig.animationFpsNormal,
     
-    enableInfiniteAnimations: !state.isCritical && !state.isLow,
+    enableInfiniteAnimations: !isSaverActive,
     
     // Visual effects
-    enableGlowEffects: state.isCritical || state.isLow 
+    enableGlowEffects: isSaverActive 
       ? fullConfig.enableGlowEffectsLowBattery 
       : fullConfig.enableGlowEffectsNormal,
     
-    enable3dBuildings: state.isCritical || state.isLow 
+    enable3dBuildings: isSaverActive 
       ? fullConfig.enable3dBuildingsLowBattery 
       : fullConfig.enable3dBuildingsNormal,
     
-    blurStrength: state.isCritical ? 'low' : state.isLow ? 'medium' : 'high',
-    glowStrength: state.isCritical ? 'low' : state.isLow ? 'medium' : 'high',
+    blurStrength: isSaverActive ? 'low' : 'medium',
+    glowStrength: isSaverActive ? 'low' : 'medium',
     
     // Feature restrictions
-    maxConcurrentAnimations: state.isCritical ? 1 : state.isLow ? 2 : 3,
-    enableBackgroundUpdates: !state.isCritical && !state.isLow,
+    maxConcurrentAnimations: isSaverActive ? 1 : 3,
+    enableBackgroundUpdates: !isSaverActive,
   };
 
   return {

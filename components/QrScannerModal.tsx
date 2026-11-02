@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Lock, Play, X, Trophy } from 'lucide-react';
+import { CheckCircle2, Lock, Play, X, Trophy, BookOpen } from 'lucide-react';
 import { Language } from '../types';
 import { QUEST_TARGETS, NFT_REWARD_IDS, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
@@ -32,6 +32,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 }) => {
   const [scannerFeedback, setScannerFeedback] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [activeVideoModal, setActiveVideoModal] = useState<{ url: string; title: string } | null>(null);
+  const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const scannerContainerId = 'map-quest-reader';
 
@@ -154,6 +155,14 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         });
         setTimeout(() => setScannerFeedback(null), 3000);
         onClose();
+
+        // Auto-open reward HTML if this target has one (e.g. Povelja Kulina Bana for Trg Slobode)
+        if (target.rewardHtml) {
+          const rewardTitle = target.name[lang as keyof typeof target.name] || target.name.en || target.name.bs;
+          setTimeout(() => {
+            setActiveRewardHtml({ url: target.rewardHtml!, title: rewardTitle });
+          }, 800);
+        }
       };
 
       const qrConfig = {
@@ -291,7 +300,9 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                             layout
                             className="group relative h-32 rounded-3xl overflow-hidden border border-amber-400/40 bg-white/5 shadow-xl transition-all active:scale-95 cursor-pointer"
                             onClick={() => {
-                              if (item.video) {
+                              if (item.rewardHtml) {
+                                setActiveRewardHtml({ url: item.rewardHtml, title: itemName });
+                              } else if (item.video) {
                                 setActiveVideoModal({ url: item.video, title: itemName });
                                 if (onSelectVideo) onSelectVideo(item.video);
                               } else if ((item as any).website) {
@@ -314,7 +325,12 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                                 {itemName}
                               </h3>
                             </div>
-                            {item.video && (
+                            {item.rewardHtml && (
+                              <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-gradient-to-tr from-amber-700 to-amber-500 border border-amber-300 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-600/40 group-hover:scale-110 transition-transform">
+                                <BookOpen className="w-5 h-5 text-white" />
+                              </div>
+                            )}
+                            {item.video && !item.rewardHtml && (
                               <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-gradient-to-tr from-amber-400 to-yellow-400 border border-yellow-200 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40 group-hover:scale-110 transition-transform">
                                 <Play className="w-5 h-5 text-slate-950 fill-slate-950 ml-0.5" />
                               </div>
@@ -499,6 +515,68 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                   className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
                 >
                   {lang === 'bs' ? 'Zatvori Video' : 'Close Video'}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* REWARD HTML MODAL (e.g. Povelja Kulina Bana for Trg Slobode) */}
+      <AnimatePresence>
+        {activeRewardHtml && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[7000] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-3 sm:p-6"
+          >
+            <div className="w-full h-full max-w-3xl max-h-[90vh] bg-black border border-amber-500/30 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col">
+              {/* Header */}
+              <div className="p-4 flex items-center justify-between border-b border-amber-500/20 bg-gradient-to-r from-amber-950/80 to-slate-950/80 shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
+                    <BookOpen className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider block">
+                      {lang === 'bs' ? '🏆 Nagrada' : '🏆 Reward'}
+                    </span>
+                    <h3 className="text-base font-black text-white uppercase tracking-tight">
+                      {activeRewardHtml.title}
+                    </h3>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setActiveRewardHtml(null)}
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Iframe Content */}
+              <div className="flex-1 relative bg-[#1b1511]">
+                <iframe
+                  src={activeRewardHtml.url}
+                  title={activeRewardHtml.title}
+                  className="w-full h-full border-0"
+                  style={{ minHeight: '400px' }}
+                  allow="accelerometer; autoplay; gyroscope"
+                  sandbox="allow-scripts allow-same-origin"
+                />
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 border-t border-amber-500/20 bg-gradient-to-r from-amber-950/80 to-slate-950/80 flex items-center justify-between shrink-0">
+                <span className="text-xs font-bold text-amber-400/70">
+                  {lang === 'bs' ? 'Povelja Kulina bana — 1189' : 'Charter of Kulin Ban — 1189'}
+                </span>
+                <button
+                  onClick={() => setActiveRewardHtml(null)}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 text-white font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
+                >
+                  {lang === 'bs' ? 'Zatvori' : 'Close'}
                 </button>
               </div>
             </div>

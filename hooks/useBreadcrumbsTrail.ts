@@ -74,10 +74,11 @@ export function useBreadcrumbTrail(opts: {
   phaseLabel?: string;
   isActive?: boolean;
   orientation?: DeviceOrientation | null;
+  targetFps?: number;
   // fires once when the user enters the geofence (trail hands off to reticle)
   onTargetLocked?: (target: PoiTarget) => void;
 }) {
-  const { canvasRef, route, target, heading, isActive = true, orientation, onTargetLocked } = opts;
+  const { canvasRef, route, target, heading, isActive = true, orientation, targetFps = CFG.FPS, onTargetLocked } = opts;
   const rafRef = useRef<number | null>(null);
   const lastDrawRef = useRef(0);
   const lockedRef = useRef(false);
@@ -99,7 +100,8 @@ export function useBreadcrumbTrail(opts: {
 
     const draw = (t: number) => {
       rafRef.current = requestAnimationFrame(draw);
-      if (t - lastDrawRef.current < 1000 / CFG.FPS) return;
+      const effectiveFps = targetFps || CFG.FPS;
+      if (t - lastDrawRef.current < 1000 / effectiveFps) return;
       lastDrawRef.current = t;
 
       const dpr = Math.min(window.devicePixelRatio || 1, 2);

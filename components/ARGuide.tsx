@@ -235,7 +235,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
   onRewardFound,
   initialTrailActive = true,
 }) => {
-  const { policy } = useQuestRuntimePolicy(features);
+  const { policy, mode, setMode } = useQuestRuntimePolicy(features);
   const t = AR_LOCALIZATION[lang] || AR_LOCALIZATION.en;
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -377,7 +377,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
           height: { ideal: policy.arFx.cameraHeight },
           frameRate: { 
             ideal: isStationary ? 15 : policy.arFx.cameraIdealFps, 
-            max: isStationary ? 20 : policy.arFx.cameraMaxFps 
+            max: isStationary ? 15 : policy.arFx.cameraMaxFps 
           },
         },
       });
@@ -398,6 +398,24 @@ export const ARGuide: React.FC<ARGuideProps> = ({
     if (videoRef.current) videoRef.current.srcObject = null;
     setCameraActive(false);
   }, []);
+
+  // Dynamically reconfigure hardware camera stream when policy (battery saver) changes without restart
+  useEffect(() => {
+    if (!streamRef.current) return;
+    const videoTrack = streamRef.current.getVideoTracks()[0];
+    if (!videoTrack || typeof videoTrack.applyConstraints !== 'function') return;
+
+    videoTrack.applyConstraints({
+      width: { ideal: policy.arFx.cameraWidth },
+      height: { ideal: policy.arFx.cameraHeight },
+      frameRate: {
+        ideal: isStationary ? 15 : policy.arFx.cameraIdealFps,
+        max: isStationary ? 15 : policy.arFx.cameraMaxFps,
+      },
+    }).catch((err) => {
+      console.warn('Dynamic track constraint update failed:', err);
+    });
+  }, [policy.arFx.cameraWidth, policy.arFx.cameraHeight, policy.arFx.cameraIdealFps, policy.arFx.cameraMaxFps, isStationary]);
 
   useEffect(() => {
     if (!permissionGranted || !isForeground) {
@@ -737,6 +755,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
             maxHorizonMeters={40}
             color={currentTargetColor}
             isActive={viewMode === 'AR' && isForeground}
+            targetFps={policy.arFx.targetFps || 30}
           />
         )}
 
@@ -761,6 +780,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
             }}
             orientation={orientationState}
             isActive={viewMode === 'AR' && isForeground && isTrailActive}
+            targetFps={policy.arFx.targetFps || 30}
             onTargetLocked={() => {
               if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
             }}
