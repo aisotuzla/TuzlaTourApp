@@ -11,9 +11,9 @@ import {
   Calendar,
   AlertCircle,
   Mail,
-  ChevronRight,
-  ShieldCheck,
-  Compass
+  Compass,
+  Globe,
+  Info
 } from 'lucide-react';
 import { Language } from '../types';
 
@@ -21,7 +21,7 @@ interface TransportationProps {
   lang: Language;
 }
 
-type TransportSection = 'flights' | 'bus' | 'taxi' | 'rentacar' | 'internationalBus';
+type TransportSection = 'bus' | 'internationalBus' | 'flights' | 'taxi' | 'rentacar';
 
 interface BusStopInfo {
   name: string;
@@ -407,6 +407,143 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
     }
   ];
 
+  // International and Domestic Intercity Bus Lines (Transturist Tuzla)
+  const INTERNATIONAL_BUS_LINES = [
+    {
+      id: 'tuzla-sarajevo',
+      route: 'Tuzla - Sarajevo',
+      via: 'Kladanj-Olovo',
+      departures: [
+        { time: '05:30', days: 'Mon, Tue, Wed, Thu, Fri' },
+        { time: '11:45', days: 'Every day' },
+        { time: '13:00', days: 'Every day' }
+      ],
+      arrivalTimes: ['08:30', '14:45', '16:00'],
+      returnTimes: ['10:30', '14:00', '17:00', '18:00'],
+      duration: '3h 0m - 3h 30m',
+      price: '21.00 KM (One way) / 34.80 KM (Return)',
+      priceEUR: '€10.50 (One way) / €17.40 (Return)',
+      carrier: 'TRANSTURIST',
+      bookingLink: 'https://buskarta.ba',
+      phone: '+387 35 320-321',
+      description: {
+        en: 'Direct bus line connecting Tuzla to Sarajevo via Kladanj and Olovo. Multiple daily departures with comfortable high-class buses.',
+        bs: 'Direktna autobuska linija Tuzla - Sarajevo preko Kladnja i Olova. Više dnevnih polazaka udobnim autobusima visoke klase.',
+        de: 'Direkte Busverbindung von Tuzla nach Sarajevo über Kladanj und Olovo. Mehrere tägliche Abfahrten mit komfortablen Hochklasse-Bussen.',
+        tr: 'Tuzla ve Sarajevo arasında Kladanj ve Olovo üzerinden direkt otobüs hattı. Günde birkaç sefer, konforlu yüksek sınıf otobüsler.'
+      }
+    },
+    {
+      id: 'tuzla-munich',
+      route: 'Tuzla - Munich',
+      via: 'Srebrenik-Brčko-Lončari-Orašje',
+      departures: [
+        { time: '10:30', days: 'Tue, Wed, Thu, Fri' },
+        { time: '18:00', days: 'Saturday' }
+      ],
+      arrivalTimes: ['01:30 (+1)', '09:00 (+1)'],
+      returnTimes: ['18:30', '18:30'],
+      duration: '15h 0m',
+      price: 'Varies by season (~120-160 KM)',
+      carrier: 'TRANSTURIST',
+      bookingLink: 'https://buskarta.ba',
+      phone: '+387 35 320-325',
+      description: {
+        en: 'International bus line from Tuzla to Munich, Germany. Overnight journey with modern coaches.',
+        bs: 'Međunarodna linija Tuzla - Minhen (Njemačka). Noćna vožnja modernim autobusima.',
+        de: 'Internationale Buslinie von Tuzla nach München. Nachtfahrt mit modernen Reisebussen.',
+        tr: 'Tuzla ve Münih (Almanya) arasındaki uluslararası otobüs hattı. Modern otobüslerle gece yolculuğu.'
+      }
+    },
+    {
+      id: 'tuzla-stuttgart',
+      route: 'Tuzla - Stuttgart',
+      via: 'Srebrenik-Brčko-Lončari-Orašje',
+      departures: [
+        { time: '10:30', days: 'Tue, Wed, Thu, Fri' },
+        { time: '18:00', days: 'Saturday' }
+      ],
+      arrivalTimes: ['04:45 (+1)', '12:45 (+1)'],
+      returnTimes: ['15:00', '15:00'],
+      duration: '16h 15m',
+      price: 'Varies by season',
+      carrier: 'TRANSTURIST',
+      bookingLink: 'https://buskarta.ba',
+      phone: '+387 35 320-325',
+      description: {
+        en: 'International bus line from Tuzla to Stuttgart, Germany. Long-distance overnight service.',
+        bs: 'Međunarodna linija Tuzla - Stuttgart (Njemačka). Dugopruga noćna usluga.',
+        de: 'Internationale Buslinie von Tuzla nach Stuttgart. Fernverkehr mit Nachtfahrt.',
+        tr: 'Tuzla ve Stuttgart (Almanya) arasındaki uluslararası otobüs hattı. Uzun mesafe gece servisi.'
+      }
+    },
+    {
+      id: 'tuzla-frankfurt',
+      route: 'Tuzla - Frankfurt',
+      via: 'Srebrenik-Brčko-Lončari-Orašje',
+      departures: [
+        { time: '10:30', days: 'Tue, Wed, Thu, Fri' },
+        { time: '18:00', days: 'Saturday' }
+      ],
+      arrivalTimes: ['08:30 (+1)', '16:00 (+1)'],
+      returnTimes: ['11:30', '11:30'],
+      duration: '21h 0m',
+      price: 'Varies by season',
+      carrier: 'TRANSTURIST',
+      bookingLink: 'https://buskarta.ba',
+      phone: '+387 35 320-325',
+      description: {
+        en: 'International bus line from Tuzla to Frankfurt, Germany. Overnight journey with stops.',
+        bs: 'Međunarodna linija Tuzla - Frankfurt (Njemačka). Noćna vožnja sa zastancima.',
+        de: 'Internationale Buslinie von Tuzla nach Frankfurt. Nachtfahrt mit Zwischenstopps.',
+        tr: 'Tuzla ve Frankfurt (Almanya) arasındaki uluslararası otobüs hattı. Duraklarla gece yolculuğu.'
+      }
+    },
+    {
+      id: 'tuzla-dortmund',
+      route: 'Tuzla - Dortmund',
+      via: 'Srebrenik-Brčko-Lončari-Orašje',
+      departures: [
+        { time: '10:30', days: 'Tue, Thu' },
+        { time: '18:00', days: 'Saturday' }
+      ],
+      arrivalTimes: ['13:50 (+1)', '21:20 (+1)'],
+      returnTimes: ['05:30', '05:30'],
+      duration: '26h 20m',
+      price: 'Varies by season',
+      carrier: 'TRANSTURIST',
+      bookingLink: 'https://buskarta.ba',
+      phone: '+387 35 320-325',
+      description: {
+        en: 'International bus line from Tuzla to Dortmund, Germany. Long-distance route with overnight travel.',
+        bs: 'Međunarodna linija Tuzla - Dortmund (Njemačka). Dugopruga ruta sa noćnom vožnjom.',
+        de: 'Internationale Buslinie von Tuzla nach Dortmund. Fernstrecke mit Nachtfahrt.',
+        tr: 'Tuzla ve Dortmund (Almanya) arasındaki uluslararası otobüs hattı. Gece yolculuğu ile uzun mesafe rotası.'
+      }
+    },
+    {
+      id: 'tuzla-zagreb',
+      route: 'Tuzla - Zagreb',
+      via: 'Srebrenik-Brčko-Lončari-Orašje',
+      departures: [
+        { time: '07:00', days: 'Every day' }
+      ],
+      arrivalTimes: ['12:30'],
+      returnTimes: ['23:30'],
+      duration: '5h 30m',
+      price: 'Varies by season (~45-55 KM)',
+      carrier: 'TRANSTURIST / PEPEX BUS',
+      bookingLink: 'https://buskarta.ba',
+      phone: '+387 35 320-325',
+      description: {
+        en: 'International bus line from Tuzla to Zagreb, Croatia. Daily departures with modern coaches.',
+        bs: 'Međunarodna linija Tuzla - Zagreb (Hrvatska). Dnevni polasci modernim autobusima.',
+        de: 'Internationale Buslinie von Tuzla nach Zagreb. Tägliche Abfahrten mit modernen Reisebussen.',
+        tr: 'Tuzla ve Zagreb (Hırvatistan) arasındaki uluslararası otobüs hattı. Modern otobüslerle günlük seferler.'
+      }
+    }
+  ];
+
   // Direct Flights at Tuzla Airport (TZL)
   const FLIGHT_DESTINATIONS = [
     { country: '🇩🇪 Germany', code: 'BER', city: 'Berlin Brandenburg', freq: '~2–3 weekly', time: '1h 40m', airline: 'Wizz Air' },
@@ -528,278 +665,158 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
     }
   ];
 
-  // International Bus Lines from Transturist Tuzla (transturist.ba)
-  const INTERNATIONAL_BUS_LINES = [
-    {
-      id: 'tuzla-sarajevo',
-      route: 'Tuzla - Sarajevo',
-      via: 'Kladanj-Olovo',
-      departures: [
-        { time: '05:30', days: 'Mon, Tue, Wed, Thu, Fri' },
-        { time: '11:45', days: 'Every day' },
-        { time: '13:00', days: 'Every day' }
-      ],
-      arrivalTimes: ['08:30', '14:45', '16:00'],
-      returnTimes: ['10:30', '14:00', '17:00', '18:00'],
-      duration: '3h 0m - 3h 30m',
-      price: '21.00 KM (One way) / 34.80 KM (Return)',
-      priceEUR: '€10.50 (One way) / €17.40 (Return)',
-      carrier: 'TRANSTURIST',
-      bookingLink: 'https://buskarta.ba',
-      phone: '+387 35 320-321',
-      description: {
-        en: 'Direct bus line connecting Tuzla to Sarajevo via Kladanj and Olovo. Multiple daily departures with comfortable high-class buses.',
-        bs: 'Direktna autobuska linija Tuzla - Sarajevo preko Kladnja i Olova. Više dnevnih polazaka udobnim autobusima visoke klase.',
-        de: 'Direkte Busverbindung von Tuzla nach Sarajevo über Kladanj und Olovo. Mehrere tägliche Abfahrten mit komfortablen Hochklasse-Bussen.',
-        tr: 'Tuzla ve Sarajevo arasında Kladanj ve Olovo üzerinden direkt otobüs hattı. Günde birkaç sefer, konforlu yüksek sınıf otobüsler.'
-      }
-    },
-    {
-      id: 'tuzla-munich',
-      route: 'Tuzla - Munich',
-      via: 'Srebrenik-Brčko-Lončari-Orašje',
-      departures: [
-        { time: '10:30', days: 'Tue, Wed, Thu, Fri' },
-        { time: '18:00', days: 'Saturday' }
-      ],
-      arrivalTimes: ['01:30 (+1)', '09:00 (+1)'],
-      returnTimes: ['18:30', '18:30'],
-      duration: '15h 0m',
-      price: 'Varies by season',
-      carrier: 'TRANSTURIST',
-      bookingLink: 'https://buskarta.ba',
-      phone: '+387 35 320-325',
-      description: {
-        en: 'International bus line from Tuzla to Munich, Germany. Overnight journey with modern coaches.',
-        bs: 'Međunarodna linija Tuzla - Minhen (Njemačka). Noćna vožnja modernim autobusima.',
-        de: 'Internationale Buslinie von Tuzla nach München. Nachtfahrt mit modernen Reisebussen.',
-        tr: 'Tuzla ve Münih (Almanya) arasındaki uluslararası otobüs hattı. Modern otobüslerle gece yolculuğu.'
-      }
-    },
-    {
-      id: 'tuzla-stuttgart',
-      route: 'Tuzla - Stuttgart',
-      via: 'Srebrenik-Brčko-Lončari-Orašje',
-      departures: [
-        { time: '10:30', days: 'Tue, Wed, Thu, Fri' },
-        { time: '18:00', days: 'Saturday' }
-      ],
-      arrivalTimes: ['04:45 (+1)', '12:45 (+1)'],
-      returnTimes: ['15:00', '15:00'],
-      duration: '16h 15m',
-      price: 'Varies by season',
-      carrier: 'TRANSTURIST',
-      bookingLink: 'https://buskarta.ba',
-      phone: '+387 35 320-325',
-      description: {
-        en: 'International bus line from Tuzla to Stuttgart, Germany. Long-distance overnight service.',
-        bs: 'Međunarodna linija Tuzla - Stuttgart (Njemačka). Dugopruga noćna usluga.',
-        de: 'Internationale Buslinie von Tuzla nach Stuttgart. Fernverkehr mit Nachtfahrt.',
-        tr: 'Tuzla ve Stuttgart (Almanya) arasındaki uluslararası otobüs hattı. Uzun mesafe gece servisi.'
-      }
-    },
-    {
-      id: 'tuzla-frankfurt',
-      route: 'Tuzla - Frankfurt',
-      via: 'Srebrenik-Brčko-Lončari-Orašje',
-      departures: [
-        { time: '10:30', days: 'Tue, Wed, Thu, Fri' },
-        { time: '18:00', days: 'Saturday' }
-      ],
-      arrivalTimes: ['08:30 (+1)', '16:00 (+1)'],
-      returnTimes: ['11:30', '11:30'],
-      duration: '21h 0m',
-      price: 'Varies by season',
-      carrier: 'TRANSTURIST',
-      bookingLink: 'https://buskarta.ba',
-      phone: '+387 35 320-325',
-      description: {
-        en: 'International bus line from Tuzla to Frankfurt, Germany. Overnight journey with stops.',
-        bs: 'Međunarodna linija Tuzla - Frankfurt (Njemačka). Noćna vožnja sa zastancima.',
-        de: 'Internationale Buslinie von Tuzla nach Frankfurt. Nachtfahrt mit Zwischenstopps.',
-        tr: 'Tuzla ve Frankfurt (Almanya) arasındaki uluslararası otobüs hattı. Duraklarla gece yolculuğu.'
-      }
-    },
-    {
-      id: 'tuzla-dortmund',
-      route: 'Tuzla - Dortmund',
-      via: 'Srebrenik-Brčko-Lončari-Orašje',
-      departures: [
-        { time: '10:30', days: 'Tue, Thu' },
-        { time: '18:00', days: 'Saturday' }
-      ],
-      arrivalTimes: ['13:50 (+1)', '21:20 (+1)'],
-      returnTimes: ['05:30', '05:30'],
-      duration: '26h 20m',
-      price: 'Varies by season',
-      carrier: 'TRANSTURIST',
-      bookingLink: 'https://buskarta.ba',
-      phone: '+387 35 320-325',
-      description: {
-        en: 'International bus line from Tuzla to Dortmund, Germany. Long-distance route with overnight travel.',
-        bs: 'Međunarodna linija Tuzla - Dortmund (Njemačka). Dugopruga ruta sa noćnom vožnjom.',
-        de: 'Internationale Buslinie von Tuzla nach Dortmund. Fernstrecke mit Nachtfahrt.',
-        tr: 'Tuzla ve Dortmund (Almanya) arasındaki uluslararası otobüs hattı. Gece yolculuğu ile uzun mesafe rotası.'
-      }
-    },
-    {
-      id: 'tuzla-zagreb',
-      route: 'Tuzla - Zagreb',
-      via: 'Srebrenik-Brčko-Lončari-Orašje',
-      departures: [
-        { time: '07:00', days: 'Every day' }
-      ],
-      arrivalTimes: ['12:30'],
-      returnTimes: ['23:30'],
-      duration: '5h 30m',
-      price: 'Varies by season',
-      carrier: 'TRANSTURIST / PEPEX BUS',
-      bookingLink: 'https://buskarta.ba',
-      phone: '+387 35 320-325',
-      description: {
-        en: 'International bus line from Tuzla to Zagreb, Croatia. Daily departures with modern coaches.',
-        bs: 'Međunarodna linija Tuzla - Zagreb (Hrvatska). Dnevni polasci modernim autobusima.',
-        de: 'Internationale Buslinie von Tuzla nach Zagreb. Tägliche Abfahrten mit modernen Reisebussen.',
-        tr: 'Tuzla ve Zagreb (Hırvatistan) arasındaki uluslararası otobüs hattı. Modern otobüslerle günlük seferler.'
-      }
-    }
-  ];
-
-  const currentLine = TOURIST_BUS_LINES.find((l) => l.lineNumber === selectedBusLine) || TOURIST_BUS_LINES[0];
-
-  // Translation helper
   const t = {
     en: {
-      title: 'Transportation in Tuzla',
-      subtitle: 'Complete guide to getting around Tuzla by bus, taxi, car rental, and flights.',
-      bus: 'Bus',
-      flights: 'Flights',
-      taxi: 'Taxi',
-      rentacar: 'Rent a Car',
-      gipsLabel: 'Track your City Bus Line Location',
-      busSectionTitle: 'Public Bus Transportation',
-      busSectionDesc: 'GIPS Tuzla operates city routes (Ka, Kb, 1, 2) at 1.50 BAM and connecting lines (11, 19, 34) from 2.50 BAM to 5.50 BAM.',
-      cityRoutes: 'City routes (Ka, Kb, 1, 2): 1.50 KM',
-      connectingLines: 'Connecting lines (11, 19, 34): 2.50 – 5.50 KM',
-      selectBusLine: 'Select Bus Line to View Stops & Route:',
-      keyStops: 'Key Bus Stops on Route',
-      checkSchedule: 'Check live departures for Line',
-      flightsSectionTitle: 'Direct Flights to & from Tuzla Airport (TZL)',
-      flightsSectionDesc: 'Tuzla International Airport (TZL) is the main gateway for northeastern Bosnia, featuring low-cost direct flights operated by Wizz Air connecting Germany, Switzerland, France, the Netherlands, and Sweden.',
-      wizzAirTimetable: 'Wizz Air Timetable & Booking',
-      tuzlaAirport: 'Tuzla Airport Official Portal',
-      taxiSectionTitle: 'Licensed Taxi Companies in Tuzla',
-      taxiSectionDesc: 'A standard taxi ride between Tuzla Airport (TZL) and downtown costs approximately 30–40 BAM (€15–20) and takes 20–25 minutes. In the city, fares run on calibrated taximeters.',
-      callTaxi: 'Call Taxi Dispatch',
-      rentacarSectionTitle: 'Rent-a-Car Agencies at Tuzla Airport (TZL)',
-      rentacarSectionDesc: 'Rental counters are conveniently situated directly inside the arrivals concourse at TZL Airport. Advance reservation is recommended.',
-      contactAgency: 'Contact Agency',
-      internationalBus: 'Intl. Bus Lines',
-      internationalBusSectionTitle: 'International Bus Lines (Transturist Tuzla)',
-      internationalBusSectionDesc: 'Transturist Tuzla offers comfortable international bus connections to Germany, Croatia, and other European destinations. Book tickets online at buskarta.ba.',
-      domesticBusTitle: 'Domestic: Tuzla - Sarajevo',
-      domesticBusDesc: 'Direct connection to Sarajevo via Kladanj-Olovo with multiple daily departures.',
-      viewTimetable: 'View Full Timetable & Book',
-      transturistOfficial: 'Transturist Official Website'
+      title: 'Tuzla Transit Hub',
+      subtitle: 'Complete public transit, GIPS live tracking, airport connections, verified taxi dispatch and car rental.',
+      busesTab: 'Buses (GIPS)',
+      intlBusTab: 'Intercity & Intl. Bus',
+      flightsTab: 'Flights (TZL)',
+      taxiTab: 'Taxis (Call)',
+      rentacarTab: 'Rent a Car',
+      gipsBannerTitle: 'Official City & Regional Bus Network',
+      gipsBannerDesc: 'GIPS d.d. Tuzla operates city lines (Ka, Kb, 2) at 1.50 BAM (€0.77) and airport connections (11, 34) at 2.50–5.50 BAM. Cash only on board.',
+      gipsLiveCta: 'Live Bus Tracking & Online Timetable',
+      selectLine: 'Select Bus Line:',
+      routeTimeline: 'Route & Key Stops',
+      timetableHeader: 'Official Timetable & Departures',
+      workdays: 'Workday & Saturday',
+      sunday: 'Sunday & Holidays',
+      departuresCount: 'scheduled departures daily',
+      cashNotice: 'Driver accepts Cash BAM (KM) only upon boarding. Please have exact change.',
+      openGipsWeb: 'View on GIPS Portal',
+      flightsHeader: 'Direct International Flights at TZL',
+      flightsSub: 'Tuzla International Airport (TZL) is Northeastern Bosnia\'s primary aviation hub, connecting major European metropolises.',
+      bookWizz: 'Book on WizzAir.com',
+      airportSite: 'Official TZL Airport Website',
+      taxiHeader: 'Licensed Radio Taxi Dispatch',
+      taxiSub: 'Official taxis in Tuzla operate with calibrated taximeters. Standard airport to city center fare is ~30–40 BAM (€15–20).',
+      callNow: 'Call Dispatch Now',
+      rentacarHeader: 'Car Rental at TZL Terminal',
+      rentacarSub: 'Car rental desks are located inside the arrivals hall of Tuzla Airport. Advance booking is recommended during peak season.',
+      callAgency: 'Call Agency',
+      emailAgency: 'Send Email',
+      intlBusHeader: 'Intercity & International Bus Lines (Transturist Tuzla)',
+      intlBusSub: 'Transturist Tuzla offers daily connections to Sarajevo and major European destinations in Germany and Croatia.',
+      bookBuskarta: 'Book Online at Buskarta.ba',
+      transturistSite: 'Official Transturist Portal',
+      domesticTitle: 'Domestic Line: Tuzla – Sarajevo',
+      domesticDesc: 'Direct express line via Kladanj and Olovo with several daily departures.',
+      intlTitle: 'International Long-Distance Lines'
     },
     bs: {
-      title: 'Transport u Tuzli',
-      subtitle: 'Potpuni vodič za kretanje Tuzlom autobusom, taksijem, iznajmljivanjem automobila i avionom.',
-      bus: 'Autobus',
-      flights: 'Avioni',
-      taxi: 'Taksi',
-      rentacar: 'Iznajmljivanje',
-      gipsLabel: 'GIPS red vožnje i lokacija',
-      busSectionTitle: 'Javni autobusi',
-      busSectionDesc: 'GIPS Tuzla operiše gradske linije (Ka, Kb, 1, 2) po 1.50 KM i povezne linije (11, 19, 34) od 2.50 KM do 5.50 KM.',
-      cityRoutes: 'Gradske (Ka, Kb, 1, 2): 1.50 KM',
-      connectingLines: 'Povezne (11, 19, 34): 2.50 – 5.50 KM',
-      selectBusLine: 'Izaberi liniju za detalje i stanice:',
-      keyStops: 'Glavna stajališta na liniji',
-      checkSchedule: 'Provjeri detaljan važeći red vožnje za Liniju',
-      flightsSectionTitle: 'Direktne avionske linije za i iz Tuzle',
-      flightsSectionDesc: 'Međunarodni aerodrom Tuzla (TZL) je glavno zračno čvorište za sjeveroistočnu Bosnu, povezan direktnim letovima kompanije Wizz Air sa ključnim gradovima u Njemačkoj, Švicarskoj, Francuskoj, Holandiji i Švedskoj.',
-      wizzAirTimetable: 'Wizz Air Raspored & Rezervacija',
-      tuzlaAirport: 'Zvanični portal Aerodroma Tuzla',
-      taxiSectionTitle: 'Zvanične taksi službe u Tuzli',
-      taxiSectionDesc: 'Standardna vožnja taksijem sa Aerodroma Tuzla do centra grada košta 30–40 KM (€15–20) i traje oko 20–25 minuta. U gradu se vozi po taksimetru.',
-      callTaxi: 'Pozovi taksi službu',
-      rentacarSectionTitle: 'Rent-a-Car agencije na Aerodromu Tuzla (TZL)',
-      rentacarSectionDesc: 'Šalteri agencija se nalaze direktno u dolaznom holu putničkog terminala aerodroma. Preporučujemo rezervaciju unaprijed prije leta.',
-      contactAgency: 'Kontaktiraj agenciju',
-      internationalBus: 'Međunarodne linije',
-      internationalBusSectionTitle: 'Međunarodne autobuskie linije (Transturist Tuzla)',
-      internationalBusSectionDesc: 'Transturist Tuzla nudi udobne međunarodne autobuske veze za Njemačku, Hrvatsku i druge evropske destinacije. Rezerviši karte online na buskarta.ba.',
-      domesticBusTitle: 'Domaće: Tuzla - Sarajevo',
-      domesticBusDesc: 'Direktna veza za Sarajevo preko Kladnja i Olova sa više dnevnih polazaka.',
-      viewTimetable: 'Pogledaj puni red vožnje & rezervacija',
-      transturistOfficial: 'Zvanična Transturist stranica'
+      title: 'Prevoz u Tuzli',
+      subtitle: 'Glavni saobraćajni vodič: GIPS linije i red vožnje, aerodromski transferi, međugradski busevi, taksi službe i rent-a-car.',
+      busesTab: 'Autobusi (GIPS)',
+      intlBusTab: 'Međugradski & Međunarodni',
+      flightsTab: 'Letovi (TZL)',
+      taxiTab: 'Taksi (Poziv)',
+      rentacarTab: 'Rent a Car',
+      gipsBannerTitle: 'Zvanična mreža gradskog prevoza',
+      gipsBannerDesc: 'GIPS d.d. Tuzla upravlja gradskim linijama (Ka, Kb, 2) po cijeni od 1.50 KM i aerodromskim linijama (11, 34) od 2.50 do 5.50 KM. Plaćanje je isključivo u gotovini kod vozača.',
+      gipsLiveCta: 'Prati autobus uživo / GIPS red vožnje',
+      selectLine: 'Odaberite autobusku liniju:',
+      routeTimeline: 'Trasa i ključna stajališta',
+      timetableHeader: 'Zvanični red vožnje i polasci',
+      workdays: 'Radni dan i Subota',
+      sunday: 'Nedjelja i Praznici',
+      departuresCount: 'redovnih polazaka dnevno',
+      cashNotice: 'Karta se kupuje kod vozača isključivo u gotovini (KM). Pripremite tačan iznos.',
+      openGipsWeb: 'Otvori na GIPS portalu',
+      flightsHeader: 'Direktni letovi sa Aerodroma Tuzla (TZL)',
+      flightsSub: 'Međunarodni aerodrom Tuzla (Dubrave) povezuje Tuzlu i regiju sa vodećim evropskim gradovima preko Wizz Air letova.',
+      bookWizz: 'Rezerviši let na WizzAir.com',
+      airportSite: 'Zvanična stranica Aerodroma Tuzla',
+      taxiHeader: 'Licencirane taksi službe u Tuzli',
+      taxiSub: 'Zvanični taksi prevoznici voze po taksimetru. Standardna vožnja između aerodroma i centra grada košta 30–40 KM (€15–20).',
+      callNow: 'Pozovi dispečera',
+      rentacarHeader: 'Rent-a-car agencije na aerodromu TZL',
+      rentacarSub: 'Šalteri rent-a-car agencija nalaze se u zoni dolazaka terminala aerodroma. Preporučuje se rezervacija unaprijed.',
+      callAgency: 'Pozovi agenciju',
+      emailAgency: 'Pošalji e-mail',
+      intlBusHeader: 'Međugradske i međunarodne linije (Transturist Tuzla)',
+      intlBusSub: 'Transturist Tuzla povezuje Tuzlu sa Sarajevom i evropskim metropolama u Njemačkoj i Hrvatskoj.',
+      bookBuskarta: 'Kupi kartu online na Buskarta.ba',
+      transturistSite: 'Zvanična Transturist stranica',
+      domesticTitle: 'Domaća linija: Tuzla – Sarajevo',
+      domesticDesc: 'Direktna linija preko Kladnja i Olova sa više dnevnih polazaka modernim autobusima.',
+      intlTitle: 'Međunarodne linije za Njemačku i Hrvatsku'
     },
     de: {
-      title: 'Transport in Tuzla',
-      subtitle: 'Vollständiger Leitfaden für die Fortbewegung in Tuzla mit Bus, Taxi, Mietwagen und Flügen.',
-      bus: 'Bus',
-      flights: 'Flüge',
-      taxi: 'Taxi',
-      rentacar: 'Mietwagen',
-      gipsLabel: 'Stadtbus-Linie in Echtzeit verfolgen',
-      busSectionTitle: 'Öffentlicher Busverkehr',
-      busSectionDesc: 'GIPS Tuzla betreibt Stadtlinien (Ka, Kb, 1, 2) für 1.50 KM und Verbindungslinien (11, 19, 34) von 2.50 KM bis 5.50 KM.',
-      cityRoutes: 'Stadtlinien (Ka, Kb, 1, 2): 1.50 KM',
-      connectingLines: 'Verbindungslinien (11, 19, 34): 2.50 – 5.50 KM',
-      selectBusLine: 'Wählen Sie Buslinie für Haltestellen & Route:',
-      keyStops: 'Wichtige Bushaltestellen auf Route',
-      checkSchedule: 'Aktuelle Abfahrten für Linie',
-      flightsSectionTitle: 'Direktflüge zum und vom Flughafen Tuzla (TZL)',
-      flightsSectionDesc: 'Der Flughafen Tuzla (TZL) ist das Haupttor für Nordostbosnien mit Direktflügen von Wizz Air nach Deutschland, Schweiz, Frankreich, Niederlande und Schweden.',
-      wizzAirTimetable: 'Wizz Air Fahrplan & Buchung',
-      tuzlaAirport: 'Offizielle Flughafen Tuzla Website',
-      taxiSectionTitle: 'Lizenzierte Taxiunternehmen in Tuzla',
-      taxiSectionDesc: 'Eine Standard-Taxifahrt zwischen Flughafen Tuzla (TZL) und Innenstadt kostet ca. 30–40 KM (€15–20) und dauert 20–25 Minuten. In der Stadt wird nach Taxameter gefahren.',
-      callTaxi: 'Taxi anrufen',
-      rentacarSectionTitle: 'Mietwagenanbieter am Flughafen Tuzla (TZL)',
-      rentacarSectionDesc: 'Mietwagenschalter befinden sich direkt im Ankunftsbereich des TZL-Flughafens. Vorabreservierung wird empfohlen.',
-      contactAgency: 'Agency kontaktieren',
-      internationalBus: 'Internat. Busse',
-      internationalBusSectionTitle: 'Internationale Buslinien (Transturist Tuzla)',
-      internationalBusSectionDesc: 'Transturist Tuzla bietet komfortable internationale Busverbindungen nach Deutschland, Kroatien und andere europäische Ziele. Tickets online auf buskarta.ba buchen.',
-      domesticBusTitle: 'Inland: Tuzla - Sarajevo',
-      domesticBusDesc: 'Direktverbindung nach Sarajevo über Kladanj-Olovo mit mehreren täglichen Abfahrten.',
-      viewTimetable: 'Fahrplan anzeigen & buchen',
-      transturistOfficial: 'Transturist Offizielle Website'
+      title: 'Verkehr & Mobilität Tuzla',
+      subtitle: 'Kompletter Nahverkehrsführer: GIPS-Buslinien mit Fahrplan, Fernbusse, Flughafen TZL, Taxis und Mietwagen.',
+      busesTab: 'Busse (GIPS)',
+      intlBusTab: 'Fern- & Int. Busse',
+      flightsTab: 'Flüge (TZL)',
+      taxiTab: 'Taxis (Anruf)',
+      rentacarTab: 'Mietwagen',
+      gipsBannerTitle: 'Offizielles Liniennetz GIPS Tuzla',
+      gipsBannerDesc: 'GIPS d.d. Tuzla bedient Stadtlinien (Ka, Kb, 2) für 1.50 BAM sowie Flughafenbusse (11, 34) für 2.50–5.50 BAM. Barzahlung im Bus.',
+      gipsLiveCta: 'Live-Busverfolgung & GIPS Fahrplan',
+      selectLine: 'Buslinie wählen:',
+      routeTimeline: 'Strecke & wichtige Haltestellen',
+      timetableHeader: 'Offizieller Fahrplan & Abfahrten',
+      workdays: 'Werktag & Samstag',
+      sunday: 'Sonntag & Feiertage',
+      departuresCount: 'geplante Abfahrten täglich',
+      cashNotice: 'Fahrkarten werden beim Fahrer ausschließlich in bar (BAM) bezahlt.',
+      openGipsWeb: 'Auf GIPS-Portal ansehen',
+      flightsHeader: 'Direktflüge ab Flughafen Tuzla (TZL)',
+      flightsSub: 'Der Flughafen Tuzla verbindet Nordostbosnien direkt mit zahlreichen Großstädten in Deutschland, der Schweiz, Schweden u.a.',
+      bookWizz: 'Auf WizzAir.com buchen',
+      airportSite: 'Flughafen Tuzla Website',
+      taxiHeader: 'Lizenzierte Taxiunternehmen in Tuzla',
+      taxiSub: 'Taxis fahren mit geeichten Taxametern. Eine Fahrt vom Flughafen ins Zentrum kostet ca. 30–40 BAM (15–20 €).',
+      callNow: 'Taxi jetzt anrufen',
+      rentacarHeader: 'Mietwagen am Flughafen TZL',
+      rentacarSub: 'Mietwagenschalter befinden sich direkt in der Ankunftshalle des Flughafens Tuzla.',
+      callAgency: 'Agentur anrufen',
+      emailAgency: 'E-Mail senden',
+      intlBusHeader: 'Fern- & Auslandsbusse (Transturist Tuzla)',
+      intlBusSub: 'Komfortable Verbindungen nach Sarajevo sowie nach Deutschland und Kroatien.',
+      bookBuskarta: 'Online buchen auf Buskarta.ba',
+      transturistSite: 'Transturist Webseite',
+      domesticTitle: 'Inland: Tuzla – Sarajevo',
+      domesticDesc: 'Direkte Verbindung über Kladanj und Olovo mit täglichen Abfahrten.',
+      intlTitle: 'Internationale Linien'
     },
     tr: {
-      title: 'Tuzla Ulaşım',
-      subtitle: 'Tuzla\'da otobüs, taksi, araba kiralama ve uçakla ulaşımın tam rehberi.',
-      bus: 'Otobüs',
-      flights: 'Uçuşlar',
-      taxi: 'Taksi',
-      rentacar: 'Araba Kiralama',
-      gipsLabel: 'Şehir otobüs hattını canlı takip et',
-      busSectionTitle: 'Toplu Taşıma Otobüsleri',
-      busSectionDesc: 'GIPS Tuzla şehir hatları (Ka, Kb, 1, 2) 1.50 KM ve bağlantı hatları (11, 19, 34) 2.50 KM ila 5.50 KM arasında değişmektedir.',
-      cityRoutes: 'Şehir hatları (Ka, Kb, 1, 2): 1.50 KM',
-      connectingLines: 'Bağlantı hatları (11, 19, 34): 2.50 – 5.50 KM',
-      selectBusLine: 'Hat seçin ve durakları görün:',
-      keyStops: 'Hat üzerindeki ana duraklar',
-      checkSchedule: 'Hat için canlı kalkışları kontrol edin',
-      flightsSectionTitle: 'Tuzla Havalimanına (TZL) Direkt Uçuşlar',
-      flightsSectionDesc: 'Tuzla Uluslararası Havalimanı (TZL), kuzeydoğu Bosna\'nın ana giriş kapısıdır. Wizz Air tarafından işletilen Almanya, İsviçre, Fransa, Hollanda ve İsveç\'e direkt uçuşlar sunulmaktadır.',
-      wizzAirTimetable: 'Wizz Air Seferleri & Rezervasyon',
-      tuzlaAirport: 'Tuzla Havalimanı Resmi Sites',
-      taxiSectionTitle: 'Tuzla\'da Lisanslı Taksi Şirketleri',
-      taxiSectionDesc: 'Tuzla Havalimanı (TZL) ve şehir merkezi arasındaki standart taksi ücreti yaklaşık 30–40 KM (€15–20) olup, 20–25 dakika sürmektedir. Şehir içinde taksimetre ile ücretlendirme yapılmaktadır.',
-      callTaxi: 'Taksi çağırmak için tıklayın',
-      rentacarSectionTitle: 'Tuzla Havalimanında (TZL) Araba Kiralama',
-      rentacarSectionDesc: 'Kiralama ofisleri, TZL Havalimanının varış terminalinde yer almaktadır. Önceden rezervasyon yapılması önerilmektedir.',
-      contactAgency: 'Acente ile iletişime geçin',
-      internationalBus: 'Uluslararası Otobüsler',
-      internationalBusSectionTitle: 'Uluslararası Otobüs Hatları (Transturist Tuzla)',
-      internationalBusSectionDesc: 'Transturist Tuzla, Almanya, Hırvatistan ve diğer Avrupa varış noktalarına konforlu uluslararası otobüs bağlantılar sunmaktadır. Biletleri buskarta.ba üzerinde online rezervasyon yapın.',
-      domesticBusTitle: 'Yerli: Tuzla - Sarajevo',
-      domesticBusDesc: 'Sarajevo\'ya Kladanj-Olovo üzerinden direkt bağlantı, günde birkaç sefer.',
-      viewTimetable: 'Tüm Seferleri Gör & Rezervasyon Yap',
-      transturistOfficial: 'Transturist Resmi Web Sitesi'
+      title: 'Tuzla Ulaşım Rehberi',
+      subtitle: 'Şehir içi GIPS otobüs hatları, şehirlerarası otobüsler, TZL Havalimanı uçuşları, resmi taksiler ve araç kiralama.',
+      busesTab: 'Otobüsler (GIPS)',
+      intlBusTab: 'Şehirlerarası & Uluslararası',
+      flightsTab: 'Uçuşlar (TZL)',
+      taxiTab: 'Taksiler (Ara)',
+      rentacarTab: 'Araç Kiralama',
+      gipsBannerTitle: 'Resmi Şehir İçi Otobüs Ağı',
+      gipsBannerDesc: 'GIPS d.d. Tuzla şehir hatları (Ka, Kb, 2) 1.50 KM, havalimanı ekspres hatları (11, 34) 2.50–5.50 KM\'dir. Sadece nakit KM kabul edilir.',
+      gipsLiveCta: 'Canlı Otobüs Takibi / GIPS Seferleri',
+      selectLine: 'Otobüs Hattı Seçin:',
+      routeTimeline: 'Güzergah ve Duraklar',
+      timetableHeader: 'Resmi Hareket Saatleri',
+      workdays: 'Hafta İçi ve Cumartesi',
+      sunday: 'Pazar ve Tatil Günleri',
+      departuresCount: 'günlük tarifeli sefer',
+      cashNotice: 'Biletler otobüse binerken şoförden sadece nakit KM ile alınır.',
+      openGipsWeb: 'GIPS Sitesinde Aç',
+      flightsHeader: 'Tuzla Havalimanı (TZL) Direkt Uçuşları',
+      flightsSub: 'Tuzla Uluslararası Havalimanı (Dubrave), Wizz Air ile Avrupa\'nın ana merkezlerine doğrudan uçuşlar sunar.',
+      bookWizz: 'WizzAir.com\'dan Bilet Al',
+      airportSite: 'Tuzla Havalimanı Resmi Sitesi',
+      taxiHeader: 'Tuzla Lisanslı Taksi Durakları',
+      taxiSub: 'Resmi taksiler taksimetre ile çalışır. Havalimanı ile şehir merkezi arası yaklaşık 30–40 KM (15–20 €) tutar.',
+      callNow: 'Hemen Taksi Çağır',
+      rentacarHeader: 'TZL Havalimanında Araç Kiralama',
+      rentacarSub: 'Kiralama ofisleri Tuzla Havalimanı gelen yolcu terminalindedir. Önceden rezervasyon önerilir.',
+      callAgency: 'Acenteyi Ara',
+      emailAgency: 'E-posta Gönder',
+      intlBusHeader: 'Şehirlerarası & Uluslararası Otobüsler (Transturist)',
+      intlBusSub: 'Transturist Tuzla ile Saraybosna\'ya ve Almanya ile Hırvatistan\'a konforlu otobüs hatları.',
+      bookBuskarta: 'Buskarta.ba\'dan Online Bilet Al',
+      transturistSite: 'Transturist Resmi Sitesi',
+      domesticTitle: 'Yurtiçi: Tuzla – Saraybosna',
+      domesticDesc: 'Kladanj ve Olovo üzerinden Saraybosna\'ya günlük seferler.',
+      intlTitle: 'Uluslararası Seferler'
     }
   } as const;
 
@@ -817,77 +834,25 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
             <Compass className="w-3.5 h-3.5" />
             <span>Tuzla Transit Hub</span>
           </div>
-          <span className="mt-2 text-xs font-bold text-blue-700 uppercase tracking-wider text-center group-hover:text-blue-900 transition-colors">
-            {translations.gipsLabel}
-          </span>
-        </a>
-      </div>
-
-      {/* Section Navigation */}
-      <div className="w-full rounded-2xl border border-blue-100 bg-white p-3 shadow-sm">
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setActiveSection('bus')}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 sm:px-5 sm:py-3 text-xs sm:text-sm font-black transition-all ${activeSection === 'bus'
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-              : 'bg-blue-50 text-blue-900 hover:bg-blue-100'
-              }`}
-          >
-            <Bus className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span>{translations.bus}</span>
-          </button>
-          <button
-            onClick={() => setActiveSection('flights')}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 sm:px-5 sm:py-3 text-xs sm:text-sm font-black transition-all ${activeSection === 'flights'
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-              : 'bg-blue-50 text-blue-900 hover:bg-blue-100'
-              }`}
-          >
-            <Plane className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span>{translations.flights}</span>
-          </button>
-          <button
-            onClick={() => setActiveSection('taxi')}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 sm:px-5 sm:py-3 text-xs sm:text-sm font-black transition-all ${activeSection === 'taxi'
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-              : 'bg-blue-50 text-blue-900 hover:bg-blue-100'
-              }`}
-          >
-            <Car className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span>{translations.taxi}</span>
-          </button>
-          <button
-            onClick={() => setActiveSection('rentacar')}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 sm:px-5 sm:py-3 text-xs sm:text-sm font-black transition-all ${activeSection === 'rentacar'
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-              : 'bg-blue-50 text-blue-900 hover:bg-blue-100'
-              }`}
-          >
-            <KeyRound className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span>{translations.rentacar}</span>
-          </button>
-          <button
-            onClick={() => setActiveSection('internationalBus')}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 sm:px-5 sm:py-3 text-xs sm:text-sm font-black transition-all ${activeSection === 'internationalBus'
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-              : 'bg-blue-50 text-blue-900 hover:bg-blue-100'
-              }`}
-          >
-            <Bus className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span>{translations.internationalBus}</span>
-          </button>
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight uppercase">
+            {currentT.title}
+          </h1>
+          <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed font-medium">
+            {currentT.subtitle}
+          </p>
         </div>
       </div>
 
       {/* 2. MAIN SEGMENT SELECTOR */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
         <button
           type="button"
           onClick={() => setActiveSection('bus')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'bus'
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
+            activeSection === 'bus'
               ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-            }`}
+          }`}
         >
           <Bus className="w-4 h-4 shrink-0" />
           <span>{currentT.busesTab}</span>
@@ -895,11 +860,25 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
 
         <button
           type="button"
-          onClick={() => setActiveSection('flights')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'flights'
+          onClick={() => setActiveSection('internationalBus')}
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
+            activeSection === 'internationalBus'
               ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-            }`}
+          }`}
+        >
+          <Globe className="w-4 h-4 shrink-0" />
+          <span>{currentT.intlBusTab}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveSection('flights')}
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
+            activeSection === 'flights'
+              ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+          }`}
         >
           <Plane className="w-4 h-4 shrink-0" />
           <span>{currentT.flightsTab}</span>
@@ -908,10 +887,11 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('taxi')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'taxi'
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
+            activeSection === 'taxi'
               ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-            }`}
+          }`}
         >
           <Car className="w-4 h-4 shrink-0" />
           <span>{currentT.taxiTab}</span>
@@ -920,10 +900,11 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('rentacar')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'rentacar'
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
+            activeSection === 'rentacar'
               ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-            }`}
+          }`}
         >
           <KeyRound className="w-4 h-4 shrink-0" />
           <span>{currentT.rentacarTab}</span>
@@ -986,10 +967,11 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
                     key={line.id}
                     type="button"
                     onClick={() => setSelectedBusLine(line.lineNumber)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all text-center relative ${isSelected
+                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all text-center relative ${
+                      isSelected
                         ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500/30'
                         : 'border-slate-200 bg-slate-50/50 hover:bg-slate-100/70 hover:border-slate-300'
-                      }`}
+                    }`}
                   >
                     <span className={`text-xl font-black ${isSelected ? 'text-blue-700' : 'text-slate-800'}`}>
                       {line.lineNumber}
@@ -1089,20 +1071,22 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
                   <button
                     type="button"
                     onClick={() => setScheduleType('workday')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${scheduleType === 'workday'
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
+                      scheduleType === 'workday'
                         ? 'bg-white text-blue-900 shadow-sm'
                         : 'text-slate-600 hover:text-slate-900'
-                      }`}
+                    }`}
                   >
                     {currentT.workdays}
                   </button>
                   <button
                     type="button"
                     onClick={() => setScheduleType('weekend')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${scheduleType === 'weekend'
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
+                      scheduleType === 'weekend'
                         ? 'bg-white text-blue-900 shadow-sm'
                         : 'text-slate-600 hover:text-slate-900'
-                      }`}
+                    }`}
                   >
                     {currentT.sunday}
                   </button>
@@ -1143,7 +1127,150 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         </div>
       )}
 
-      {/* 4. SECTION 2: FLIGHTS (TZL AIRPORT) */}
+      {/* 4. SECTION 2: INTERCITY & INTERNATIONAL BUSES (TRANSTURIST) */}
+      {activeSection === 'internationalBus' && (
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-950 p-6 sm:p-8 text-white space-y-4 shadow-xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-300 text-xs font-black uppercase tracking-wider border border-cyan-400/30">
+              <Globe className="w-3.5 h-3.5" />
+              <span>Transturist Tuzla d.d.</span>
+            </div>
+            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">
+              {currentT.intlBusHeader}
+            </h3>
+            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
+              {currentT.intlBusSub}
+            </p>
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <a
+                href="https://buskarta.ba"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-5 py-3 text-xs sm:text-sm font-black transition-all shadow-lg active:scale-95 uppercase tracking-wider"
+              >
+                <span>{currentT.bookBuskarta}</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+              <a
+                href="https://www.transturist.ba"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white px-5 py-3 text-xs sm:text-sm font-black transition-all border border-white/20 active:scale-95"
+              >
+                <span>{currentT.transturistSite}</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Domestic line: Tuzla - Sarajevo */}
+          <div className="rounded-3xl border border-blue-200 bg-white p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="rounded-full bg-blue-100 text-blue-800 px-3 py-1 text-xs font-black uppercase tracking-wider">
+                Domaća ekspres linija
+              </span>
+              <span className="text-xs font-mono font-bold text-slate-500">
+                Transturist d.d.
+              </span>
+            </div>
+            <h4 className="text-xl font-black text-slate-900">{currentT.domesticTitle}</h4>
+            <p className="text-xs sm:text-sm text-slate-600">{currentT.domesticDesc}</p>
+
+            <div className="rounded-2xl bg-slate-50 p-4 space-y-2 border border-slate-100">
+              <div className="grid grid-cols-3 gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-2">
+                <span>Polazak Tuzla</span>
+                <span>Dolazak Sarajevo</span>
+                <span>Dani vožnje</span>
+              </div>
+              {INTERNATIONAL_BUS_LINES[0].departures.map((dep, idx) => (
+                <div key={idx} className="grid grid-cols-3 gap-2 text-xs sm:text-sm py-1.5 border-b border-slate-100">
+                  <span className="font-black text-slate-800">{dep.time}</span>
+                  <span className="text-slate-600">{INTERNATIONAL_BUS_LINES[0].arrivalTimes[idx]}</span>
+                  <span className="text-slate-500">{dep.days}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs">
+              <div className="text-slate-600">
+                <span className="font-bold">Trajanje:</span> {INTERNATIONAL_BUS_LINES[0].duration} &nbsp;|&nbsp;
+                <span className="font-bold">Cijena:</span> {INTERNATIONAL_BUS_LINES[0].price}
+              </div>
+              <a
+                href={INTERNATIONAL_BUS_LINES[0].bookingLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-bold hover:underline"
+              >
+                <span>Rezervacija na Buskarta.ba</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+
+          {/* International Lines Grid */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-black text-slate-900 flex items-center gap-2">
+              <Globe className="w-5 h-5 text-blue-600" />
+              <span>{currentT.intlTitle}</span>
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {INTERNATIONAL_BUS_LINES.slice(1).map((line) => (
+                <div
+                  key={line.id}
+                  className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:border-blue-300 transition-all space-y-3 flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-black text-slate-900 text-base">{line.route}</h5>
+                      <span className="text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded-lg font-bold">
+                        {line.duration}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500">via {line.via}</p>
+                    <p className="text-xs text-slate-600">
+                      {line.description[lang] || line.description.en}
+                    </p>
+
+                    <div className="rounded-xl bg-slate-50 p-3 text-xs space-y-1.5 border border-slate-100">
+                      <div className="font-bold text-slate-600 text-[11px] uppercase tracking-wider">Polasci iz Tuzle:</div>
+                      {line.departures.map((dep, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-slate-700">
+                          <span className="font-mono font-black">{dep.time}</span>
+                          <span className="text-slate-500 text-[11px]">{dep.days}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500">{line.carrier}</span>
+                    <a
+                      href={line.bookingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-black transition-all"
+                    >
+                      <span>Rezerviši</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-blue-50 border border-blue-200 p-4 text-xs text-slate-700 flex items-start gap-3">
+            <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+            <p>
+              Za detaljne informacije o peronima i polascima, posjetite <a href="https://buskarta.ba" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-700 hover:underline">buskarta.ba</a> ili kontaktirajte dispečerski centar Transturist Tuzla na <a href="tel:+38735320325" className="font-bold text-blue-700 hover:underline">+387 35 320-325</a>.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 5. SECTION 3: FLIGHTS (TZL AIRPORT) */}
       {activeSection === 'flights' && (
         <div className="space-y-6">
           <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-950 p-6 sm:p-8 text-white space-y-4 shadow-xl">
@@ -1206,7 +1333,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         </div>
       )}
 
-      {/* 5. SECTION 3: TAXI SERVICES (WITH DIRECT CALL HOOKS) */}
+      {/* 6. SECTION 4: TAXI SERVICES (WITH DIRECT CALL HOOKS) */}
       {activeSection === 'taxi' && (
         <div className="space-y-6">
           <div className="rounded-3xl border border-amber-200 bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 p-6 space-y-2">
@@ -1270,7 +1397,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         </div>
       )}
 
-      {/* 6. SECTION 4: RENT-A-CAR (WITH DIRECT CALL & CONTACT HOOKS) */}
+      {/* 7. SECTION 5: RENT-A-CAR (WITH DIRECT CALL & CONTACT HOOKS) */}
       {activeSection === 'rentacar' && (
         <div className="space-y-6">
           <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 space-y-2">
@@ -1337,140 +1464,6 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {/* SECTION 5: INTERNATIONAL BUS LINES */}
-      {activeSection === 'internationalBus' && (
-        <div className="w-full space-y-6">
-          <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-5 space-y-2">
-            <h3 className="text-base sm:text-lg font-black text-blue-950 flex items-center gap-2">
-              <Bus className="h-5 w-5 text-blue-600" />
-              {translations.internationalBusSectionTitle}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600">{translations.internationalBusSectionDesc}</p>
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <a
-                href="https://buskarta.ba"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-4 py-2 text-xs font-black transition-all"
-              >
-                <span>{translations.viewTimetable}</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-              <a
-                href="https://www.transturist.ba"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-white/20 text-blue-700 border border-blue-200 px-4 py-2 text-xs font-black transition-all"
-              >
-                <span>{translations.transturistOfficial}</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            </div>
-          </div>
-
-          {/* Domestic: Tuzla - Sarajevo */}
-          <div className="rounded-2xl border border-blue-200 bg-white p-5 space-y-4 shadow-sm">
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide text-blue-800">
-                Domestic
-              </span>
-            </div>
-            <h4 className="text-lg sm:text-xl font-black text-slate-900">{translations.domesticBusTitle}</h4>
-            <p className="text-xs sm:text-sm text-slate-600">{translations.domesticBusDesc}</p>
-
-            <div className="rounded-xl bg-slate-50 p-4 space-y-3">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-2">
-                <span>Departure</span>
-                <span>Arrival</span>
-                <span>Days</span>
-              </div>
-              {INTERNATIONAL_BUS_LINES[0].departures.map((dep, idx) => (
-                <div key={idx} className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs sm:text-sm py-1.5 border-b border-slate-100">
-                  <span className="font-black text-slate-800">{dep.time}</span>
-                  <span className="text-slate-600">{INTERNATIONAL_BUS_LINES[0].arrivalTimes[idx]}</span>
-                  <span className="text-slate-500">{dep.days}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between pt-2">
-              <div className="text-xs text-slate-500">
-                <span className="font-semibold">Duration:</span> {INTERNATIONAL_BUS_LINES[0].duration} |
-                <span className="font-semibold">Price:</span> {INTERNATIONAL_BUS_LINES[0].price}
-              </div>
-              <div className="text-xs text-slate-400 font-medium">
-                {INTERNATIONAL_BUS_LINES[0].carrier}
-              </div>
-            </div>
-          </div>
-
-          {/* International Lines */}
-          <div className="space-y-4">
-            <h4 className="text-base font-black text-blue-900 flex items-center gap-2">
-              <Bus className="h-4 w-4 text-blue-600" />
-              Top 5 International Bus Lines
-            </h4>
-
-            {INTERNATIONAL_BUS_LINES.slice(1).map((line) => (
-              <div key={line.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:border-blue-200 transition-all">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h5 className="font-black text-slate-900 text-sm sm:text-base">{line.route}</h5>
-                      <span className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">{line.duration}</span>
-                    </div>
-                    <p className="text-xs text-slate-500">via {line.via}</p>
-                    <p className="text-xs text-slate-600 mt-1">{line.description[lang] || line.description.en}</p>
-                  </div>
-                </div>
-
-                <div className="mt-3 rounded-xl bg-slate-50 p-3">
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="space-y-1">
-                      <span className="font-semibold text-slate-400 uppercase tracking-wider">Departures</span>
-                      {line.departures.map((dep, idx) => (
-                        <div key={idx} className="flex items-center gap-1">
-                          <Clock className="h-3 w-3 text-blue-500" />
-                          <span className="font-black text-slate-800">{dep.time}</span>
-                          <span className="text-slate-400 text-[10px]">{dep.days}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="space-y-1">
-                      <span className="font-semibold text-slate-400 uppercase tracking-wider">Arrivals</span>
-                      {line.arrivalTimes.map((arr, idx) => (
-                        <div key={idx} className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3 text-green-500" />
-                          <span className="font-black text-slate-800">{arr}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-3 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-blue-600">{line.carrier}</span>
-                  <a
-                    href={line.bookingLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-black transition-all"
-                  >
-                    <span>Book Tickets</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="rounded-xl bg-blue-50 border border-blue-100 p-4 text-xs text-slate-600">
-            <Info className="h-4 w-4 text-blue-600 float-left mr-2" />
-            <p>For the most accurate and up-to-date information, please visit <a href="https://buskarta.ba" className="font-bold text-blue-700 hover:underline">buskarta.ba</a> or call Transturist Tuzla at <a href="tel:+38735320325" className="font-bold text-blue-700 hover:underline">+387 35 320-325</a>.</p>
           </div>
         </div>
       )}
