@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Battery, BatteryCharging, BatteryLow, BatteryMedium, BatteryFull, Zap, Settings, X, Check, AlertTriangle } from 'lucide-react';
+import { Battery, BatteryCharging, BatteryLow, BatteryMedium, BatteryFull, Zap, Settings, X, Check, AlertTriangle, Sparkles } from 'lucide-react';
 import { useBatterySaver, formatBatteryPercentage, getBatteryIcon } from '../hooks/useBatterySaver';
 import { Language } from '../types';
 
@@ -12,7 +12,7 @@ interface BatterySaverToggleProps {
 
 const BATTERY_LOCALIZATION: Record<Language, any> = {
   en: {
-    batterySaver: 'Battery Saver',
+    batterySaver: 'Power & Quality',
     autoMode: 'Auto',
     manualMode: 'Manual',
     batteryLevel: 'Battery',
@@ -28,15 +28,20 @@ const BATTERY_LOCALIZATION: Record<Language, any> = {
     effects: 'Visual Effects',
     currentSettings: 'Current Settings',
     optimizedFor: 'Optimized for battery life',
-    normalMode: 'Normal mode',
+    normalMode: 'Balanced',
     saverActive: 'Battery saver active',
     stationery: 'Stationary',
     moving: 'Moving',
-    saveBattery: 'Save Battery',
+    saveBattery: 'Battery Saver',
     powerOptimized: 'Power Optimized',
+    highQuality: 'High Quality',
+    highQualityDesc: '60 FPS AR • 1080p • 3D',
+    balancedDesc: '30 FPS AR • 720p',
+    saverDesc: '15 FPS AR • 360p (Eco)',
+    forFlagships: 'PC & High-end devices',
   },
   bs: {
-    batterySaver: 'Štednja Baterije',
+    batterySaver: 'Kvalitet i Baterija',
     autoMode: 'Automatski',
     manualMode: 'Ručni',
     batteryLevel: 'Nivo Baterije',
@@ -52,15 +57,20 @@ const BATTERY_LOCALIZATION: Record<Language, any> = {
     effects: 'Vizualni Efekti',
     currentSettings: 'Trenutne Postavke',
     optimizedFor: 'Optimizirano za trajanje baterije',
-    normalMode: 'Normalan režim',
+    normalMode: 'Uravnoteženo',
     saverActive: 'Štednja baterije aktivna',
     stationery: 'Stalno',
     moving: 'U pokretu',
-    saveBattery: 'Uštedi Bateriju',
+    saveBattery: 'Štednja Baterije',
     powerOptimized: 'Optimizirano za energiju',
+    highQuality: 'Visok Kvalitet',
+    highQualityDesc: '60 FPS AR • 1080p • 3D',
+    balancedDesc: '30 FPS AR • 720p',
+    saverDesc: '15 FPS AR • 360p (Eko)',
+    forFlagships: 'PC i jači telefoni',
   },
   de: {
-    batterySaver: 'Akku-Sparmodus',
+    batterySaver: 'Qualität & Akku',
     autoMode: 'Automatisch',
     manualMode: 'Manuell',
     batteryLevel: 'Akku-Stand',
@@ -76,15 +86,20 @@ const BATTERY_LOCALIZATION: Record<Language, any> = {
     effects: 'Visuelle Effekte',
     currentSettings: 'Aktuelle Einstellungen',
     optimizedFor: 'Optimiert für Akkulaufzeit',
-    normalMode: 'Normalmodus',
+    normalMode: 'Ausgewogen',
     saverActive: 'Akku-Sparmodus aktiv',
     stationery: 'Stationär',
     moving: 'In Bewegung',
     saveBattery: 'Akku sparen',
     powerOptimized: 'Energieoptimiert',
+    highQuality: 'Hohe Qualität',
+    highQualityDesc: '60 FPS AR • 1080p • 3D',
+    balancedDesc: '30 FPS AR • 720p',
+    saverDesc: '15 FPS AR • 360p (Eco)',
+    forFlagships: 'PC & High-End-Geräte',
   },
   tr: {
-    batterySaver: 'Pil Tasarrufu',
+    batterySaver: 'Kalite ve Pil',
     autoMode: 'Otomatik',
     manualMode: 'Manuel',
     batteryLevel: 'Pil Seviyesi',
@@ -100,12 +115,17 @@ const BATTERY_LOCALIZATION: Record<Language, any> = {
     effects: 'Görsel Efektler',
     currentSettings: 'Mevcut Ayarlar',
     optimizedFor: 'Pil ömrü için optimize edilmiş',
-    normalMode: 'Normal mod',
+    normalMode: 'Dengeli',
     saverActive: 'Pil tasarrufu aktif',
     stationery: 'Durağan',
     moving: 'Hareket halinde',
     saveBattery: 'Pil Tasarrufu',
     powerOptimized: 'Enerji Optimize',
+    highQuality: 'Yüksek Kalite',
+    highQualityDesc: '60 FPS AR • 1080p • 3D',
+    balancedDesc: '30 FPS AR • 720p',
+    saverDesc: '15 FPS AR • 360p (Eko)',
+    forFlagships: 'PC ve Güçlü Telefonlar',
   },
 };
 
@@ -198,32 +218,72 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
           <button
             onClick={() => setShowModal(true)}
             className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-lg active:scale-95 transition-all shrink-0 border ${
-              activeSaver
+              state.isHighQualityActive
+                ? 'bg-purple-500/25 border-purple-400 text-purple-300 ring-2 ring-purple-400/40 shadow-[0_0_12px_rgba(168,85,247,0.4)]'
+                : activeSaver
                 ? 'bg-amber-500/25 border-amber-400 text-amber-300 ring-2 ring-amber-400/40 shadow-[0_0_12px_rgba(251,191,36,0.35)]'
                 : 'bg-slate-900/60 border-white/20 text-slate-300 hover:text-white hover:border-white/40'
             } ${className}`}
-            title={activeSaver ? `${t.saverActive} (15 FPS)` : `${t.batterySaver} (30 FPS)`}
+            title={
+              state.isHighQualityActive
+                ? `${t.highQuality} (60 FPS • 1080p • 3D)`
+                : activeSaver
+                ? `${t.saverActive} (15 FPS)`
+                : `${t.batterySaver} (30 FPS)`
+            }
             aria-label={t.batterySaver}
           >
-            {activeSaver ? <Zap className="w-5 h-5 text-amber-400 animate-pulse" /> : getBatteryIconComponent()}
+            {state.isHighQualityActive ? (
+              <Sparkles className="w-5 h-5 text-purple-300 animate-pulse" />
+            ) : activeSaver ? (
+              <Zap className="w-5 h-5 text-amber-400 animate-pulse" />
+            ) : (
+              getBatteryIconComponent()
+            )}
           </button>
         ) : (
           <button
             onClick={() => setShowModal(true)}
             className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all ${className}`}
             style={{
-              borderColor: activeSaver ? '#f59e0b' : '#3b82f6',
-              backgroundColor: activeSaver ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+              borderColor: state.isHighQualityActive ? '#a855f7' : activeSaver ? '#f59e0b' : '#3b82f6',
+              backgroundColor: state.isHighQualityActive
+                ? 'rgba(168, 85, 247, 0.15)'
+                : activeSaver
+                ? 'rgba(245, 158, 11, 0.15)'
+                : 'rgba(59, 130, 246, 0.1)',
             }}
-            title={activeSaver ? t.saverActive : t.normalMode}
+            title={state.isHighQualityActive ? t.highQuality : activeSaver ? t.saverActive : t.normalMode}
           >
-            {activeSaver ? <Zap className="w-4 h-4 text-amber-500" /> : getBatteryIconComponent()}
-            <span className={`font-semibold text-sm ${activeSaver ? 'text-amber-500' : getBatteryColor()}`}>
-              {state.isBatteryApiSupported && state.batteryLevel !== null
+            {state.isHighQualityActive ? (
+              <Sparkles className="w-4 h-4 text-purple-500" />
+            ) : activeSaver ? (
+              <Zap className="w-4 h-4 text-amber-500" />
+            ) : (
+              getBatteryIconComponent()
+            )}
+            <span
+              className={`font-semibold text-sm ${
+                state.isHighQualityActive
+                  ? 'text-purple-600'
+                  : activeSaver
+                  ? 'text-amber-500'
+                  : getBatteryColor()
+              }`}
+            >
+              {state.isHighQualityActive
+                ? 'HQ 60 FPS'
+                : state.isBatteryApiSupported && state.batteryLevel !== null
                 ? formatBatteryPercentage(state.batteryLevel)
-                : (activeSaver ? (lang === 'bs' ? 'Štednja 15 FPS' : 'Eco 15 FPS') : (lang === 'bs' ? 'Standard 30 FPS' : '30 FPS'))}
+                : activeSaver
+                ? (lang === 'bs' ? 'Štednja 15 FPS' : 'Eco 15 FPS')
+                : (lang === 'bs' ? 'Standard 30 FPS' : '30 FPS')}
             </span>
-            {activeSaver && <Zap className="w-4 h-4 text-amber-500" />}
+            {state.isHighQualityActive ? (
+              <Sparkles className="w-4 h-4 text-purple-500" />
+            ) : activeSaver ? (
+              <Zap className="w-4 h-4 text-amber-500" />
+            ) : null}
           </button>
         )}
 
@@ -233,8 +293,23 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
             <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  {activeSaver ? <Zap className="w-6 h-6 text-amber-500" /> : getBatteryIconComponent()}
-                  <h3 className="text-lg font-bold text-slate-800">{t.batterySaver}</h3>
+                  {state.isHighQualityActive ? (
+                    <Sparkles className="w-6 h-6 text-purple-600" />
+                  ) : activeSaver ? (
+                    <Zap className="w-6 h-6 text-amber-500" />
+                  ) : (
+                    getBatteryIconComponent()
+                  )}
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-800">{t.batterySaver}</h3>
+                    <p className="text-xs text-slate-500">
+                      {state.isHighQualityActive
+                        ? `${t.highQuality} (60 FPS • 1080p)`
+                        : activeSaver
+                        ? `${t.saverActive} (15 FPS)`
+                        : `${t.normalMode} (30 FPS)`}
+                    </p>
+                  </div>
                 </div>
                 <button
                   onClick={() => setShowModal(false)}
@@ -245,7 +320,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
               </div>
 
               {/* Battery Status */}
-              <div className="bg-slate-50 rounded-lg p-4 mb-6">
+              <div className="bg-slate-50 rounded-lg p-4 mb-5">
                 {state.isBatteryApiSupported && state.batteryLevel !== null ? (
                   <>
                     <div className="flex items-center justify-between mb-2">
@@ -272,23 +347,31 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-semibold text-slate-700">{t.batteryLevel}</span>
                       <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                        activeSaver ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'
+                        state.isHighQualityActive
+                          ? 'bg-purple-100 text-purple-800'
+                          : activeSaver
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-blue-100 text-blue-800'
                       }`}>
-                        {activeSaver ? (lang === 'bs' ? 'Štednja aktivna' : 'Saver Active') : (lang === 'bs' ? 'Standard 30 FPS' : 'Standard 30 FPS')}
+                        {state.isHighQualityActive
+                          ? 'HQ 60 FPS'
+                          : activeSaver
+                          ? (lang === 'bs' ? 'Štednja 15 FPS' : 'Eco 15 FPS')
+                          : (lang === 'bs' ? 'Standard 30 FPS' : '30 FPS')}
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 leading-tight">
                       {lang === 'bs'
-                        ? 'Preglednik (npr. iOS Safari) štiti privatnost i ne otkriva hardverski nivo baterije. Ručna štednja direktno rasterećuje kameru, GPS i animacije.'
-                        : 'Browser privacy protects battery percentage. Manual power saver directly throttles camera, GPS and AR animation loop.'}
+                        ? 'Odaberite profil performansi prema Vašem uređaju (PC, telefon ili štednja).'
+                        : 'Choose performance profile suited for your device (PC, flagship or battery saving).'}
                     </p>
                   </div>
                 )}
-                <p className="text-sm text-slate-500 flex items-center gap-1 mt-2">
+                <p className="text-xs text-slate-500 flex items-center gap-1 mt-2">
                   {state.isStationary ? (
                     <>
                       <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                      {t.stationery} (Eco)
+                      {t.stationery}
                     </>
                   ) : (
                     <>
@@ -299,68 +382,107 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                 </p>
               </div>
 
-              {/* Mode Toggle */}
-              <div className="flex gap-3 mb-6">
+              {/* 3 Mode Selection Buttons */}
+              <div className="grid grid-cols-3 gap-2 mb-5">
+                {/* 1. Battery Saver */}
                 <button
-                  onClick={() => {
-                    actions.disableBatterySaver();
-                    setShowModal(false);
-                  }}
-                  className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
-                    !activeSaver 
-                      ? 'border-blue-500 bg-blue-50 shadow-sm' 
-                      : 'border-slate-200 bg-white hover:border-slate-300'
-                  }`}
-                >
-                  <div className={`w-6 h-6 rounded-full transition-colors flex items-center justify-center ${
-                    !activeSaver ? 'bg-blue-500 text-white' : 'bg-slate-300'
-                  }`}>
-                    {!activeSaver && <Check className="w-3.5 h-3.5" />}
-                  </div>
-                  <span className="font-semibold text-sm">{t.normalMode}</span>
-                  <span className="text-[10px] text-slate-500">30 FPS AR</span>
-                </button>
-                <button
+                  type="button"
                   onClick={() => {
                     actions.enableBatterySaver();
                     setShowModal(false);
                   }}
-                  className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
-                    activeSaver 
-                      ? 'border-amber-500 bg-amber-50 shadow-sm' 
+                  className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${
+                    activeSaver
+                      ? 'border-amber-500 bg-amber-50 shadow-sm ring-1 ring-amber-400'
                       : 'border-slate-200 bg-white hover:border-slate-300'
                   }`}
                 >
-                  <Zap className={`w-6 h-6 transition-colors ${
-                    activeSaver ? 'text-amber-500 fill-amber-500' : 'text-slate-400'
-                  }`} />
-                  <span className="font-semibold text-sm">{t.saveBattery}</span>
-                  <span className="text-[10px] text-amber-700">15 FPS / Eco</span>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
+                    activeSaver ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-400'
+                  }`}>
+                    <Zap className="w-4 h-4 fill-current" />
+                  </div>
+                  <span className="font-bold text-xs text-slate-800 leading-tight">{t.saveBattery}</span>
+                  <span className="text-[10px] text-amber-700 font-semibold mt-1">15 FPS • 360p</span>
+                  <span className="text-[9px] text-slate-400">{t.saverDesc}</span>
+                </button>
+
+                {/* 2. Balanced (Standard) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    actions.disableBatterySaver();
+                    setShowModal(false);
+                  }}
+                  className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${
+                    !activeSaver && !state.isHighQualityActive
+                      ? 'border-blue-500 bg-blue-50 shadow-sm ring-1 ring-blue-400'
+                      : 'border-slate-200 bg-white hover:border-slate-300'
+                  }`}
+                >
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
+                    !activeSaver && !state.isHighQualityActive ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-400'
+                  }`}>
+                    <Check className="w-4 h-4" />
+                  </div>
+                  <span className="font-bold text-xs text-slate-800 leading-tight">{t.normalMode}</span>
+                  <span className="text-[10px] text-blue-700 font-semibold mt-1">30 FPS • 720p</span>
+                  <span className="text-[9px] text-slate-400">{t.balancedDesc}</span>
+                </button>
+
+                {/* 3. High Quality (PC / Flagship) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    actions.setHighQualityMode();
+                    setShowModal(false);
+                  }}
+                  className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center relative overflow-hidden ${
+                    state.isHighQualityActive
+                      ? 'border-purple-500 bg-purple-50 shadow-sm ring-1 ring-purple-400'
+                      : 'border-slate-200 bg-white hover:border-slate-300'
+                  }`}
+                >
+                  <span className="absolute top-0 right-0 bg-purple-600 text-[8px] font-bold text-white px-1 py-0.5 rounded-bl">
+                    HQ
+                  </span>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
+                    state.isHighQualityActive ? 'bg-purple-600 text-white' : 'bg-slate-100 text-purple-400'
+                  }`}>
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <span className="font-bold text-xs text-slate-800 leading-tight">{t.highQuality}</span>
+                  <span className="text-[10px] text-purple-700 font-semibold mt-1">60 FPS • 1080p</span>
+                  <span className="text-[9px] text-purple-600 font-medium">{t.forFlagships}</span>
                 </button>
               </div>
 
               {/* Current Settings */}
               <div className="bg-slate-50 rounded-lg p-4">
-                <h4 className="font-semibold text-slate-700 mb-3">{t.currentSettings}</h4>
+                <h4 className="font-semibold text-slate-700 mb-3 text-xs uppercase tracking-wider">{t.currentSettings}</h4>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-slate-600">{t.cameraFps}</span>
-                    <span className="font-mono text-slate-800">{recommendations.cameraFps} FPS ({recommendations.cameraWidth}x{recommendations.cameraHeight})</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">{t.animations}</span>
-                    <span className="font-mono text-slate-800">{recommendations.animationFps} FPS</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">{t.gpsAccuracy}</span>
-                    <span className="font-mono text-slate-800">
-                      {recommendations.enableHighAccuracyGPS ? 'High' : 'Eco Throttled'}
+                    <span className="font-mono text-xs font-semibold text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200">
+                      {recommendations.cameraFps} FPS ({recommendations.cameraWidth}x{recommendations.cameraHeight})
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">{t.effects}</span>
-                    <span className="font-mono text-slate-800">
-                      {recommendations.enableGlowEffects ? 'Enabled' : 'Disabled (Eco)'}
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">{t.animations} & AR</span>
+                    <span className="font-mono text-xs font-semibold text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200">
+                      {recommendations.animationFps} FPS
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">{t.gpsAccuracy}</span>
+                    <span className="font-mono text-xs font-semibold text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200">
+                      {recommendations.enableHighAccuracyGPS ? 'High Accuracy' : 'Eco Throttled'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">{t.effects} & 3D</span>
+                    <span className="font-mono text-xs font-semibold text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200">
+                      {state.isHighQualityActive ? '3D + Max Glow (HQ)' : recommendations.enableGlowEffects ? 'Standard 3D' : 'Eco Minimal'}
                     </span>
                   </div>
                 </div>
@@ -368,7 +490,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
 
               <button
                 onClick={() => setShowModal(false)}
-                className="w-full mt-6 bg-slate-200 text-slate-700 py-2 rounded-lg font-semibold hover:bg-slate-300 transition-colors"
+                className="w-full mt-5 bg-slate-800 text-white py-2.5 rounded-lg font-semibold hover:bg-slate-900 transition-colors shadow-sm text-sm"
               >
                 {lang === 'bs' ? 'Zatvori' : lang === 'de' ? 'Schließen' : lang === 'tr' ? 'Kapat' : 'Close'}
               </button>
@@ -423,8 +545,8 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
           <span>{state.isCharging ? t.charging : t.batteryLevel}</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${activeSaver ? 'bg-amber-500' : 'bg-slate-300'}`} />
-          <span>{activeSaver ? t.saverActive : t.normalMode}</span>
+          <div className={`w-2 h-2 rounded-full ${state.isHighQualityActive ? 'bg-purple-500' : activeSaver ? 'bg-amber-500' : 'bg-blue-500'}`} />
+          <span>{state.isHighQualityActive ? t.highQuality : activeSaver ? t.saverActive : t.normalMode}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className={`w-2 h-2 rounded-full ${state.isStationary ? 'bg-blue-500' : 'bg-green-500 animate-pulse'}`} />
@@ -441,9 +563,9 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
         <h4 className="font-semibold text-slate-700 mb-2">{t.recommendations}</h4>
         <div className="text-sm text-slate-600 space-y-1">
           <p>{t.cameraFps}: {recommendations.cameraFps} FPS ({recommendations.cameraWidth}x{recommendations.cameraHeight})</p>
-          <p>{t.animations}: {recommendations.animationFps} FPS</p>
-          <p>{t.gpsAccuracy}: {recommendations.enableHighAccuracyGPS ? 'High' : 'Eco Throttled'}</p>
-          <p>{t.effects}: {recommendations.enableGlowEffects ? 'Enabled' : 'Disabled (Eco)'}</p>
+          <p>{t.animations} & AR: {recommendations.animationFps} FPS</p>
+          <p>{t.gpsAccuracy}: {recommendations.enableHighAccuracyGPS ? 'High Accuracy' : 'Eco Throttled'}</p>
+          <p>{t.effects} & 3D: {state.isHighQualityActive ? '3D + Max Glow (HQ)' : recommendations.enableGlowEffects ? 'Standard 3D' : 'Eco Minimal'}</p>
         </div>
       </div>
 
@@ -491,8 +613,23 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
           <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                {getBatteryIconComponent()}
-                <h3 className="text-lg font-bold text-slate-800">{t.batterySaver}</h3>
+                {state.isHighQualityActive ? (
+                  <Sparkles className="w-6 h-6 text-purple-600" />
+                ) : activeSaver ? (
+                  <Zap className="w-6 h-6 text-amber-500" />
+                ) : (
+                  getBatteryIconComponent()
+                )}
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800">{t.batterySaver}</h3>
+                  <p className="text-xs text-slate-500">
+                    {state.isHighQualityActive
+                      ? `${t.highQuality} (60 FPS • 1080p)`
+                      : activeSaver
+                      ? `${t.saverActive} (15 FPS)`
+                      : `${t.normalMode} (30 FPS)`}
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => setShowModal(false)}
@@ -502,44 +639,84 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
               </button>
             </div>
 
-            <div className="flex gap-3 mb-6">
+            {/* 3 Mode Selection Buttons */}
+            <div className="grid grid-cols-3 gap-2 mb-5">
+              {/* 1. Battery Saver */}
               <button
-                onClick={() => {
-                  actions.disableBatterySaver();
-                  setShowModal(false);
-                }}
-                className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
-                  !activeSaver 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-slate-200 bg-white'
-                }`}
-              >
-                <div className={`w-6 h-6 rounded-full transition-colors ${
-                  !activeSaver ? 'bg-blue-500' : 'bg-slate-300'
-                }`} />
-                <span className="font-semibold text-sm">{t.normalMode}</span>
-              </button>
-              <button
+                type="button"
                 onClick={() => {
                   actions.enableBatterySaver();
                   setShowModal(false);
                 }}
-                className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
-                  activeSaver 
-                    ? 'border-amber-500 bg-amber-50' 
-                    : 'border-slate-200 bg-white'
+                className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${
+                  activeSaver
+                    ? 'border-amber-500 bg-amber-50 shadow-sm ring-1 ring-amber-400'
+                    : 'border-slate-200 bg-white hover:border-slate-300'
                 }`}
               >
-                <Zap className={`w-6 h-6 transition-colors ${
-                  activeSaver ? 'text-amber-500' : 'text-slate-400'
-                }`} />
-                <span className="font-semibold text-sm">{t.saveBattery}</span>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
+                  activeSaver ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-400'
+                }`}>
+                  <Zap className="w-4 h-4 fill-current" />
+                </div>
+                <span className="font-bold text-xs text-slate-800 leading-tight">{t.saveBattery}</span>
+                <span className="text-[10px] text-amber-700 font-semibold mt-1">15 FPS • 360p</span>
+                <span className="text-[9px] text-slate-400">{t.saverDesc}</span>
+              </button>
+
+              {/* 2. Balanced (Standard) */}
+              <button
+                type="button"
+                onClick={() => {
+                  actions.disableBatterySaver();
+                  setShowModal(false);
+                }}
+                className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${
+                  !activeSaver && !state.isHighQualityActive
+                    ? 'border-blue-500 bg-blue-50 shadow-sm ring-1 ring-blue-400'
+                    : 'border-slate-200 bg-white hover:border-slate-300'
+                }`}
+              >
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
+                  !activeSaver && !state.isHighQualityActive ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-400'
+                }`}>
+                  <Check className="w-4 h-4" />
+                </div>
+                <span className="font-bold text-xs text-slate-800 leading-tight">{t.normalMode}</span>
+                <span className="text-[10px] text-blue-700 font-semibold mt-1">30 FPS • 720p</span>
+                <span className="text-[9px] text-slate-400">{t.balancedDesc}</span>
+              </button>
+
+              {/* 3. High Quality (PC / Flagship) */}
+              <button
+                type="button"
+                onClick={() => {
+                  actions.setHighQualityMode();
+                  setShowModal(false);
+                }}
+                className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center relative overflow-hidden ${
+                  state.isHighQualityActive
+                    ? 'border-purple-500 bg-purple-50 shadow-sm ring-1 ring-purple-400'
+                    : 'border-slate-200 bg-white hover:border-slate-300'
+                }`}
+              >
+                <span className="absolute top-0 right-0 bg-purple-600 text-[8px] font-bold text-white px-1 py-0.5 rounded-bl">
+                  HQ
+                </span>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
+                  state.isHighQualityActive ? 'bg-purple-600 text-white' : 'bg-slate-100 text-purple-400'
+                }`}>
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <span className="font-bold text-xs text-slate-800 leading-tight">{t.highQuality}</span>
+                <span className="text-[10px] text-purple-700 font-semibold mt-1">60 FPS • 1080p</span>
+                <span className="text-[9px] text-purple-600 font-medium">{t.forFlagships}</span>
               </button>
             </div>
 
             <button
               onClick={() => setShowModal(false)}
-              className="w-full mt-6 bg-slate-200 text-slate-700 py-2 rounded-lg font-semibold hover:bg-slate-300 transition-colors"
+              className="w-full mt-5 bg-slate-800 text-white py-2.5 rounded-lg font-semibold hover:bg-slate-900 transition-colors shadow-sm text-sm"
             >
               {lang === 'bs' ? 'Zatvori' : lang === 'de' ? 'Schließen' : lang === 'tr' ? 'Kapat' : 'Close'}
             </button>

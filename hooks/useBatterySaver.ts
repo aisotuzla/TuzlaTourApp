@@ -51,13 +51,17 @@ export interface BatterySaverState {
   manualMode: boolean;                 // User has manually enabled battery saver
   autoMode: boolean;                   // Battery saver auto-activated due to low battery
   isSaverActive: boolean;              // Master flag: true if manualMode, autoMode, isCritical, or isLow
+  isHighQualityActive: boolean;        // Master flag: true if user manually enabled High Quality mode (60 FPS, 1080p)
+  qualityMode: 'saver' | 'balanced' | 'cinematic'; // Current effective quality mode
   isBatteryApiSupported: boolean;      // True if browser supports navigator.getBattery (false on iOS/Safari)
 }
 
 export interface BatterySaverActions {
-  enableBatterySaver: () => void;      // Manually enable battery saver
-  disableBatterySaver: () => void;     // Manually disable battery saver
+  enableBatterySaver: () => void;      // Manually enable battery saver (15 FPS, Eco 360p)
+  disableBatterySaver: () => void;     // Revert to balanced / normal (30 FPS, 720p)
   toggleBatterySaver: () => void;       // Toggle battery saver mode
+  setHighQualityMode: () => void;      // Manually enable High Quality mode (60 FPS, 1080p, PC / Flagship)
+  setQualityMode: (mode: 'saver' | 'balanced' | 'cinematic') => void;
 }
 
 export interface BatterySaverRecommendations {
@@ -126,15 +130,17 @@ const normalizeBatteryLevel = (value: number | null): number | null => {
   return Math.min(1, Math.max(0, value));
 };
 
-const readInitialSaverMode = (): boolean => {
-  if (typeof window === 'undefined') return false;
+const readInitialQualityMode = (): 'saver' | 'balanced' | 'cinematic' => {
+  if (typeof window === 'undefined') return 'balanced';
   const qMode = window.localStorage.getItem('tuzla.quest.quality-mode');
-  if (qMode === 'saver') return true;
-  return window.localStorage.getItem('tuzla.batterySaver.manualMode') === 'true';
+  if (qMode === 'cinematic') return 'cinematic';
+  if (qMode === 'saver') return 'saver';
+  if (window.localStorage.getItem('tuzla.batterySaver.manualMode') === 'true') return 'saver';
+  return 'balanced';
 };
 
 /**
- * Hook for managing battery saver mode
+ * Hook for managing battery saver and quality modes
  */
 export function useBatterySaver(config: Partial<BatterySaverConfig> = {}): {
   state: BatterySaverState;
@@ -146,7 +152,7 @@ export function useBatterySaver(config: Partial<BatterySaverConfig> = {}): {
   
   const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
   const [isCharging, setIsCharging] = useState<boolean>(false);
-  const [manualMode, setManualMode] = useState<boolean>(readInitialSaverMode);
+  const [qualityMode, setQualityModeState] = useState<'saver' | 'balanced' | 'cinematic'>(readInitialQualityMode);
   const [isStationary, setIsStationary] = useState<boolean>(false);
   const [isBatteryApiSupported, setIsBatteryApiSupported] = useState<boolean>(() => {
     return typeof navigator !== 'undefined' && 'getBattery' in navigator && typeof (navigator as any).getBattery === 'function';
@@ -161,16 +167,17 @@ export function useBatterySaver(config: Partial<BatterySaverConfig> = {}): {
 
     const handleModeEvent = (e: Event) => {
       const customEvent = e as CustomEvent<{ mode: string }>;
-      if (customEvent.detail?.mode) {
-        setManualMode(customEvent.detail.mode === 'saver');
+      const mode = customEvent.detail?.mode;
+      if (mode === 'cinematic' || mode === 'saver' || mode === 'balanced') {
+        setQualityModeState(mode);
       } else {
-        setManualMode(readInitialSaverMode());
+        setQualityModeState(readInitialQualityMode());
       }
     };
 
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'tuzla.quest.quality-mode' || e.key === 'tuzla.batterySaver.manualMode') {
-        setManualMode(readInitialSaverMode());
+        setQualityModeState(readInitialQualityMode());
       }
     };
 
@@ -264,8 +271,10 @@ export function useBatterySaver(config: Partial<BatterySaverConfig> = {}): {
   // Calculate master state
   const isCritical = batteryLevel !== null && batteryLevel <= fullConfig.criticalBatteryThreshold;
   const isLow = batteryLevel !== null && batteryLevel <= fullConfig.lowBatteryThreshold;
-  const autoMode = batteryLevel !== null && !manualMode && (isLow || isCritical);
-  const isSaverActive = manualMode || autoMode || isCritical || isLow;
+  const autoMode = batteryLevel !== null && qualityMode === 'balanced' && (isLow || isCritical);
+  const isSaverActive = qualityMode === 'saver' || autoMode || isCritical || isLow;
+  const isHighQualityActive = qualityMode === 'cinematic';
+  const effectiveMode: 'saver' | 'balanced' | 'cinematic' = isSaverActive ? 'saver' : (isHighQualityActive ? 'cinematic' : 'balanced');
 
   const state: BatterySaverState = {
     batteryLevel,
@@ -273,94 +282,83 @@ export function useBatterySaver(config: Partial<BatterySaverConfig> = {}): {
     isCritical,
     isLow,
     isStationary,
-    manualMode,
+    manualMode: qualityMode === 'saver',
     autoMode,
     isSaverActive,
+    isHighQualityActive,
+    qualityMode,
     isBatteryApiSupported,
   };
 
   // Actions synchronize directly across app
-  const enableBatterySaver = useCallback(() => {
-    setManualMode(true);
+  const setQualityMode = useCallback((mode: 'saver' | 'balanced' | 'cinematic') => {
+    setQualityModeState(mode);
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem('tuzla.batterySaver.manualMode', 'true');
-      window.localStorage.setItem('tuzla.quest.quality-mode', 'saver');
-      window.dispatchEvent(new CustomEvent('tuzla:quality-mode-changed', { detail: { mode: 'saver' } }));
+      window.localStorage.setItem('tuzla.quest.quality-mode', mode);
+      window.localStorage.setItem('tuzla.batterySaver.manualMode', mode === 'saver' ? 'true' : 'false');
+      window.dispatchEvent(new CustomEvent('tuzla:quality-mode-changed', { detail: { mode } }));
     }
   }, []);
 
-  const disableBatterySaver = useCallback(() => {
-    setManualMode(false);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('tuzla.batterySaver.manualMode', 'false');
-      window.localStorage.setItem('tuzla.quest.quality-mode', 'auto');
-      window.dispatchEvent(new CustomEvent('tuzla:quality-mode-changed', { detail: { mode: 'auto' } }));
-    }
-  }, []);
-
+  const enableBatterySaver = useCallback(() => setQualityMode('saver'), [setQualityMode]);
+  const disableBatterySaver = useCallback(() => setQualityMode('balanced'), [setQualityMode]);
+  const setHighQualityMode = useCallback(() => setQualityMode('cinematic'), [setQualityMode]);
   const toggleBatterySaver = useCallback(() => {
-    setManualMode(prev => {
-      const next = !prev;
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem('tuzla.batterySaver.manualMode', String(next));
-        window.localStorage.setItem('tuzla.quest.quality-mode', next ? 'saver' : 'auto');
-        window.dispatchEvent(new CustomEvent('tuzla:quality-mode-changed', { detail: { mode: next ? 'saver' : 'auto' } }));
-      }
-      return next;
-    });
-  }, []);
+    setQualityMode(qualityMode === 'saver' ? 'balanced' : 'saver');
+  }, [qualityMode, setQualityMode]);
 
   const actions: BatterySaverActions = {
     enableBatterySaver,
     disableBatterySaver,
     toggleBatterySaver,
+    setHighQualityMode,
+    setQualityMode,
   };
 
-  // Generate recommendations based on active saver state and stationary detection
+  // Generate recommendations based on active quality mode and stationary detection
   const recommendations: BatterySaverRecommendations = {
-    // Camera settings: 15 FPS when saver active or stationary, 30 FPS normal
-    cameraFps: isCritical 
-      ? fullConfig.cameraFpsCritical 
-      : isSaverActive 
-        ? fullConfig.cameraFpsLowBattery 
-        : isStationary 
-          ? Math.min(fullConfig.cameraFpsLowBattery, fullConfig.cameraFpsNormal) 
-          : fullConfig.cameraFpsNormal,
+    // Camera settings: 60 FPS (1920x1080) High Quality, 30 FPS (960x720) Balanced, 15 FPS (480x360) Saver
+    cameraFps: effectiveMode === 'cinematic'
+      ? 60
+      : isCritical 
+        ? fullConfig.cameraFpsCritical 
+        : isSaverActive 
+          ? fullConfig.cameraFpsLowBattery 
+          : isStationary 
+            ? Math.min(fullConfig.cameraFpsLowBattery, fullConfig.cameraFpsNormal) 
+            : fullConfig.cameraFpsNormal,
     
-    cameraWidth: isCritical ? 480 : isSaverActive ? 480 : 960,
-    cameraHeight: isCritical ? 360 : isSaverActive ? 360 : 720,
+    cameraWidth: effectiveMode === 'cinematic' ? 1920 : (isCritical || isSaverActive ? 480 : 960),
+    cameraHeight: effectiveMode === 'cinematic' ? 1080 : (isCritical || isSaverActive ? 360 : 720),
     
-    // GPS settings
-    enableHighAccuracyGPS: !isSaverActive && !isStationary,
+    // GPS settings: High accuracy in High Quality & Balanced, throttled in Saver
+    enableHighAccuracyGPS: effectiveMode === 'cinematic' || (!isSaverActive && !isStationary),
     gpsUpdateInterval: isCritical 
       ? fullConfig.gpsIntervalCritical 
       : isSaverActive 
         ? fullConfig.gpsIntervalLowBattery 
         : fullConfig.gpsIntervalNormal,
     
-    // Animation settings: 15 FPS saver, 30 FPS normal
-    animationFps: isCritical 
-      ? fullConfig.animationFpsCritical 
-      : isSaverActive 
-        ? fullConfig.animationFpsLowBattery 
-        : fullConfig.animationFpsNormal,
+    // Animation settings: 60 FPS High Quality, 30 FPS Balanced, 15 FPS Saver
+    animationFps: effectiveMode === 'cinematic'
+      ? 60
+      : isCritical 
+        ? fullConfig.animationFpsCritical 
+        : isSaverActive 
+          ? fullConfig.animationFpsLowBattery 
+          : fullConfig.animationFpsNormal,
     
     enableInfiniteAnimations: !isSaverActive,
     
-    // Visual effects
-    enableGlowEffects: isSaverActive 
-      ? fullConfig.enableGlowEffectsLowBattery 
-      : fullConfig.enableGlowEffectsNormal,
+    // Visual effects & 3D buildings
+    enableGlowEffects: isSaverActive ? false : true,
+    enable3dBuildings: isSaverActive ? false : true,
     
-    enable3dBuildings: isSaverActive 
-      ? fullConfig.enable3dBuildingsLowBattery 
-      : fullConfig.enable3dBuildingsNormal,
-    
-    blurStrength: isSaverActive ? 'low' : 'medium',
-    glowStrength: isSaverActive ? 'low' : 'medium',
+    blurStrength: effectiveMode === 'cinematic' ? 'high' : (isSaverActive ? 'low' : 'medium'),
+    glowStrength: effectiveMode === 'cinematic' ? 'high' : (isSaverActive ? 'low' : 'medium'),
     
     // Feature restrictions
-    maxConcurrentAnimations: isSaverActive ? 1 : 3,
+    maxConcurrentAnimations: effectiveMode === 'cinematic' ? 5 : (isSaverActive ? 1 : 3),
     enableBackgroundUpdates: !isSaverActive,
   };
 

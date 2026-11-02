@@ -752,7 +752,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 <img
                   src="/assets/Gallery/ilovebos.webp"
                   alt="AISO Logo"
-                  className="w-16 h-16 object-contain pointer-events-none group-hover:scale-110 transition-transform"
+                  className="w-20 h-16 object-contain pointer-events-none group-hover:scale-110 transition-transform"
                 />
                 <span>AISO Tuzla</span>
               </a>

@@ -74,18 +74,14 @@ const autoQualityDecision = (
 ): { quality: QuestQualityLevel; reasonTag: string | null } => {
   const batteryLevel = signals.batteryLevel;
   const lowBattery = typeof batteryLevel === 'number' && batteryLevel <= 0.2;
-  const mediumBattery = typeof batteryLevel === 'number' && batteryLevel <= 0.35;
-  const constrainedNetwork = signals.saveData || signals.effectiveConnectionType === 'slow-2g' || signals.effectiveConnectionType === '2g';
 
   if (signals.batterySaving || lowBattery) {
     return { quality: 'utility', reasonTag: 'power-saver' };
   }
 
-  if (features.isAndroidLight || mediumBattery || constrainedNetwork) {
-    return { quality: 'balanced', reasonTag: features.isAndroidLight ? 'android-balanced' : 'runtime-balance' };
-  }
-
-  return { quality: 'cinematic', reasonTag: null };
+  // Automatic decision defaults to balanced (30 FPS, 720p). 
+  // High quality (60 FPS, 1080p, max AR FX) is strictly manual-only for PC & flagship phones.
+  return { quality: 'balanced', reasonTag: features.isAndroidLight ? 'android-balanced' : 'auto-balanced' };
 };
 
 const withHysteresis = (
@@ -171,24 +167,25 @@ const makeArFx = (qualityLevel: QuestQualityLevel): QuestPolicyArFx => {
 
   if (qualityLevel === 'balanced') {
     return {
-      targetFps: 24,
+      targetFps: 30,
       cameraOnMeters: 8,
       cameraOffMeters: 12,
-      cameraWidth: 640,
-      cameraHeight: 480,
-      cameraIdealFps: 20,
-      cameraMaxFps: 24,
+      cameraWidth: 960,
+      cameraHeight: 720,
+      cameraIdealFps: 30,
+      cameraMaxFps: 30,
     };
   }
 
+  // 'cinematic': High quality mode for PC & high-end phones (strictly manual)
   return {
-    targetFps: 30,
-    cameraOnMeters: 10,
-    cameraOffMeters: 15,
-    cameraWidth: 960,
-    cameraHeight: 720,
-    cameraIdealFps: 24,
-    cameraMaxFps: 30,
+    targetFps: 60,
+    cameraOnMeters: 14,
+    cameraOffMeters: 20,
+    cameraWidth: 1920,
+    cameraHeight: 1080,
+    cameraIdealFps: 60,
+    cameraMaxFps: 60,
   };
 };
 

@@ -18,6 +18,7 @@ import { QUEST_TARGETS, POI_COLORS, ROUTE_POI_PRESETS, PHASE_1_POIS, PHASE_2_POI
 import { NavigationHud } from './NavigationHud.tsx';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import ARGuide from './ARGuide.tsx';
+import { BatterySaverToggle } from './BatterySaverToggle.tsx';
 import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
 import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
 
@@ -778,6 +779,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         </button>
         <button onClick={() => setShowRules((prev) => !prev)} className="w-9 h-9 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-purple-400/30 rounded-full shadow-lg text-purple-400 hover:text-white active:scale-95 transition-all" title={lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}><Info size={16} /></button>
         <button onClick={() => setShowLayerMenu((prev) => !prev)} className="w-9 h-9 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-purple-400/40 rounded-full shadow-xl text-purple-400 hover:text-white hover:border-purple-400 active:scale-95 transition-all" title={lang === 'bs' ? 'Promijeni Sloj Mape' : 'Switch Map Layer'}><Layers size={16} /></button>
+        <BatterySaverToggle lang={lang} compact={true} />
       </div>
 
       {/* Layer Menu Dropdown */}
