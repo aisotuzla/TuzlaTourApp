@@ -13,7 +13,11 @@ import {
   Mail,
   Compass,
   Globe,
-  Info
+  Info,
+  Sun,
+  Ticket,
+  Sparkles,
+  Users
 } from 'lucide-react';
 import { Language } from '../types';
 
@@ -478,25 +482,26 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       }
     },
     {
-      id: 'tuzla-frankfurt',
-      route: 'Tuzla - Frankfurt',
-      via: 'Srebrenik-Brčko-Lončari-Orašje',
+      id: 'tuzla-beograd',
+      route: 'Tuzla - Beograd',
+      via: 'Priboj - Ugljevik - Bijeljina - Bosut - Kuzmin - Sremska Mitrovica',
       departures: [
-        { time: '10:30', days: 'Tue, Wed, Thu, Fri' },
-        { time: '18:00', days: 'Saturday' }
+        { time: '06:15', days: 'Svaki dan / Daily' },
+        { time: '16:25', days: 'Svaki dan / Daily' },
+        { time: '19:00', days: 'Svaki dan / Daily' }
       ],
-      arrivalTimes: ['08:30 (+1)', '16:00 (+1)'],
-      returnTimes: ['11:30', '11:30'],
-      duration: '21h 0m',
-      price: 'Varies by season',
+      arrivalTimes: ['10:45', '20:55', '23:30'],
+      returnTimes: ['06:30', '13:00', '17:30'],
+      duration: '~4h 15m - 4h 30m',
+      price: '28.00 KM (Jedan smjer) / 45.00 KM (Povratna)',
       carrier: 'TRANSTURIST',
       bookingLink: 'https://buskarta.ba',
       phone: '+387 35 320-325',
       description: {
-        en: 'International bus line from Tuzla to Frankfurt, Germany. Overnight journey with stops.',
-        bs: 'Međunarodna linija Tuzla - Frankfurt (Njemačka). Noćna vožnja sa zastancima.',
-        de: 'Internationale Buslinie von Tuzla nach Frankfurt. Nachtfahrt mit Zwischenstopps.',
-        tr: 'Tuzla ve Frankfurt (Almanya) arasındaki uluslararası otobüs hattı. Duraklarla gece yolculuğu.'
+        en: 'International bus line connecting Tuzla to Belgrade (Serbia) via Priboj, Ugljevik, Bijeljina, Bosut, Kuzmin, and Sremska Mitrovica. Three daily departures.',
+        bs: 'Međunarodna autobuska linija Tuzla - Beograd preko Priboja, Ugljevika, Bijeljine, Bosuta, Kuzmina i Sremske Mitrovice. Polasci svakog dana u 06:15h, 16:25h i 19:00h.',
+        de: 'Internationale Buslinie von Tuzla nach Belgrad (Serbien) über Priboj, Ugljevik, Bijeljina, Bosut, Kuzmin und Sremska Mitrovica. Täglich um 06:15, 16:25 und 19:00 Uhr.',
+        tr: 'Tuzla - Belgrad (Sırbistan) güzergahı: Priboj, Ugljevik, Bijeljina, Bosut, Kuzmin ve Sremska Mitrovica üzerinden. Her gün 06:15, 16:25 ve 19:00 seferleri.'
       }
     },
     {
@@ -700,9 +705,27 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       intlBusSub: 'Transturist Tuzla offers daily connections to Sarajevo and major European destinations in Germany and Croatia.',
       bookBuskarta: 'Book Online at Buskarta.ba',
       transturistSite: 'Official Transturist Portal',
-      domesticTitle: 'Domestic Line: Tuzla – Sarajevo',
-      domesticDesc: 'Direct express line via Kladanj and Olovo with several daily departures.',
-      intlTitle: 'International Long-Distance Lines'
+      intlTitle: 'International Long-Distance Lines',
+      domesticTitle: 'Domestic: Tuzla – Sarajevo',
+      domesticDesc: 'Direct connection via Kladanj and Olovo with multiple daily departures on modern coaches.',
+      trainBadge: 'Summer Seasonal Attraction',
+      trainTitle: 'Tuzla Tourist Sightseeing Train',
+      trainSubtitle: 'The tourist mini-train operates in Tuzla, starting from Freedom Square to the Pannonian Lakes from Tuesday to Sunday between 10:00 and 17:00, while Monday is a non-working day (no service). Enjoy a scenic ride through parks and landmarks.',
+      trainBoardingTitle: 'Boarding Location',
+      trainBoardingPlace: 'Freedom Square (Trg slobode)',
+      trainBoardingDesc: 'Official departure and return station is located at Freedom Square, running towards the Pannonian Lakes complex and city park.',
+      trainDays: 'Tuesday – Sunday (10:00 – 17:00)',
+      trainMonday: 'Monday: Non-working day (does not operate)',
+      trainScheduleTitle: 'Schedule & Tour Details',
+      trainDeparturesTitle: 'Departures: Every full hour (10:00 to 17:00)',
+      trainTicketTitle: 'Ticket Pricing',
+      trainSingleTicket: 'Individual Ticket',
+      trainSinglePrice: '2.00 BAM (KM)',
+      trainSingleDesc: 'Per passenger for one scenic sightseeing loop',
+      trainCharterTicket: 'Reserved Charter (Entire Train)',
+      trainCharterPrice: '36.00 BAM (KM)',
+      trainCharterDesc: 'Exclusive private booking for groups / events (maximum 36 seats)',
+      trainSummerNotice: 'Seasonal operation exclusively during the summer period from Tuesday to Sunday. Closed on Mondays.'
     },
     bs: {
       title: 'Prevoz u Tuzli',
@@ -740,7 +763,25 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       transturistSite: 'Zvanična Transturist stranica',
       domesticTitle: 'Domaća linija: Tuzla – Sarajevo',
       domesticDesc: 'Direktna linija preko Kladnja i Olova sa više dnevnih polazaka modernim autobusima.',
-      intlTitle: 'Međunarodne linije za Njemačku i Hrvatsku'
+      intlTitle: 'Međunarodne linije za Njemačku i Hrvatsku',
+      trainBadge: 'Ljetna turistička atrakcija',
+      trainTitle: 'Turistički vozić u Tuzli',
+      trainSubtitle: 'Turistički vozić u Tuzli polazi sa Trga slobode prema Panonskim jezerima i saobraća od utorka do nedjelje u terminima od 10:00 do 17:00 sati, dok je ponedjeljak neradni dan (ne vozi). Uživajte u panoramskoj vožnji kroz uži centar grada, parkove i turističke lokalitete.',
+      trainBoardingTitle: 'Mjesto polaska i ukrcaja',
+      trainBoardingPlace: 'Trg slobode (Freedom Square)',
+      trainBoardingDesc: 'Zvanična početna i povratna stanica vozića nalazi se na Trgu slobode, sa rutom prema kompleksu Panonskih jezera i Gradskom parku.',
+      trainDays: 'Od utorka do nedjelje (10:00 – 17:00 sati)',
+      trainMonday: 'Ponedjeljak: Neradni dan (ne vozi)',
+      trainScheduleTitle: 'Raspored i detalji vožnje',
+      trainDeparturesTitle: 'Polasci: Svakog punog sata (od 10:00 do 17:00)',
+      trainTicketTitle: 'Cijena karte',
+      trainSingleTicket: 'Pojedinačna karta',
+      trainSinglePrice: '2,00 KM',
+      trainSingleDesc: 'Po osobi za jednu panoramsku vožnju',
+      trainCharterTicket: 'Rezervisana vožnja (cijena cijelog vozića/ture)',
+      trainCharterPrice: '36,00 KM',
+      trainCharterDesc: 'Zakup cijelog vozića za grupe, rođendane i ekskurzije (maksimalno 36 sjedišta)',
+      trainSummerNotice: 'Turistički vozić vozi isključivo tokom ljetne sezone od utorka do nedjelje. Ponedjeljkom ne saobraća.'
     },
     de: {
       title: 'Verkehr & Mobilität Tuzla',
@@ -778,7 +819,25 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       transturistSite: 'Transturist Webseite',
       domesticTitle: 'Inland: Tuzla – Sarajevo',
       domesticDesc: 'Direkte Verbindung über Kladanj und Olovo mit täglichen Abfahrten.',
-      intlTitle: 'Internationale Linien'
+      intlTitle: 'Internationale Linien',
+      trainBadge: 'Sommer-Saison-Attraktion',
+      trainTitle: 'Touristischer Bummelzug Tuzla',
+      trainSubtitle: 'Der touristische Bummelzug in Tuzla startet am Freiheitsplatz (Trg slobode) in Richtung Pannonische Seen und verkehrt in der Sommersaison von Dienstag bis Sonntag zwischen 10:00 und 17:00 Uhr. Montags ist Ruhetag (fährt nicht).',
+      trainBoardingTitle: 'Abfahrtsort & Einstieg',
+      trainBoardingPlace: 'Freiheitsplatz (Trg slobode)',
+      trainBoardingDesc: 'Die Hauptabfahrtshaltestelle befindet sich am Trg slobode und führt zu den Pannonischen Seen und dem Stadtpark.',
+      trainDays: 'Dienstag – Sonntag (10:00 – 17:00 Uhr)',
+      trainMonday: 'Montag: Ruhetag (fährt nicht)',
+      trainScheduleTitle: 'Fahrplan & Tour-Details',
+      trainDeparturesTitle: 'Abfahrten: Zu jeder vollen Stunde (von 10:00 bis 17:00 Uhr)',
+      trainTicketTitle: 'Fahrpreise',
+      trainSingleTicket: 'Einzelfahrkarte',
+      trainSinglePrice: '2,00 KM (BAM)',
+      trainSingleDesc: 'Pro Person für eine Rundfahrt',
+      trainCharterTicket: 'Reservierte Exklusivfahrt (Gesamter Zug)',
+      trainCharterPrice: '36,00 KM (BAM)',
+      trainCharterDesc: 'Komplette Buchung für Gruppen und Anlässe (maximal 36 Sitzplätze)',
+      trainSummerNotice: 'Verkehrt ausschließlich während der Sommersaison von Dienstag bis Sonntag. Montags kein Betrieb.'
     },
     tr: {
       title: 'Tuzla Ulaşım Rehberi',
@@ -816,7 +875,25 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       transturistSite: 'Transturist Resmi Sitesi',
       domesticTitle: 'Yurtiçi: Tuzla – Saraybosna',
       domesticDesc: 'Kladanj ve Olovo üzerinden Saraybosna\'ya günlük seferler.',
-      intlTitle: 'Uluslararası Seferler'
+      intlTitle: 'Uluslararası Seferler',
+      trainBadge: 'Yaz Sezonluk Eğlence Treni',
+      trainTitle: 'Tuzla Turistik Gezi Treni',
+      trainSubtitle: 'Tuzla Turistik Gezi Treni Trg slobode\'den (Özgürlük Meydanı) Panonika Gölleri\'ne doğru hareket eder ve yaz aylarında Salı\'dan Pazar\'a 10:00 - 17:00 saatleri arasında sefer yapar; Pazartesi günleri tatildir (çalışmaz).',
+      trainBoardingTitle: 'Biniş ve Kalkış Noktası',
+      trainBoardingPlace: 'Trg slobode (Özgürlük Meydanı)',
+      trainBoardingDesc: 'Resmi kalkış ve dönüş durağı Trg slobode\'dedir; güzergah Panonika Gölleri ve şehir parkı yönündedir.',
+      trainDays: 'Salı – Pazar (10:00 – 17:00 saatleri arası)',
+      trainMonday: 'Pazartesi: Tatil günü (çalışmamaktadır)',
+      trainScheduleTitle: 'Sefer Tarifesi ve Tur Detayları',
+      trainDeparturesTitle: 'Kalkışlar: Her saat başı (10:00 - 17:00 arası)',
+      trainTicketTitle: 'Bilet Fiyatları',
+      trainSingleTicket: 'Tek Kişilik Bilet',
+      trainSinglePrice: '2,00 KM',
+      trainSingleDesc: 'Kişi başı tek panoramik tur',
+      trainCharterTicket: 'Özel Rezervasyon (Tüm Tren / Tur)',
+      trainCharterPrice: '36,00 KM',
+      trainCharterDesc: 'Gruplar ve etkinlikler için tüm tren kiralama (maksimum 36 koltuk)',
+      trainSummerNotice: 'Yalnızca yaz döneminde Salı\'dan Pazar\'a kadar çalışır. Pazartesi günleri kapalıdır.'
     }
   } as const;
 
@@ -848,11 +925,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('bus')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
-            activeSection === 'bus'
-              ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-          }`}
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'bus'
+            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+            }`}
         >
           <Bus className="w-4 h-4 shrink-0" />
           <span>{currentT.busesTab}</span>
@@ -861,11 +937,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('internationalBus')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
-            activeSection === 'internationalBus'
-              ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-          }`}
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'internationalBus'
+            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+            }`}
         >
           <Globe className="w-4 h-4 shrink-0" />
           <span>{currentT.intlBusTab}</span>
@@ -874,11 +949,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('flights')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
-            activeSection === 'flights'
-              ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-          }`}
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'flights'
+            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+            }`}
         >
           <Plane className="w-4 h-4 shrink-0" />
           <span>{currentT.flightsTab}</span>
@@ -887,11 +961,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('taxi')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
-            activeSection === 'taxi'
-              ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-          }`}
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'taxi'
+            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+            }`}
         >
           <Car className="w-4 h-4 shrink-0" />
           <span>{currentT.taxiTab}</span>
@@ -900,11 +973,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('rentacar')}
-          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${
-            activeSection === 'rentacar'
-              ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-          }`}
+          className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'rentacar'
+            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+            }`}
         >
           <KeyRound className="w-4 h-4 shrink-0" />
           <span>{currentT.rentacarTab}</span>
@@ -967,11 +1039,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
                     key={line.id}
                     type="button"
                     onClick={() => setSelectedBusLine(line.lineNumber)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all text-center relative ${
-                      isSelected
-                        ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500/30'
-                        : 'border-slate-200 bg-slate-50/50 hover:bg-slate-100/70 hover:border-slate-300'
-                    }`}
+                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all text-center relative ${isSelected
+                      ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500/30'
+                      : 'border-slate-200 bg-slate-50/50 hover:bg-slate-100/70 hover:border-slate-300'
+                      }`}
                   >
                     <span className={`text-xl font-black ${isSelected ? 'text-blue-700' : 'text-slate-800'}`}>
                       {line.lineNumber}
@@ -1071,22 +1142,20 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
                   <button
                     type="button"
                     onClick={() => setScheduleType('workday')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
-                      scheduleType === 'workday'
-                        ? 'bg-white text-blue-900 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${scheduleType === 'workday'
+                      ? 'bg-white text-blue-900 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                      }`}
                   >
                     {currentT.workdays}
                   </button>
                   <button
                     type="button"
                     onClick={() => setScheduleType('weekend')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
-                      scheduleType === 'weekend'
-                        ? 'bg-white text-blue-900 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${scheduleType === 'weekend'
+                      ? 'bg-white text-blue-900 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                      }`}
                   >
                     {currentT.sunday}
                   </button>
@@ -1122,6 +1191,153 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
+            </div>
+          </div>
+
+          {/* SPECIAL FEATURE: SIGHTSEEING TOURIST MINI-TRAIN (TURISTIČKI VOZIĆ - LJETNA ATRAKCIJA) */}
+          <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-amber-50 via-orange-50/40 to-amber-100/70 p-6 sm:p-8 shadow-md space-y-6">
+            {/* Ambient decorative background glow */}
+            <div className="absolute -top-16 -right-16 w-48 h-48 bg-gradient-to-br from-amber-300/40 to-orange-400/30 rounded-full blur-2xl pointer-events-none" />
+
+            {/* Header with badges */}
+            <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-200/80 pb-5">
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-black uppercase tracking-wider shadow-sm">
+                    <Sun className="w-3.5 h-3.5" />
+                    <span>{currentT.trainBadge}</span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 text-blue-900 text-xs font-bold border border-amber-300 shadow-sm">
+                    <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                    <span>{currentT.trainBoardingPlace}</span>
+                  </div>
+                </div>
+
+                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                  <span>{currentT.trainTitle}</span>
+                  <span className="text-xl">🚂</span>
+                </h3>
+
+                <p className="text-xs sm:text-sm text-slate-700 max-w-3xl leading-relaxed">
+                  {currentT.trainSubtitle}
+                </p>
+              </div>
+
+              {/* Operating status badge */}
+              <div className="flex flex-col sm:flex-row md:flex-col items-start md:items-end gap-1.5 shrink-0">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-black">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>{currentT.trainDays}</span>
+                </div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-200/80 text-slate-700 text-[11px] font-bold">
+                  <AlertCircle className="w-3.5 h-3.5 text-slate-500" />
+                  <span>{currentT.trainMonday}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* BOARDING LOCATION (MJESTO POLASKA: TRG SLOBODE) */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-4.5 rounded-2xl bg-white/95 border-2 border-amber-200 shadow-sm">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shrink-0 shadow-sm">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div className="space-y-0.5">
+                  <div className="text-[11px] font-black uppercase tracking-wider text-amber-800">
+                    {currentT.trainBoardingTitle}
+                  </div>
+                  <div className="text-base sm:text-lg font-black text-slate-900 flex flex-wrap items-center gap-2">
+                    <span>{currentT.trainBoardingPlace}</span>
+                    <span className="text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-lg border border-amber-200">
+                      {lang === 'bs' ? 'Polazak & Povratak' : 'Departure & Return'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600">
+                    {currentT.trainBoardingDesc}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* DEPARTURES MATRIX (Svakog punog sata od 10:00 do 17:00) */}
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h4 className="text-xs font-black uppercase tracking-wider text-amber-950 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-600" />
+                  <span>{currentT.trainDeparturesTitle}</span>
+                </h4>
+                <span className="text-xs font-bold text-amber-800/80">
+                  8 {lang === 'bs' ? 'polazaka dnevno' : 'departures daily'} (10:00 – 17:00)
+                </span>
+              </div>
+
+              <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                {['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'].map((time) => (
+                  <div
+                    key={time}
+                    className="p-3 rounded-2xl bg-white/90 border-2 border-amber-200 text-center font-mono font-black text-xs sm:text-sm text-slate-900 shadow-sm hover:border-amber-400 hover:bg-amber-100/60 transition-all"
+                  >
+                    {time}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* TICKET PRICING CARDS */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-black uppercase tracking-wider text-amber-950 flex items-center gap-2">
+                <Ticket className="w-4 h-4 text-amber-600" />
+                <span>{currentT.trainTicketTitle}</span>
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Individual ticket */}
+                <div className="rounded-2xl bg-white/95 border-2 border-amber-200 p-4 sm:p-5 shadow-sm space-y-2 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider text-amber-800">
+                        {currentT.trainSingleTicket}
+                      </span>
+                      <span className="p-1.5 rounded-xl bg-amber-100 text-amber-700">
+                        <Ticket className="w-4 h-4" />
+                      </span>
+                    </div>
+                    <div className="text-3xl font-black text-slate-950 mt-1">
+                      {currentT.trainSinglePrice}
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 pt-2 border-t border-slate-100">
+                    {currentT.trainSingleDesc}
+                  </p>
+                </div>
+
+                {/* Charter private train */}
+                <div className="rounded-2xl bg-gradient-to-br from-white via-amber-50/40 to-orange-50/50 border-2 border-orange-200 p-4 sm:p-5 shadow-sm space-y-2 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider text-orange-900">
+                        {currentT.trainCharterTicket}
+                      </span>
+                      <span className="p-1.5 rounded-xl bg-orange-100 text-orange-700">
+                        <Users className="w-4 h-4" />
+                      </span>
+                    </div>
+                    <div className="text-3xl font-black text-slate-950 mt-1">
+                      {currentT.trainCharterPrice}
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 pt-2 border-t border-slate-100">
+                    {currentT.trainCharterDesc}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom seasonal notice */}
+            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-amber-200/50 border border-amber-300 text-xs text-amber-950 font-medium">
+              <Sun className="w-4 h-4 text-amber-700 shrink-0" />
+              <span>{currentT.trainSummerNotice}</span>
             </div>
           </div>
         </div>
