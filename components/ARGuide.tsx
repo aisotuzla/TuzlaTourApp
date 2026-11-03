@@ -524,11 +524,13 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       }
     };
 
-    window.addEventListener('deviceorientationabsolute', ((e: any) => handleOrientation(e, true)) as any);
-    window.addEventListener('deviceorientation', ((e: any) => handleOrientation(e, false)) as any);
+    const onAbsolute = (e: any) => handleOrientation(e, true);
+    const onRelative = (e: any) => handleOrientation(e, false);
+    window.addEventListener('deviceorientationabsolute', onAbsolute as any);
+    window.addEventListener('deviceorientation', onRelative as any);
     return () => {
-      window.removeEventListener('deviceorientationabsolute', handleOrientation as any);
-      window.removeEventListener('deviceorientation', handleOrientation as any);
+      window.removeEventListener('deviceorientationabsolute', onAbsolute as any);
+      window.removeEventListener('deviceorientation', onRelative as any);
     };
   }, [permissionGranted, isForeground]);
 

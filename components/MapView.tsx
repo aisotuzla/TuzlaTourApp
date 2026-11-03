@@ -654,8 +654,12 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
   useEffect(() => {
     if (!map.current || !isLoaded) return;
 
-    let watchId: number;
+    let watchId: number | null = null;
     const startTracking = () => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
@@ -681,14 +685,21 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     if (document.visibilityState === 'visible') startTracking();
 
     const handleVisibility = () => {
-      if (document.visibilityState === 'visible') startTracking();
-      else if (watchId) navigator.geolocation.clearWatch(watchId);
+      if (document.visibilityState === 'visible') {
+        startTracking();
+      } else if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
     };
 
     document.addEventListener('visibilitychange', handleVisibility);
     return () => {
       document.removeEventListener('visibilitychange', handleVisibility);
-      if (watchId) navigator.geolocation.clearWatch(watchId);
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
     };
   }, [isLoaded]);
 

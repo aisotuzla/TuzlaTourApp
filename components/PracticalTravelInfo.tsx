@@ -90,7 +90,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
           { label: 'Airport Direct', value: 'Line 34 (Direct)' },
         ],
         cashWarning: 'Crucial: Bus drivers accept CASH ONLY in KM. Fares range from 2.50 KM to 5.50 KM depending on distance. Please carry exact change, as drivers cannot accept cards or Euros.',
-        taxiAlternative: 'Taxi Alternative: Official taxis wait directly outside arrivals. A trip to downtown Tuzla takes ~20–25 minutes and costs approximately 30–40 BAM (€15–20). Always confirm the fare or taximeter before departing.',
+        taxiAlternative: 'Taxi Alternative:  taxis wait directly outside arrivals. A trip to downtown Tuzla takes ~20–25 minutes and costs approximately 30–40 BAM (€15–20). Always confirm the fare or taximeter before departing.',
         line34: {
           title: 'Line 34: Tuzla (AS Istok) – B. Malta – Tuzla Airport (Dubrave)',
           badge: 'Direct to Airport Terminal',

@@ -388,10 +388,10 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       operatingHours: '07:00 – 22:30 (Dnevno)',
       priceNotice: '2.50 – 5.50 KM (~€2.80, BAM gotovina)',
       description: {
-        en: 'Official direct express bus stopping directly in front of Tuzla Airport passenger terminal building. Fully synchronized with flight arrival schedules.',
-        bs: 'Zvanični direktni ekspresni autobus koji staje neposredno ispred putničkog terminala Međunarodnog aerodroma Tuzla. Usklađen sa redom letenja Wizz Aira.',
-        de: 'Offizieller Expressbus direkt vor das Passagierterminal des Flughafens Tuzla (TZL), abgestimmt auf Flugankünfte.',
-        tr: 'Tuzla Havalimanı yolcu terminalinin tam önüne kadar giden doğrudan ekspres otobüs. Uçuş saatleriyle uyumludur.'
+        en: 'Direct express bus stopping directly in front of Tuzla Airport passenger terminal building. Fully synchronized with flight arrival schedules.',
+        bs: 'Direktni ekspresni autobus koji staje neposredno ispred putničkog terminala Međunarodnog aerodroma Tuzla. Usklađen sa redom letenja Wizz Aira.',
+        de: 'Expressbus direkt vor das Passagierterminal des Flughafens Tuzla (TZL), abgestimmt auf Flugankünfte.',
+        tr: 'Tuzla yolcu terminalinin tam önüne kadar giden doğrudan ekspres otobüs. Uçuş saatleriyle uyumludur.'
       },
       scheduleLink: 'https://www.gipstk.com/red-voznje/34-aerodrom-tuzla-b-malta-tuzla-as-istok/',
       stops: [
@@ -679,12 +679,12 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       flightsTab: 'Flights (TZL)',
       taxiTab: 'Taxis (Call)',
       rentacarTab: 'Rent a Car',
-      gipsBannerTitle: 'Official City & Regional Bus Network',
+      gipsBannerTitle: 'City & Regional Bus Network',
       gipsBannerDesc: 'GIPS d.d. Tuzla operates city lines (Ka, Kb, 2) at 1.50 BAM (€0.77) and airport connections (11, 34) at 2.50–5.50 BAM. Cash only on board.',
       gipsLiveCta: 'Live Bus Tracking & Online Timetable',
       selectLine: 'Select Bus Line:',
       routeTimeline: 'Route & Key Stops',
-      timetableHeader: 'Official Timetable & Departures',
+      timetableHeader: ' Timetable & Departures',
       workdays: 'Workday & Saturday',
       sunday: 'Sunday & Holidays',
       departuresCount: 'scheduled departures daily',
@@ -693,9 +693,9 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       flightsHeader: 'Direct International Flights at TZL',
       flightsSub: 'Tuzla International Airport (TZL) is Northeastern Bosnia\'s primary aviation hub, connecting major European metropolises.',
       bookWizz: 'Book on WizzAir.com',
-      airportSite: 'Official TZL Airport Website',
+      airportSite: ' TZL Airport Website',
       taxiHeader: 'Licensed Radio Taxi Dispatch',
-      taxiSub: 'Official taxis in Tuzla operate with calibrated taximeters. Standard airport to city center fare is ~30–40 BAM (€15–20).',
+      taxiSub: ' taxis in Tuzla operate with calibrated taximeters. Standard airport to city center fare is ~30–40 BAM (€15–20).',
       callNow: 'Call Dispatch Now',
       rentacarHeader: 'Car Rental at TZL Terminal',
       rentacarSub: 'Car rental desks are located inside the arrivals hall of Tuzla Airport. Advance booking is recommended during peak season.',
@@ -713,7 +713,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       trainSubtitle: 'The tourist mini-train operates in Tuzla, starting from Freedom Square to the Pannonian Lakes from Tuesday to Sunday between 10:00 and 17:00, while Monday is a non-working day (no service). Enjoy a scenic ride through parks and landmarks.',
       trainBoardingTitle: 'Boarding Location',
       trainBoardingPlace: 'Freedom Square (Trg slobode)',
-      trainBoardingDesc: 'Official departure and return station is located at Freedom Square, running towards the Pannonian Lakes complex and city park.',
+      trainBoardingDesc: ' departure and return station is located at Freedom Square, running towards the Pannonian Lakes complex and city park.',
       trainDays: 'Tuesday – Sunday (10:00 – 17:00)',
       trainMonday: 'Monday: Non-working day (does not operate)',
       trainScheduleTitle: 'Schedule & Tour Details',
@@ -769,7 +769,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       trainSubtitle: 'Turistički vozić u Tuzli polazi sa Trga slobode prema Panonskim jezerima i saobraća od utorka do nedjelje u terminima od 10:00 do 17:00 sati, dok je ponedjeljak neradni dan (ne vozi). Uživajte u panoramskoj vožnji kroz uži centar grada, parkove i turističke lokalitete.',
       trainBoardingTitle: 'Mjesto polaska i ukrcaja',
       trainBoardingPlace: 'Trg slobode (Freedom Square)',
-      trainBoardingDesc: 'Zvanična početna i povratna stanica vozića nalazi se na Trgu slobode, sa rutom prema kompleksu Panonskih jezera i Gradskom parku.',
+      trainBoardingDesc: 'Početna i povratna stanica vozića nalazi se na Trgu slobode, sa rutom prema kompleksu Panonskih jezera i Gradskom parku.',
       trainDays: 'Od utorka do nedjelje (10:00 – 17:00 sati)',
       trainMonday: 'Ponedjeljak: Neradni dan (ne vozi)',
       trainScheduleTitle: 'Raspored i detalji vožnje',
@@ -1006,14 +1006,18 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
             {/* Text */}
             <div className="flex-1 min-w-0">
               <div className="font-black text-sm sm:text-base leading-tight">Gradski Parking Tuzla</div>
-              <div className="text-blue-200 text-xs font-medium mt-0.5 truncate">Pronađi slobodno parking mjesto · gradskiparkingtuzla.vercel.app</div>
+              <div className="text-blue-100 text-xs font-medium mt-1 leading-snug">
+                SMS Smart Parking App -  SMS payment and gps navigation to parking zones in Tuzla
+              </div>
             </div>
 
-            {/* Arrow */}
-            <div className="shrink-0 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-white/25 transition-colors">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
+            {/* QR Parking Image replacing arrow */}
+            <div className="shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-white/40 group-hover:scale-105 transition-transform">
+              <img
+                src="/assets/Gallery/QuestQRLocations/qrparking.png"
+                alt="SMS Smart Parking App QR"
+                className="w-full h-full object-contain rounded-lg"
+              />
             </div>
           </a>
 
@@ -1230,9 +1234,9 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
             {/* Ambient decorative background glow */}
             <div className="absolute -top-16 -right-16 w-48 h-48 bg-gradient-to-br from-amber-300/40 to-orange-400/30 rounded-full blur-2xl pointer-events-none" />
 
-            {/* Header with badges */}
-            <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-200/80 pb-5">
-              <div className="space-y-2">
+            {/* Header with badges & top right train image */}
+            <div className="relative flex flex-col md:flex-row md:items-start justify-between gap-5 border-b border-amber-200/80 pb-5">
+              <div className="space-y-2 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-black uppercase tracking-wider shadow-sm">
                     <Sun className="w-3.5 h-3.5" />
@@ -1250,20 +1254,31 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
                   <span className="text-xl">🚂</span>
                 </h3>
 
-                <p className="text-xs sm:text-sm text-slate-700 max-w-3xl leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-700 max-w-2xl leading-relaxed">
                   {currentT.trainSubtitle}
                 </p>
               </div>
 
-              {/* Operating status badge */}
-              <div className="flex flex-col sm:flex-row md:flex-col items-start md:items-end gap-1.5 shrink-0">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-black">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>{currentT.trainDays}</span>
+              {/* Top right corner: Tourist Train image (90% opacity) + working hours graphic below it */}
+              <div className="flex flex-col items-start md:items-end gap-3 shrink-0">
+                <div className="relative w-44 sm:w-52 h-28 sm:h-32 rounded-2xl overflow-hidden shadow-md border-2 border-amber-300/80 bg-white/70">
+                  <img
+                    src="/assets/Gallery/QuestQRLocations/voz.webp"
+                    alt="Turistički vozić Tuzla"
+                    className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+                  />
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-200/80 text-slate-700 text-[11px] font-bold">
-                  <AlertCircle className="w-3.5 h-3.5 text-slate-500" />
-                  <span>{currentT.trainMonday}</span>
+
+                {/* Working hours graphic moved below image */}
+                <div className="flex flex-col sm:flex-row md:flex-col items-start md:items-end gap-1.5 w-full md:w-auto">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-black shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>{currentT.trainDays}</span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-200/90 text-slate-700 text-[11px] font-bold">
+                    <AlertCircle className="w-3.5 h-3.5 text-slate-500" />
+                    <span>{currentT.trainMonday}</span>
+                  </div>
                 </div>
               </div>
             </div>

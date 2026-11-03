@@ -105,8 +105,14 @@ export function useBreadcrumbTrail(opts: {
       lastDrawRef.current = t;
 
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = (canvas.width = (canvas.clientWidth || window.innerWidth) * dpr);
-      const h = (canvas.height = (canvas.clientHeight || window.innerHeight) * dpr);
+      const targetW = Math.round((canvas.clientWidth || window.innerWidth) * dpr);
+      const targetH = Math.round((canvas.clientHeight || window.innerHeight) * dpr);
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+      const w = canvas.width;
+      const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
       if (!target || !isActive) return;

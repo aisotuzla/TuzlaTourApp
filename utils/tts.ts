@@ -21,7 +21,10 @@ export interface PlayTTSOptions {
 export function stopTTS() {
   if (activeAudio) {
     activeAudio.pause();
-    activeAudio.currentTime = 0;
+    try {
+      activeAudio.removeAttribute('src');
+      activeAudio.load();
+    } catch (_) {}
     activeAudio = null;
     isAudioPaused = false;
   }

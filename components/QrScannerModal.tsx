@@ -34,6 +34,10 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   const [activeVideoModal, setActiveVideoModal] = useState<{ url: string; title: string } | null>(null);
   const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+  const isOpenRef = useRef(isOpen);
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
   const scannerContainerId = 'map-quest-reader';
 
   // Scanner initialization lifecycle
@@ -173,12 +177,20 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
       try {
         await html5QrCode.start({ facingMode: 'environment' }, qrConfig, onScanSuccess, () => {});
+        if (!isOpenRef.current) {
+          stopScanner();
+          return;
+        }
       } catch (err) {
         console.warn('[QR Scanner] Environment camera failed, trying fallback to any camera...', err);
         try {
           const devices = await Html5Qrcode.getCameras();
           if (devices && devices.length > 0) {
             await html5QrCode.start(devices[0].id, qrConfig, onScanSuccess, () => {});
+            if (!isOpenRef.current) {
+              stopScanner();
+              return;
+            }
           } else {
             throw new Error('No cameras found on device.');
           }

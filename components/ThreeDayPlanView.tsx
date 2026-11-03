@@ -111,7 +111,7 @@ export const ThreeDayPlanView: React.FC<ThreeDayPlanViewProps> = ({
           description: 'Arrive at TZL in Dubrave Gornje and start your Tuzla exploration smoothly.',
           points: [
             'Open Tuzla Tour Guide to access transit routes and local guides',
-            'Take official Airport Taxi (~30–40 BAM / €15–20) or local Bus Line 34 (direct to airport) / Line 11 via Dubrave (2.50 – 5.50 BAM cash only)',
+            'Take  Airport Taxi (~30–40 BAM / €15–20) or local Bus Line 34 (direct to airport) / Line 11 via Dubrave (2.50 – 5.50 BAM cash only)',
             'Reach Tuzla city center in approximately 20–50 minutes',
           ],
           tip: 'Tip: Bus lines 34 and 11 require cash in BAM (KM), costing 2.50–5.50 BAM depending on distance. Check Practical Info for full schedules.',
@@ -962,41 +962,37 @@ export const ThreeDayPlanView: React.FC<ThreeDayPlanViewProps> = ({
         <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-white/10">
           <button
             onClick={() => setActiveDay(0)}
-            className={`rounded-xl px-4 py-2.5 text-xs sm:text-sm font-black transition-all ${
-              activeDay === 0
+            className={`rounded-xl px-4 py-2.5 text-xs sm:text-sm font-black transition-all ${activeDay === 0
                 ? 'bg-cyan-400 text-slate-950 shadow-md shadow-cyan-400/20'
                 : 'bg-white/10 text-white/80 hover:bg-white/20'
-            }`}
+              }`}
           >
             {t.allDays}
           </button>
           <button
             onClick={() => setActiveDay(1)}
-            className={`rounded-xl px-4 py-2.5 text-xs sm:text-sm font-black transition-all ${
-              activeDay === 1
+            className={`rounded-xl px-4 py-2.5 text-xs sm:text-sm font-black transition-all ${activeDay === 1
                 ? 'bg-cyan-400 text-slate-950 shadow-md shadow-cyan-400/20'
                 : 'bg-white/10 text-white/80 hover:bg-white/20'
-            }`}
+              }`}
           >
             {t.day1}
           </button>
           <button
             onClick={() => setActiveDay(2)}
-            className={`rounded-xl px-4 py-2.5 text-xs sm:text-sm font-black transition-all ${
-              activeDay === 2
+            className={`rounded-xl px-4 py-2.5 text-xs sm:text-sm font-black transition-all ${activeDay === 2
                 ? 'bg-cyan-400 text-slate-950 shadow-md shadow-cyan-400/20'
                 : 'bg-white/10 text-white/80 hover:bg-white/20'
-            }`}
+              }`}
           >
             {t.day2}
           </button>
           <button
             onClick={() => setActiveDay(3)}
-            className={`rounded-xl px-4 py-2.5 text-xs sm:text-sm font-black transition-all ${
-              activeDay === 3
+            className={`rounded-xl px-4 py-2.5 text-xs sm:text-sm font-black transition-all ${activeDay === 3
                 ? 'bg-cyan-400 text-slate-950 shadow-md shadow-cyan-400/20'
                 : 'bg-white/10 text-white/80 hover:bg-white/20'
-            }`}
+              }`}
           >
             {t.day3}
           </button>
@@ -1011,11 +1007,10 @@ export const ThreeDayPlanView: React.FC<ThreeDayPlanViewProps> = ({
           return (
             <div
               key={milestone.id}
-              className={`rounded-[1.75rem] border transition-all p-5 sm:p-6 shadow-sm ${
-                isDone
+              className={`rounded-[1.75rem] border transition-all p-5 sm:p-6 shadow-sm ${isDone
                   ? 'border-emerald-200 bg-emerald-50/40 opacity-90'
                   : 'border-slate-200/90 bg-white hover:border-blue-300'
-              }`}
+                }`}
             >
               <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                 <div className="flex items-start gap-4 flex-1">
@@ -1050,9 +1045,8 @@ export const ThreeDayPlanView: React.FC<ThreeDayPlanViewProps> = ({
 
                     {/* Title */}
                     <h3
-                      className={`mt-2 text-lg sm:text-xl font-black ${
-                        isDone ? 'text-slate-500 line-through' : 'text-slate-900'
-                      }`}
+                      className={`mt-2 text-lg sm:text-xl font-black ${isDone ? 'text-slate-500 line-through' : 'text-slate-900'
+                        }`}
                     >
                       {milestone.title}
                     </h3>
