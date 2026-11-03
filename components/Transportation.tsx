@@ -986,6 +986,37 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       {/* 3. SECTION 1: BUSES & GIPS LIVE */}
       {activeSection === 'bus' && (
         <div className="space-y-6">
+          {/* GRADSKI PARKING TUZLA – PARTNERSHIP BANNER */}
+          <a
+            href="https://gradskiparkingtuzla.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative flex items-center gap-4 w-full rounded-2xl px-5 py-4
+              bg-[#2563EB] text-white
+              shadow-[0_6px_0_0_#1741a6]
+              active:shadow-[0_2px_0_0_#1741a6] active:translate-y-1
+              hover:bg-[#1d57d8] hover:shadow-[0_6px_0_0_#1235a0]
+              transition-all duration-150 ease-out cursor-pointer select-none"
+          >
+            {/* White square "P" badge */}
+            <div className="shrink-0 w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-sm">
+              <span className="text-[#2563EB] font-black text-2xl leading-none tracking-tighter">P</span>
+            </div>
+
+            {/* Text */}
+            <div className="flex-1 min-w-0">
+              <div className="font-black text-sm sm:text-base leading-tight">Gradski Parking Tuzla</div>
+              <div className="text-blue-200 text-xs font-medium mt-0.5 truncate">Pronađi slobodno parking mjesto · gradskiparkingtuzla.vercel.app</div>
+            </div>
+
+            {/* Arrow */}
+            <div className="shrink-0 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-white/25 transition-colors">
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </div>
+          </a>
+
           {/* GIPS LOGO & LIVE TRACKING BANNER */}
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-5 sm:p-7 border border-blue-700/50 shadow-lg">
             <div className="flex flex-col md:flex-row items-center gap-6 justify-between">
