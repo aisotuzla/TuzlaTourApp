@@ -721,7 +721,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             </div>
 
             {/* AISO TUZLA LINK */}
-            <div className="flex flex-wrap justify-center items-center gap-8 text-sm font-bold uppercase tracking-widest">
+            <div className="flex flex-col items-center gap-4 text-sm font-bold uppercase tracking-widest">
               <a
                 href="https://aiso-tuzla.lovable.app"
                 target="_blank"
@@ -729,12 +729,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 className="flex items-center gap-2 group hover:text-blue-600 transition-colors border-b-2 border-transparent hover:border-blue-600 pb-1 text-slate-600"
               >
                 <img
-                  src="/assets/Gallery/ilovebos.webp"
+                  src="/assets/Gallery/QuestQRLocations/aisologo.png"
                   alt="AISO Logo"
-                  className="w-16 h-12 object-contain pointer-events-none group-hover:scale-110 transition-transform"
+                  className="w-8 h-8 object-contain pointer-events-none group-hover:scale-110 transition-transform"
                 />
                 <span>AISO Tuzla</span>
               </a>
+              <img
+                src="/assets/Gallery/ilovebos.webp"
+                alt="I Love Bosnia"
+                className="w-24 h-[4.5rem] object-contain pointer-events-none"
+              />
             </div>
 
           </div>
