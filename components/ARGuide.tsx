@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { Language, Location } from '../types';
 import { LOCATIONS, TRANSLATIONS } from '../constants';
 import {
-  Camera, Info, X, MapPin, Compass, Navigation, ChevronLeft, ChevronRight, Target, CheckCircle2, Footprints,
+  Camera, Info, X, MapPin, Compass, Navigation, ChevronLeft, ChevronRight, Target, CheckCircle2, Footprints, Zap,
 } from 'lucide-react';
 import {
   getARProjection, ARStage, DeviceOrientation, WGS84Location, smoothHeading, smoothAngle,
@@ -307,6 +307,20 @@ export const ARGuide: React.FC<ARGuideProps> = ({
     () => currentPhasePois.filter((p) => isPoiRewardUnlocked(p.id, localUnlockedRewards)).length,
     [currentPhasePois, localUnlockedRewards]
   );
+
+  const romanPhase = useMemo(() => {
+    switch (currentPhase) {
+      case 1: return 'I';
+      case 2: return 'II';
+      case 3: return 'III';
+      case 4: return 'IV';
+      default: return String(currentPhase);
+    }
+  }, [currentPhase]);
+
+  const phaseShortText = useMemo(() => {
+    return `Phase ${romanPhase} - ${currentPhaseUnlockedCount}/${currentPhasePois.length}`;
+  }, [romanPhase, currentPhaseUnlockedCount, currentPhasePois.length]);
 
   const userLocationRef = useRef<WGS84Location | null>(null);
   const [userLocationState, setUserLocationState] = useState<WGS84Location | null>(null);
@@ -925,18 +939,8 @@ export const ARGuide: React.FC<ARGuideProps> = ({
           </>
         )}
 
-        {/* TOP HUD: PHASE BADGE, SENSOR STATUS & CONTROLS */}
-        <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-30 pointer-events-none gap-2">
-          {/* Active Phase Pill */}
-          <div className="pointer-events-auto bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-amber-400/50 flex items-center gap-2 shadow-xl">
-            <span className="text-amber-300 text-[10px] font-black uppercase tracking-wider truncate max-w-[160px] sm:max-w-none">
-              {currentPhaseTitle}
-            </span>
-            <span className="text-[9px] font-black text-slate-900 bg-amber-400 px-1.5 py-0.2 rounded-full">
-              {currentPhaseUnlockedCount}/{currentPhasePois.length}
-            </span>
-          </div>
-
+        {/* TOP HUD: SENSOR STATUS & CONTROLS */}
+        <div className="absolute top-3 left-3 right-3 flex justify-end items-center z-30 pointer-events-none gap-2">
           <div className="flex items-center gap-2 pointer-events-auto ml-auto">
             <BatterySaverToggle lang={lang} compact={true} />
             <button
@@ -962,7 +966,16 @@ export const ARGuide: React.FC<ARGuideProps> = ({
         )}
 
         {/* FLOATING BOTTOM CONTROLS & PHASE-FILTERED CAROUSEL */}
-        <div className="absolute bottom-3 left-0 right-0 z-30 px-3 flex flex-col gap-2.5 pointer-events-none">
+        <div className="absolute bottom-3 left-0 right-0 z-30 px-3 flex flex-col gap-2 pointer-events-none">
+          {/* Active Phase Pill at Right Bottom */}
+          <div className="flex justify-end pointer-events-auto">
+            <div className="bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-amber-400/50 flex items-center gap-1.5 shadow-xl">
+              <Zap className="w-3.5 h-3.5 text-amber-400 fill-current" />
+              <span className="text-amber-300 text-[10px] sm:text-xs font-black uppercase tracking-wider">
+                {phaseShortText}
+              </span>
+            </div>
+          </div>
           {permissionGranted && targetPoi && activeStep && (
             <div className="pointer-events-auto bg-slate-950/95 border border-amber-400/60 rounded-2xl p-3 shadow-2xl flex items-center justify-between gap-3 backdrop-blur-xl">
               <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center shrink-0">
@@ -1106,7 +1119,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                       className="w-5 h-5 rounded-md flex items-center justify-center font-black text-[9px] text-white shadow-sm shrink-0 border border-white/10"
                       style={{ backgroundColor: isDarkened ? '#334155' : poi.color }}
                     >
-                      {isDarkened ? '✓' : isUnlocked ? '★' : '🎯'}
+                      {isDarkened ? '✓' : isUnlocked ? <Zap className="w-3 h-3 text-amber-300 fill-current" /> : '🎯'}
                     </div>
                     <div className="truncate flex flex-col justify-center">
                       <h5

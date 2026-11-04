@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Battery, BatteryCharging, BatteryLow, BatteryMedium, BatteryFull, Zap, Settings, X, Check, AlertTriangle, Sparkles } from 'lucide-react';
+import { Battery, BatteryCharging, BatteryLow, BatteryMedium, BatteryFull, Zap, Settings, X, Check, AlertTriangle } from 'lucide-react';
 import { useBatterySaver, formatBatteryPercentage, getBatteryIcon } from '../hooks/useBatterySaver';
 import { Language } from '../types';
 
@@ -234,7 +234,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
             aria-label={t.batterySaver}
           >
             {state.isHighQualityActive ? (
-              <Sparkles className="w-5 h-5 text-purple-300 animate-pulse" />
+              <Zap className="w-5 h-5 text-purple-300 animate-pulse fill-current" />
             ) : activeSaver ? (
               <Zap className="w-5 h-5 text-amber-400 animate-pulse" />
             ) : (
@@ -256,7 +256,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
             title={state.isHighQualityActive ? t.highQuality : activeSaver ? t.saverActive : t.normalMode}
           >
             {state.isHighQualityActive ? (
-              <Sparkles className="w-4 h-4 text-purple-500" />
+              <Zap className="w-4 h-4 text-purple-500 fill-current" />
             ) : activeSaver ? (
               <Zap className="w-4 h-4 text-amber-500" />
             ) : (
@@ -280,7 +280,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                 : (lang === 'bs' ? 'Standard 30 FPS' : '30 FPS')}
             </span>
             {state.isHighQualityActive ? (
-              <Sparkles className="w-4 h-4 text-purple-500" />
+              <Zap className="w-4 h-4 text-purple-500 fill-current" />
             ) : activeSaver ? (
               <Zap className="w-4 h-4 text-amber-500" />
             ) : null}
@@ -294,7 +294,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   {state.isHighQualityActive ? (
-                    <Sparkles className="w-6 h-6 text-purple-600" />
+                    <Zap className="w-6 h-6 text-purple-600 fill-current" />
                   ) : activeSaver ? (
                     <Zap className="w-6 h-6 text-amber-500" />
                   ) : (
@@ -449,7 +449,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
                     state.isHighQualityActive ? 'bg-purple-600 text-white' : 'bg-slate-100 text-purple-400'
                   }`}>
-                    <Sparkles className="w-4 h-4" />
+                    <Zap className="w-4 h-4 fill-current" />
                   </div>
                   <span className="font-bold text-xs text-slate-800 leading-tight">{t.highQuality}</span>
                   <span className="text-[10px] text-purple-700 font-semibold mt-1">60 FPS • 1080p</span>
@@ -614,7 +614,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 {state.isHighQualityActive ? (
-                  <Sparkles className="w-6 h-6 text-purple-600" />
+                  <Zap className="w-6 h-6 text-purple-600 fill-current" />
                 ) : activeSaver ? (
                   <Zap className="w-6 h-6 text-amber-500" />
                 ) : (
@@ -706,7 +706,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
                   state.isHighQualityActive ? 'bg-purple-600 text-white' : 'bg-slate-100 text-purple-400'
                 }`}>
-                  <Sparkles className="w-4 h-4" />
+                  <Zap className="w-4 h-4 fill-current" />
                 </div>
                 <span className="font-bold text-xs text-slate-800 leading-tight">{t.highQuality}</span>
                 <span className="text-[10px] text-purple-700 font-semibold mt-1">60 FPS • 1080p</span>

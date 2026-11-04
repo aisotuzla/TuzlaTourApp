@@ -257,40 +257,21 @@ Kako bi se osigurala cjelodnevna autonomija posjetilaca Tuzle, implementiran je 
 ### 📊 Tehnički Proračun Potrošnje Po Podsistemima (Baterija 4500 mAh / 3.85V = 17.3 Wh)
 
 | Hardverski Podsistem | ⚡ Max Performance (60 FPS, 1080p) | ⚖️ Balanced Režim (30 FPS, 720p) | 🍃 Battery Saver / Eco (15 FPS, 480p) | 🧭 Kompas / Horizon 360 (Kamera Isključena) | 🎧 Audio Vodič / Standby (Ekran Isključen) |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | **Ekran (OLED / LCD)** | 1000 mW (svijetlo) | 900 mW (prilagođeno) | 750 mW (smanjeno) | 700 mW | 0 mW (isključen) |
 | **Kamera & ISP senzor** | 1100 mW (1080p @ 60fps) | 550 mW (720p @ 30fps) | 280 mW (480p @ 15fps) | **0 mW (ugašena)** | **0 mW (ugašena)** |
 | **CPU (JS, ENU projekcija)** | 750 mW | 350 mW | 200 mW | 120 mW | 60 mW (audio dekoder) |
 | **GPU (Canvas / Glow)** | 550 mW (puni glow) | 220 mW (optimizirano) | 90 mW (bez efekata sjaja) | 50 mW (CSS 3D transform) | 0 mW |
 | **GPS / GNSS čipset** | 240 mW (1 Hz continuous) | 150 mW (adaptivni filter) | 90 mW (duty-cycled 3-5s) | 100 mW | 40 mW (geofence wake) |
-| **IMU senzori (žiroskop/kompas)**| 45 mW | 35 mW | 25 mW | 25 mW | 0 mW |
+| **IMU senzori (žiroskop/kompas)** | 45 mW | 35 mW | 25 mW | 25 mW | 0 mW |
 | **OS i bazni procesi** | 300 mW | 280 mW | 250 mW | 250 mW | 120 mW |
 | **UKUPNA SNAGA (mW)** | **~3,985 mW** | **~2,485 mW** | **~1,485 mW** | **~1,245 mW** | **~220 mW** |
 | **Prosječna Struja (mA)** | **~1,035 mA** | **~645 mA** | **~385 mA** | **~323 mA** | **~57 mA** |
-| **Potrošnja po Satu (%/h)**| **~23.0% / h** | **~14.3% / h** | **~8.5% / h** | **~7.2% / h** | **~1.3% / h** |
-| **Procijenjena Autonomija**| **~4.3 sati rada** | **~7.0 sati rada** | **~11.7 sati rada** | **~13.9 sati rada** | **~75+ sati rada** |
+| **Potrošnja po Satu (%/h)** | **~23.0% / h** | **~14.3% / h** | **~8.5% / h** | **~7.2% / h** | **~1.3% / h** |
+| **Procijenjena Autonomija** | **~4.3 sati rada** | **~7.0 sati rada** | **~11.7 sati rada** | **~13.9 sati rada** | **~75+ sati rada** |
 
 > **Automatska detekcija mirovanja (Stationary Detection):** Ako se korisnik ne pomjeri više od 1.5 metara tokom 5 sekundi, AR kamera automatski spušta frekvenciju kadrova sa 30 FPS na 15 FPS, čime se štedi dodatnih **40-50% energije kamere i ISP čipa** bez primjetnog utjecaja na korisničko iskustvo.
-
----
-
-## 🔍 Quality Inspector Code Audit & Preporuke za Čišćenje
-
-Nakon detaljne inspekcije arhitekture i koda (profilisano prema Chrome DevTools Memory Leak standardima), utvrđene su sljedeće stavke:
-
-### ✅ Otklonjeni Memorijski Leakovi (Riješeno u ovoj verziji):
-1. **`ARGuide.tsx` (DeviceOrientation Event Listener Leak):** `removeEventListener` je pozivao neispravnu funkciju umjesto stvarne reference listenera. Ispravljeno kreiranjem postojanih referenci `onAbsolute` i `onRelative`.
-2. **`useBreadcrumbsTrail.ts` (Canvas Buffer Thrashing):** Uklonjeno bespotrebno dodjeljivanje `canvas.width = ...` unutar svakog kadra (30 FPS) koje je forsiralo resetovanje GPU bafera i layout reflow.
-3. **`MapView.tsx` (Duplicirani Geolocation Watcher):** Uvedena sigurna terminacija postojećeg `watchId` prije pokretanja novog praćenja na `visibilitychange`.
-4. **`QrScannerModal.tsx` (Camera Stream Race Condition):** Dodata provjera stanja modala (`isOpenRef`) nakon asinhronog pokretanja kamere radi sprečavanja curenja WebRTC video toka.
-5. **`utils/tts.ts` (Audio Buffer Detachment):** `stopTTS()` sada eksplicitno uklanja atribut `src` i poziva `.load()` kako bi mobilni preglednici momentalno oslobodili hardverski audio pajplajn.
-
-### 🧹 Izvršeno Čišćenje Koda iz Prethodnih Buildova (✅ Riješeno):
-- **Uklonjene nekorištene Bus komponente:** `components/BusLines.tsx`, `components/BusLinesTab.tsx`, `components/BusTab.tsx` i `src/data/busLines.ts` (ukupno ~92 KB) arhivirane su u `.legacy-archive/` i uklonjene iz aktivnog stabla.
-- **Uklonjeni duplicirani i siročići fajlovi:** `constants/tourMediaGuides.ts` i `src/data/tourMediaGuides.ts` su uklonjeni (kopirani u `.legacy-archive/`).
-- **Uklonjeni `Solflare.css` i `server.ts`:** Eksperimentalni backend i nelinkovani CSS uklonjeni su iz radnog direktorija.
-- **Očišćen `package.json`:** Uklonjeni su svi nekorišteni paketi (`three.js`, `locar`, `@wasmer/sdk`, `@ionic/react`, `jbr`, `install.js`, `multer`, `express`, `@google/genai`, `lucide-solid`), smanjujući veličinu instalacije i ubrzavajući build proces.
-
+  
 ---
 
 ## 📄 License & Attribution
