@@ -672,9 +672,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               </a>
             </div>
             <img
-              src="/assets/icons/TuzlaTourGuideIcon192x192.webp"
-              alt="I Love Tuzla Tour Guide"
-              className="w-16 h-16 object-contain rounded-2xl shadow-sm pointer-events-none group-hover:scale-105 transition-transform"
+              src="/assets/Gallery/ilovebos.webp"
+              alt="Ilovebos"
+              className="w-22 h-14 object-contain pointer-events-none group-hover:scale-110 transition-transform"
             />
           </div>
         </section>

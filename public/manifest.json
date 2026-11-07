@@ -1,7 +1,7 @@
 {
-  "name": "Tuzla Tour Guide - Multilingual Platform with AR Quests, GPS Navigation, Tour Info & Web3 Rewards",
+  "name": "Tuzla Tour Guide",
   "short_name": "Tuzla Guide",
-  "description": "Interactive virtual tour guide for Tuzla, Bosnia and Herzegovina. Features 3D GPS navigation, camera AR Quests with QR code scanning, neural audio guides, personal itinerary planner with expense ledger, verified hotel and dining directories, and real-time Web3 rewards on Solana.",
+  "description": "Interactive virtual tour guide for Tuzla, Bosnia and Herzegovina. Features 3D GPS navigation, camera AR Quests with QR code scanning, audio guides, personal itinerary planner with expense ledger, verified hotel and dining directories, and real-time Web3 rewards on Solana.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -12,7 +12,7 @@
     "browser"
   ],
   "orientation": "portrait",
-  "background_color": "#ffffff",
+  "background_color": "#000000",
   "theme_color": "#1e3a8a",
   "categories": [
     "travel",
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "name": "Neural Audio Guides",
+      "name": "Audio Guides",
       "short_name": "Audio Guide",
       "description": "Listen to spoken multilingual audio guides about Tuzla's 6,000-year history",
       "url": "/?tab=history",

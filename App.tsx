@@ -166,7 +166,7 @@ const AppContent: React.FC = () => {
       <ReloadPrompt />
       <OfflineIndicator lang={lang} />
 
-      <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm" style={{ height: 'calc(56px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm" style={{ height: 'calc(58px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex items-center z-10 w-16 sm:w-20">
           <button
             onClick={() => setIsDrawerOpen(true)}
@@ -177,12 +177,7 @@ const AppContent: React.FC = () => {
           </button>
         </div>
 
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 sm:gap-2.5 z-0 pointer-events-none">
-          <img
-            src="/assets/icons/TuzlaTourGuideIcon96x96.webp"
-            alt="Tuzla Tour Guide"
-            className="w-7 h-7 sm:w-8 sm:h-8 object-contain rounded-xl shadow-sm shrink-0"
-          />
+        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center z-0 w-[55%] sm:w-auto pointer-events-none">
           <h1 className="text-[4vw] sm:text-xl lg:text-2xl font-black tracking-tight leading-none uppercase flex flex-row flex-wrap sm:flex-nowrap justify-center items-center gap-1 sm:gap-1.5 text-center">
             <span className="text-blue-900">Tuzla</span>
             <span className="text-blue-500">Tour</span>
@@ -206,7 +201,7 @@ const AppContent: React.FC = () => {
         </filter>
       </svg>
 
-      <div className="relative min-h-screen bg-white flex overflow-hidden" style={{ paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))' }}>
+      <div className="relative min-h-screen bg-white flex overflow-hidden" style={{ paddingTop: 'calc(58px + env(safe-area-inset-top, 0px))' }}>
         <Sidebar
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
@@ -218,7 +213,7 @@ const AppContent: React.FC = () => {
         <div
           className="flex-1 flex flex-col overflow-hidden"
           style={{
-            minHeight: 'calc(100vh - 56px - env(safe-area-inset-top, 0px))',
+            minHeight: 'calc(100vh - 58px - env(safe-area-inset-top, 0px))',
           }}
         >
           <main className="flex-1 overflow-y-auto overflow-x-hidden">

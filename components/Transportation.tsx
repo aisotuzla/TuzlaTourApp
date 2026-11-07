@@ -103,13 +103,13 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       }
     },
     PIVARA: {
-      name: 'Pivara (Tuzlanska Pivara & Kapija)',
+      name: 'Pivara (Tuzlanska Pivara)',
       code: '722419',
       description: {
-        en: 'Historic Tuzla Brewery & access to Kapija old town promenade',
-        bs: 'Historijska Tuzlanska pivara i pješački prilaz Kapiji',
-        de: 'Historische Brauerei Tuzla & Altstadt-Promenade Kapija',
-        tr: 'Tarihi Tuzla Bira Fabrikası ve Kapija girişi'
+        en: 'Brewery Tuzla',
+        bs: 'Tuzlanska Pivara',
+        de: 'Bierfabrik Tuzla',
+        tr: 'Tuzla Bira Fabririşi'
       }
     },
     BRCANSKA_MALTA: {

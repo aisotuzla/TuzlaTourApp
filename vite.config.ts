@@ -66,11 +66,11 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'resources/TuzlaTourAppLogo512x512.png',
         ],
         manifest: {
-          name: 'Tuzla Virtual Tour Guide',
+          name: 'Tuzla Tour Guide',
           short_name: 'Tuzla Guide',
           description: 'Explore Tuzla with interactive maps, quests, and local history.',
           theme_color: '#1e40af',
-          background_color: '#ffffff',
+          background_color: '#000000',
           display: 'standalone',
           orientation: 'portrait',
           scope: '/',

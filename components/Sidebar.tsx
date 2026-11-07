@@ -191,11 +191,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
             {/* Header */}
             <div className="p-4 flex items-center justify-between border-b border-slate-100 bg-white/50">
               <div className="flex items-center gap-2.5">
-                <img
-                  src="/assets/icons/TuzlaTourGuideIcon96x96.webp"
-                  alt="Tuzla Tour Guide"
-                  className="w-8 h-8 rounded-xl object-contain shadow-sm"
-                />
                 <span className="font-quicksand font-black text-xl tracking-tight bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
                   Tuzla Tour Guide
                 </span>
@@ -263,14 +258,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
             </div>
 
             {/* Footer */}
-            <div className="p-3 border-t border-slate-100 flex items-center justify-center gap-2 text-center bg-white/40">
-              <img
-                src="/assets/icons/TuzlaTourGuideIcon96x96.webp"
-                alt="Tuzla Tour Guide"
-                className="w-5 h-5 rounded-md object-contain"
-              />
+            <div className="p-3 border-t border-slate-100 flex items-center justify-center gap-1.5 text-center bg-white/40">
+              <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
               <span className="text-xs font-black tracking-wider text-slate-700">
-                Tuzla Tour Guide
+                Tuzla
               </span>
             </div>
           </motion.aside>
