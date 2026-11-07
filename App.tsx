@@ -201,7 +201,7 @@ const AppContent: React.FC = () => {
         </filter>
       </svg>
 
-      <div className="relative min-h-screen bg-white flex overflow-hidden" style={{ paddingTop: 'calc(58px + env(safe-area-inset-top, 0px))' }}>
+      <div className="relative h-[100dvh] min-h-[100dvh] max-h-[100dvh] bg-white flex overflow-hidden" style={{ paddingTop: 'calc(58px + env(safe-area-inset-top, 0px))' }}>
         <Sidebar
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
@@ -213,7 +213,9 @@ const AppContent: React.FC = () => {
         <div
           className="flex-1 flex flex-col overflow-hidden"
           style={{
-            minHeight: 'calc(100vh - 58px - env(safe-area-inset-top, 0px))',
+            height: 'calc(100dvh - 58px - env(safe-area-inset-top, 0px))',
+            minHeight: 'calc(100dvh - 58px - env(safe-area-inset-top, 0px))',
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           }}
         >
           <main className="flex-1 overflow-y-auto overflow-x-hidden">

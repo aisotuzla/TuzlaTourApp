@@ -11,9 +11,13 @@ const POI_GEOJSON_DATA = {
         name: "Pannonian Lakes",
         name_bs: "Panonska jezera",
         category: "nature",
-        "marker-size": "medium",
+        "marker-size": "large",
         "marker-color": "rgba(60, 149, 239, 1)",
-        "marker-symbol": "beach"
+        "marker-symbol": "panonikaO",
+        image: "panonikaO.webp",
+        icon: "panonikaO",
+        "icon-image": "panonikaO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/panonikaO.webp"
       }
     },
     {
@@ -23,9 +27,13 @@ const POI_GEOJSON_DATA = {
         name: "Old Town (Carsija)",
         name_bs: "Stari grad (Carsija)",
         category: "culture",
-        "marker-size": "medium",
+        "marker-size": "large",
         "marker-color": "rgba(240, 94, 31, 1)",
-        "marker-symbol": "marker"
+        image: "trgslobodeO.webp",
+        icon: "trgslobodeO",
+        "icon-image": "trgslobodeO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp",
+        "marker-symbol": "trgslobodeO"
       }
     },
     {
@@ -36,7 +44,12 @@ const POI_GEOJSON_DATA = {
         name_bs: "Trg soli",
         category: "culture",
         "marker-color": "rgba(191, 52, 247, 1)",
-        "marker-size": "medium"
+        "marker-size": "large",
+        image: "sonitrgO.webp",
+        icon: "sonitrgO",
+        "icon-image": "sonitrgO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/sonitrgO.webp",
+        "marker-symbol": "sonitrgO"
       }
     },
     {
@@ -47,7 +60,12 @@ const POI_GEOJSON_DATA = {
         name_bs: "Slana Banja",
         category: "nature",
         "marker-color": "rgba(235, 201, 34, 1)",
-        "marker-size": "medium"
+        "marker-size": "large",
+        image: "BanjaO.webp",
+        icon: "BanjaO",
+        "icon-image": "BanjaO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/BanjaO.webp",
+        "marker-symbol": "BanjaO"
       }
     },
     {
@@ -56,7 +74,12 @@ const POI_GEOJSON_DATA = {
       properties: {
         name: "Tuzlanka Mall",
         name_bs: "RK Tuzlanka",
-        category: "shopping"
+        category: "shopping",
+        image: "TuzlankaO.webp",
+        icon: "TuzlankaO",
+        "icon-image": "TuzlankaO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/TuzlankaO.webp",
+        "marker-symbol": "TuzlankaO"
       }
     },
     {
@@ -67,30 +90,44 @@ const POI_GEOJSON_DATA = {
         name_bs: "Bingo City Centar",
         category: "shopping",
         "marker-color": "rgba(15, 193, 12, 1)",
-        "marker-size": "medium",
-        "marker-symbol": "convenience"
+        "marker-size": "large",
+        image: "bcctuzlaO.webp",
+        icon: "bcctuzlaO",
+        "icon-image": "bcctuzlaO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/bcctuzlaO.webp",
+        "marker-symbol": "bcctuzlaO"
       }
     },
     {
       type: "Feature",
-      geometry: { type: "Point", coordinates: [18.67826, 44.537075] },
+      geometry: { type: "Point", coordinates: [18.678286, 44.537054] },
       properties: {
         name: "Mesa Selimovic",
         name_bs: "Meša Selimović",
         category: "culture",
         "marker-color": "rgba(2, 1, 49, 1)",
-        "marker-size": "medium"
+        "marker-size": "large",
+        image: "mesaO.webp",
+        icon: "mesaO",
+        "icon-image": "mesaO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/mesaO.webp",
+        "marker-symbol": "mesaO"
       }
     },
     {
       type: "Feature",
-      geometry: { type: "Point", coordinates: [18.681081, 44.536948] },
+      geometry: { type: "Point", coordinates: [18.681146, 44.5368] },
       properties: {
         name: "Atelje Ismet Mujezinovic",
         name_bs: "Atelje Ismet Mujezinović",
         category: "culture",
         "marker-color": "rgba(10, 175, 161, 1)",
-        "marker-size": "medium"
+        "marker-size": "medium",
+        image: "ateljeO.webp",
+        icon: "ateljeO",
+        "icon-image": "ateljeO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/ateljeO.webp",
+        "marker-symbol": "ateljeO"
       }
     },
     {
@@ -102,7 +139,12 @@ const POI_GEOJSON_DATA = {
         category: "Sport",
         "marker-color": "rgba(195, 0, 0, 1)",
         "marker-size": "medium",
-        "marker-symbol": "soccer"
+        image: "trgslobodeO.webp",
+        icon: "trgslobodeO",
+        "icon-image": "trgslobodeO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp",
+        "marker-symbol": "trgslobodeO",
+        visibility: false
       }
     },
     {
@@ -113,30 +155,60 @@ const POI_GEOJSON_DATA = {
         name_bs: "Slapovi",
         category: "nature",
         "marker-color": "#312E81",
-        "marker-size": "medium"
+        "marker-size": "large",
+        image: "slapoviO.webp",
+        icon: "slapoviO",
+        "icon-image": "slapoviO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/slapoviO.webp",
+        "marker-symbol": "slapoviO"
       }
     },
     {
       type: "Feature",
+      geometry: { type: "Point", coordinates: [18.677621, 44.538452] },
       properties: {
         name: "Panckaces House \"Bagi\"",
         name_bs: "Palančinkara \"Bagi\"",
         category: "dining",
         "marker-color": "rgba(114, 61, 160, 1)",
-        "marker-size": "medium"
-      },
-      geometry: { type: "Point", coordinates: [18.677621, 44.538452] }
+        "marker-size": "large",
+        image: "bagiO.webp",
+        icon: "bagiO",
+        "icon-image": "bagiO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/bagiO.webp",
+        "marker-symbol": "bagiO"
+      }
     },
     {
       type: "Feature",
+      geometry: { type: "Point", coordinates: [18.678361, 44.538075] },
       properties: {
         name: "King Tvrtko I",
         name_bs: "Kralj Tvrtko",
         category: "culture",
         "marker-color": "rgba(242, 242, 255, 1)",
-        "marker-size": "large"
-      },
-      geometry: { type: "Point", coordinates: [18.678361, 44.538075] }
+        "marker-size": "large",
+        image: "tvrtkO.webp",
+        icon: "tvrtkO",
+        "icon-image": "tvrtkO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp",
+        "marker-symbol": "tvrtkO"
+      }
+    },
+    {
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [18.676824, 44.53858] },
+      properties: {
+        name: "kapija",
+        name_bs: "kapija",
+        category: "monument",
+        "marker-size": "large",
+        image: "kapijaO.webp",
+        icon: "kapijaO",
+        "icon-image": "kapijaO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/kapijaO.webp",
+        "marker-symbol": "kapijaO"
+      }
     }
   ]
 };
@@ -147,6 +219,9 @@ const POI_GEOJSON_DATA = {
  */
 export const OFFLINE_STYLE_SPEC: StyleSpecification = {
   ...(baseOfflineStyle as unknown as StyleSpecification),
+  sprite: typeof window !== 'undefined' && window.location
+    ? new URL('/maps/sprite', window.location.origin).href
+    : '/maps/sprite',
   sources: {
     ...(baseOfflineStyle as any).sources,
     'app-pois': {

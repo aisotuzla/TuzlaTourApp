@@ -64,6 +64,12 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'resources/TuzlaTourAppLogo96x96.png',
           'resources/TuzlaTourAppLogo192x192.png',
           'resources/TuzlaTourAppLogo512x512.png',
+          'maps/sprite.json',
+          'maps/sprite.png',
+          'maps/sprite@2x.json',
+          'maps/sprite@2x.png',
+          'maps/poi.geojson',
+          'maps/offline-vector-style.json',
         ],
         manifest: {
           name: 'Tuzla Tour Guide',
