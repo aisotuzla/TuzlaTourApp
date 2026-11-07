@@ -71,6 +71,9 @@ export function useBreadcrumbTrail(opts: {
   route: RoutePoint[]; // Geoapify walking route geometry
   target: PoiTarget | null; // current quest POI
   heading: HeadingSource;
+  orientationRef?: React.RefObject<DeviceOrientation>;
+  compassHeadingRef?: React.RefObject<number | null>;
+  gpsTrackRef?: React.RefObject<RoutePoint[]>;
   phaseLabel?: string;
   isActive?: boolean;
   orientation?: DeviceOrientation | null;
@@ -78,7 +81,19 @@ export function useBreadcrumbTrail(opts: {
   // fires once when the user enters the geofence (trail hands off to reticle)
   onTargetLocked?: (target: PoiTarget) => void;
 }) {
-  const { canvasRef, route, target, heading, isActive = true, orientation, targetFps = CFG.FPS, onTargetLocked } = opts;
+  const {
+    canvasRef,
+    route,
+    target,
+    heading,
+    orientationRef,
+    compassHeadingRef,
+    gpsTrackRef,
+    isActive = true,
+    orientation,
+    targetFps = CFG.FPS,
+    onTargetLocked,
+  } = opts;
   const rafRef = useRef<number | null>(null);
   const lastDrawRef = useRef(0);
   const lockedRef = useRef(false);
@@ -104,26 +119,22 @@ export function useBreadcrumbTrail(opts: {
       if (t - lastDrawRef.current < 1000 / effectiveFps) return;
       lastDrawRef.current = t;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const targetW = Math.round((canvas.clientWidth || window.innerWidth) * dpr);
-      const targetH = Math.round((canvas.clientHeight || window.innerHeight) * dpr);
-      if (canvas.width !== targetW || canvas.height !== targetH) {
-        canvas.width = targetW;
-        canvas.height = targetH;
-      }
       const w = canvas.width;
       const h = canvas.height;
+      if (w === 0 || h === 0) return;
+
       ctx.clearRect(0, 0, w, h);
 
       if (!target || !isActive) return;
 
-      const me = heading.gpsTrack[heading.gpsTrack.length - 1];
+      const track = gpsTrackRef?.current ?? heading.gpsTrack;
+      const me = track[track.length - 1];
       if (!me) return;
 
       // ---- fused heading: GPS heading wins while walking ----
-      let hdg = heading.compassHeading;
-      if (heading.gpsTrack.length >= 2) {
-        const prev = heading.gpsTrack[heading.gpsTrack.length - 2];
+      let hdg = compassHeadingRef?.current !== undefined ? compassHeadingRef.current : heading.compassHeading;
+      if (track.length >= 2) {
+        const prev = track[track.length - 2];
         const moved = distM(prev, me);
         if (moved > 1.5) hdg = bearingDeg(prev, me); // >1.5 m since last fix = walking
       }
@@ -148,7 +159,8 @@ export function useBreadcrumbTrail(opts: {
       const cx = w / 2;
 
       // Dynamic tilt compensation from device beta angle
-      const pitchOffset = orientation?.beta ? ((orientation.beta - 70) / 90) * h * 0.25 : 0;
+      const currentOrient = orientationRef?.current ?? orientation;
+      const pitchOffset = currentOrient?.beta ? ((currentOrient.beta - 70) / 90) * h * 0.25 : 0;
       const horizonY = Math.max(h * 0.15, Math.min(h * 0.7, h * 0.38 + pitchOffset));
       const groundY = h * 0.95;
 
@@ -200,7 +212,7 @@ export function useBreadcrumbTrail(opts: {
     return () => {
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
     };
-  }, [canvasRef, route, target, heading, isActive, orientation, onTargetLocked]);
+  }, [canvasRef, route, target, isActive, targetFps, onTargetLocked]);
 }
 
 // ---------- trail construction ----------

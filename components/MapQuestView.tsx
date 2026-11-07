@@ -5,7 +5,7 @@ import { globalPMTilesProtocol, ensureTuzlaOfflineMapDownloaded } from '../utils
 import { OFFLINE_STYLE_SPEC } from '../utils/offlineMapStyle.ts';
 import { motion, AnimatePresence } from 'framer-motion';
 import CelebrationOverlay from './CelebrationOverlay.tsx';
-import { QrCode, Navigation, Route, Info, X, Compass, Landmark, Hotel as HotelIcon, Trophy, Layers, Check, ChevronUp, ChevronDown, Play } from 'lucide-react';
+import { QrCode, Navigation, Info, X, Compass, Trophy, Layers, Check, ChevronUp, ChevronDown, Play } from 'lucide-react';
 import { AppFeatures } from '../utils/platform.ts';
 import { Language } from '../types.ts';
 import { TUZLA_CENTER, LOCATIONS } from '../constants.tsx';
@@ -14,7 +14,7 @@ import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
 import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
-import { QUEST_TARGETS, POI_COLORS, ROUTE_POI_PRESETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData.ts';
+import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData.ts';
 import { NavigationHud } from './NavigationHud.tsx';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import ARGuide from './ARGuide.tsx';
@@ -36,13 +36,6 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   tvrtko_park: { lat: 44.5380826, lon: 18.6783327 },
 };
 
-const TUZLA_HOTELS = [
-  { name: 'Hotel Mellain', latitude: 44.537521, longitude: 18.683412, rating: '5.0', priceRange: '120-220 KM' },
-  { name: 'Grand Hotel Tuzla', latitude: 44.532912, longitude: 18.676389, rating: '4.8', priceRange: '90-160 KM' },
-  { name: 'Hotel Salis', latitude: 44.536102, longitude: 18.665241, rating: '4.7', priceRange: '80-140 KM' },
-  { name: 'Hotel Heartland', latitude: 44.539120, longitude: 18.676912, rating: '4.6', priceRange: '70-120 KM' },
-  { name: 'Hotel Tehnograd', latitude: 44.541230, longitude: 18.705120, rating: '4.5', priceRange: '60-100 KM' },
-];
 
 const GEOAPIFY_API_KEY = getGeoapifyGeneralKey();
 const VITE_PROTOMAPS_CARTO_API = '78417d24f3c5d515';
@@ -71,8 +64,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const [showARGuide, setShowARGuide] = useState(false);
   const [selectedNavTarget, setSelectedNavTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
-  const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
-  const [activeModalTab, setActiveModalTab] = useState<'quest' | 'poi' | 'hotel'>('quest');
   const [playingQuestVideo, setPlayingQuestVideo] = useState<{ url: string; title: string } | null>(null);
   const [playingQuestPanorama, setPlayingQuestPanorama] = useState<{ url: string; title: string; haov?: number } | null>(null);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
@@ -133,6 +124,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   };
 
   const handleStartNavigation = (name: string, lat: number, lon: number) => {
+    // AR Guide and GPS navigation are mutually exclusive
+    if (showARGuide) setShowARGuide(false);
     setSelectedNavTarget({ name, lat, lon });
     setIsNavigating(true);
     if (map.current && userLocationRef.current) {
@@ -154,8 +147,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
   const handleToggleARMode = () => {
     if (!showARGuide && isNavigating) {
+      // Turning AR on while navigating — stop GPS route but keep selectedNavTarget for AR Guide
       setIsNavigating(false);
-      setSelectedNavTarget(null);
       clearRoute();
     }
     setShowARGuide(previous => !previous);
@@ -179,7 +172,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       for (let i = 0; i < popups.length; i++) {
         (popups[i] as HTMLElement).remove();
       }
-      handleStartNavigation(name, lat, lon);
+      // AR Guide and GPS navigation are mutually exclusive — stop any active navigation
+      setIsNavigating(false);
+      clearRoute();
+      setSelectedNavTarget({ name, lat, lon });
       setShowARGuide(true);
     };
     (window as any).playQuestVideo = (videoUrl: string, title?: string) => {
@@ -218,7 +214,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       delete (window as any).openQuestPanorama;
       delete (window as any).playPoiAudio;
     };
-  }, [activeStyle, lang, currentNarration, isPlaying, playNarration, pauseNarration]);
+  }, [activeStyle, lang, currentNarration, isPlaying, playNarration, pauseNarration, isNavigating]);
 
   useEffect(() => {
     globalPMTilesProtocol.init();
@@ -234,7 +230,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     safeSet('landcover_grass', 'fill-color', '#91e147');
     safeSet('park', 'fill-color', 'rgba(163, 219, 65, 0.82)');
     safeSet('landcover_wood', 'fill-color', '#95b959');
-    safeSet('road_path', 'line-color', '#656262');
+    safeSet('road_path', 'line-color', '#acacacff');
     safeSet('road_minor', 'line-color', '#ffffff');
     safeSet('road_trunk_primary', 'line-color', '#f4ca61');
     safeSet('road_secondary_tertiary', 'line-color', '#fcfb8f');
@@ -716,7 +712,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
           <div className="flex gap-1.5">
             <button onClick={() => setIsScannerOpen(true)} className="flex-1 flex flex-col items-center gap-0.5 py-1.5 bg-gradient-to-b from-amber-500/20 to-amber-600/10 hover:from-amber-500 hover:to-amber-600 text-amber-300 hover:text-slate-950 rounded-xl border border-amber-500/30 transition-all active:scale-95 shadow-md"><QrCode className="w-4 h-4" /><span className="text-[8px] font-black uppercase tracking-wider">QR Code</span></button>
             <button onClick={handleToggleARMode} className={`flex-1 flex flex-col items-center gap-0.5 py-1.5 rounded-xl border transition-all active:scale-95 shadow-md ${showARGuide ? 'bg-purple-500 text-slate-950 border-purple-300' : 'bg-gradient-to-b from-purple-500/20 to-purple-600/10 hover:from-purple-500 hover:to-purple-600 text-purple-300 hover:text-slate-950 border-purple-500/30'}`}><Compass className="w-4 h-4" /><span className="text-[8px] font-black uppercase tracking-wider">AR Guide</span></button>
-            <button onClick={() => setIsPresetModalOpen(true)} className="flex-1 flex flex-col items-center gap-0.5 py-1.5 bg-gradient-to-b from-blue-500/20 to-blue-600/10 hover:from-blue-500 hover:to-blue-600 text-blue-300 hover:text-white rounded-xl border border-blue-500/30 transition-all active:scale-95 shadow-md"><Route className="w-4 h-4" /><span className="text-[8px] font-black uppercase tracking-wider">GPS Route</span></button>
           </div>
         </div>
       </div>
@@ -811,74 +806,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         )}
       </AnimatePresence>
 
-      {/* Presets Modal */}
-      <AnimatePresence>
-        {isPresetModalOpen && (
-          <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} transition={{ type: 'spring', damping: 25, stiffness: 350 }} className="w-full max-w-lg overflow-hidden border bg-slate-900/95 backdrop-blur-2xl border-blue-500/30 rounded-3xl shadow-2xl flex flex-col max-h-[80vh]">
-              <div className="p-5 border-b border-white/10 flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-black text-white flex items-center gap-2"><Compass className="text-blue-400" size={22} />{lang === 'bs' ? 'Odaberi Odredište Potrage' : 'Choose Quest Target'}</h3>
-                  <p className="text-xs font-bold text-slate-400 mt-0.5">{lang === 'bs' ? 'Započni pješačku GPS rutu do lokacije' : 'Start a walking GPS route to the location'}</p>
-                </div>
-                <button onClick={() => setIsPresetModalOpen(false)} className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all"><X size={18} /></button>
-              </div>
-              <div className="px-5 py-2 border-b border-white/5 flex gap-2">
-                <button onClick={() => setActiveModalTab('quest')} className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${activeModalTab === 'quest' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}><Trophy size={14} />{lang === 'bs' ? 'Ciljevi' : 'Targets'}</button>
-                <button onClick={() => setActiveModalTab('poi')} className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${activeModalTab === 'poi' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}><Landmark size={14} />{lang === 'bs' ? 'Znamenitosti' : 'Attractions'}</button>
-                <button onClick={() => setActiveModalTab('hotel')} className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all ${activeModalTab === 'hotel' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}><HotelIcon size={14} />{lang === 'bs' ? 'Hoteli' : 'Hotels'}</button>
-              </div>
-              <div className="flex-1 overflow-y-auto p-5 space-y-3 custom-scrollbar">
-                {activeModalTab === 'quest' ? (
-                  QUEST_TARGETS.map((target) => {
-                    const isUnlocked = unlockedRewards.includes(target.id);
-                    const coords = QUEST_TARGET_COORDS[target.id];
-                    const title = target.name[lang] || target.name.bs;
-                    return (
-                      <button key={target.id} onClick={() => { if (coords) { handleStartNavigation(title, coords.lat, coords.lon); setIsPresetModalOpen(false); } }} className="w-full p-3.5 bg-white/5 hover:bg-amber-500/20 hover:border-amber-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left">
-                        <div className="flex items-center gap-3.5">
-                          <img src={target.Image} alt={title} className="w-12 h-12 rounded-xl object-cover border border-white/10 shadow-md" onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }} />
-                          <div>
-                            <h4 className="font-extrabold text-sm text-white group-hover:text-amber-300 transition-colors">{title}</h4>
-                            <span className={`text-[10px] uppercase font-black tracking-wider ${isUnlocked ? 'text-amber-400' : 'text-blue-400/80'}`}>{isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2"><span className="text-xs font-bold text-amber-400 group-hover:underline">{lang === 'bs' ? 'Navigacija' : 'Navigate'}</span><Route size={18} className="text-amber-400 group-hover:translate-x-1 transition-all" /></div>
-                      </button>
-                    );
-                  })
-                ) : activeModalTab === 'poi' ? (
-                  ROUTE_POI_PRESETS.map((poi, idx) => (
-                    <button key={idx} onClick={() => { handleStartNavigation(poi.name[lang as 'bs' | 'en'] ?? poi.name.en, poi.lat, poi.lon); setIsPresetModalOpen(false); }} className="w-full p-3.5 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left">
-                      <div className="flex items-center gap-3.5">
-                        <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all"><Landmark size={20} /></div>
-                        <div>
-                          <h4 className="font-extrabold text-sm text-white group-hover:text-blue-300 transition-colors">{poi.name[lang as 'bs' | 'en'] ?? poi.name.en}</h4>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">{poi.category}</span>
-                        </div>
-                      </div>
-                      <Route size={18} className="text-blue-400 group-hover:translate-x-1 transition-all" />
-                    </button>
-                  ))
-                ) : (
-                  TUZLA_HOTELS.map((hotel, idx) => (
-                    <button key={idx} onClick={() => { handleStartNavigation(hotel.name, hotel.latitude, hotel.longitude); setIsPresetModalOpen(false); }} className="w-full p-3.5 bg-white/5 hover:bg-blue-600/20 hover:border-blue-500/50 border border-white/5 rounded-2xl transition-all flex items-center justify-between group text-left">
-                      <div className="flex items-center gap-3.5">
-                        <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all"><HotelIcon size={20} /></div>
-                        <div>
-                          <h4 className="font-extrabold text-sm text-white group-hover:text-blue-300 transition-colors">{hotel.name}</h4>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400/80">{hotel.rating} ★ • {hotel.priceRange}</span>
-                        </div>
-                      </div>
-                      <Route size={18} className="text-blue-400 group-hover:translate-x-1 transition-all" />
-                    </button>
-                  ))
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       <NavigationHud
         isNavigating={isNavigating}
@@ -890,7 +817,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         onEndNavigation={handleEndNavigation}
         targetColor={currentNavTargetColor}
         isArTrailActive={showARGuide}
-        onActivateArTrail={() => setShowARGuide(true)}
+        onActivateArTrail={() => {
+          // AR Guide and navigation are mutually exclusive
+          setIsNavigating(false);
+          clearRoute();
+          setShowARGuide(true);
+        }}
       />
       <QrScannerModal
         isOpen={isScannerOpen}
@@ -917,11 +849,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
             {(() => {
               const isVertical = playingQuestVideo.url.includes('MesaSelimovic');
               return (
-                <div className={`w-full bg-black border-0 sm:border border-white/15 overflow-hidden shadow-2xl flex flex-col h-full sm:h-auto ${
-                  isVertical
+                <div className={`w-full bg-black border-0 sm:border border-white/15 overflow-hidden shadow-2xl flex flex-col h-full sm:h-auto ${isVertical
                     ? 'sm:max-w-[420px] sm:max-h-[92vh] rounded-none sm:rounded-[2.5rem]'
                     : 'sm:max-w-2xl rounded-none sm:rounded-[2.5rem]'
-                }`}>
+                  }`}>
                   <div className="p-3.5 sm:p-4 flex items-center justify-between border-b border-white/10 bg-white/5 shrink-0">
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
@@ -946,11 +877,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
                     </button>
                   </div>
 
-                  <div className={`relative w-full bg-black flex items-center justify-center overflow-hidden ${
-                    isVertical
+                  <div className={`relative w-full bg-black flex items-center justify-center overflow-hidden ${isVertical
                       ? 'flex-1 sm:flex-none sm:aspect-[9/16] sm:max-h-[75vh]'
                       : 'flex-1 sm:flex-none aspect-video sm:max-h-[60vh]'
-                  }`}>
+                    }`}>
                     <video
                       src={playingQuestVideo.url}
                       autoPlay

@@ -4,7 +4,9 @@ import { DeviceOrientation, WGS84Location, projectGpsPathWithElevationToCanvas }
 export interface ARPolylineCanvasProps {
   polyline: Array<[number, number, number?]>; // [lat, lng, elevation]
   userLocation: WGS84Location | null;
+  userLocationRef?: React.RefObject<WGS84Location | null>;
   orientation: DeviceOrientation;
+  orientationRef?: React.RefObject<DeviceOrientation>;
   maxHorizonMeters?: number; // Horizon clipping distance (default 40m)
   isActive?: boolean; // If false (viewMode !== 'AR'), loop is stopped completely to save CPU/battery
   className?: string;
@@ -15,7 +17,9 @@ export interface ARPolylineCanvasProps {
 export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
   polyline,
   userLocation,
+  userLocationRef,
   orientation,
+  orientationRef,
   maxHorizonMeters = 40,
   isActive = true,
   className = 'absolute inset-0 pointer-events-none z-10 w-full h-full',
@@ -109,8 +113,11 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, displayWidth, displayHeight);
 
+      const currentLoc = userLocationRef?.current ?? userLocation;
+      const currentOrient = orientationRef?.current ?? orientation;
+
       // Skip render if essential tracking data is missing
-      if (!userLocation || orientation.alpha === null || polyline.length < 2) {
+      if (!currentLoc || currentOrient.alpha === null || polyline.length < 2) {
         ctx.restore();
         return;
       }
@@ -121,8 +128,8 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
       // 3D ENU to 2D Screen perspective path projection
       const projectedNodes = projectGpsPathWithElevationToCanvas(
         polyline,
-        userLocation,
-        orientation,
+        currentLoc,
+        currentOrient,
         displayWidth,
         displayHeight
       );
@@ -223,7 +230,7 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
         animFrameIdRef.current = null;
       }
     };
-  }, [polyline, userLocation, orientation, maxHorizonMeters, isActive]);
+  }, [polyline, maxHorizonMeters, isActive, targetFps, color]);
 
   return (
     <div ref={containerRef} className={className}>

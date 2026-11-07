@@ -54,9 +54,16 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
           'assets/panonikalogo.webp',
           'assets/icons/aisologo.webp',
+          'assets/icons/TuzlaTourGuideIcon.png',
+          'assets/icons/TuzlaTourGuideIcon192x192.webp',
+          'assets/icons/TuzlaTourGuideIcon512x512.webp',
           'assets/x.svg',
           'assets/bluesky.svg',
+          'favicon.ico',
+          'favicon.png',
           'resources/TuzlaTourAppLogo96x96.png',
+          'resources/TuzlaTourAppLogo192x192.png',
+          'resources/TuzlaTourAppLogo512x512.png',
         ],
         manifest: {
           name: 'Tuzla Virtual Tour Guide',
@@ -70,23 +77,23 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           start_url: '/',
           icons: [
             {
-              src: 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
+              src: '/resources/TuzlaTourAppLogo192x192.png',
               sizes: '192x192',
               type: 'image/png'
             },
             {
-              src: 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
+              src: '/resources/TuzlaTourAppLogo512x512.png',
               sizes: '512x512',
               type: 'image/png'
             },
             {
-              src: 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
+              src: '/resources/TuzlaTourAppLogo512x512.png',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'any'
             },
             {
-              src: 'assets/Gallery/QuestQRLocations/TuzlaMenuLogo.png',
+              src: '/resources/TuzlaTourAppLogo512x512.png',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'maskable'

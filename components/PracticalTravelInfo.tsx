@@ -33,7 +33,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
   onSwitchToItinerary,
 }) => {
   const [isWarningDismissed, setIsWarningDismissed] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'flights' | 'bus' | 'entry' | 'health' | 'simMoney'>('all');
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'flights' | 'bus' | 'entry' | 'health' | 'simMoney' | 'tourAgency'>('all');
 
   const content = {
     en: {
@@ -48,6 +48,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         entry: '🛂 Entry & Customs',
         health: '🏥 Health & Insurance',
         simMoney: '💡 SIM, Wi-Fi & Money',
+        tourAgency: '🧭 Tour Agencies',
       },
       quickItineraryNotice: 'Looking for a structured trip schedule? Check our curated 3-Day Tuzla Itinerary.',
       openItineraryBtn: 'Open 3-Day Plan',
@@ -178,6 +179,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         entry: '🛂 Ulazak i Carina',
         health: '🏥 Zdravstvo i Osiguranje',
         simMoney: '💡 SIM, Wi-Fi i Novac',
+        tourAgency: '🧭 Turističke agencije',
       },
       quickItineraryNotice: 'Želite organizovan 3-dnevni plan posjete gradu? Pogledajte naš preporučeni itinerar.',
       openItineraryBtn: 'Otvori 3-Dnevni plan',
@@ -306,6 +308,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         entry: '🛂 Einreise & Zoll',
         health: '🏥 Gesundheit & Versicherung',
         simMoney: '💡 SIM, WLAN & Geld',
+        tourAgency: '🧭 Reiseagenturen',
       },
       quickItineraryNotice: 'Suchen Sie einen strukturierten Zeitplan? Nutzen Sie unseren kuratierten 3-Tage-Plan für Tuzla.',
       openItineraryBtn: '3-Tage-Plan öffnen',
@@ -434,6 +437,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         entry: '🛂 Giriş & Gümrük',
         health: '🏥 Sağlık & Sigorta',
         simMoney: '💡 SIM, Wi-Fi & Para',
+        tourAgency: '🧭 Tur Acenteleri',
       },
       quickItineraryNotice: 'Detaylı bir gezi programı mı arıyorsunuz? Özel olarak hazırlanan 3 Günlük Tuzla Planımızı inceleyin.',
       openItineraryBtn: '3 Günlük Planı Aç',
@@ -620,7 +624,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
 
         {/* Category Filters */}
         <div className="mt-6 flex flex-wrap gap-2 pt-2 border-t border-white/10">
-          {(['all', 'flights', 'bus', 'entry', 'health', 'simMoney'] as const).map((key) => (
+          {(['all', 'flights', 'bus', 'entry', 'health', 'simMoney', 'tourAgency'] as const).map((key) => (
             <button
               key={key}
               onClick={() => setSelectedFilter(key)}
@@ -1029,6 +1033,162 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
                     <span className="mt-0.5 text-[11px] font-bold text-center opacity-80">{contact.name}</span>
                   </a>
                 ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+
+        {/* SECTION 6: TOUR AGENCIES & EXPERIENCES MARKETPLACE */}
+        {(selectedFilter === 'all' || selectedFilter === 'tourAgency') && (
+          <section className="overflow-hidden rounded-[1.75rem] border border-indigo-100 bg-white shadow-sm">
+            <div className="bg-gradient-to-br from-slate-950 via-indigo-950 to-blue-900 p-6 sm:p-8 text-white">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="max-w-3xl">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-widest text-cyan-200">
+                    <Compass className="h-3.5 w-3.5" />
+                    {lang === 'bs' ? 'Otkrij Tuzlu i okolinu' : lang === 'de' ? 'Tuzla und Umgebung entdecken' : lang === 'tr' ? 'Tuzla ve çevresini keşfedin' : 'Discover Tuzla & the region'}
+                  </div>
+                  <h3 className="mt-3 text-2xl sm:text-3xl font-black tracking-tight">
+                    {lang === 'bs' ? 'Turističke agencije i doživljaji' : lang === 'de' ? 'Reiseagenturen & Erlebnisse' : lang === 'tr' ? 'Tur Acenteleri ve Deneyimler' : 'Tour Agencies & Experiences'}
+                  </h3>
+                  <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-blue-100/85">
+                    {lang === 'bs'
+                      ? 'Pronađite lokalne organizatore, raspitajte se o vođenim turama, jednodnevnim izletima, prevozu i prilagođenim programima.'
+                      : lang === 'de'
+                      ? 'Finden Sie Reiseveranstalter und fragen Sie nach geführten Touren, Tagesausflügen, Transfers und individuellen Reiseprogrammen.'
+                      : lang === 'tr'
+                      ? 'Yerel tur operatörlerini keşfedin; rehberli turlar, günübirlik geziler, ulaşım ve özel programlar hakkında bilgi alın.'
+                      : 'Discover tour operators and enquire about guided tours, day trips, transport, and tailor-made experiences.'}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
+                  <div className="text-2xl font-black">5</div>
+                  <div className="mt-0.5 text-[11px] font-bold uppercase tracking-wider text-blue-100">
+                    {lang === 'bs' ? 'Organizatora za kontakt' : lang === 'de' ? 'Ansprechpartner' : lang === 'tr' ? 'Tur operatörü' : 'Operators to contact'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5 sm:p-8">
+              <div className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-950">
+                <Info className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
+                <div className="text-xs sm:text-sm leading-relaxed">
+                  <strong className="font-black">
+                    {lang === 'bs' ? 'Informativni imenik — nije potvrda partnerstva.' : lang === 'de' ? 'Informationsverzeichnis – keine bestätigte Partnerschaft.' : lang === 'tr' ? 'Bilgilendirme rehberi — onaylanmış ortaklık değildir.' : 'Information directory — not a confirmed partnership.'}
+                  </strong>
+                  {' '}
+                  {lang === 'bs'
+                    ? 'Ovi organizatori su potencijalni pružaoci usluga. Ponude, cijene, termini, dostupnost i mogućnost rezervacije moraju se direktno potvrditi kod agencije.'
+                    : lang === 'de'
+                    ? 'Die Anbieter sind potenzielle Dienstleister. Angebote, Preise, Termine, Verfügbarkeit und Buchungsmöglichkeiten müssen direkt beim Anbieter bestätigt werden.'
+                    : lang === 'tr'
+                    ? 'Bunlar potansiyel hizmet sağlayıcılardır. Tur içeriği, fiyatlar, tarihler, müsaitlik ve rezervasyon doğrudan acenteyle teyit edilmelidir.'
+                    : 'These operators are prospective providers. Tour details, prices, dates, availability, and booking arrangements must be confirmed directly with each agency.'}
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {([
+                  {
+                    name: 'Elle Travel',
+                    category: lang === 'bs' ? 'Incoming DMC • prilagođene ture' : lang === 'de' ? 'Incoming-DMC • maßgeschneiderte Touren' : lang === 'tr' ? 'Incoming DMC • özel turlar' : 'Incoming DMC • tailor-made tours',
+                    detail: lang === 'bs' ? 'Organizacija dolaznih putovanja, prilagođeni programi i turističke usluge u BiH.' : lang === 'de' ? 'Incoming-Reisen, individuelle Programme und touristische Dienstleistungen in Bosnien und Herzegowina.' : lang === 'tr' ? 'Bosna-Hersek genelinde incoming seyahatler, özel programlar ve turizm hizmetleri.' : 'Incoming travel, tailored itineraries, and destination services across Bosnia and Herzegovina.',
+                    website: 'https://elletravel.ba/bosnia-dmc/',
+                    email: 'info@elletravel.ba',
+                    phone: '+387 61 186 200',
+                    secondaryPhone: undefined,
+                  },
+                  {
+                    name: 'ROAD',
+                    category: lang === 'bs' ? 'Izleti • autobuski i minibus prevoz' : lang === 'de' ? 'Ausflüge • Bus- und Minibusverkehr' : lang === 'tr' ? 'Geziler • otobüs ve minibüs ulaşımı' : 'Excursions • bus & minibus transport',
+                    detail: lang === 'bs' ? 'Organizacija jednodnevnih i višednevnih izleta te turistički autobuski i minibus prevoz.' : lang === 'de' ? 'Organisation von Tages- und Mehrtagesausflügen sowie touristischer Bus- und Minibusverkehr.' : lang === 'tr' ? 'Günübirlik ve çok günlük geziler ile turistik otobüs ve minibüs taşımacılığı.' : 'One-day and multi-day excursions, plus tourist bus and minibus transport.',
+                    website: 'https://road.ba/',
+                    email: '',
+                    phone: '+387 62 800 925',
+                    secondaryPhone: '+387 35 556 113',
+                  },
+                  {
+                    name: 'Unitravel',
+                    category: lang === 'bs' ? 'Incoming turizam • ekskurzije' : lang === 'de' ? 'Incoming-Tourismus • Ausflüge' : lang === 'tr' ? 'Incoming turizm • geziler' : 'Incoming tourism • excursions',
+                    detail: lang === 'bs' ? 'Dolazni turizam u BiH, izleti i domaći i međunarodni turistički aranžmani.' : lang === 'de' ? 'Incoming-Tourismus in Bosnien und Herzegowina, Ausflüge sowie nationale und internationale Reisen.' : lang === 'tr' ? 'Bosna-Hersek incoming turizmi, geziler ve yurt içi/yurt dışı seyahat paketleri.' : 'Incoming tourism in Bosnia and Herzegovina, excursions, and domestic and international travel.',
+                    website: 'https://unitravel.ba/',
+                    email: 'info@unitravel.ba',
+                    phone: '+387 62 80 50 50',
+                    secondaryPhone: undefined,
+                  },
+                  {
+                    name: 'TransTurist',
+                    category: lang === 'bs' ? 'Prevoz • turističke usluge' : lang === 'de' ? 'Transport • Reisedienstleistungen' : lang === 'tr' ? 'Ulaşım • turizm hizmetleri' : 'Transport • travel services',
+                    detail: lang === 'bs' ? 'Lokalni prevoznik i turistička agencija; kontaktirajte ih za raspoložive izlete i prevoz.' : lang === 'de' ? 'Lokaler Verkehrs- und Reiseanbieter; fragen Sie direkt nach verfügbaren Ausflügen und Transport.' : lang === 'tr' ? 'Yerel ulaşım ve seyahat acentesi; mevcut geziler ve ulaşım seçenekleri için iletişime geçin.' : 'Local transport and travel operator; contact them directly about available excursions and transport.',
+                    website: 'https://www.transturist.ba/',
+                    email: 'info@transturist.ba',
+                    phone: '+387 35 249 301',
+                    secondaryPhone: undefined,
+                  },
+                  {
+                    name: 'HIT Tours',
+                    category: lang === 'bs' ? 'Grupna putovanja • turistička agencija' : lang === 'de' ? 'Gruppenreisen • Reiseagentur' : lang === 'tr' ? 'Grup seyahatleri • tur acentesi' : 'Group travel • travel agency',
+                    detail: lang === 'bs' ? 'Turistička agencija za grupna putovanja; raspitajte se o aktuelnim programima i izletima.' : lang === 'de' ? 'Reiseagentur für Gruppenreisen; erkundigen Sie sich nach aktuellen Programmen und Ausflügen.' : lang === 'tr' ? 'Grup seyahatleri sunan acente; güncel programlar ve geziler için bilgi alın.' : 'Travel agency offering group travel; enquire about current programmes and excursions.',
+                    website: 'https://www.hit-tours.ba/',
+                    email: 'agencija@hit-tours.ba',
+                    phone: '+387 35 258 311',
+                    secondaryPhone: undefined,
+                  },
+                ] as Array<{
+                  name: string;
+                  category: string;
+                  detail: string;
+                  website: string;
+                  email: string;
+                  phone: string;
+                  secondaryPhone?: string;
+                }>).map((agency) => (
+                  <article key={agency.name} className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-indigo-50 text-indigo-700">
+                        <Building className="h-5 w-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-lg font-black text-slate-900">{agency.name}</h4>
+                        <div className="mt-1 text-xs font-black uppercase tracking-wide text-indigo-700">{agency.category}</div>
+                      </div>
+                    </div>
+                    <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600">{agency.detail}</p>
+                    <div className="mt-4 space-y-2 border-t border-slate-100 pt-3">
+                      <a href={agency.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-blue-700 hover:text-blue-900">
+                        <ExternalLink className="h-4 w-4" />
+                        {lang === 'bs' ? 'Zvanična web stranica' : lang === 'de' ? 'Offizielle Website' : lang === 'tr' ? 'Resmî web sitesi' : 'Official website'}
+                      </a>
+                      {agency.email && (
+                        <a href={`mailto:${agency.email}`} className="flex items-center gap-2 break-all text-xs font-semibold text-slate-600 hover:text-blue-700">
+                          <span className="w-4 text-center">✉</span>{agency.email}
+                        </a>
+                      )}
+                      <a href={`tel:${agency.phone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-blue-700">
+                        <PhoneCall className="h-3.5 w-3.5" />{agency.phone}
+                      </a>
+                      {agency.secondaryPhone && (
+                        <a href={`tel:${agency.secondaryPhone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-blue-700">
+                          <PhoneCall className="h-3.5 w-3.5" />{agency.secondaryPhone}
+                        </a>
+                      )}
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
+                <h4 className="flex items-center gap-2 text-sm font-black text-blue-950">
+                  <ShieldCheck className="h-4 w-4 text-blue-700" />
+                  {lang === 'bs' ? 'Kako rezervisati sigurno' : lang === 'de' ? 'Sicher buchen' : lang === 'tr' ? 'Güvenli rezervasyon' : 'How to book safely'}
+                </h4>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-xs sm:text-sm leading-relaxed text-blue-900">
+                  <li>{lang === 'bs' ? 'Prije plaćanja potvrdite naziv ture, datum, trajanje, mjesto polaska i šta je uključeno u cijenu.' : lang === 'de' ? 'Bestätigen Sie vor der Zahlung Tourname, Datum, Dauer, Abfahrtsort und enthaltene Leistungen.' : lang === 'tr' ? 'Ödeme öncesinde tur adını, tarihi, süreyi, kalkış noktasını ve fiyata dahil olanları teyit edin.' : 'Before paying, confirm the tour name, date, duration, departure point, and what the price includes.'}</li>
+                  <li>{lang === 'bs' ? 'Tražite konačnu cijenu, uslove otkazivanja i potvrdu rezervacije u pisanom obliku.' : lang === 'de' ? 'Lassen Sie sich Endpreis, Stornierungsbedingungen und Buchungsbestätigung schriftlich geben.' : lang === 'tr' ? 'Nihai fiyatı, iptal koşullarını ve rezervasyon onayını yazılı olarak isteyin.' : 'Request the final price, cancellation terms, and written booking confirmation.'}</li>
+                  <li>{lang === 'bs' ? 'Tuzla Virtual Tour Guide trenutno prikazuje kontakt-podatke; dostupnost i rezervacije potvrđuje direktno pružalac usluge.' : lang === 'de' ? 'Tuzla Virtual Tour Guide zeigt derzeit Kontaktdaten; Verfügbarkeit und Buchungen bestätigt der Anbieter direkt.' : lang === 'tr' ? 'Tuzla Virtual Tour Guide şu anda iletişim bilgilerini sunar; müsaitlik ve rezervasyon sağlayıcı tarafından doğrulanır.' : 'Tuzla Virtual Tour Guide currently provides contact details; the operator confirms availability and bookings directly.'}</li>
+                </ul>
               </div>
             </div>
           </section>

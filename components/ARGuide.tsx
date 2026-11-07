@@ -343,6 +343,31 @@ export const ARGuide: React.FC<ARGuideProps> = ({
   const lastMovementTimeRef = useRef<number>(Date.now());
   const lastPositionRef = useRef<{ lat: number; lng: number } | null>(null);
 
+  const lastOrientationStateTimeRef = useRef<number>(0);
+  const lastRenderedAlphaRef = useRef<number | null>(null);
+  const lastGuidanceUpdateRef = useRef<number>(0);
+  const compassHeadingRef = useRef<number | null>(null);
+  const viewportDimensionsRef = useRef<{ width: number; height: number }>({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1000,
+    height: typeof window !== 'undefined' ? window.innerHeight * 0.4 : 400,
+  });
+
+  // Zero-layout-shift ResizeObserver for AR viewport
+  useEffect(() => {
+    const el = arViewportRef.current;
+    if (!el) return;
+    const updateDimensions = () => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        viewportDimensionsRef.current = { width: rect.width, height: rect.height };
+      }
+    };
+    updateDimensions();
+    const ro = new ResizeObserver(updateDimensions);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const markerRefs = useRef<
     Record<string, { dom: HTMLDivElement | null; dist: HTMLSpanElement | null; currentDist: number }>
   >({});
@@ -534,7 +559,18 @@ export const ARGuide: React.FC<ARGuideProps> = ({
 
         const newOrient: DeviceOrientation = { alpha, beta, gamma };
         orientationRef.current = newOrient;
-        setOrientationState(newOrient);
+        compassHeadingRef.current = alpha;
+
+        // Battery / Performance: Throttle React state re-renders to max 10Hz and only when angle delta > 1.5 deg
+        const now = performance.now();
+        if (
+          now - lastOrientationStateTimeRef.current >= 100 &&
+          (lastRenderedAlphaRef.current === null || Math.abs(alpha - lastRenderedAlphaRef.current) > 1.5)
+        ) {
+          lastOrientationStateTimeRef.current = now;
+          lastRenderedAlphaRef.current = alpha;
+          setOrientationState(newOrient);
+        }
       }
     };
 
@@ -552,7 +588,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
   useEffect(() => {
     if (!permissionGranted || !isForeground) return;
     let frameId: number;
-    const targetFps = policy.arFx.targetFps || 30;
+    const targetFps = isStationary ? 15 : (policy.arFx.targetFps || 30);
     const frameInterval = 1000 / targetFps;
 
     const loop = (timestamp: number) => {
@@ -565,8 +601,8 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       const orient = orientationRef.current;
       if (!userLoc || orient.alpha === null) return;
 
-      const rect = arViewportRef.current?.getBoundingClientRect();
-      const screen = { width: rect?.width || window.innerWidth, height: rect?.height || window.innerHeight * 0.4 };
+      // Zero-layout-reflow: read dimensions cached by ResizeObserver
+      const screen = viewportDimensionsRef.current;
 
       if (viewMode === 'AR') {
         questArPois.forEach((poi) => {
@@ -609,57 +645,63 @@ export const ARGuide: React.FC<ARGuideProps> = ({
         });
       }
 
-      // Track target relative bearing or nearest active phase landmark
-      if (targetPoi) {
-        const targetProj = getARProjection(
-          userLoc,
-          orient,
-          { lat: targetPoi.coordinates[0], lng: targetPoi.coordinates[1] },
-          screen
-        );
-        setTargetRelativeBearing(targetProj.relativeBearing);
-        setTargetDistance(targetProj.distance);
-        setNearestActivePoiBearing(null);
-      } else if (activeStep) {
-        const stepProj = getARProjection(userLoc, orient, { lat: activeStep.lat, lng: activeStep.lng }, screen);
-        setTargetRelativeBearing(stepProj.relativeBearing);
-        setTargetDistance(stepProj.distance);
-        setNearestActivePoiBearing(null);
-      } else {
-        // Track the closest landmark in the current active phase
-        const activePois = questArPois.filter((p) => p.phase === currentPhase);
-        let closestDist = Infinity;
-        let closestProj: any = null;
-        let closestName = '';
+      // Throttle React state updates for guidance arrows/badges to ~5 FPS (every 200ms)
+      // to eliminate 30-60 full component re-renders per second
+      const now = performance.now();
+      if (now - lastGuidanceUpdateRef.current >= 200) {
+        lastGuidanceUpdateRef.current = now;
 
-        activePois.forEach((p) => {
-          const proj = getARProjection(userLoc, orient, { lat: p.coordinates[0], lng: p.coordinates[1] }, screen);
-          if (proj.distance < closestDist) {
-            closestDist = proj.distance;
-            closestProj = proj;
-            closestName = p.name[lang] || p.name.en;
-          }
-        });
-
-        if (closestProj) {
-          setTargetRelativeBearing(closestProj.relativeBearing);
-          setTargetDistance(closestProj.distance);
-          setNearestActivePoiBearing({
-            bearing: closestProj.relativeBearing,
-            distance: closestProj.distance,
-            name: closestName,
-          });
-        } else {
-          setTargetRelativeBearing(null);
-          setTargetDistance(null);
+        if (targetPoi) {
+          const targetProj = getARProjection(
+            userLoc,
+            orient,
+            { lat: targetPoi.coordinates[0], lng: targetPoi.coordinates[1] },
+            screen
+          );
+          setTargetRelativeBearing(targetProj.relativeBearing);
+          setTargetDistance(targetProj.distance);
           setNearestActivePoiBearing(null);
+        } else if (activeStep) {
+          const stepProj = getARProjection(userLoc, orient, { lat: activeStep.lat, lng: activeStep.lng }, screen);
+          setTargetRelativeBearing(stepProj.relativeBearing);
+          setTargetDistance(stepProj.distance);
+          setNearestActivePoiBearing(null);
+        } else {
+          // Track the closest landmark in the current active phase
+          const activePois = questArPois.filter((p) => p.phase === currentPhase);
+          let closestDist = Infinity;
+          let closestProj: any = null;
+          let closestName = '';
+
+          activePois.forEach((p) => {
+            const proj = getARProjection(userLoc, orient, { lat: p.coordinates[0], lng: p.coordinates[1] }, screen);
+            if (proj.distance < closestDist) {
+              closestDist = proj.distance;
+              closestProj = proj;
+              closestName = p.name[lang] || p.name.en;
+            }
+          });
+
+          if (closestProj) {
+            setTargetRelativeBearing(closestProj.relativeBearing);
+            setTargetDistance(closestProj.distance);
+            setNearestActivePoiBearing({
+              bearing: closestProj.relativeBearing,
+              distance: closestProj.distance,
+              name: closestName,
+            });
+          } else {
+            setTargetRelativeBearing(null);
+            setTargetDistance(null);
+            setNearestActivePoiBearing(null);
+          }
         }
       }
     };
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [permissionGranted, isForeground, viewMode, policy.arFx.targetFps, targetPoi, activeStep, questArPois, currentPhase, lang]);
+  }, [permissionGranted, isForeground, viewMode, policy.arFx.targetFps, isStationary, targetPoi, activeStep, questArPois, currentPhase, lang]);
 
   const requestPermission = async () => {
     setError(null);
@@ -767,11 +809,13 @@ export const ARGuide: React.FC<ARGuideProps> = ({
           <ARPolylineCanvas
             polyline={fullPolyline}
             userLocation={userLocationState}
+            userLocationRef={userLocationRef}
             orientation={orientationState}
+            orientationRef={orientationRef}
             maxHorizonMeters={40}
             color={currentTargetColor}
             isActive={viewMode === 'AR' && isForeground}
-            targetFps={policy.arFx.targetFps || 30}
+            targetFps={isStationary ? 15 : (policy.arFx.targetFps || 30)}
           />
         )}
 
@@ -787,7 +831,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
             }}
             route={breadcrumbRoute}
             heading={{
-              compassHeading: orientationState.alpha,
+              compassHeading: orientationRef.current.alpha,
               gpsTrack: gpsTrackRef.current.length > 0
                 ? gpsTrackRef.current
                 : userLocationState
@@ -795,8 +839,11 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                 : [],
             }}
             orientation={orientationState}
+            orientationRef={orientationRef}
+            compassHeadingRef={compassHeadingRef}
+            gpsTrackRef={gpsTrackRef}
             isActive={viewMode === 'AR' && isForeground && isTrailActive}
-            targetFps={policy.arFx.targetFps || 30}
+            targetFps={isStationary ? 15 : (policy.arFx.targetFps || 30)}
             onTargetLocked={() => {
               if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
             }}

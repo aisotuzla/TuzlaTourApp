@@ -23,6 +23,8 @@ import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
 import { AudioGuideProvider, useAudioGuide } from './contexts/AudioGuideContext';
 import AudioControlBar from './components/AudioControlBar';
 import { useDraggablePopups } from './hooks/useDraggablePopups';
+import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
+import { useGeofenceNotifications } from './hooks/useGeofenceNotifications';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import ARGuide from './components/ARGuide';
 
@@ -83,6 +85,9 @@ const AppContent: React.FC = () => {
     disableAudioGuide
   } = useAudioGuide();
   useDraggablePopups();
+
+  const { position: userGps } = useGeolocationWatcher({ enabled: true });
+  useGeofenceNotifications({ userPosition: userGps, lang, enabled: true });
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -172,7 +177,12 @@ const AppContent: React.FC = () => {
           </button>
         </div>
 
-        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center z-0 w-[55%] sm:w-auto pointer-events-none">
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 sm:gap-2.5 z-0 pointer-events-none">
+          <img
+            src="/assets/icons/TuzlaTourGuideIcon96x96.webp"
+            alt="Tuzla Tour Guide"
+            className="w-7 h-7 sm:w-8 sm:h-8 object-contain rounded-xl shadow-sm shrink-0"
+          />
           <h1 className="text-[4vw] sm:text-xl lg:text-2xl font-black tracking-tight leading-none uppercase flex flex-row flex-wrap sm:flex-nowrap justify-center items-center gap-1 sm:gap-1.5 text-center">
             <span className="text-blue-900">Tuzla</span>
             <span className="text-blue-500">Tour</span>
@@ -209,8 +219,6 @@ const AppContent: React.FC = () => {
           className="flex-1 flex flex-col overflow-hidden"
           style={{
             minHeight: 'calc(100vh - 56px - env(safe-area-inset-top, 0px))',
-            filter: isDrawerOpen ? 'blur(4px)' : 'none',
-            transition: 'filter 0.3s ease',
           }}
         >
           <main className="flex-1 overflow-y-auto overflow-x-hidden">

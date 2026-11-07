@@ -479,10 +479,16 @@ const WalletContent: React.FC<{
                 )}
 
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-black text-blue-950 uppercase tracking-tight flex items-center justify-center gap-3">
-                        <WalletIcon className="w-10 h-10 text-blue-600" />
-                        {t.digitalWalletTitle}
-                    </h1>
+                    <div className="flex items-center justify-center gap-3">
+                        <img
+                            src="/assets/icons/TuzlaTourGuideIcon96x96.webp"
+                            alt="Tuzla Tour Guide"
+                            className="w-10 h-10 object-contain rounded-2xl shadow-md"
+                        />
+                        <h1 className="text-3xl sm:text-4xl font-black text-blue-950 uppercase tracking-tight">
+                            {t.digitalWalletTitle}
+                        </h1>
+                    </div>
                     <div className="h-1 w-24 bg-blue-600 mx-auto rounded-full mt-2" />
                 </div>
 
@@ -497,12 +503,12 @@ const WalletContent: React.FC<{
                             {/* Header */}
                             <div className="flex justify-between items-start gap-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0">
-                                        <img src="/assets/Gallery/QuestQRLocations/sologo.png" alt="Solflare" className="w-7 h-7 object-contain" />
+                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0 overflow-hidden p-1">
+                                        <img src="/assets/icons/TuzlaTourGuideIcon96x96.webp" alt="Tuzla Tour Guide" className="w-full h-full object-contain rounded-xl" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-purple-600 uppercase tracking-widest">Solflare Wallet</p>
-                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">Solana Blockchain</h3>
+                                        <p className="text-[10px] font-black text-purple-600 uppercase tracking-widest">Tuzla Tour Guide • Solana</p>
+                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">Solana Web3 Devnet</h3>
                                     </div>
                                 </div>
                                 {/* Clean Network Switcher */}

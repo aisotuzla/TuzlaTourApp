@@ -41,125 +41,125 @@ interface NavItemConfig {
   activeBorder: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectTab, lang }) => {
-  const navItems: NavItemConfig[] = [
-    {
-      id: AppTab.LANDING,
-      icon: Home,
-      label: { en: 'Home', bs: 'Početna', de: 'Startseite', tr: 'Ana Sayfa' },
-      inactiveClass: 'bg-gradient-to-r from-sky-50/90 to-blue-50/80 text-sky-700 hover:from-sky-100 hover:to-blue-100/90 hover:text-sky-900',
-      inactiveIconClass: 'text-sky-600',
-      inactiveBorderClass: 'border-sky-200/50',
-      activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_8px_20px_rgba(251,191,36,0.45)]',
-      activeBorder: 'border-amber-300/80'
-    },
-    {
-      id: AppTab.CITY_GUIDE,
-      icon: BookOpen,
-      label: { en: 'City Guide', bs: 'Gradski Vodič', de: 'Stadtführer', tr: 'Şehir Rehberi' },
-      isHeader: true,
-      inactiveClass: 'bg-gradient-to-r from-blue-100/80 via-indigo-50/70 to-blue-100/80 text-blue-900 hover:from-blue-200/80 hover:to-indigo-100',
-      inactiveIconClass: 'text-blue-700',
-      inactiveBorderClass: 'border-blue-200/60',
-      activeClass: 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_8px_22px_rgba(245,158,11,0.5)]',
-      activeBorder: 'border-amber-400/90'
-    },
-    {
-      id: AppTab.HISTORY,
-      icon: HistoryIcon,
-      label: { en: 'History', bs: 'Historija', de: 'Geschichte', tr: 'Tarih' },
-      isSubItem: true,
-      inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-800 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
-      inactiveIconClass: 'text-blue-600',
-      inactiveBorderClass: 'border-blue-100/60',
-      activeClass: 'bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-400 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_6px_18px_rgba(245,158,11,0.4)]',
-      activeBorder: 'border-amber-300'
-    },
-    {
-      id: AppTab.TRANSPORTATION,
-      icon: Bus,
-      label: { en: 'Transportation', bs: 'Prevoz', de: 'Transport', tr: 'Ulaşım' },
-      isSubItem: true,
-      inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-800 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
-      inactiveIconClass: 'text-blue-600',
-      inactiveBorderClass: 'border-blue-100/60',
-      activeClass: 'bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-400 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_6px_18px_rgba(245,158,11,0.4)]',
-      activeBorder: 'border-amber-300'
-    },
-    {
-      id: AppTab.FOOD,
-      icon: Utensils,
-      label: { en: 'Food', bs: 'Hrana', de: 'Essen', tr: 'Yemek' },
-      isSubItem: true,
-      inactiveClass: 'bg-gradient-to-r from-blue-100/60 to-indigo-100/50 text-blue-800 hover:from-blue-200/70 hover:to-indigo-200/60 hover:text-blue-950',
-      inactiveIconClass: 'text-blue-700',
-      inactiveBorderClass: 'border-blue-200/60',
-      activeClass: 'bg-gradient-to-r from-amber-500 via-orange-400 to-amber-600 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_6px_18px_rgba(249,115,22,0.4)]',
-      activeBorder: 'border-orange-300'
-    },
-    {
-      id: AppTab.ACCOMMODATION,
-      icon: Bed,
-      label: { en: 'Accommodation', bs: 'Smještaj', de: 'Unterkunft', tr: 'Konaklama' },
-      isSubItem: true,
-      inactiveClass: 'bg-gradient-to-r from-indigo-100/60 to-blue-200/50 text-indigo-800 hover:from-indigo-200/70 hover:to-blue-300/60 hover:text-indigo-950',
-      inactiveIconClass: 'text-indigo-700',
-      inactiveBorderClass: 'border-indigo-200/60',
-      activeClass: 'bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_6px_18px_rgba(249,115,22,0.45)]',
-      activeBorder: 'border-orange-300'
-    },
-    {
-      id: AppTab.MAP,
-      icon: Map,
-      label: { en: 'Map', bs: 'Mapa', de: 'Karte', tr: 'Harita' },
-      inactiveClass: 'bg-gradient-to-r from-blue-100 via-sky-100 to-blue-200/80 text-blue-900 hover:from-blue-200 hover:to-sky-200',
-      inactiveIconClass: 'text-blue-700',
-      inactiveBorderClass: 'border-blue-300/70',
-      activeClass: 'bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_8px_24px_rgba(245,158,11,0.55)]',
-      activeBorder: 'border-amber-300'
-    },
-    {
-      id: AppTab.QUEST,
-      icon: Gamepad2,
-      label: { en: 'Quest', bs: 'Potraga', de: 'Quest', tr: 'Görev' },
-      inactiveClass: 'bg-gradient-to-r from-indigo-100 via-blue-200 to-indigo-200 text-indigo-950 hover:from-indigo-200 hover:to-blue-300 font-extrabold',
-      inactiveIconClass: 'text-indigo-800',
-      inactiveBorderClass: 'border-indigo-300/80',
-      activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black ring-2 ring-yellow-300/80',
-      activeGlow: 'shadow-[0_0_30px_rgba(251,191,36,0.65)]',
-      activeBorder: 'border-yellow-200'
-    },
-    {
-      id: AppTab.TASK_MANAGER,
-      icon: CheckSquare,
-      label: { en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
-      inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
-      inactiveIconClass: 'text-blue-900',
-      inactiveBorderClass: 'border-blue-400/80',
-      activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
-      activeBorder: 'border-amber-400'
-    },
-    {
-      id: AppTab.WALLET,
-      icon: Wallet,
-      label: { en: 'Wallet', bs: 'Novčanik', de: 'Wallet', tr: 'Cüzdan' },
-      inactiveClass: 'bg-gradient-to-r from-blue-300 via-indigo-300 to-sky-300 text-slate-950 hover:from-blue-400 hover:to-indigo-400 font-bold',
-      inactiveIconClass: 'text-blue-950',
-      inactiveBorderClass: 'border-blue-500/80',
-      activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_8px_25px_rgba(245,158,11,0.6)]',
-      activeBorder: 'border-yellow-300'
-    }
-  ];
+const NAV_ITEMS: NavItemConfig[] = [
+  {
+    id: AppTab.LANDING,
+    icon: Home,
+    label: { en: 'Home', bs: 'Početna', de: 'Startseite', tr: 'Ana Sayfa' },
+    inactiveClass: 'bg-gradient-to-r from-sky-50/90 to-blue-50/80 text-sky-700 hover:from-sky-100 hover:to-blue-100/90 hover:text-sky-900',
+    inactiveIconClass: 'text-sky-600',
+    inactiveBorderClass: 'border-sky-200/50',
+    activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_20px_rgba(251,191,36,0.45)]',
+    activeBorder: 'border-amber-300/80'
+  },
+  {
+    id: AppTab.CITY_GUIDE,
+    icon: BookOpen,
+    label: { en: 'City Guide', bs: 'Gradski Vodič', de: 'Stadtführer', tr: 'Şehir Rehberi' },
+    isHeader: true,
+    inactiveClass: 'bg-gradient-to-r from-blue-100/80 via-indigo-50/70 to-blue-100/80 text-blue-900 hover:from-blue-200/80 hover:to-indigo-100',
+    inactiveIconClass: 'text-blue-700',
+    inactiveBorderClass: 'border-blue-200/60',
+    activeClass: 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_22px_rgba(245,158,11,0.5)]',
+    activeBorder: 'border-amber-400/90'
+  },
+  {
+    id: AppTab.HISTORY,
+    icon: HistoryIcon,
+    label: { en: 'History', bs: 'Historija', de: 'Geschichte', tr: 'Tarih' },
+    isSubItem: true,
+    inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-800 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
+    inactiveIconClass: 'text-blue-600',
+    inactiveBorderClass: 'border-blue-100/60',
+    activeClass: 'bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-400 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_6px_18px_rgba(245,158,11,0.4)]',
+    activeBorder: 'border-amber-300'
+  },
+  {
+    id: AppTab.TRANSPORTATION,
+    icon: Bus,
+    label: { en: 'Transportation', bs: 'Prevoz', de: 'Transport', tr: 'Ulaşım' },
+    isSubItem: true,
+    inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-800 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
+    inactiveIconClass: 'text-blue-600',
+    inactiveBorderClass: 'border-blue-100/60',
+    activeClass: 'bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-400 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_6px_18px_rgba(245,158,11,0.4)]',
+    activeBorder: 'border-amber-300'
+  },
+  {
+    id: AppTab.FOOD,
+    icon: Utensils,
+    label: { en: 'Food', bs: 'Hrana', de: 'Essen', tr: 'Yemek' },
+    isSubItem: true,
+    inactiveClass: 'bg-gradient-to-r from-blue-100/60 to-indigo-100/50 text-blue-800 hover:from-blue-200/70 hover:to-indigo-200/60 hover:text-blue-950',
+    inactiveIconClass: 'text-blue-700',
+    inactiveBorderClass: 'border-blue-200/60',
+    activeClass: 'bg-gradient-to-r from-amber-500 via-orange-400 to-amber-600 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_6px_18px_rgba(249,115,22,0.4)]',
+    activeBorder: 'border-orange-300'
+  },
+  {
+    id: AppTab.ACCOMMODATION,
+    icon: Bed,
+    label: { en: 'Accommodation', bs: 'Smještaj', de: 'Unterkunft', tr: 'Konaklama' },
+    isSubItem: true,
+    inactiveClass: 'bg-gradient-to-r from-indigo-100/60 to-blue-200/50 text-indigo-800 hover:from-indigo-200/70 hover:to-blue-300/60 hover:text-indigo-950',
+    inactiveIconClass: 'text-indigo-700',
+    inactiveBorderClass: 'border-indigo-200/60',
+    activeClass: 'bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_6px_18px_rgba(249,115,22,0.45)]',
+    activeBorder: 'border-orange-300'
+  },
+  {
+    id: AppTab.MAP,
+    icon: Map,
+    label: { en: 'Map', bs: 'Mapa', de: 'Karte', tr: 'Harita' },
+    inactiveClass: 'bg-gradient-to-r from-blue-100 via-sky-100 to-blue-200/80 text-blue-900 hover:from-blue-200 hover:to-sky-200',
+    inactiveIconClass: 'text-blue-700',
+    inactiveBorderClass: 'border-blue-300/70',
+    activeClass: 'bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_24px_rgba(245,158,11,0.55)]',
+    activeBorder: 'border-amber-300'
+  },
+  {
+    id: AppTab.QUEST,
+    icon: Gamepad2,
+    label: { en: 'Quest', bs: 'Potraga', de: 'Quest', tr: 'Görev' },
+    inactiveClass: 'bg-gradient-to-r from-indigo-100 via-blue-200 to-indigo-200 text-indigo-950 hover:from-indigo-200 hover:to-blue-300 font-extrabold',
+    inactiveIconClass: 'text-indigo-800',
+    inactiveBorderClass: 'border-indigo-300/80',
+    activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black ring-2 ring-yellow-300/80',
+    activeGlow: 'shadow-[0_0_30px_rgba(251,191,36,0.65)]',
+    activeBorder: 'border-yellow-200'
+  },
+  {
+    id: AppTab.TASK_MANAGER,
+    icon: CheckSquare,
+    label: { en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
+    inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
+    inactiveIconClass: 'text-blue-900',
+    inactiveBorderClass: 'border-blue-400/80',
+    activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
+    activeBorder: 'border-amber-400'
+  },
+  {
+    id: AppTab.WALLET,
+    icon: Wallet,
+    label: { en: 'Wallet', bs: 'Novčanik', de: 'Wallet', tr: 'Cüzdan' },
+    inactiveClass: 'bg-gradient-to-r from-blue-300 via-indigo-300 to-sky-300 text-slate-950 hover:from-blue-400 hover:to-indigo-400 font-bold',
+    inactiveIconClass: 'text-blue-950',
+    inactiveBorderClass: 'border-blue-500/80',
+    activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_25px_rgba(245,158,11,0.6)]',
+    activeBorder: 'border-yellow-300'
+  }
+];
 
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectTab, lang }) => {
   const handleSelect = (tab: AppTab) => {
     onSelectTab(tab);
     onClose();
@@ -174,8 +174,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+            className="fixed inset-0 bg-slate-950/60 z-[100]"
           />
 
           {/* Drawer */}
@@ -183,12 +184,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-            className="fixed top-0 left-0 h-full w-72 bg-white/95 backdrop-blur-xl z-[101] shadow-2xl flex flex-col border-r border-slate-200/80"
+            transition={{ type: 'tween', ease: [0.16, 1, 0.3, 1], duration: 0.25 }}
+            style={{ willChange: 'transform' }}
+            className="fixed top-0 left-0 h-full w-72 bg-white z-[101] shadow-2xl flex flex-col border-r border-slate-200/80"
           >
             {/* Header */}
             <div className="p-4 flex items-center justify-between border-b border-slate-100 bg-white/50">
               <div className="flex items-center gap-2.5">
+                <img
+                  src="/assets/icons/TuzlaTourGuideIcon96x96.webp"
+                  alt="Tuzla Tour Guide"
+                  className="w-8 h-8 rounded-xl object-contain shadow-sm"
+                />
                 <span className="font-quicksand font-black text-xl tracking-tight bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
                   Tuzla Tour Guide
                 </span>
@@ -205,7 +212,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
 
             {/* Navigation Links */}
             <div className="flex-1 overflow-y-auto p-3.5 space-y-1.5 custom-scrollbar">
-              {navItems.map((item) => {
+              {NAV_ITEMS.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
                 const label = item.label[lang as keyof typeof item.label] || item.label.en;
@@ -226,10 +233,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
                   >
                     {/* Active side indicator accent */}
                     {isActive && (
-                      <motion.div
-                        layoutId="active-nav-indicator"
+                      <div
                         className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4.5 bg-slate-950 rounded-r-full shadow-sm"
-                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                       />
                     )}
 
@@ -258,10 +263,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
             </div>
 
             {/* Footer */}
-            <div className="p-3 border-t border-slate-100 flex items-center justify-center gap-1.5 text-center bg-white/40">
-              <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
+            <div className="p-3 border-t border-slate-100 flex items-center justify-center gap-2 text-center bg-white/40">
+              <img
+                src="/assets/icons/TuzlaTourGuideIcon96x96.webp"
+                alt="Tuzla Tour Guide"
+                className="w-5 h-5 rounded-md object-contain"
+              />
               <span className="text-xs font-black tracking-wider text-slate-700">
-                Tuzla
+                Tuzla Tour Guide
               </span>
             </div>
           </motion.aside>
@@ -271,4 +280,4 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
   );
 };
 
-export default Sidebar;
+export default React.memo(Sidebar);

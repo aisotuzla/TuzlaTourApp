@@ -678,7 +678,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
           setUserLocation([longitude, latitude]);
         },
         (err) => console.error(err),
-        { enableHighAccuracy: true, timeout: 10000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 3000 }
       );
     };
 

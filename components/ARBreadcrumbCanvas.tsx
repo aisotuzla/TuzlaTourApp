@@ -5,8 +5,11 @@ import { DeviceOrientation } from '../utils/arProjection';
 export interface ARBreadcrumbCanvasProps {
   target: PoiTarget | null;
   route: RoutePoint[];
-  heading: HeadingSource;
+  heading?: HeadingSource;
   orientation?: DeviceOrientation | null;
+  orientationRef?: React.RefObject<DeviceOrientation>;
+  compassHeadingRef?: React.RefObject<number | null>;
+  gpsTrackRef?: React.RefObject<RoutePoint[]>;
   isActive?: boolean;
   onTargetLocked?: (target: PoiTarget) => void;
   className?: string;
@@ -16,8 +19,11 @@ export interface ARBreadcrumbCanvasProps {
 export const ARBreadcrumbCanvas: React.FC<ARBreadcrumbCanvasProps> = ({
   target,
   route,
-  heading,
+  heading = { compassHeading: null, gpsTrack: [] },
   orientation,
+  orientationRef,
+  compassHeadingRef,
+  gpsTrackRef,
   isActive = true,
   onTargetLocked,
   className = 'absolute inset-0 pointer-events-none z-15 w-full h-full',
@@ -65,6 +71,9 @@ export const ARBreadcrumbCanvas: React.FC<ARBreadcrumbCanvasProps> = ({
     target,
     heading,
     orientation,
+    orientationRef,
+    compassHeadingRef,
+    gpsTrackRef,
     isActive,
     targetFps,
     onTargetLocked,
