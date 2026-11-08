@@ -9,7 +9,6 @@ const queryClient = new QueryClient();
 import { Analytics } from "@vercel/analytics/react"
 import Sidebar from './components/Sidebar';
 import LandingPage from './components/LandingPage';
-import SecurityGuard from './components/SecurityGuard';
 import LanguageSelector from './components/LanguageSelector';
 import FullScreenImageViewer from './components/FullScreenImageViewer';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -33,7 +32,7 @@ const MapView = React.lazy(() => import('./components/MapView'));
 const History = React.lazy(() => import('./components/History'));
 const CityGuide = React.lazy(() => import('./components/CityGuide'));
 const Transportation = React.lazy(() => import('./components/Transportation'));
-const WalletShell = React.lazy(() => import('./components/Wallet'));
+const QRScanShell = React.lazy(() => import('./components/QRScan'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
@@ -45,7 +44,7 @@ const getTabFromPath = (path: string): AppTab => {
     case '/transportation': return AppTab.TRANSPORTATION;
     case '/map': return AppTab.MAP;
     case '/quest': return AppTab.QUEST;
-    case '/wallet': return AppTab.WALLET;
+    case '/qr-scan': return AppTab.QR_SCAN;
     case '/task-manager': return AppTab.TASK_MANAGER;
     case '/food': return AppTab.FOOD;
     case '/accommodation': return AppTab.ACCOMMODATION;
@@ -62,7 +61,7 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.TRANSPORTATION: return '/transportation';
     case AppTab.MAP: return '/map';
     case AppTab.QUEST: return '/quest';
-    case AppTab.WALLET: return '/wallet';
+    case AppTab.QR_SCAN: return '/qr-scan';
     case AppTab.TASK_MANAGER: return '/task-manager';
     case AppTab.FOOD: return '/food';
     case AppTab.ACCOMMODATION: return '/accommodation';
@@ -107,7 +106,6 @@ const AppContent: React.FC = () => {
   const [navigationTarget, setNavigationTarget] = useState<any | null>(null);
   const [autoOpenScanner, setAutoOpenScanner] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isWalletUnlocked, setIsWalletUnlocked] = useState(false);
 
   const navigateToTab = (tab: AppTab, options?: { openScanner?: boolean }) => {
     const path = getPathFromTab(tab);
@@ -162,13 +160,13 @@ const AppContent: React.FC = () => {
       });
     };
 
-    (window as any).mintNFTReward = () => {
-      navigate('/wallet');
+    (window as any).openQRScan = () => {
+      navigate('/qr-scan');
     };
 
     return () => {
       delete (window as any).playPoiAudio;
-      delete (window as any).mintNFTReward;
+      delete (window as any).openQRScan;
     };
   }, [lang, currentNarration, isPlaying, playNarration, pauseNarration, navigate]);
 
@@ -258,16 +256,14 @@ const AppContent: React.FC = () => {
                       initialOpenScanner={autoOpenScanner}
                     />
                   } />
-                  <Route path="/wallet" element={
-                    <SecurityGuard lang={lang} isUnlocked={isWalletUnlocked} onUnlock={() => setIsWalletUnlocked(true)}>
-                      <WalletShell
-                        lang={lang}
-                        onNavigateToTarget={(target) => {
-                          setNavigationTarget(target);
-                          navigateToTab(AppTab.QUEST);
-                        }}
-                      />
-                    </SecurityGuard>
+                  <Route path="/qr-scan" element={
+                    <QRScanShell
+                      lang={lang}
+                      onNavigateToTarget={(target) => {
+                        setNavigationTarget(target);
+                        navigateToTab(AppTab.QUEST);
+                      }}
+                    />
                   } />
                   <Route path="/task-manager" element={<TaskManager lang={lang} />} />
                   <Route path="/food" element={<Food lang={lang} />} />

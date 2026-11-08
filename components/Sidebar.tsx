@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { AppTab, Language } from '../types';
 import {
-  Wallet,
+  QrCode,
   CheckSquare,
   Home,
   Map,
@@ -147,9 +147,9 @@ const NAV_ITEMS: NavItemConfig[] = [
     activeBorder: 'border-amber-400'
   },
   {
-    id: AppTab.WALLET,
-    icon: Wallet,
-    label: { en: 'Wallet', bs: 'Novčanik', de: 'Wallet', tr: 'Cüzdan' },
+    id: AppTab.QR_SCAN,
+    label: { en: 'QR Scan', bs: 'QR skeniranje', de: 'QR Scan', tr: 'QR Tarama' },
+    icon: QrCode,
     inactiveClass: 'bg-gradient-to-r from-blue-300 via-indigo-300 to-sky-300 text-slate-950 hover:from-blue-400 hover:to-indigo-400 font-bold',
     inactiveIconClass: 'text-blue-950',
     inactiveBorderClass: 'border-blue-500/80',

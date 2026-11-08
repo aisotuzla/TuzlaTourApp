@@ -26,11 +26,7 @@
     "@emotion/is-prop-valid": "^1.4.0",
     "@makina-corpus/maplibre-offline-pmtiles": "^2.1.1",
     "@maplibre/geojson-vt": "^6.1.1",
-    "@solana/kit": "^7.0.0",
-    "@solana/wallet-adapter-react": "^0.15.39",
-    "@solana/wallet-adapter-react-ui": "^0.9.39",
-    "@solana/wallet-adapter-wallets": "^0.19.38",
-    "@solana/web3.js": "^1.98.4",
+    
     "@supabase/supabase-js": "^2.118.0",
     "@tailwindcss/postcss": "^4.2.0",
     "@tailwindcss/vite": "^4.2.0",

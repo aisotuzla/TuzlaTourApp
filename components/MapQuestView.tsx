@@ -14,7 +14,7 @@ import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
 import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
-import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData.ts';
+import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
 import { NavigationHud } from './NavigationHud.tsx';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import ARGuide from './ARGuide.tsx';
@@ -192,7 +192,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
   useEffect(() => {
     if (activeVictoryModal === 'phase2') {
-      setShowCelebration({ phase: 2, rewardUrl: SOLANA_DEVNET_NFT_REWARD.image || SOLANA_DEVNET_NFT_REWARD.ipfsUrl });
+      setShowCelebration({ phase: 2 });
     } else if (activeVictoryModal === 'phase3') {
       setShowCelebration({ phase: 3 });
     } else {
@@ -726,16 +726,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
           <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
             <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="w-full max-w-md bg-gradient-to-b from-slate-900 via-purple-950 to-slate-900 border-2 border-purple-500/50 rounded-3xl p-6 shadow-2xl text-center flex flex-col items-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-purple-500/20 border-2 border-purple-400 flex items-center justify-center animate-pulse"><Trophy className="w-9 h-9 text-purple-300" /></div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-purple-300 bg-purple-500/20 px-3 py-1 rounded-full border border-purple-400/30">FAZA 2 ZAVRŠENA • SOLANA NFT REWARD! ⚽</span>
-              <h3 className="text-2xl font-black text-white">Osvojili ste NFT Karticu!</h3>
-              <div className="w-full bg-slate-950/80 border border-purple-400/40 rounded-2xl p-4 flex flex-col items-center space-y-2 relative overflow-hidden shadow-inner">
-                <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-purple-600/80 text-[8px] font-black text-white uppercase">Solana Devnet</div>
-                <img src={SOLANA_DEVNET_NFT_REWARD.image || SOLANA_DEVNET_NFT_REWARD.ipfsUrl} alt="Edin Džeko NFT Card" className="w-28 h-36 rounded-xl object-contain border-2 border-purple-400 shadow-lg bg-black/40" />
-                <h4 className="font-extrabold text-sm text-purple-200">Edin Džeko #11 — Dijamant Collectible</h4>
-                <p className="text-[10px] text-purple-300 font-mono">Dostupno za preuzimanje u Solflare Novčaniku (Solana Devnet)</p>
-              </div>
-              <p className="text-xs text-slate-300 leading-relaxed font-medium">Čestitamo! Otključali ste Park Kralja Tvrtka, Palančikara Bagi i Solni Trg.</p>
-              <button onClick={() => handleCloseVictoryModal('phase2')} className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95">Preuzmi & Nastavi na Fazu 3 🚀</button>
+              <span className="text-[10px] font-black uppercase tracking-widest text-purple-300 bg-purple-500/20 px-3 py-1 rounded-full border border-purple-400/30">FAZA 2 ZAVRŠENA! ⚽</span>
+              <h3 className="text-2xl font-black text-white">Faza 2 Kompletirana!</h3>
+              <p className="text-xs text-slate-300 leading-relaxed font-medium">Čestitamo! Otključali ste Park Kralja Tvrtka, Palančikara Bagi i Solni Trg. Sada su dostupne lokacije Faze 3!</p>
+              <button onClick={() => handleCloseVictoryModal('phase2')} className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95">Nastavi na Fazu 3 🚀</button>
             </motion.div>
           </div>
         )}
