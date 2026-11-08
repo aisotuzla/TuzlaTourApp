@@ -36,6 +36,87 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   tvrtko_park: { lat: 44.5380826, lon: 18.6783327 },
 };
 
+export const QUEST_POI_THUMBNAILS: Record<string, string> = {
+  trg_slobode: '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
+  trgslobodeO: '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
+  'trgslobodeO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
+  freedom_square: '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
+  salt_square: '/assets/Gallery/QuestQRLocations/QuestQR/sonitrgO.webp',
+  sonitrgO: '/assets/Gallery/QuestQRLocations/QuestQR/sonitrgO.webp',
+  'sonitrgO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/sonitrgO.webp',
+  palancinkara: '/assets/Gallery/QuestQRLocations/QuestQR/bagiO.webp',
+  palancikara: '/assets/Gallery/QuestQRLocations/QuestQR/bagiO.webp',
+  bagiO: '/assets/Gallery/QuestQRLocations/QuestQR/bagiO.webp',
+  'bagiO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/bagiO.webp',
+  slana_banja: '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
+  banjaO: '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
+  'banjaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
+  BanjaO: '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
+  'BanjaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
+  panonika: '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
+  panonikaO: '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
+  'panonikaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
+  panonica: '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
+  panonicaO: '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
+  'panonicaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
+  pannonian_lakes: '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
+  slapovi: '/assets/Gallery/QuestQRLocations/QuestQR/slapoviO.webp',
+  slapoviO: '/assets/Gallery/QuestQRLocations/QuestQR/slapoviO.webp',
+  'slapoviO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/slapoviO.webp',
+  kapija: '/assets/Gallery/QuestQRLocations/QuestQR/kapijaO.webp',
+  kapijaO: '/assets/Gallery/QuestQRLocations/QuestQR/kapijaO.webp',
+  'kapijaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/kapijaO.webp',
+  atelje_ismet: '/assets/Gallery/QuestQRLocations/QuestQR/ateljeO.webp',
+  atelje: '/assets/Gallery/QuestQRLocations/QuestQR/ateljeO.webp',
+  ateljeO: '/assets/Gallery/QuestQRLocations/QuestQR/ateljeO.webp',
+  'ateljeO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/ateljeO.webp',
+  IsmetO: '/assets/Gallery/QuestQRLocations/QuestQR/IsmetO.webp',
+  'IsmetO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/IsmetO.webp',
+  bingo_city_centar: '/assets/Gallery/QuestQRLocations/QuestQR/bcctuzlaO.webp',
+  bcctuzlaO: '/assets/Gallery/QuestQRLocations/QuestQR/bcctuzlaO.webp',
+  'bcctuzlaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/bcctuzlaO.webp',
+  mesa_selimovic: '/assets/Gallery/QuestQRLocations/QuestQR/mesaO.webp',
+  mesa: '/assets/Gallery/QuestQRLocations/QuestQR/mesaO.webp',
+  mesaO: '/assets/Gallery/QuestQRLocations/QuestQR/mesaO.webp',
+  'mesaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/mesaO.webp',
+  tvrtko_park: '/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp',
+  tvrtko: '/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp',
+  tvrtkO: '/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp',
+  'tvrtkO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp',
+  tuzlanka: '/assets/Gallery/QuestQRLocations/QuestQR/TuzlankaO.webp',
+  TuzlankaO: '/assets/Gallery/QuestQRLocations/QuestQR/TuzlankaO.webp',
+  'TuzlankaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/TuzlankaO.webp',
+  hukaO: '/assets/Gallery/QuestQRLocations/QuestQR/hukaO.webp',
+  'hukaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/hukaO.webp',
+  sojO: '/assets/Gallery/QuestQRLocations/QuestQR/sojO.webp',
+  'sojO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/sojO.webp',
+  marker: '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
+};
+
+export const preloadPoiMarkerImages = async (mapInstance: maplibregl.Map) => {
+  if (!mapInstance) return;
+  for (const [id, url] of Object.entries(QUEST_POI_THUMBNAILS)) {
+    try {
+      if (mapInstance.hasImage(id)) continue;
+      const res = await mapInstance.loadImage(url);
+      if (res?.data && !mapInstance.hasImage(id)) {
+        mapInstance.addImage(id, res.data);
+      }
+    } catch (_) {}
+  }
+};
+
+export const handlePoiMarkerMissingImage = async (mapInstance: maplibregl.Map, id: string) => {
+  if (!mapInstance || mapInstance.hasImage(id)) return;
+  const url = QUEST_POI_THUMBNAILS[id] || (id.endsWith('.webp') ? `/assets/Gallery/QuestQRLocations/QuestQR/${id}` : `/assets/Gallery/QuestQRLocations/QuestQR/${id}.webp`);
+  try {
+    const res = await mapInstance.loadImage(url);
+    if (res?.data && !mapInstance.hasImage(id)) {
+      mapInstance.addImage(id, res.data);
+    }
+  } catch (_) {}
+};
+
 
 const GEOAPIFY_API_KEY = getGeoapifyGeneralKey();
 const VITE_PROTOMAPS_CARTO_API = '78417d24f3c5d515';
@@ -247,6 +328,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     map.current = mapInstance;
     mapInstance.on('load', () => {
       setIsLoaded(true);
+      preloadPoiMarkerImages(mapInstance);
+      mapInstance.on('styleimagemissing', (e: any) => handlePoiMarkerMissingImage(mapInstance, e.id));
       mapInstance.dragRotate.enable(); mapInstance.touchPitch.enable(); mapInstance.touchZoomRotate.enable();
       mapInstance.on('pitch', () => setPitch(Math.round(mapInstance.getPitch())));
       mapInstance.on('rotate', () => setBearing(Math.round(mapInstance.getBearing())));
@@ -301,6 +384,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     }
     map.current.once('style.load', () => {
       setIsLoaded(true);
+      if (map.current) preloadPoiMarkerImages(map.current);
       if (isNavigating && selectedNavTarget) {
         const start = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
         calculateRoute(start, selectedNavTarget);
@@ -328,6 +412,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       const imageUrl = target.Image || matchedLoc?.image || '/assets/Gallery/QuestQRLocations/trgslobode.webp';
       const description = matchedLoc?.description?.[lang] || matchedLoc?.description?.bs || matchedLoc?.description?.en || (lang === 'bs' ? 'Kulturna i historijska znamenitost grada Tuzle.' : 'Cultural and historical landmark of Tuzla.');
       const customPoiColor = POI_COLORS[target.id] || '#3b82f6';
+      const poiThumb = QUEST_POI_THUMBNAILS[target.id] || QUEST_POI_THUMBNAILS[target.id.toLowerCase()] || '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp';
       const el = document.createElement('div');
       el.className = 'quest-target-marker cursor-pointer select-none';
       el.style.width = '42px';
@@ -336,7 +421,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       el.style.alignItems = 'center';
       el.style.justifyContent = 'center';
 
-      el.innerHTML = `<div class="relative flex items-center justify-center group pointer-events-auto transition-transform duration-200 ease-out hover:scale-110 active:scale-95" title="${title}"><div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-2xl border-2 pointer-events-none" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><span class="text-xs font-black text-white pointer-events-none">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm pointer-events-none" style="background-color: ${customPoiColor};"></div></div>`;
+      el.innerHTML = `<div class="relative flex items-center justify-center group pointer-events-auto transition-transform duration-200 ease-out hover:scale-110 active:scale-95" title="${title}"><div class="w-10 h-10 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl border-2 pointer-events-none relative" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><img src="${poiThumb}" alt="${title}" class="w-8 h-8 rounded-xl object-cover pointer-events-none" onerror="this.style.display='none'" /><span class="absolute top-0.5 right-0.5 text-[9px] leading-none font-black drop-shadow pointer-events-none px-1 rounded-full ${isUnlocked ? 'bg-amber-400 text-black' : 'bg-slate-900/80 text-white'}">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm pointer-events-none" style="background-color: ${customPoiColor};"></div></div>`;
       const marker = new maplibregl.Marker(el).setLngLat([coords.lon, coords.lat]).addTo(map.current!);
       const hasVideo = !!(target as any).video && (isUnlocked || target.id === 'mesa_selimovic');
       const videoBtnHtml = hasVideo

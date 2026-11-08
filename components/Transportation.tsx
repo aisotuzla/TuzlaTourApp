@@ -16,7 +16,6 @@ import {
   Info,
   Sun,
   Ticket,
-  Sparkles,
   Users
 } from 'lucide-react';
 import { Language } from '../types';
@@ -950,7 +949,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
           type="button"
           onClick={() => setActiveSection('flights')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'flights'
-            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            ? 'bg-fuchsia-600 border-fuchsia-600 text-white shadow-fuchsia-500/20 shadow-md ring-2 ring-fuchsia-300/40'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >
@@ -1532,26 +1531,37 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         </div>
       )}
 
-      {/* 5. SECTION 3: FLIGHTS (TZL AIRPORT) */}
+      {/* 5. SECTION 3: FLIGHTS (TZL AIRPORT) - LIGHT WIZZAIR VIOLET-PURPLE-PINK THEME */}
       {activeSection === 'flights' && (
         <div className="space-y-6">
-          <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-950 p-6 sm:p-8 text-white space-y-4 shadow-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-300 text-xs font-black uppercase tracking-wider border border-cyan-400/30">
-              <Plane className="w-3.5 h-3.5" />
-              <span>Tuzla International Airport (TZL)</span>
+          {/* Lighter Hero Banner with soft violet-pink tones */}
+          <div className="rounded-3xl border border-pink-200/80 bg-gradient-to-br from-fuchsia-50/70 via-purple-50/50 to-pink-50/60 p-6 sm:p-8 space-y-4 shadow-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-100/90 text-pink-800 text-xs font-black uppercase tracking-wider border border-pink-200">
+                <Plane className="w-3.5 h-3.5 text-pink-600" />
+                <span>Tuzla International Airport (TZL)</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-100/90 text-purple-800 text-xs font-black uppercase tracking-wider border border-purple-200">
+                <Globe className="w-3.5 h-3.5 text-purple-600" />
+                <span>Wizz Air Hub</span>
+              </div>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">
-              {currentT.flightsHeader}
-            </h3>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
-              {currentT.flightsSub}
-            </p>
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+
+            <div className="space-y-1.5">
+              <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+                {currentT.flightsHeader}
+              </h3>
+              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
+                {currentT.flightsSub}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 pt-1">
               <a
                 href="https://wizzair.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-5 py-3 text-xs sm:text-sm font-black transition-all shadow-lg active:scale-95 uppercase tracking-wider"
+                className="inline-flex items-center gap-2 rounded-2xl bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-5 py-3 text-xs sm:text-sm font-black transition-all shadow-sm active:scale-95 uppercase tracking-wider"
               >
                 <span>{currentT.bookWizz}</span>
                 <ExternalLink className="w-4 h-4" />
@@ -1560,37 +1570,82 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
                 href="https://tuzla-airport.ba"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white px-5 py-3 text-xs sm:text-sm font-black transition-all border border-white/20 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 px-5 py-3 text-xs sm:text-sm font-black transition-all border border-slate-200 shadow-sm active:scale-95"
               >
                 <span>{currentT.airportSite}</span>
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-4 h-4 text-slate-400" />
               </a>
             </div>
           </div>
 
-          {/* Destinations Grid */}
+          {/* Destinations Grid with Soft Violet-Pink Badges */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {FLIGHT_DESTINATIONS.map((f, i) => (
               <div
                 key={f.code + i}
-                className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:border-blue-300 hover:shadow-md transition-all space-y-3"
+                className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:border-pink-300 hover:shadow-md transition-all space-y-3"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-500">{f.country}</span>
-                  <span className="rounded-xl bg-blue-50 text-blue-700 px-2.5 py-1 text-xs font-black">
-                    {f.code}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {f.airline === 'Wizz Air' && (
+                      <span className="text-[10px] font-bold text-fuchsia-700 bg-fuchsia-50 px-2 py-0.5 rounded-lg border border-fuchsia-100 uppercase tracking-wider">
+                        WIZZ
+                      </span>
+                    )}
+                    <span className="rounded-xl bg-pink-50 text-pink-700 border border-pink-100 px-2.5 py-1 text-xs font-bold tracking-wider">
+                      {f.code}
+                    </span>
+                  </div>
                 </div>
-                <div className="font-black text-lg text-slate-900">{f.city}</div>
+                <div className="font-black text-lg text-slate-900">
+                  {f.city}
+                </div>
                 <div className="flex items-center justify-between text-xs text-slate-500 border-t border-slate-100 pt-3">
-                  <span className="flex items-center gap-1 font-medium">
+                  <span className="flex items-center gap-1.5 font-medium text-slate-500">
                     <Clock className="w-3.5 h-3.5 text-slate-400" />
                     {f.time}
                   </span>
-                  <span className="font-bold text-blue-700">{f.freq}</span>
+                  <span className="font-bold text-fuchsia-700">
+                    {f.freq}
+                  </span>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Direct Airport Shuttle Connection Banner */}
+          <div className="rounded-3xl border border-slate-200/90 bg-gradient-to-r from-purple-50/50 via-slate-50 to-pink-50/40 p-5 sm:p-6 text-slate-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-fuchsia-800">
+                <Bus className="w-3.5 h-3.5 text-fuchsia-600" />
+                <span>
+                  {lang === 'bs' ? 'Aerodromski transfer i prevoz' :
+                    lang === 'de' ? 'Flughafentransfer & Verbindung' :
+                      lang === 'tr' ? 'Havalimanı Ulaşımı' :
+                        'Airport Ground Transport'}
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                {lang === 'bs' ? 'Linija 34 (GIPS) vozi direktno ispred terminala aerodroma. Licencirani taksi prevoz dostupan je na izlazu (cca 30 KM do centra Tuzle).' :
+                  lang === 'de' ? 'Die Buslinie 34 (GIPS) hält direkt vor dem Terminal. Offizielle Taxis stehen am Ausgang bereit (ca. 30 BAM ins Zentrum).' :
+                    lang === 'tr' ? '34 numaralı GIPS otobüsü terminalin tam önünden kalkar. Çıkışta lisanslı taksiler mevcuttur (Tuzla merkezine yaklaşık 30 KM).' :
+                      'Bus Line 34 (GIPS) departs directly in front of the terminal. Official licensed taxis available at arrivals (~30 BAM to Tuzla center).'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveSection('bus')}
+              className="shrink-0 inline-flex items-center gap-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 px-4 py-2.5 text-xs font-bold border border-slate-200 shadow-sm transition-all hover:border-slate-300 active:scale-95"
+            >
+              <Bus className="w-3.5 h-3.5 text-fuchsia-600" />
+              <span>
+                {lang === 'bs' ? 'Red vožnje Linije 34' :
+                  lang === 'de' ? 'Fahrplan Linie 34' :
+                    lang === 'tr' ? 'Hat 34 Saatleri' :
+                      'View Line 34 Schedule'}
+              </span>
+            </button>
           </div>
         </div>
       )}

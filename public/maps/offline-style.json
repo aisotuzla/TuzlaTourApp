@@ -4,6 +4,7 @@
   "metadata": {
     "maputnik:renderer": "mlgljs"
   },
+  "sprite": "/maps/sprite",
   "sources": {
     "osm-raster": {
       "type": "raster",
@@ -112,13 +113,21 @@
     },
     {
       "id": "poi-icons",
-      "type": "circle",
+      "type": "symbol",
       "source": "app-pois",
-      "paint": {
-        "circle-radius": 8,
-        "circle-color": "#3b82f6",
-        "circle-stroke-width": 2,
-        "circle-stroke-color": "#ffffff"
+      "layout": {
+        "icon-image": [
+          "coalesce",
+          ["get", "icon-image"],
+          ["get", "icon"],
+          ["get", "marker-symbol"],
+          ["get", "image"],
+          "marker"
+        ],
+        "icon-size": 1.0,
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-anchor": "center"
       }
     }
   ]

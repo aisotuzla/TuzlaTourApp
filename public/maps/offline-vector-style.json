@@ -4,6 +4,7 @@
   "metadata": {
     "maputnik:renderer": "mlgljs"
   },
+  "sprite": "/maps/sprite",
   "sources": {
     "tuzla-pmtiles": {
       "type": "vector",
@@ -262,22 +263,23 @@
     },
     {
       "id": "app-pois-marker",
-      "type": "circle",
+      "type": "symbol",
       "source": "app-pois",
-      "minzoom": 11,
+      "minzoom": 10,
       "maxzoom": 24,
-      "paint": {
-        "circle-radius": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          11, 4,
-          15, 8
+      "layout": {
+        "icon-image": [
+          "coalesce",
+          ["get", "icon-image"],
+          ["get", "icon"],
+          ["get", "marker-symbol"],
+          ["get", "image"],
+          "marker"
         ],
-        "circle-color": "#2563eb",
-        "circle-stroke-width": 2,
-        "circle-stroke-color": "#ffffff",
-        "circle-opacity": 0.9
+        "icon-size": 1.0,
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-anchor": "center"
       }
     }
   ]
