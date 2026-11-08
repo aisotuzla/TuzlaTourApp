@@ -20,6 +20,7 @@ import { QrScannerModal } from './QrScannerModal.tsx';
 import ARGuide from './ARGuide.tsx';
 import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
 import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
+import { setupPoiMarkerLayers } from '../utils/mapPoiLayers.ts';
 
 export interface MapQuestViewProps {
   lang: Language; features: AppFeatures; unlockedRewards: string[];
@@ -95,6 +96,7 @@ export const QUEST_POI_THUMBNAILS: Record<string, string> = {
 
 export const preloadPoiMarkerImages = async (mapInstance: maplibregl.Map) => {
   if (!mapInstance) return;
+  await setupPoiMarkerLayers(mapInstance);
   for (const [id, url] of Object.entries(QUEST_POI_THUMBNAILS)) {
     try {
       if (mapInstance.hasImage(id)) continue;
@@ -358,6 +360,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         mapInstance.setMaxZoom(16);
         if (mapInstance.getZoom() > 16) mapInstance.setZoom(16);
         mapInstance.setStyle(OFFLINE_STYLE_SPEC);
+        mapInstance.once('style.load', () => {
+          setupPoiMarkerLayers(mapInstance);
+        });
         ensureTuzlaOfflineMapDownloaded().catch(() => { });
       }
     });

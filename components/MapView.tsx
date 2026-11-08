@@ -15,6 +15,7 @@ import { QUEST_TARGETS } from '../constants/questData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapSheetDrawer, SheetSnapState, SheetTarget } from './MapSheetDrawer';
 import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
+import { setupPoiMarkerLayers } from '../utils/mapPoiLayers';
 
 
 interface MapViewProps {
@@ -188,6 +189,9 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
     map.current.setStyle(styleUrl);
     map.current.once('style.load', () => {
       setIsLoaded(true);
+      if (map.current) {
+        setupPoiMarkerLayers(map.current);
+      }
       if (isNavigating && selectedTarget && userLocationRef.current) {
         calculateRoute(userLocationRef.current, selectedTarget);
       }
@@ -604,6 +608,9 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
         map.current?.setMaxZoom(15);
         if ((map.current?.getZoom() ?? 0) > 15) map.current?.setZoom(15);
       }
+      if (map.current) {
+        setupPoiMarkerLayers(map.current);
+      }
 
       tuzlaHotelData.forEach(hotel => {
         const el = document.createElement('div');
@@ -642,6 +649,11 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
         map.current.setMaxZoom(16);
         if (map.current.getZoom() > 16) map.current.setZoom(16);
         map.current.setStyle(OFFLINE_STYLE);
+        map.current.once('style.load', () => {
+          if (map.current) {
+            setupPoiMarkerLayers(map.current);
+          }
+        });
       }
     });
 

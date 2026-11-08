@@ -53,26 +53,42 @@
       "paint": {
         "fill-extrusion-color": [
           "interpolate",
-          ["linear"],
+          [
+            "linear"
+          ],
           [
             "coalesce",
-            ["get", "height"],
+            [
+              "get",
+              "height"
+            ],
             15
           ],
-          0, "#f8fafc",
-          15, "#e2e8f0",
-          30, "#cbd5e1",
-          60, "#94a3b8",
-          100, "#64748b"
+          0,
+          "#f8fafc",
+          15,
+          "#e2e8f0",
+          30,
+          "#cbd5e1",
+          60,
+          "#94a3b8",
+          100,
+          "#64748b"
         ],
         "fill-extrusion-height": [
           "coalesce",
-          ["get", "height"],
+          [
+            "get",
+            "height"
+          ],
           15
         ],
         "fill-extrusion-base": [
           "coalesce",
-          ["get", "min_height"],
+          [
+            "get",
+            "min_height"
+          ],
           0
         ],
         "fill-extrusion-opacity": 0.85,
@@ -92,7 +108,10 @@
         "line-color": "#3b82f6",
         "line-width": 3,
         "line-opacity": 0.7,
-        "line-dasharray": [2, 1]
+        "line-dasharray": [
+          2,
+          1
+        ]
       }
     },
     {
@@ -112,17 +131,21 @@
       }
     },
     {
-      "id": "poi-icons",
+      "id": "app-pois-marker",
       "type": "symbol",
       "source": "app-pois",
+      "filter": [
+        "!=",
+        [
+          "get",
+          "visibility"
+        ],
+        false
+      ],
       "layout": {
         "icon-image": [
-          "coalesce",
-          ["get", "icon-image"],
-          ["get", "icon"],
-          ["get", "marker-symbol"],
-          ["get", "image"],
-          "marker"
+          "get",
+          "icon-image"
         ],
         "icon-size": 1.0,
         "icon-allow-overlap": true,

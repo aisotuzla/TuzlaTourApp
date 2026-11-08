@@ -267,15 +267,13 @@
       "source": "app-pois",
       "minzoom": 10,
       "maxzoom": 24,
+      "filter": [
+        "!=",
+        ["get", "visibility"],
+        false
+      ],
       "layout": {
-        "icon-image": [
-          "coalesce",
-          ["get", "icon-image"],
-          ["get", "icon"],
-          ["get", "marker-symbol"],
-          ["get", "image"],
-          "marker"
-        ],
+        "icon-image": ["get", "icon-image"],
         "icon-size": 1.0,
         "icon-allow-overlap": true,
         "icon-ignore-placement": true,

@@ -27,6 +27,7 @@ import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
 import { useGeofenceNotifications } from './hooks/useGeofenceNotifications';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import ARGuide from './components/ARGuide';
+import { requestPushToken, onForegroundMessage } from './utils/firebase';
 
 const MapView = React.lazy(() => import('./components/MapView'));
 const History = React.lazy(() => import('./components/History'));
@@ -88,6 +89,16 @@ const AppContent: React.FC = () => {
 
   const { position: userGps } = useGeolocationWatcher({ enabled: true });
   useGeofenceNotifications({ userPosition: userGps, lang, enabled: true });
+
+  useEffect(() => {
+    requestPushToken().catch((err) => console.warn('FCM registration notice:', err));
+    const unsubscribePromise = onForegroundMessage((payload) => {
+      console.log('FCM Foreground Notification received:', payload);
+    });
+    return () => {
+      unsubscribePromise.then((unsub) => unsub && unsub());
+    };
+  }, []);
 
   const navigate = useNavigate();
   const location = useLocation();

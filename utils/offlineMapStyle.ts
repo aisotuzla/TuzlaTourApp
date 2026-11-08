@@ -1,7 +1,7 @@
 import type { StyleSpecification } from 'maplibre-gl';
 import baseOfflineStyle from '../src/maps/offline-vector-style.json';
 
-const POI_GEOJSON_DATA = {
+export const POI_GEOJSON_DATA = {
   type: "FeatureCollection",
   features: [
     {
@@ -61,11 +61,11 @@ const POI_GEOJSON_DATA = {
         category: "nature",
         "marker-color": "rgba(235, 201, 34, 1)",
         "marker-size": "large",
-        image: "BanjaO.webp",
-        icon: "BanjaO",
-        "icon-image": "BanjaO",
-        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/BanjaO.webp",
-        "marker-symbol": "BanjaO"
+        image: "banjaO.webp",
+        icon: "banjaO",
+        "icon-image": "banjaO",
+        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp",
+        "marker-symbol": "banjaO"
       }
     },
     {

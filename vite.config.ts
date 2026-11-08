@@ -70,6 +70,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'maps/sprite@2x.png',
           'maps/poi.geojson',
           'maps/offline-vector-style.json',
+          'firebase-messaging-sw.js',
         ],
         manifest: {
           name: 'Tuzla Tour Guide',
