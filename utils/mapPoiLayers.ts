@@ -176,38 +176,12 @@ export async function setupPoiMarkerLayers(map: MapLibreMap): Promise<void> {
     } catch (_) {}
   }
 
-  // 7. Interactive click & hover handlers
+  // 7. Cursor handlers (markers are non-interactive display icons)
   if (!(map as any)._poiInteractionHooked) {
     (map as any)._poiInteractionHooked = true;
 
-    map.on('click', 'app-pois-marker', (e) => {
-      if (!e.features || !e.features[0]) return;
-      const f = e.features[0];
-      const props = f.properties || {};
-      const geom = f.geometry as any;
-      if (geom?.type !== 'Point') return;
-      const coords = geom.coordinates.slice() as [number, number];
-      const title = props.name_bs || props.name || 'POI';
-      const markerImg = props['marker-image'] || '';
-
-      new maplibregl.Popup({ offset: 18, maxWidth: '260px' })
-        .setLngLat(coords)
-        .setHTML(`
-          <div style="font-family: 'Quicksand', sans-serif; padding: 10px; color: #1e293b;">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-              ${markerImg ? `<img src="${markerImg}" alt="${title}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 6px;" />` : ''}
-              <div style="font-weight: 800; font-size: 13px; color: #0f172a; line-height: 1.2;">${title}</div>
-            </div>
-            <button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords[1]}, ${coords[0]})" style="width:100%; background:#2563eb; border:none; border-radius:6px; color:white; padding:6px 0; font-weight:800; font-size:11px; cursor:pointer; font-family:'Quicksand',sans-serif; box-shadow:0 2px 6px rgba(37,99,235,0.25);">
-              Navigacija
-            </button>
-          </div>
-        `)
-        .addTo(map);
-    });
-
     map.on('mouseenter', 'app-pois-marker', () => {
-      map.getCanvas().style.cursor = 'pointer';
+      map.getCanvas().style.cursor = 'default';
     });
     map.on('mouseleave', 'app-pois-marker', () => {
       map.getCanvas().style.cursor = '';
