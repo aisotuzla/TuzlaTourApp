@@ -1,4 +1,4 @@
-package com.icptuzla.tuzlavirtualtour;
+package com.tuzlatourguide;
 
 import com.getcapacitor.BridgeActivity;
 

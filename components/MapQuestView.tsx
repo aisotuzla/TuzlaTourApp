@@ -15,7 +15,6 @@ import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
 import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
-import { NavigationHud } from './NavigationHud.tsx';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import ARGuide from './ARGuide.tsx';
 import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
@@ -144,7 +143,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const userLocationRef = useRef<[number, number] | null>(null);
   const [isScannerOpen, setIsScannerOpen] = useState(initialOpenScanner);
-  const [showARGuide, setShowARGuide] = useState(false);
+  const [showARGuide, setShowARGuide] = useState(true);
   const [selectedNavTarget, setSelectedNavTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [playingQuestVideo, setPlayingQuestVideo] = useState<{ url: string; title: string } | null>(null);
@@ -618,7 +617,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     if (onClearNavigation) onClearNavigation();
   };
 
-  const [splitHeight, setSplitHeight] = useState<number>(35);
+  const [splitHeight, setSplitHeight] = useState<number>(40);
   const [isDraggingSplit, setIsDraggingSplit] = useState(false);
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
@@ -752,49 +751,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         />
       )}
 
-      {/* TOP HUD CONTAINER WITH HIDE / SHOW ANIMATION */}
-      <div
-        className={`absolute top-2.5 inset-x-0 mx-auto z-30 w-[78%] max-w-[380px] transition-transform duration-300 ease-in-out pointer-events-auto ${isHudHidden ? '-translate-y-[calc(100%+16px)] pointer-events-none' : 'translate-y-0'
-          }`}
-      >
-        <div className="bg-slate-900/95 backdrop-blur-xl px-3.5 py-2.5 rounded-2xl border border-blue-500/30 shadow-2xl flex flex-col gap-2 relative">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping" />
-              {lang === 'bs' ? 'Tuzla Potraga' : 'Tuzla Quest'}
-            </h2>
-            <div className="flex items-center gap-1.5">
-              <div className="px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-[9px] font-black text-blue-400">
-                {unlockedItemsCount} / {totalItemsCount} {lang === 'bs' ? 'Otključano' : 'Unlocked'}
-              </div>
-              <button
-                onClick={() => setIsHudHidden(true)}
-                className="p-1 rounded-full bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition-all active:scale-95"
-                title={lang === 'bs' ? 'Sakrij zaglavlje' : 'Hide HUD'}
-              >
-                <ChevronUp size={14} />
-              </button>
-            </div>
-          </div>
-          <div className="flex gap-1.5">
-            <button onClick={() => setIsScannerOpen(true)} className="flex-1 flex flex-col items-center gap-0.5 py-1.5 bg-gradient-to-b from-amber-500/20 to-amber-600/10 hover:from-amber-500 hover:to-amber-600 text-amber-300 hover:text-slate-950 rounded-xl border border-amber-500/30 transition-all active:scale-95 shadow-md"><QrCode className="w-4 h-4" /><span className="text-[8px] font-black uppercase tracking-wider">QR Code</span></button>
-            <button onClick={handleToggleARMode} className={`flex-1 flex flex-col items-center gap-0.5 py-1.5 rounded-xl border transition-all active:scale-95 shadow-md ${showARGuide ? 'bg-purple-500 text-slate-950 border-purple-300' : 'bg-gradient-to-b from-purple-500/20 to-purple-600/10 hover:from-purple-500 hover:to-purple-600 text-purple-300 hover:text-slate-950 border-purple-500/30'}`}><Compass className="w-4 h-4" /><span className="text-[8px] font-black uppercase tracking-wider">AR Guide</span></button>
-          </div>
-        </div>
-      </div>
-
-      {/* SMALL ARROW INDICATOR TAB WHEN HUD IS HIDDEN */}
-      {isHudHidden && (
-        <button
-          onClick={() => setIsHudHidden(false)}
-          className="absolute top-2 left-1/2 -translate-x-1/2 z-30 px-2.5 py-0.5 bg-slate-900/90 backdrop-blur-md border border-amber-500/40 rounded-full text-amber-400 hover:text-amber-300 shadow-2xl flex items-center gap-1 transition-all text-[9px] font-black uppercase tracking-wider animate-bounce cursor-pointer active:scale-95"
-          title={lang === 'bs' ? 'Prikaži zaglavlje' : 'Tap to show HUD'}
-        >
-          <ChevronDown size={12} />
-          <span>{lang === 'bs' ? 'Tuzla Potraga' : 'Tuzla Quest'}</span>
-        </button>
-      )}
-
       {/* FLOATING ACTION BUTTONS (LOCATION, RULES, LAYERS) */}
       <div
         className="absolute z-30 flex items-center gap-1.5 transition-all duration-150 left-3"
@@ -874,23 +830,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       </AnimatePresence>
 
 
-      <NavigationHud
-        isNavigating={isNavigating}
-        selectedNavTarget={selectedNavTarget}
-        lang={lang}
-        routeDistance={routeDistance}
-        routeTime={routeTime}
-        isRouteLoading={isRouteLoading}
-        onEndNavigation={handleEndNavigation}
-        targetColor={currentNavTargetColor}
-        isArTrailActive={showARGuide}
-        onActivateArTrail={() => {
-          // AR Guide and navigation are mutually exclusive
-          setIsNavigating(false);
-          clearRoute();
-          setShowARGuide(true);
-        }}
-      />
       <QrScannerModal
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}

@@ -6,7 +6,7 @@
 [![Capacitor Native](https://img.shields.io/badge/Capacitor-Android_8.4-119EFF?style=for-the-badge&logo=capacitor)](https://capacitorjs.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
-> **Tuzla Tour Guide** (`com.icptuzla.tuzlavirtualtour`) is an all-in-one smart travel platform, interactive 3D virtual tour guide, and Web3 exploration companion for Tuzla, Bosnia and Herzegovina. The platform unites **real-time 3D GPS navigation**, **camera-based Augmented Reality (AR) guidance**, a **gamified city AR Quest with physical QR code scanning**, **neural text-to-speech audio guides** in 4 languages, **comprehensive hospitality and dining directories**, a **personal travel itinerary with an offline expense ledger**, and **real-time Web3 rewards on the Solana blockchain**.
+> **Tuzla Tour Guide** is an all-in-one smart travel platform, interactive 3D virtual tour guide, and AR exploration companion for Tuzla, Bosnia and Herzegovina. The platform unites **real-time 3D GPS navigation**, **camera-based Augmented Reality (AR) guidance**, a **gamified city AR Quest with physical QR code scanning**, **neural text-to-speech audio guides** in 4 languages, **comprehensive hospitality and dining directories**, a **personal travel itinerary with an offline expense ledger**, and **real-time Web3 rewards on the Solana blockchain**.
 
 ---
 
@@ -80,13 +80,8 @@ Potraga vodi korisnika kroz 4 faze otkrivanja grada. Validacija lokacije vrši s
   - 🇹🇷 **Turski:** `tr-TR-AhmetNeural`
 - **Bogata naracija:** Priče o 6.000 godina staroj eksploataciji soli, neolitskom sojeničkom naselju, povelji Kulina bana i modernom gradu.
 
-#### 5. 💼 Integracija Digitalnog Novčanika & Web3 Solana Nagrade (`Wallet.tsx` & `SecurityGuard.tsx`)
+#### 5. 💼 QR Scan
 
-- **PIN Zaštita:** Četvorocifreni lokalni PIN kod pohranjen putem `@capacitor/preferences`.
-- **Solana Web3 Povezivanje:**
-  - Povezivanje sa Phantom i Solflare novčanicima (`@solana/wallet-adapter-react`).
-  - Podrška za **Devnet** i **Mainnet-beta** mreže.
-  - Trenutno služi samo za preuzimanje digitalnih certifikata i NFT kartica ostvarenih kroz quest.
 - **Historija i Galerija:** Vremenski zapis svih skeniranih QR lokacija s mogućnošću pregleda slika i panorama (`pannellum`).
 - **Konvertor valuta:** Fiksni dvosmjerni kurs BAM ⟷ EUR (1 EUR = 1.95583 BAM).
 
@@ -118,8 +113,7 @@ Zajedno sa partnerima Grada Tuzle, Turističke zajednice, Wizz-air, AirBnB web s
 | **Korisnički interfejs** | React 18, TypeScript, Tailwind CSS 4, Framer Motion, Lucide Icons |
 | **Kartografija i GIS** | MapLibre GL 5, `@makina-corpus/maplibre-offline-pmtiles`, Geoapify, CARTO |
 | **Proširena stvarnost (AR)** | HTML5 Camera API, DeviceOrientation Sensor Fusion, ENU Geodetic Engine (arProjection.ts), Hardware-Accelerated Canvas 2D |
-| **QR Prepoznavanje** | `html5-qrcode` (kamera i galerija slika) |
-| **Web3 & Blockchain** | `@solana/web3.js`, `@solana/wallet-adapter-react`, `@solana/wallet-adapter-wallets` |
+| **QR Prepoznavanje** | `html5-qrcode` (kamera i galerija slika) | |
 | **Govor i Audio (TTS)** | Edge Neural TTS API, Web Speech API |
 | **Mobilna platforma** | Capacitor 8 (Android Geolocation, Camera, Preferences, Local Notifications) |
 | **PWA & Build** | Vite 6, `vite-plugin-pwa`, Workbox Service Worker |
@@ -155,7 +149,7 @@ npx cap open android
 
 ### 📌 Project Overview
 
-**Tuzla Tour Guide** (`com.icptuzla.tuzlavirtualtour`) is a state-of-the-art Progressive Web App (PWA) and hybrid mobile application (Capacitor / Android) engineered for visitors and citizens of Tuzla, Bosnia and Herzegovina. The platform blends high-precision **3D GPS navigation**, **camera-based Augmented Reality (AR)**, a **gamified city AR Quest with QR code scanning**, **neural text-to-speech audio tours**, **hospitality and dining directories**, a **personal travel itinerary with an offline expense ledger**, and **real-time Web3 rewards powered by Solana**.
+**Tuzla Tour Guide** (`com.tuzlatourguide`) is a state-of-the-art Progressive Web App (PWA) and hybrid mobile application (Capacitor / Android) engineered for visitors and citizens of Tuzla, Bosnia and Herzegovina. The platform blends high-precision **3D GPS navigation**, **camera-based Augmented Reality (AR)**, a **gamified city AR Quest with QR code scanning**, **neural text-to-speech audio tours**, **hospitality and dining directories**, a **personal travel itinerary with an offline expense ledger**.
 
 ---
 

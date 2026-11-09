@@ -11,22 +11,22 @@ export const POI_GEOJSON_URL = '/maps/poi.geojson';
 export async function loadPoiMarkerImages(map: MapLibreMap, features?: any[]): Promise<void> {
   if (!map) return;
 
-  let featureList = features;
+  let featureList: any[] = features || [];
 
-  if (!featureList || featureList.length === 0) {
+  if (featureList.length === 0) {
     try {
       const response = await fetch(POI_GEOJSON_URL);
       if (response.ok) {
         const geojson = await response.json();
-        featureList = geojson?.features;
+        featureList = geojson?.features || [];
       }
     } catch (_) {
       // Offline fallback
     }
   }
 
-  if (!featureList || featureList.length === 0) {
-    featureList = (POI_GEOJSON_DATA as any).features || [];
+  if (featureList.length === 0) {
+    featureList = (POI_GEOJSON_DATA as any)?.features || [];
   }
 
   const loadedIds = new Set<string>();

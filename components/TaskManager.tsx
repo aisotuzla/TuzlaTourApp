@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  Banknote,
   BookOpen,
   Calendar as CalendarIcon,
   CheckCircle2,
@@ -9,9 +10,7 @@ import {
   Headphones,
   MapPin,
   Plus,
-  Receipt,
   Trash2,
-  TrendingUp,
 } from 'lucide-react';
 import { Language } from '../types';
 import { Preferences } from '@capacitor/preferences';
@@ -55,7 +54,7 @@ const copy = {
     amountPlaceholder: 'Amount (KM)',
     expenseTotal: 'Total Expenses',
     entriesCount: 'Entries',
-    avgExpense: 'Average',
+    euroTotal: 'In Euros (€)',
     addExpense: 'Add',
     emptyLedger: 'No expenses recorded yet.',
     addHint: 'Enter item details and tap Add to log an expense.',
@@ -73,7 +72,7 @@ const copy = {
     amountPlaceholder: 'Iznos (KM)',
     expenseTotal: 'Ukupni troškovi',
     entriesCount: 'Stavke',
-    avgExpense: 'Prosjek',
+    euroTotal: 'U eurima (€)',
     addExpense: 'Dodaj',
     emptyLedger: 'Nema zabilježenih troškova.',
     addHint: 'Unesi stavku i iznos, pa pritisni Dodaj.',
@@ -91,7 +90,7 @@ const copy = {
     amountPlaceholder: 'Betrag (KM)',
     expenseTotal: 'Gesamtausgaben',
     entriesCount: 'Einträge',
-    avgExpense: 'Durchschnitt',
+    euroTotal: 'In Euro (€)',
     addExpense: 'Hinzufügen',
     emptyLedger: 'Noch keine Ausgaben erfasst.',
     addHint: 'Eintrag und Betrag eingeben, dann Hinzufügen tippen.',
@@ -109,7 +108,7 @@ const copy = {
     amountPlaceholder: 'Tutar (KM)',
     expenseTotal: 'Toplam Harcama',
     entriesCount: 'Kayıt',
-    avgExpense: 'Ortalama',
+    euroTotal: 'Euro Olarak (€)',
     addExpense: 'Ekle',
     emptyLedger: 'Henüz kayıtlı harcama yok.',
     addHint: 'Harcama adı ve tutarını girip Ekle düğmesine dokunun.',
@@ -181,9 +180,9 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
     [expenses]
   );
 
-  const averageExpense = useMemo(() => {
-    if (expenses.length === 0) return '0.00';
-    return (expenses.reduce((acc, curr) => acc + curr.amount, 0) / expenses.length).toFixed(2);
+  const totalEur = useMemo(() => {
+    const kmAmount = expenses.reduce((acc, curr) => acc + curr.amount, 0);
+    return (kmAmount / 1.95583).toFixed(2);
   }, [expenses]);
 
   const addExpense = () => {
@@ -282,7 +281,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-cyan-200">
-              <Receipt className="h-4 w-4" />
+              <Banknote className="h-4 w-4" />
               {t.expenseTotal}
             </div>
             <div className="mt-1 text-3xl sm:text-4xl font-black tracking-tight">{total} KM</div>
@@ -295,10 +294,10 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
             </div>
             <div className="rounded-xl bg-white/15 px-3.5 py-2 backdrop-blur-xs border border-white/20">
               <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-cyan-100">
-                <TrendingUp className="h-3 w-3" />
-                {t.avgExpense}
+                <Banknote className="h-3 w-3" />
+                {t.euroTotal}
               </div>
-              <div className="text-lg font-black text-white">{averageExpense} KM</div>
+              <div className="text-lg font-black text-white">€ {totalEur}</div>
             </div>
           </div>
         </div>
@@ -398,6 +397,9 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
           </div>
           <div className="mt-1 text-2xl font-black text-blue-900">
             {total} <span className="text-sm font-semibold text-slate-500">KM</span>
+          </div>
+          <div className="text-xs font-bold text-emerald-600 mt-0.5">
+            € {totalEur}
           </div>
         </div>
       </div>
@@ -548,8 +550,8 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <Receipt className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-600 shrink-0" />
-                <span className="truncate">{t.expenses} ({total} KM)</span>
+                <Banknote className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-600 shrink-0" />
+                <span className="truncate">{t.expenses} ({total} KM / €{totalEur})</span>
               </button>
             </div>
 
@@ -572,9 +574,10 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                     <div>
                       <div className="text-xs font-bold uppercase tracking-widest text-indigo-600">{t.expenseTotal}</div>
                       <div className="mt-1 text-2xl sm:text-3xl font-black text-indigo-900">{total} KM</div>
+                      <div className="text-xs font-bold text-emerald-600 mt-0.5">€ {totalEur}</div>
                     </div>
                     <div className="w-12 h-12 rounded-2xl bg-indigo-100/70 flex items-center justify-center text-indigo-600">
-                      <Receipt className="h-6 w-6" />
+                      <Banknote className="h-6 w-6" />
                     </div>
                   </div>
                 </div>
@@ -599,12 +602,17 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                   <div className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-white p-4 sm:p-6 shadow-xs space-y-4">
                     <div className="flex items-center justify-between pb-3 border-b border-blue-50">
                       <div className="flex items-center gap-2 font-black text-blue-900 text-lg sm:text-xl">
-                        <Receipt className="h-5 w-5 text-amber-600" />
+                        <Banknote className="h-5 w-5 text-amber-600" />
                         {t.expenses}
                       </div>
-                      <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-black text-amber-700">
-                        {total} KM
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-black text-amber-700">
+                          {total} KM
+                        </span>
+                        <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-black text-emerald-700">
+                          €{totalEur}
+                        </span>
+                      </div>
                     </div>
                     {renderExpensesContent()}
                   </div>
