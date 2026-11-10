@@ -33,7 +33,8 @@ export const POI_GEOJSON_DATA = {
         icon: "trgslobodeO",
         "icon-image": "trgslobodeO",
         "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp",
-        "marker-symbol": "trgslobodeO"
+        "marker-symbol": "trgslobodeO",
+        popup_image: "/assets/Gallery/trgslobode.webp"
       }
     },
     {
@@ -65,7 +66,8 @@ export const POI_GEOJSON_DATA = {
         icon: "banjaO",
         "icon-image": "banjaO",
         "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp",
-        "marker-symbol": "banjaO"
+        "marker-symbol": "banjaO",
+        popup_image: "/assets/Gallery/slanabanja.webp"
       }
     },
     {
@@ -95,7 +97,8 @@ export const POI_GEOJSON_DATA = {
         icon: "bcctuzlaO",
         "icon-image": "bcctuzlaO",
         "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/bcctuzlaO.webp",
-        "marker-symbol": "bcctuzlaO"
+        "marker-symbol": "bcctuzlaO",
+
       }
     },
     {
