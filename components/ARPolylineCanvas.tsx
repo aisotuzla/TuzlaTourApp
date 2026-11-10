@@ -199,6 +199,52 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
           ctx.lineCap = 'round';
           ctx.stroke();
           ctx.restore();
+
+          // ── Directional Chevron Arrows ──
+          // Draw arrow chevrons every 3 segments pointing in travel direction
+          if (i % 3 === 0) {
+            const angle = Math.atan2(p2.pxY - p1.pxY, p2.pxX - p1.pxX);
+            const midX = (p1.pxX + p2.pxX) / 2;
+            const midY = (p1.pxY + p2.pxY) / 2;
+            const arrowLen = Math.max(6, thickness * 1.8);
+            const arrowWidth = Math.max(4, thickness * 1.2);
+
+            // Animated pulse: arrows gently pulse opacity with dash flow
+            const pulseFactor = 0.7 + 0.3 * Math.sin((dashOffsetRef.current + i * 15) * 0.08);
+            const arrowOpacity = opacity * pulseFactor;
+
+            // Arrow glow (outer)
+            ctx.save();
+            ctx.translate(midX, midY);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.moveTo(arrowLen, 0);
+            ctx.lineTo(-arrowLen * 0.5, -arrowWidth);
+            ctx.lineTo(-arrowLen * 0.2, 0);
+            ctx.lineTo(-arrowLen * 0.5, arrowWidth);
+            ctx.closePath();
+            ctx.fillStyle = glowColor;
+            ctx.globalAlpha = arrowOpacity * 0.3;
+            ctx.shadowColor = glowColor;
+            ctx.shadowBlur = 14;
+            ctx.fill();
+            ctx.restore();
+
+            // Arrow fill (inner bright)
+            ctx.save();
+            ctx.translate(midX, midY);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.moveTo(arrowLen, 0);
+            ctx.lineTo(-arrowLen * 0.5, -arrowWidth);
+            ctx.lineTo(-arrowLen * 0.2, 0);
+            ctx.lineTo(-arrowLen * 0.5, arrowWidth);
+            ctx.closePath();
+            ctx.fillStyle = color || '#FFFFFF';
+            ctx.globalAlpha = arrowOpacity * 0.85;
+            ctx.fill();
+            ctx.restore();
+          }
         } else {
           // Distant Path Segment (> 40m): Subtle Translucent Dashed Line
           const distantOffset = avgDistance - maxHorizonMeters;
@@ -216,6 +262,30 @@ export const ARPolylineCanvas: React.FC<ARPolylineCanvasProps> = ({
           ctx.lineCap = 'round';
           ctx.stroke();
           ctx.restore();
+
+          // ── Distant Chevron Arrows (lighter, sparser) ──
+          // Draw subtle arrows every 5 segments for distant path
+          if (i % 5 === 0) {
+            const angle = Math.atan2(p2.pxY - p1.pxY, p2.pxX - p1.pxX);
+            const midX = (p1.pxX + p2.pxX) / 2;
+            const midY = (p1.pxY + p2.pxY) / 2;
+            const arrowLen = Math.max(4, thickness * 1.2);
+            const arrowWidth = Math.max(3, thickness * 0.9);
+
+            ctx.save();
+            ctx.translate(midX, midY);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.moveTo(arrowLen, 0);
+            ctx.lineTo(-arrowLen * 0.5, -arrowWidth);
+            ctx.lineTo(-arrowLen * 0.2, 0);
+            ctx.lineTo(-arrowLen * 0.5, arrowWidth);
+            ctx.closePath();
+            ctx.fillStyle = color || 'rgba(147, 197, 253, 1)';
+            ctx.globalAlpha = distantOpacity * 0.6;
+            ctx.fill();
+            ctx.restore();
+          }
         }
       }
 

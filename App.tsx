@@ -14,6 +14,7 @@ import FullScreenImageViewer from './components/FullScreenImageViewer';
 import ErrorBoundary from './components/ErrorBoundary';
 import ReloadPrompt from './components/ReloadPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
+import CookieConsentBanner from './components/CookieConsentBanner';
 import MapQuestView from "./components/MapQuestView";
 import { AppTab } from './types';
 import { QUEST_TARGETS } from './constants/questData';
@@ -26,7 +27,7 @@ import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
 import { useGeofenceNotifications } from './hooks/useGeofenceNotifications';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import ARGuide from './components/ARGuide';
-import { requestPushToken, onForegroundMessage } from './utils/firebase';
+import { requestPushToken, onForegroundMessage, getFirebaseRemoteConfig } from './utils/firebase';
 
 const MapView = React.lazy(() => import('./components/MapView'));
 const History = React.lazy(() => import('./components/History'));
@@ -91,6 +92,7 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     requestPushToken().catch((err) => console.warn('FCM registration notice:', err));
+    getFirebaseRemoteConfig().catch((err) => console.warn('RemoteConfig initialization notice:', err));
     const unsubscribePromise = onForegroundMessage((payload) => {
       console.log('FCM Foreground Notification received:', payload);
     });
@@ -175,7 +177,7 @@ const AppContent: React.FC = () => {
       <ReloadPrompt />
       <OfflineIndicator lang={lang} />
 
-      <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm" style={{ height: 'calc(58px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm" style={{ height: 'calc(60px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex items-center z-10 w-16 sm:w-20">
           <button
             onClick={() => setIsDrawerOpen(true)}
@@ -210,7 +212,7 @@ const AppContent: React.FC = () => {
         </filter>
       </svg>
 
-      <div className="relative h-[100dvh] min-h-[100dvh] max-h-[100dvh] bg-white flex overflow-hidden" style={{ paddingTop: 'calc(58px + env(safe-area-inset-top, 0px))' }}>
+      <div className="relative h-[100dvh] min-h-[100dvh] max-h-[100dvh] bg-white flex overflow-hidden" style={{ paddingTop: 'calc(60px + env(safe-area-inset-top, 0px))' }}>
         <Sidebar
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
@@ -222,8 +224,8 @@ const AppContent: React.FC = () => {
         <div
           className="flex-1 flex flex-col overflow-hidden"
           style={{
-            height: 'calc(100dvh - 58px - env(safe-area-inset-top, 0px))',
-            minHeight: 'calc(100dvh - 58px - env(safe-area-inset-top, 0px))',
+            height: 'calc(100dvh - 60px - env(safe-area-inset-top, 0px))',
+            minHeight: 'calc(100dvh - 60px - env(safe-area-inset-top, 0px))',
             paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           }}
         >
@@ -307,6 +309,7 @@ const AppContent: React.FC = () => {
         />
       )}
 
+      <CookieConsentBanner lang={lang} />
       <FullScreenImageViewer />
     </ImageProvider>
   );
