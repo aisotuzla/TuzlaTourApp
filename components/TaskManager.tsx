@@ -9,7 +9,7 @@ import {
   Headphones,
   MapPin,
   Plus,
-  Receipt,
+  Banknote,
   Trash2,
   TrendingUp,
 } from 'lucide-react';
@@ -239,9 +239,8 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               )}
               <div className="min-w-0">
                 <div
-                  className={`text-sm sm:text-base font-black truncate ${
-                    item.checked ? 'text-slate-400 line-through' : 'text-slate-900'
-                  }`}
+                  className={`text-sm sm:text-base font-black truncate ${item.checked ? 'text-slate-400 line-through' : 'text-slate-900'
+                    }`}
                 >
                   {item.name}
                 </div>
@@ -250,13 +249,12 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
             </button>
             <div className="flex items-center gap-2 shrink-0">
               <span
-                className={`rounded-full px-2.5 py-1 text-[9px] sm:text-[10px] font-black uppercase tracking-widest ${
-                  item.type === 'Hotel'
+                className={`rounded-full px-2.5 py-1 text-[9px] sm:text-[10px] font-black uppercase tracking-widest ${item.type === 'Hotel'
                     ? 'bg-blue-50 text-blue-700 border border-blue-100'
                     : item.type === 'Restaurant'
-                    ? 'bg-green-50 text-green-700 border border-green-100'
-                    : 'bg-yellow-50 text-yellow-700 border border-yellow-100'
-                }`}
+                      ? 'bg-green-50 text-green-700 border border-green-100'
+                      : 'bg-yellow-50 text-yellow-700 border border-yellow-100'
+                  }`}
               >
                 {item.type}
               </span>
@@ -282,7 +280,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-cyan-200">
-              <Receipt className="h-4 w-4" />
+              <      Banknote className="h-4 w-4" />
               {t.expenseTotal}
             </div>
             <div className="mt-1 text-3xl sm:text-4xl font-black tracking-tight">{total} KM</div>
@@ -414,10 +412,10 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
             {lang === 'bs'
               ? 'Lični organizer'
               : lang === 'tr'
-              ? 'Kişisel Organizatör'
-              : lang === 'de'
-              ? 'Persönlicher Organizer'
-              : 'Personal Organizer'}
+                ? 'Kişisel Organizatör'
+                : lang === 'de'
+                  ? 'Persönlicher Organizer'
+                  : 'Personal Organizer'}
           </div>
           <h1 className="mt-2 sm:mt-3 text-3xl font-black tracking-tight sm:text-5xl">{t.title}</h1>
           <p className="mt-2 sm:mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-white/80">
@@ -428,60 +426,55 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
           <div className="mt-5 sm:mt-6 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:flex-wrap sm:pb-0">
             <button
               onClick={() => setView('notebook')}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
-                view === 'notebook'
+              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${view === 'notebook'
                   ? 'bg-white text-blue-900 shadow-lg'
                   : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
-              }`}
+                }`}
             >
               <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
               {t.notebook}
             </button>
             <button
               onClick={() => setView('calendar')}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
-                view === 'calendar'
+              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${view === 'calendar'
                   ? 'bg-white text-blue-900 shadow-lg'
                   : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
-              }`}
+                }`}
             >
               <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               {lang === 'bs'
                 ? 'Kalendar događaja'
                 : lang === 'de'
-                ? 'Veranstaltungskalender'
-                : lang === 'tr'
-                ? 'Etkinlik Takvimi'
-                : 'Calendar of Events'}
+                  ? 'Veranstaltungskalender'
+                  : lang === 'tr'
+                    ? 'Etkinlik Takvimi'
+                    : 'Calendar of Events'}
             </button>
             <button
               onClick={() => setView('threeDayPlan')}
-              className={`shrink-0 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
-                view === 'threeDayPlan'
+              className={`shrink-0 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${view === 'threeDayPlan'
                   ? 'bg-white text-blue-900 shadow-lg'
                   : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
-              }`}
+                }`}
             >
               {lang === 'bs' ? '3 Dnevni plan' : lang === 'de' ? '3-Tage-Plan' : lang === 'tr' ? '3 Günlük Plan' : '3 Day Plan'}
             </button>
             <button
               onClick={() => setView('practicalInfo')}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
-                view === 'practicalInfo'
+              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${view === 'practicalInfo'
                   ? 'bg-white text-blue-900 shadow-lg'
                   : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
-              }`}
+                }`}
             >
               <Compass className="h-4 w-4 sm:h-5 sm:w-5" />
               {lang === 'bs' ? 'Praktične info' : lang === 'de' ? 'Praktische Infos' : lang === 'tr' ? 'Pratik Bilgiler' : 'Practical Info'}
             </button>
             <button
               onClick={() => setView('media')}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
-                view === 'media'
+              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${view === 'media'
                   ? 'bg-white text-blue-900 shadow-lg'
                   : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
-              }`}
+                }`}
             >
               <Headphones className="h-4 w-4 sm:h-5 sm:w-5" />
               {lang === 'bs' ? 'Media' : 'Media'}
@@ -521,34 +514,31 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
             <div className="grid grid-cols-3 sm:flex sm:w-fit items-center gap-1 sm:gap-2 rounded-2xl bg-slate-100/90 p-1.5 border border-slate-200/60">
               <button
                 onClick={() => setNotebookSubTab('all')}
-                className={`flex items-center justify-center rounded-xl py-2.5 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${
-                  notebookSubTab === 'all'
+                className={`flex items-center justify-center rounded-xl py-2.5 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${notebookSubTab === 'all'
                     ? 'bg-white text-blue-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 {t.all}
               </button>
               <button
                 onClick={() => setNotebookSubTab('itinerary')}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 sm:py-2 px-2 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${
-                  notebookSubTab === 'itinerary'
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 sm:py-2 px-2 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${notebookSubTab === 'itinerary'
                     ? 'bg-white text-blue-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 shrink-0" />
                 <span className="truncate">{t.itinerary} ({itinerary.length})</span>
               </button>
               <button
                 onClick={() => setNotebookSubTab('expenses')}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 sm:py-2 px-2 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${
-                  notebookSubTab === 'expenses'
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 sm:py-2 px-2 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${notebookSubTab === 'expenses'
                     ? 'bg-white text-blue-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
-                }`}
+                  }`}
               >
-                <Receipt className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-600 shrink-0" />
+                <Banknote className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-600 shrink-0" />
                 <span className="truncate">{t.expenses} ({total} KM)</span>
               </button>
             </div>
@@ -574,7 +564,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                       <div className="mt-1 text-2xl sm:text-3xl font-black text-indigo-900">{total} KM</div>
                     </div>
                     <div className="w-12 h-12 rounded-2xl bg-indigo-100/70 flex items-center justify-center text-indigo-600">
-                      <Receipt className="h-6 w-6" />
+                      <    Banknote className="h-6 w-6" />
                     </div>
                   </div>
                 </div>
@@ -599,7 +589,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                   <div className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-white p-4 sm:p-6 shadow-xs space-y-4">
                     <div className="flex items-center justify-between pb-3 border-b border-blue-50">
                       <div className="flex items-center gap-2 font-black text-blue-900 text-lg sm:text-xl">
-                        <Receipt className="h-5 w-5 text-amber-600" />
+                        <Banknote className="h-5 w-5 text-amber-600" />
                         {t.expenses}
                       </div>
                       <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-black text-amber-700">

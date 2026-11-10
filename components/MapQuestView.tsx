@@ -15,7 +15,6 @@ import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
 import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
-import { NavigationHud } from './NavigationHud.tsx';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import ARGuide from './ARGuide.tsx';
 import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
@@ -94,9 +93,9 @@ export const QUEST_POI_THUMBNAILS: Record<string, string> = {
   marker: '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
 };
 
-export const preloadPoiMarkerImages = async (mapInstance: maplibregl.Map) => {
+export const preloadPoiMarkerImages = async (mapInstance: maplibregl.Map, lang: Language = 'bs') => {
   if (!mapInstance) return;
-  await setupPoiMarkerLayers(mapInstance);
+  await setupPoiMarkerLayers(mapInstance, lang);
   for (const [id, url] of Object.entries(QUEST_POI_THUMBNAILS)) {
     try {
       if (mapInstance.hasImage(id)) continue;
@@ -104,7 +103,7 @@ export const preloadPoiMarkerImages = async (mapInstance: maplibregl.Map) => {
       if (res?.data && !mapInstance.hasImage(id)) {
         mapInstance.addImage(id, res.data);
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 };
 
@@ -116,7 +115,7 @@ export const handlePoiMarkerMissingImage = async (mapInstance: maplibregl.Map, i
     if (res?.data && !mapInstance.hasImage(id)) {
       mapInstance.addImage(id, res.data);
     }
-  } catch (_) {}
+  } catch (_) { }
 };
 
 
@@ -144,7 +143,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const userLocationRef = useRef<[number, number] | null>(null);
   const [isScannerOpen, setIsScannerOpen] = useState(initialOpenScanner);
-  const [showARGuide, setShowARGuide] = useState(false);
+  const [showARGuide, setShowARGuide] = useState(true);
   const [selectedNavTarget, setSelectedNavTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [playingQuestVideo, setPlayingQuestVideo] = useState<{ url: string; title: string } | null>(null);
@@ -389,7 +388,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     }
     map.current.once('style.load', () => {
       setIsLoaded(true);
-      if (map.current) preloadPoiMarkerImages(map.current);
+      if (map.current) preloadPoiMarkerImages(map.current, lang);
       if (isNavigating && selectedNavTarget) {
         const start = userLocationRef.current || [TUZLA_CENTER[1], TUZLA_CENTER[0]];
         calculateRoute(start, selectedNavTarget);
@@ -418,33 +417,60 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       const description = matchedLoc?.description?.[lang] || matchedLoc?.description?.bs || matchedLoc?.description?.en || (lang === 'bs' ? 'Kulturna i historijska znamenitost grada Tuzle.' : 'Cultural and historical landmark of Tuzla.');
       const customPoiColor = POI_COLORS[target.id] || '#3b82f6';
       const poiThumb = QUEST_POI_THUMBNAILS[target.id] || QUEST_POI_THUMBNAILS[target.id.toLowerCase()] || '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp';
+      const audioUrl = target.audio || (matchedLoc as any)?.audio || '';
+
       const el = document.createElement('div');
-      el.className = 'quest-target-marker cursor-pointer select-none';
+      el.className = 'quest-target-marker select-none cursor-pointer';
       el.style.width = '42px';
       el.style.height = '42px';
       el.style.display = 'flex';
       el.style.alignItems = 'center';
       el.style.justifyContent = 'center';
 
-      el.innerHTML = `<div class="relative flex items-center justify-center group pointer-events-auto transition-transform duration-200 ease-out hover:scale-110 active:scale-95" title="${title}"><div class="w-10 h-10 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl border-2 pointer-events-none relative" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><img src="${poiThumb}" alt="${title}" class="w-8 h-8 rounded-xl object-cover pointer-events-none" onerror="this.style.display='none'" /><span class="absolute top-0.5 right-0.5 text-[9px] leading-none font-black drop-shadow pointer-events-none px-1 rounded-full ${isUnlocked ? 'bg-amber-400 text-black' : 'bg-slate-900/80 text-white'}">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm pointer-events-none" style="background-color: ${customPoiColor};"></div></div>`;
-      const marker = new maplibregl.Marker(el).setLngLat([coords.lon, coords.lat]).addTo(map.current!);
-      const hasVideo = !!(target as any).video && (isUnlocked || target.id === 'mesa_selimovic');
-      const videoBtnHtml = hasVideo
-        ? `<button onclick="window.playQuestVideo('${(target as any).video}', '${title.replace(/'/g, "\\'")}')" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 10px; color: #090d16; padding: 7px 10px; font-weight: 900; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">🎬 Video</button>`
-        : '';
+      el.innerHTML = `<div class="relative flex items-center justify-center group pointer-events-auto hover:scale-110 active:scale-95 transition-transform" title="${title}"><div class="w-10 h-10 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl border-2 relative" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><img src="${poiThumb}" alt="${title}" class="w-8 h-8 rounded-xl object-cover pointer-events-none" onerror="this.style.display='none'" /><span class="absolute top-0.5 right-0.5 text-[9px] leading-none font-black drop-shadow pointer-events-none px-1 rounded-full ${isUnlocked ? 'bg-amber-400 text-black' : 'bg-slate-900/80 text-white'}">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm pointer-events-none" style="background-color: ${customPoiColor};"></div></div>`;
+      
+      const escapedTitle = title.replace(/'/g, "\\'");
+      const arGuideLabel = lang === 'bs' ? 'AR Vodič' : 'AR Guide';
+      const navLabel = lang === 'bs' ? 'Navigacija' : 'Navigation';
+      const audioLabel = lang === 'bs' ? 'Audio Vodič' : 'Audio Guide';
 
-      // 270 Panorama button temporarily hidden
-      const panoramaBtnHtml = '';
+      const popupHtml = `
+        <div style="font-family: 'Quicksand', -apple-system, sans-serif; padding: 6px; color: #0f172a;">
+          ${imageUrl ? `
+            <div style="width: 100%; height: 110px; border-radius: 12px; overflow: hidden; margin-bottom: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); background: #0f172a;">
+              <img src="${imageUrl}" alt="${title}" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.parentElement.style.display='none'" />
+            </div>
+          ` : ''}
+          <div style="font-weight: 800; font-size: 14px; color: #0f172a; line-height: 1.25; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background: ${customPoiColor}; shrink: 0;"></div>
+            <span>${title}</span>
+          </div>
+          <p style="font-size: 11px; line-height: 1.45; color: #475569; margin: 0 0 10px 0; max-height: 62px; overflow-y: auto;">
+            ${description}
+          </p>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button onclick="window.startArTrailFromPopup && window.startArTrailFromPopup('${target.id}', '${escapedTitle}', ${coords.lat}, ${coords.lon})" style="flex: 1 1 45%; min-width: 90px; background: linear-gradient(135deg, #d97706, #b45309); border: none; border-radius: 8px; color: white; padding: 7px 6px; font-weight: 800; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 6px rgba(217,119,6,0.35);">
+              📱 ${arGuideLabel}
+            </button>
+            ${audioUrl ? `
+              <button onclick="window.playPoiAudio && window.playPoiAudio('${target.id}', '${escapedTitle}', '${audioUrl}')" style="flex: 1 1 45%; min-width: 90px; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 8px; color: white; padding: 7px 6px; font-weight: 800; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 6px rgba(37,99,235,0.35);">
+                🎧 ${audioLabel}
+              </button>
+            ` : ''}
+            <button onclick="window.startNavigationFromPopup('${escapedTitle}', ${coords.lat}, ${coords.lon})" style="flex: 1 1 100%; background: #0f172a; border: none; border-radius: 8px; color: white; padding: 6px 0; font-weight: 700; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+              🧭 ${navLabel}
+            </button>
+          </div>
+        </div>
+      `;
 
-      const noAudioPoiIds = ['salt_square', 'palancinkara', 'slapovi', 'bingo_city_centar', 'mesa_selimovic'];
-      const hasAudio = !!(target as any).audio && !noAudioPoiIds.includes(target.id);
-      const audioBtnHtml = hasAudio
-        ? `<button onclick="window.playPoiAudio && window.playPoiAudio('${target.id}', '${title.replace(/'/g, "\\'")}', '${(target as any).audio}')" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 10px; color: white; padding: 7px 11px; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;" title="${lang === 'bs' ? 'Audio Vodič' : 'Audio Guide'}">🎧 Audio</button>`
-        : '';
+      const popup = new maplibregl.Popup({ offset: 18, maxWidth: '290px', className: 'poi-custom-popup' })
+        .setHTML(popupHtml);
 
-      const popupHtml = `<div style="font-family: 'Quicksand', sans-serif; padding: 10px; background: #090d16; border-radius: 16px; color: white; width: 230px; border: 1px solid ${customPoiColor}; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);"><div style="position: relative; overflow: hidden; border-radius: 10px; height: 100px; margin-bottom: 8px; background: #1e293b;"><img src="${imageUrl}" alt="${title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"/><div style="position: absolute; top: 4px; right: 4px; background: ${isUnlocked ? customPoiColor : 'rgba(15, 23, 42, 0.9)'}; color: #ffffff; padding: 2px 6px; border-radius: 8px; font-weight: 900; font-size: 9px;">${isUnlocked ? '★ ' + (lang === 'bs' ? 'Otključano' : 'Unlocked') : '🔒 ' + (lang === 'bs' ? 'Zaključano' : 'Locked')}</div></div><h4 style="font-weight: 800; font-size: 13px; margin: 0 0 4px 0; color: #f8fafc; line-height: 1.2;">${title}</h4><p style="font-size: 10px; margin: 0 0 10px 0; color: #94a3b8; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p><div style="display: flex; gap: 5px; flex-wrap: wrap;"><button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="flex: 1; min-width: 78px; background: ${customPoiColor}; border: none; border-radius: 10px; color: white; padding: 7px 4px; font-weight: 800; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}66; display: flex; align-items: center; justify-content: center; gap: 3px;">${lang === 'bs' ? '🧭 Navigacija' : '🧭 Navigate'}</button><button onclick="window.startArTrailFromPopup('${target.id}', '${title.replace(/'/g, "\\'")}', ${coords.lat}, ${coords.lon})" style="background: ${customPoiColor}25; border: 1.5px solid ${customPoiColor}; border-radius: 10px; color: ${customPoiColor}; padding: 7px 8px; font-weight: 900; font-size: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px ${customPoiColor}44; display: flex; align-items: center; justify-content: center; gap: 3px;" title="${lang === 'bs' ? 'AR Staza' : 'AR Trail'}">👣 AR</button>${audioBtnHtml}${videoBtnHtml}${panoramaBtnHtml}</div></div>`;
-      const popup = new maplibregl.Popup({ offset: 25, closeButton: false, maxWidth: '240px' }).setHTML(popupHtml);
-      marker.setPopup(popup);
+      const marker = new maplibregl.Marker(el)
+        .setLngLat([coords.lon, coords.lat])
+        .setPopup(popup)
+        .addTo(map.current!);
       markersRef.current[target.id] = marker;
     });
     return () => { Object.values(markersRef.current).forEach((m) => m.remove()); markersRef.current = {}; };
@@ -635,7 +661,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     if (onClearNavigation) onClearNavigation();
   };
 
-  const [splitHeight, setSplitHeight] = useState<number>(35);
+  const [splitHeight, setSplitHeight] = useState<number>(40);
   const [isDraggingSplit, setIsDraggingSplit] = useState(false);
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
@@ -769,94 +795,67 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         />
       )}
 
-      {/* TOP HUD CONTAINER WITH HIDE / SHOW ANIMATION */}
+      {/* FLOATING ACTION BUTTONS (AR GUIDE, LOCATION, RULES, LAYERS) */}
       <div
-        className={`absolute top-2.5 inset-x-0 mx-auto z-30 w-[78%] max-w-[380px] transition-transform duration-300 ease-in-out pointer-events-auto ${isHudHidden ? '-translate-y-[calc(100%+16px)] pointer-events-none' : 'translate-y-0'
-          }`}
-      >
-        <div className="bg-slate-900/95 backdrop-blur-xl px-3.5 py-2.5 rounded-2xl border border-blue-500/30 shadow-2xl flex flex-col gap-2 relative">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping" />
-              {lang === 'bs' ? 'Tuzla Potraga' : 'Tuzla Quest'}
-            </h2>
-            <div className="flex items-center gap-1.5">
-              <div className="px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-[9px] font-black text-blue-400">
-                {unlockedItemsCount} / {totalItemsCount} {lang === 'bs' ? 'Otključano' : 'Unlocked'}
-              </div>
-              <button
-                onClick={() => setIsHudHidden(true)}
-                className="p-1 rounded-full bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition-all active:scale-95"
-                title={lang === 'bs' ? 'Sakrij zaglavlje' : 'Hide HUD'}
-              >
-                <ChevronUp size={14} />
-              </button>
-            </div>
-          </div>
-          <div className="flex gap-1.5">
-            <button onClick={() => setIsScannerOpen(true)} className="flex-1 flex flex-col items-center gap-0.5 py-1.5 bg-gradient-to-b from-amber-500/20 to-amber-600/10 hover:from-amber-500 hover:to-amber-600 text-amber-300 hover:text-slate-950 rounded-xl border border-amber-500/30 transition-all active:scale-95 shadow-md"><QrCode className="w-4 h-4" /><span className="text-[8px] font-black uppercase tracking-wider">QR Code</span></button>
-            <button onClick={handleToggleARMode} className={`flex-1 flex flex-col items-center gap-0.5 py-1.5 rounded-xl border transition-all active:scale-95 shadow-md ${showARGuide ? 'bg-purple-500 text-slate-950 border-purple-300' : 'bg-gradient-to-b from-purple-500/20 to-purple-600/10 hover:from-purple-500 hover:to-purple-600 text-purple-300 hover:text-slate-950 border-purple-500/30'}`}><Compass className="w-4 h-4" /><span className="text-[8px] font-black uppercase tracking-wider">AR Guide</span></button>
-          </div>
-        </div>
-      </div>
-
-      {/* SMALL ARROW INDICATOR TAB WHEN HUD IS HIDDEN */}
-      {isHudHidden && (
-        <button
-          onClick={() => setIsHudHidden(false)}
-          className="absolute top-2 left-1/2 -translate-x-1/2 z-30 px-2.5 py-0.5 bg-slate-900/90 backdrop-blur-md border border-amber-500/40 rounded-full text-amber-400 hover:text-amber-300 shadow-2xl flex items-center gap-1 transition-all text-[9px] font-black uppercase tracking-wider animate-bounce cursor-pointer active:scale-95"
-          title={lang === 'bs' ? 'Prikaži zaglavlje' : 'Tap to show HUD'}
-        >
-          <ChevronDown size={12} />
-          <span>{lang === 'bs' ? 'Tuzla Potraga' : 'Tuzla Quest'}</span>
-        </button>
-      )}
-
-      {/* FLOATING ACTION BUTTONS (LOCATION, RULES, LAYERS) */}
-      <div
-        className="absolute z-30 flex items-center gap-1.5 transition-all duration-150 left-3"
+        className="absolute z-30 flex flex-col items-center gap-2 transition-all duration-150 left-3"
         style={showARGuide ? { bottom: `calc(${100 - splitHeight}% + 14px)` } : { bottom: '0.85rem' }}
       >
+        {/* AR Guide toggle button directly above round location button */}
         <button
-          onClick={() => {
-            if (userLocationRef.current && map.current) {
-              map.current.flyTo({
-                center: [userLocationRef.current[0], userLocationRef.current[1]],
-                zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
-                pitch: 60,
-                bearing: -15,
-                duration: 2000
-              });
-            } else if (rawGeoPosition && map.current) {
-              map.current.flyTo({
-                center: [rawGeoPosition.lng, rawGeoPosition.lat],
-                zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
-                pitch: 60,
-                bearing: -15,
-                duration: 2000
-              });
-            } else if (navigator.geolocation && map.current) {
-              navigator.geolocation.getCurrentPosition((pos) => {
-                const { longitude, latitude } = pos.coords;
-                userLocationRef.current = [longitude, latitude];
-                setUserLocation([latitude, longitude]);
-                map.current?.flyTo({
-                  center: [longitude, latitude],
+          onClick={handleToggleARMode}
+          className={`w-9 h-9 flex items-center justify-center font-black text-xs rounded-full shadow-xl transition-all duration-200 active:scale-95 border ${
+            showARGuide
+              ? 'bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 border-amber-300 shadow-amber-500/30 ring-2 ring-amber-400/50'
+              : 'bg-slate-900/90 text-amber-400 border-amber-400/40 hover:bg-amber-500/20 hover:text-amber-300 backdrop-blur-xl'
+          }`}
+          title={lang === 'bs' ? 'AR Vodič (Uključi/Isključi)' : 'AR Guide (Toggle)'}
+          aria-label="AR Guide"
+        >
+          AR
+        </button>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => {
+              if (userLocationRef.current && map.current) {
+                map.current.flyTo({
+                  center: [userLocationRef.current[0], userLocationRef.current[1]],
                   zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
                   pitch: 60,
                   bearing: -15,
                   duration: 2000
                 });
-              });
-            }
-          }}
-          className="w-9 h-9 flex items-center justify-center bg-purple-600/90 backdrop-blur-xl border border-purple-400/40 rounded-full shadow-lg text-white active:scale-95 transition-all hover:bg-purple-500"
-          title={lang === 'bs' ? 'Moja Lokacija' : 'My Location'}
-        >
-          <Navigation size={16} />
-        </button>
-        <button onClick={() => setShowRules((prev) => !prev)} className="w-9 h-9 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-purple-400/30 rounded-full shadow-lg text-purple-400 hover:text-white active:scale-95 transition-all" title={lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}><Info size={16} /></button>
-        <button onClick={() => setShowLayerMenu((prev) => !prev)} className="w-9 h-9 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-purple-400/40 rounded-full shadow-xl text-purple-400 hover:text-white hover:border-purple-400 active:scale-95 transition-all" title={lang === 'bs' ? 'Promijeni Sloj Mape' : 'Switch Map Layer'}><Layers size={16} /></button>
+              } else if (rawGeoPosition && map.current) {
+                map.current.flyTo({
+                  center: [rawGeoPosition.lng, rawGeoPosition.lat],
+                  zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+                  pitch: 60,
+                  bearing: -15,
+                  duration: 2000
+                });
+              } else if (navigator.geolocation && map.current) {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                  const { longitude, latitude } = pos.coords;
+                  userLocationRef.current = [longitude, latitude];
+                  setUserLocation([latitude, longitude]);
+                  map.current?.flyTo({
+                    center: [longitude, latitude],
+                    zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+                    pitch: 60,
+                    bearing: -15,
+                    duration: 2000
+                  });
+                });
+              }
+            }}
+            className="w-9 h-9 flex items-center justify-center bg-purple-600/90 backdrop-blur-xl border border-purple-400/40 rounded-full shadow-lg text-white active:scale-95 transition-all hover:bg-purple-500"
+            title={lang === 'bs' ? 'Moja Lokacija' : 'My Location'}
+          >
+            <Navigation size={16} />
+          </button>
+          <button onClick={() => setShowRules((prev) => !prev)} className="w-9 h-9 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-purple-400/30 rounded-full shadow-lg text-purple-400 hover:text-white active:scale-95 transition-all" title={lang === 'bs' ? 'Pravila Potrage' : 'Quest Rules'}><Info size={16} /></button>
+          <button onClick={() => setShowLayerMenu((prev) => !prev)} className="w-9 h-9 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-purple-400/40 rounded-full shadow-xl text-purple-400 hover:text-white hover:border-purple-400 active:scale-95 transition-all" title={lang === 'bs' ? 'Promijeni Sloj Mape' : 'Switch Map Layer'}><Layers size={16} /></button>
+        </div>
       </div>
 
       {/* Layer Menu Dropdown */}
@@ -891,23 +890,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       </AnimatePresence>
 
 
-      <NavigationHud
-        isNavigating={isNavigating}
-        selectedNavTarget={selectedNavTarget}
-        lang={lang}
-        routeDistance={routeDistance}
-        routeTime={routeTime}
-        isRouteLoading={isRouteLoading}
-        onEndNavigation={handleEndNavigation}
-        targetColor={currentNavTargetColor}
-        isArTrailActive={showARGuide}
-        onActivateArTrail={() => {
-          // AR Guide and navigation are mutually exclusive
-          setIsNavigating(false);
-          clearRoute();
-          setShowARGuide(true);
-        }}
-      />
       <QrScannerModal
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
@@ -934,8 +916,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
               const isVertical = playingQuestVideo.url.includes('MesaSelimovic');
               return (
                 <div className={`w-full bg-black border-0 sm:border border-white/15 overflow-hidden shadow-2xl flex flex-col h-full sm:h-auto ${isVertical
-                    ? 'sm:max-w-[420px] sm:max-h-[92vh] rounded-none sm:rounded-[2.5rem]'
-                    : 'sm:max-w-2xl rounded-none sm:rounded-[2.5rem]'
+                  ? 'sm:max-w-[420px] sm:max-h-[92vh] rounded-none sm:rounded-[2.5rem]'
+                  : 'sm:max-w-2xl rounded-none sm:rounded-[2.5rem]'
                   }`}>
                   <div className="p-3.5 sm:p-4 flex items-center justify-between border-b border-white/10 bg-white/5 shrink-0">
                     <div className="flex items-center gap-2.5">
@@ -962,8 +944,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
                   </div>
 
                   <div className={`relative w-full bg-black flex items-center justify-center overflow-hidden ${isVertical
-                      ? 'flex-1 sm:flex-none sm:aspect-[9/16] sm:max-h-[75vh]'
-                      : 'flex-1 sm:flex-none aspect-video sm:max-h-[60vh]'
+                    ? 'flex-1 sm:flex-none sm:aspect-[9/16] sm:max-h-[75vh]'
+                    : 'flex-1 sm:flex-none aspect-video sm:max-h-[60vh]'
                     }`}>
                     <video
                       src={playingQuestVideo.url}

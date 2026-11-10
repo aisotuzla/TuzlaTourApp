@@ -925,7 +925,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
           type="button"
           onClick={() => setActiveSection('bus')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'bus'
-            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            ? 'bg-gradient-to-r from-sky-400 to-blue-600 border-sky-400 text-white shadow-blue-500/30 shadow-md ring-2 ring-sky-300/50'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >
@@ -937,7 +937,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
           type="button"
           onClick={() => setActiveSection('internationalBus')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'internationalBus'
-            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            ? 'bg-gradient-to-r from-sky-300 to-sky-500 border-sky-300 text-slate-950 shadow-sky-400/30 shadow-md ring-2 ring-sky-200/60'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >
@@ -949,7 +949,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
           type="button"
           onClick={() => setActiveSection('flights')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'flights'
-            ? 'bg-fuchsia-600 border-fuchsia-600 text-white shadow-fuchsia-500/20 shadow-md ring-2 ring-fuchsia-300/40'
+            ? 'bg-gradient-to-r from-pink-300 via-purple-400 to-violet-600 border-pink-300 text-white shadow-purple-500/30 shadow-md ring-2 ring-pink-300/50'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >
@@ -961,7 +961,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
           type="button"
           onClick={() => setActiveSection('taxi')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'taxi'
-            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 border-amber-300 text-slate-950 shadow-amber-500/30 shadow-md ring-2 ring-amber-300/50'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >
@@ -973,7 +973,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
           type="button"
           onClick={() => setActiveSection('rentacar')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'rentacar'
-            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            ? 'bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 border-blue-400 text-white shadow-blue-600/30 shadow-md ring-2 ring-blue-400/50'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >

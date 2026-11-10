@@ -234,17 +234,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
                     )}
 
                     <div className={`p-1 rounded-lg transition-all duration-200 ${isActive
-                        ? 'bg-slate-950/10 text-slate-950'
-                        : `${item.inactiveIconClass} group-hover:scale-105`
+                      ? 'bg-slate-950/10 text-slate-950'
+                      : `${item.inactiveIconClass} group-hover:scale-105`
                       }`}>
                       <Icon className={`w-4.5 h-4.5 transition-transform duration-200 ${isActive ? 'scale-105' : ''}`} />
                     </div>
 
                     <span className={`tracking-wide transition-colors flex-1 ${isHeader
-                        ? 'text-sm font-black uppercase tracking-wider'
-                        : isSubItem
-                          ? 'text-xs font-bold'
-                          : 'text-xs font-extrabold'
+                      ? 'text-sm font-black uppercase tracking-wider'
+                      : isSubItem
+                        ? 'text-xs font-bold'
+                        : 'text-xs font-extrabold'
                       }`}>
                       {label}
                     </span>
@@ -259,9 +259,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
 
             {/* Footer */}
             <div className="p-3 border-t border-slate-100 flex items-center justify-center gap-1.5 text-center bg-white/40">
-              <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
+
               <span className="text-xs font-black tracking-wider text-slate-700">
-                Tuzla
+                AISO Tuzla
               </span>
             </div>
           </motion.aside>

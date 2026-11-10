@@ -2,6 +2,9 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 import maplibregl from 'maplibre-gl';
 import { POI_GEOJSON_DATA } from './offlineMapStyle';
 
+import { QUEST_TARGETS } from '../constants/questData';
+import { LOCATIONS } from '../constants';
+
 export const POI_GEOJSON_URL = '/maps/poi.geojson';
 
 /**
@@ -11,21 +14,21 @@ export const POI_GEOJSON_URL = '/maps/poi.geojson';
 export async function loadPoiMarkerImages(map: MapLibreMap, features?: any[]): Promise<void> {
   if (!map) return;
 
-  let featureList = features;
+  let featureList: any[] = features || [];
 
-  if (!featureList || featureList.length === 0) {
+  if (featureList.length === 0) {
     try {
       const response = await fetch(POI_GEOJSON_URL);
       if (response.ok) {
         const geojson = await response.json();
-        featureList = geojson?.features;
+        featureList = geojson?.features || [];
       }
     } catch (_) {
       // Offline fallback
     }
   }
 
-  if (!featureList || featureList.length === 0) {
+  if (featureList.length === 0) {
     featureList = (POI_GEOJSON_DATA as any).features || [];
   }
 
@@ -85,7 +88,7 @@ export function removePoiCircleLayers(map: MapLibreMap): void {
  *    - 'icon-ignore-placement': true
  *    - filter: ['!=', ['get', 'visibility'], false] (hiding visibility: false features)
  */
-export async function setupPoiMarkerLayers(map: MapLibreMap): Promise<void> {
+export async function setupPoiMarkerLayers(map: MapLibreMap, lang: string = 'bs'): Promise<void> {
   if (!map) return;
 
   // 1. Fetch GeoJSON or fallback
@@ -187,20 +190,67 @@ export async function setupPoiMarkerLayers(map: MapLibreMap): Promise<void> {
       const geom = f.geometry as any;
       if (geom?.type !== 'Point') return;
       const coords = geom.coordinates.slice() as [number, number];
-      const title = props.name_bs || props.name || 'POI';
+      const title = (lang === 'en' ? (props.name || props.name_bs) : (props.name_bs || props.name)) || 'POI';
       const markerImg = props['marker-image'] || '';
 
-      new maplibregl.Popup({ offset: 18, maxWidth: '260px' })
+      // Match target in QUEST_TARGETS and LOCATIONS for rich info (description, audio, image)
+      const rawName = (props.name || props.name_bs || '').toLowerCase();
+      const rawIcon = (props['icon-image'] || props.image || '').toLowerCase();
+      const target = QUEST_TARGETS.find(q => 
+        q.id.toLowerCase() === rawName ||
+        q.name.bs.toLowerCase() === rawName ||
+        q.name.en.toLowerCase() === rawName ||
+        rawIcon.includes(q.id.toLowerCase())
+      );
+
+      const loc = LOCATIONS.find(l => 
+        l.id === target?.id ||
+        l.id.toLowerCase() === rawName ||
+        l.name.bs.toLowerCase() === rawName ||
+        l.name.en.toLowerCase() === rawName
+      );
+
+      const poiId = target?.id || loc?.id || rawName;
+      const displayTitle = target?.name?.[lang as 'bs' | 'en'] || (loc?.name ? (loc.name[lang as 'bs' | 'en'] || loc.name.bs) : title);
+      const displayImage = target?.Image || loc?.image || markerImg || '/assets/Gallery/QuestQRLocations/trgslobode.webp';
+      const description = (loc?.description ? (loc.description[lang as 'bs' | 'en'] || loc.description.bs || loc.description.en) : null) || 
+        (lang === 'bs' ? 'Kulturna i historijska znamenitost grada Tuzle sa pričom i lokacijom.' : 'Cultural and historical landmark of Tuzla with rich heritage.');
+      const audioUrl = target?.audio || (loc as any)?.audio || '';
+
+      const escapedTitle = displayTitle.replace(/'/g, "\\'");
+      const arGuideLabel = lang === 'bs' ? 'AR Vodič' : 'AR Guide';
+      const navLabel = lang === 'bs' ? 'Navigacija' : 'Navigation';
+      const audioLabel = lang === 'bs' ? 'Audio Vodič' : 'Audio Guide';
+
+      new maplibregl.Popup({ offset: 18, maxWidth: '290px', className: 'poi-custom-popup' })
         .setLngLat(coords)
         .setHTML(`
-          <div style="font-family: 'Quicksand', sans-serif; padding: 10px; color: #1e293b;">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-              ${markerImg ? `<img src="${markerImg}" alt="${title}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 6px;" />` : ''}
-              <div style="font-weight: 800; font-size: 13px; color: #0f172a; line-height: 1.2;">${title}</div>
+          <div style="font-family: 'Quicksand', -apple-system, sans-serif; padding: 6px; color: #0f172a;">
+            ${displayImage ? `
+              <div style="width: 100%; height: 110px; border-radius: 12px; overflow: hidden; margin-bottom: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); background: #0f172a;">
+                <img src="${displayImage}" alt="${displayTitle}" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.parentElement.style.display='none'" />
+              </div>
+            ` : ''}
+            <div style="font-weight: 800; font-size: 14px; color: #0f172a; line-height: 1.25; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              ${markerImg ? `<img src="${markerImg}" alt="" style="width: 20px; height: 20px; object-fit: contain; border-radius: 4px;" />` : ''}
+              <span>${displayTitle}</span>
             </div>
-            <button onclick="window.startNavigationFromPopup('${title.replace(/'/g, "\\'")}', ${coords[1]}, ${coords[0]})" style="width:100%; background:#2563eb; border:none; border-radius:6px; color:white; padding:6px 0; font-weight:800; font-size:11px; cursor:pointer; font-family:'Quicksand',sans-serif; box-shadow:0 2px 6px rgba(37,99,235,0.25);">
-              Navigacija
-            </button>
+            <p style="font-size: 11px; line-height: 1.45; color: #475569; margin: 0 0 10px 0; max-height: 62px; overflow-y: auto;">
+              ${description}
+            </p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button onclick="window.startArTrailFromPopup ? window.startArTrailFromPopup('${poiId}', '${escapedTitle}', ${coords[1]}, ${coords[0]}) : (window.toggleArGuide && window.toggleArGuide())" style="flex: 1 1 45%; min-width: 90px; background: linear-gradient(135deg, #d97706, #b45309); border: none; border-radius: 8px; color: white; padding: 7px 6px; font-weight: 800; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 6px rgba(217,119,6,0.35);">
+                📱 ${arGuideLabel}
+              </button>
+              ${audioUrl ? `
+                <button onclick="window.playPoiAudio && window.playPoiAudio('${poiId}', '${escapedTitle}', '${audioUrl}')" style="flex: 1 1 45%; min-width: 90px; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; border-radius: 8px; color: white; padding: 7px 6px; font-weight: 800; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 6px rgba(37,99,235,0.35);">
+                  🎧 ${audioLabel}
+                </button>
+              ` : ''}
+              <button onclick="window.startNavigationFromPopup('${escapedTitle}', ${coords[1]}, ${coords[0]})" style="flex: 1 1 100%; background: #0f172a; border: none; border-radius: 8px; color: white; padding: 6px 0; font-weight: 700; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                🧭 ${navLabel}
+              </button>
+            </div>
           </div>
         `)
         .addTo(map);

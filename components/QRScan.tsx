@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Html5Qrcode } from 'html5-qrcode';
+import { QrScannerModal } from './QrScannerModal';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
 import { QUEST_TARGETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, isPoiRewardUnlocked } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
@@ -58,7 +58,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
     const [playingVideoError, setPlayingVideoError] = useState<string | null>(null);
     const [expandedPhaseId, setExpandedPhaseId] = useState<string | null>(null);
 
-    const scannerRef = useRef<Html5Qrcode | null>(null);
     const isOnline = useNetwork();
     const t = TRANSLATIONS[lang];
     const { unlockedRewards, setUnlockedRewards } = useGlobalApp();
@@ -91,87 +90,22 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
         loadLedger();
     }, []);
 
-    // Cleanup scanner on unmount
-    useEffect(() => {
-        return () => {
-            if (scannerRef.current) {
-                scannerRef.current.stop().catch(() => { });
-            }
-        };
-    }, []);
-
-    const startScanner = async () => {
-        setIsScanning(true);
-        setScannerFeedback(null);
-        setTimeout(async () => {
-            const containerId = 'qrscan-reader';
-            if (!document.getElementById(containerId)) return;
-            try {
-                const scanner = new Html5Qrcode(containerId);
-                scannerRef.current = scanner;
-                await scanner.start(
-                    { facingMode: 'environment' },
-                    { fps: 12, qrbox: { width: 220, height: 220 } },
-                    async (decodedText) => {
-                        const trimmed = decodedText?.trim() ?? '';
-                        const target = findQuestTargetFromQr(trimmed);
-                        if (!target) {
-                            setScannerFeedback({ text: lang === 'bs' ? 'Nepoznat QR kod lokacije.' : 'Unknown location QR code.', type: 'error' });
-                            return;
-                        }
-
-                        const now = new Date();
-                        const timeStr = now.toLocaleTimeString(lang === 'bs' ? 'bs-BA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
-                        const dateStr = now.toLocaleDateString(lang === 'bs' ? 'bs-BA' : 'en-US', { month: 'short', day: 'numeric' });
-                        const timestamp = `${dateStr}, ${timeStr}`;
-
-                        const exists = ledger.some(item => item.id === target.id);
-                        if (exists) {
-                            setScannerFeedback({ text: lang === 'bs' ? `${target.name.bs} je već u vašoj knjizi.` : `${target.name.en} is already in your ledger.`, type: 'success' });
-                            setTimeout(() => setScannerFeedback(null), 3000);
-                            stopScanner();
-                            return;
-                        }
-
-                        const newLedger = [{ id: target.id, timestamp }, ...ledger];
-                        setLedger(newLedger);
-                        await Preferences.set({ key: 'tuzla_scan_ledger', value: JSON.stringify(newLedger) });
-
-                        if (!unlockedRewards.includes(target.id)) {
-                            setUnlockedRewards(prev => [...prev, target.id]);
-                        }
-
-                        setScannerFeedback({ text: lang === 'bs' ? `Otključana lokacija: ${target.name.bs}!` : `Unlocked location: ${target.name.en}!`, type: 'success' });
-                        setTimeout(() => setScannerFeedback(null), 3000);
-                        stopScanner();
-                    },
-                    () => { }
-                );
-            } catch (err) {
-                console.error('Scanner error', err);
-                setIsScanning(false);
-                setScannerFeedback({ text: lang === 'bs' ? 'Nije moguće pokrenuti kameru.' : 'Could not start camera.', type: 'error' });
-                setTimeout(() => setScannerFeedback(null), 3000);
-            }
-        }, 150);
-    };
-
-    const stopScanner = () => {
-        if (scannerRef.current) {
-            scannerRef.current.stop().then(() => {
-                scannerRef.current?.clear();
-                scannerRef.current = null;
-                setIsScanning(false);
-            }).catch(() => setIsScanning(false));
-        } else {
-            setIsScanning(false);
-        }
-    };
-
     const handleClearLedger = async () => {
         setLedger([]);
         await Preferences.remove({ key: 'tuzla_scan_ledger' });
         setShowClearConfirm(false);
+    };
+
+    const handleRewardFound = (id: string) => {
+        if (!unlockedRewards.includes(id)) {
+            setUnlockedRewards(prev => [...prev, id]);
+        }
+        // Refresh local ledger
+        Preferences.get({ key: 'tuzla_scan_ledger' }).then(({ value }) => {
+            if (value) {
+                try { setLedger(JSON.parse(value)); } catch (_) {}
+            }
+        });
     };
 
     return (
@@ -214,35 +148,14 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                 </div>
                             </div>
 
-                            {/* Scanner viewport */}
-                            <AnimatePresence>
-                                {isScanning && (
-                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                                        <div id="qrscan-reader" className="w-full rounded-2xl overflow-hidden border border-blue-200" />
-                                        <button onClick={stopScanner} className="mt-3 w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs uppercase tracking-widest rounded-xl transition-all">
-                                            {t.cancel}
-                                        </button>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-
-                            {scannerFeedback && (
-                                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-xs font-bold ${scannerFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
-                                    <AlertCircle size={14} className="shrink-0" />
-                                    {scannerFeedback.text}
-                                </motion.div>
-                            )}
-
                             <div className="flex-1 bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center">
                                 <p className="text-xs text-slate-500 leading-relaxed">{t.qrScannerDesc}</p>
                             </div>
 
-                            {!isScanning && (
-                                <button onClick={startScanner} className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
-                                    <QrCode size={16} />
-                                    {t.startScanner}
-                                </button>
-                            )}
+                            <button onClick={() => setIsScanning(true)} className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                                <QrCode size={16} />
+                                {t.startScanner}
+                            </button>
                         </div>
 
                         {/* Currency Converter */}
@@ -431,6 +344,19 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                     </div>
                 </div>
             </div>
+
+            {/* QrScannerModal - Full featured scanner with laser animations and reward cards */}
+            <QrScannerModal
+                isOpen={isScanning}
+                onClose={() => setIsScanning(false)}
+                lang={lang}
+                unlockedRewards={unlockedRewards}
+                onRewardFound={handleRewardFound}
+                onSelectVideo={(videoUrl) => {
+                    setPlayingVideoError(null);
+                    setPlayingVideo(videoUrl);
+                }}
+            />
 
             {/* Video lightbox */}
             <AnimatePresence>
