@@ -3,7 +3,13 @@
   "features": [
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.680213, 44.539067] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.680213,
+          44.539067
+        ]
+      },
       "properties": {
         "name": "Pannonian Lakes",
         "name_bs": "Panonska jezera",
@@ -19,14 +25,21 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.674774, 44.539492] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.674774,
+          44.539492
+        ]
+      },
       "properties": {
-        "name": "Old Town (Carsija)",
-        "name_bs": "Stari grad (Carsija)",
+        "name": "Freedom Square",
+        "name_bs": "Trg slobode",
         "category": "culture",
         "marker-size": "large",
         "marker-color": "rgba(240, 94, 31, 1)",
-        "image": "trgslobodeO.webp",
+        "image": "trgslobode.webp",
+        "popup-image": "/assets/Gallery/QuestQRLocations/trgslobode.webp",
         "icon": "trgslobodeO",
         "icon-image": "trgslobodeO",
         "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp",
@@ -35,7 +48,13 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.675957, 44.538232] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.675957,
+          44.538232
+        ]
+      },
       "properties": {
         "name": "Salt Square",
         "name_bs": "Trg soli",
@@ -51,7 +70,13 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.68567, 44.538425] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.68567,
+          44.538425
+        ]
+      },
       "properties": {
         "name": "Slana Banja",
         "name_bs": "Slana Banja",
@@ -67,7 +92,13 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.665, 44.5381] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.665,
+          44.5381
+        ]
+      },
       "properties": {
         "name": "Tuzlanka Mall",
         "name_bs": "RK Tuzlanka",
@@ -81,7 +112,13 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.651743, 44.532177] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.651743,
+          44.532177
+        ]
+      },
       "properties": {
         "name": "Bingo City Center",
         "name_bs": "Bingo City Centar",
@@ -97,7 +134,13 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.678286, 44.537054] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.678286,
+          44.537054
+        ]
+      },
       "properties": {
         "name": "Mesa Selimovic",
         "name_bs": "Meša Selimović",
@@ -113,7 +156,13 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.681146, 44.5368] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.681146,
+          44.5368
+        ]
+      },
       "properties": {
         "name": "Atelje Ismet Mujezinovic",
         "name_bs": "Atelje Ismet Mujezinović",
@@ -129,7 +178,13 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.661546, 44.540812] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.661546,
+          44.540812
+        ]
+      },
       "properties": {
         "name": "Stadion \"Tusanj\"",
         "name_bs": "Stadion \"Tušanj\"",
@@ -146,7 +201,13 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.681752, 44.540654] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.681752,
+          44.540654
+        ]
+      },
       "properties": {
         "name": "Slapovi",
         "name_bs": "Slapovi",
@@ -162,7 +223,13 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.677621, 44.538452] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.677621,
+          44.538452
+        ]
+      },
       "properties": {
         "name": "Panckaces House \"Bagi\"",
         "name_bs": "Palančinkara \"Bagi\"",
@@ -178,23 +245,36 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.678361, 44.538075] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.678361,
+          44.538075
+        ]
+      },
       "properties": {
         "name": "King Tvrtko I",
         "name_bs": "Kralj Tvrtko",
         "category": "culture",
         "marker-color": "rgba(242, 242, 255, 1)",
         "marker-size": "large",
-        "image": "tvrtkO.webp",
+        "image": "tvrtko.png",
+        "popup-image": "/assets/Gallery/QuestQRLocations/tvrtko.png",
         "icon": "tvrtkO",
-        "icon-image": "tvrtkO",
+        "icon-image": "tvrtkO.webp",
         "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp",
         "marker-symbol": "tvrtkO"
       }
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [18.676824, 44.53858] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.676824,
+          44.53858
+        ]
+      },
       "properties": {
         "name": "kapija",
         "name_bs": "kapija",

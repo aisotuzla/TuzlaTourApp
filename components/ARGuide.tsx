@@ -760,7 +760,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       {!permissionGranted && (
         <div className="absolute top-0 inset-x-0 z-[200] bg-gradient-to-r from-amber-950 via-slate-900 to-amber-950 border-b-2 border-amber-400 p-2.5 px-4 flex items-center justify-between gap-3 shadow-2xl shrink-0">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center shrink-0 animate-bounce">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center shrink-0">
               <Compass className="w-5 h-5 text-amber-400" />
             </div>
             <div className="truncate">
@@ -949,8 +949,8 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                 isTargetOffscreenLeft ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'
               }`}
             >
-              <div className="flex items-center gap-2 bg-amber-950/95 border border-amber-400/90 px-3.5 py-2.5 rounded-2xl backdrop-blur-md shadow-2xl animate-pulse">
-                <ChevronLeft className="w-6 h-6 text-amber-400 animate-bounce" />
+              <div className="flex items-center gap-2 bg-amber-950/95 border border-amber-400/90 px-3.5 py-2.5 rounded-2xl backdrop-blur-md shadow-2xl">
+                <ChevronLeft className="w-6 h-6 text-amber-400" />
                 <div className="flex flex-col">
                   <span className="text-amber-400 font-black text-[10px] uppercase tracking-widest">
                     {targetRelativeBearing !== null
@@ -969,7 +969,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                 isTargetOffscreenRight ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6'
               }`}
             >
-              <div className="flex items-center gap-2 bg-amber-950/95 border border-amber-400/90 px-3.5 py-2.5 rounded-2xl backdrop-blur-md shadow-2xl animate-pulse">
+              <div className="flex items-center gap-2 bg-amber-950/95 border border-amber-400/90 px-3.5 py-2.5 rounded-2xl backdrop-blur-md shadow-2xl">
                 <div className="flex flex-col items-end">
                   <span className="text-amber-400 font-black text-[10px] uppercase tracking-widest">
                     {targetRelativeBearing !== null
@@ -980,7 +980,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                     {activeGuidanceName} • {targetDistance ? (targetDistance >= 1000 ? `${(targetDistance / 1000).toFixed(1)}km` : `${Math.round(targetDistance)}m`) : ''}
                   </span>
                 </div>
-                <ChevronRight className="w-6 h-6 text-amber-400 animate-bounce" />
+                <ChevronRight className="w-6 h-6 text-amber-400" />
               </div>
             </div>
           </>

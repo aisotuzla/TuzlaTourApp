@@ -22,6 +22,8 @@ interface MapViewProps {
   lang: Language;
   features: AppFeatures;
   unlockedRewards?: string[];
+  navigationTarget?: any | null;
+  onClearNavigation?: () => void;
 }
 
 
@@ -133,7 +135,7 @@ const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
   }
 ];
 
-const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] }) => {
+const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [], navigationTarget, onClearNavigation }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const userMarker = useRef<maplibregl.Marker | null>(null);
@@ -158,6 +160,40 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [] 
   const [isNavigating, setIsNavigating] = useState(false);
   const [routeDistance, setRouteDistance] = useState<number | null>(null);
   const [routeTime, setRouteTime] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!navigationTarget || !Number.isFinite(navigationTarget.lat) || !Number.isFinite(navigationTarget.lon)) return;
+    const target: SheetTarget = {
+      name: navigationTarget.name,
+      lat: navigationTarget.lat,
+      lon: navigationTarget.lon,
+      category: navigationTarget.category || 'Dining',
+      description: navigationTarget.address || navigationTarget.description,
+      image: navigationTarget.image,
+    };
+    handleSelectTarget(target);
+    setSnapState('half');
+
+    if (map.current) {
+      if (searchMarkerRef.current) searchMarkerRef.current.remove();
+      searchMarkerRef.current = new maplibregl.Marker({ color: '#ea580c' })
+        .setLngLat([navigationTarget.lon, navigationTarget.lat])
+        .setPopup(
+          new maplibregl.Popup({ offset: 25 }).setHTML(`
+            <div style="font-family:'Quicksand',sans-serif; padding:10px; min-width:180px;">
+              <h4 style="margin:0 0 4px; font-weight:800; color:#1e293b; font-size:13px;">${navigationTarget.name}</h4>
+              ${navigationTarget.address ? `<p style="margin:0 0 8px; font-size:11px; color:#64748b;">${navigationTarget.address}</p>` : ''}
+              <button onclick="window.startNavigationFromPopup('${navigationTarget.name.replace(/'/g, "\\'")}', ${navigationTarget.lat}, ${navigationTarget.lon})" style="width:100%; background:#2563eb; border:none; border-radius:6px; color:white; padding:6px 0; font-weight:800; font-size:11px; cursor:pointer; font-family:'Quicksand',sans-serif;">
+                ${lang === 'bs' ? '🧭 Navigacija' : '🧭 Navigate'}
+              </button>
+            </div>
+          `)
+        )
+        .addTo(map.current);
+      searchMarkerRef.current.togglePopup();
+    }
+    onClearNavigation?.();
+  }, [navigationTarget]);
   const [isRouteLoading, setIsRouteLoading] = useState(false);
 
   // Register PMTiles Protocol and pre-cache Tuzla PMTiles into OPFS

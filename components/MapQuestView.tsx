@@ -20,6 +20,7 @@ import ARGuide from './ARGuide.tsx';
 import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
 import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
 import { setupPoiMarkerLayers } from '../utils/mapPoiLayers.ts';
+import { generateQuestPopupHtml } from '../utils/questPopupHtml.ts';
 
 export interface MapQuestViewProps {
   lang: Language; features: AppFeatures; unlockedRewards: string[];
@@ -37,60 +38,17 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
 };
 
 export const QUEST_POI_THUMBNAILS: Record<string, string> = {
-  trg_slobode: '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
-  trgslobodeO: '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
-  'trgslobodeO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
-  freedom_square: '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
-  salt_square: '/assets/Gallery/QuestQRLocations/QuestQR/sonitrgO.webp',
-  sonitrgO: '/assets/Gallery/QuestQRLocations/QuestQR/sonitrgO.webp',
-  'sonitrgO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/sonitrgO.webp',
-  palancinkara: '/assets/Gallery/QuestQRLocations/QuestQR/bagiO.webp',
-  palancikara: '/assets/Gallery/QuestQRLocations/QuestQR/bagiO.webp',
-  bagiO: '/assets/Gallery/QuestQRLocations/QuestQR/bagiO.webp',
-  'bagiO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/bagiO.webp',
+  trg_slobode: '/assets/Gallery/QuestQRLocations/trgslobode.webp',
+  salt_square: '/assets/Gallery/QuestQRLocations/sonitrg.webp',
+  palancinkara: '/assets/Gallery/Food/bagi.webp',
   slana_banja: '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
-  banjaO: '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
-  'banjaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
-  BanjaO: '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
-  'BanjaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
-  panonika: '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
-  panonikaO: '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
-  'panonikaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
-  panonica: '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
-  panonicaO: '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
-  'panonicaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
-  pannonian_lakes: '/assets/Gallery/QuestQRLocations/QuestQR/panonicaO.webp',
-  slapovi: '/assets/Gallery/QuestQRLocations/QuestQR/slapoviO.webp',
-  slapoviO: '/assets/Gallery/QuestQRLocations/QuestQR/slapoviO.webp',
-  'slapoviO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/slapoviO.webp',
-  kapija: '/assets/Gallery/QuestQRLocations/QuestQR/kapijaO.webp',
-  kapijaO: '/assets/Gallery/QuestQRLocations/QuestQR/kapijaO.webp',
-  'kapijaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/kapijaO.webp',
-  atelje_ismet: '/assets/Gallery/QuestQRLocations/QuestQR/ateljeO.webp',
-  atelje: '/assets/Gallery/QuestQRLocations/QuestQR/ateljeO.webp',
-  ateljeO: '/assets/Gallery/QuestQRLocations/QuestQR/ateljeO.webp',
-  'ateljeO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/ateljeO.webp',
-  IsmetO: '/assets/Gallery/QuestQRLocations/QuestQR/IsmetO.webp',
-  'IsmetO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/IsmetO.webp',
-  bingo_city_centar: '/assets/Gallery/QuestQRLocations/QuestQR/bcctuzlaO.webp',
-  bcctuzlaO: '/assets/Gallery/QuestQRLocations/QuestQR/bcctuzlaO.webp',
-  'bcctuzlaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/bcctuzlaO.webp',
-  mesa_selimovic: '/assets/Gallery/QuestQRLocations/QuestQR/mesaO.webp',
-  mesa: '/assets/Gallery/QuestQRLocations/QuestQR/mesaO.webp',
-  mesaO: '/assets/Gallery/QuestQRLocations/QuestQR/mesaO.webp',
-  'mesaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/mesaO.webp',
-  tvrtko_park: '/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp',
-  tvrtko: '/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp',
-  tvrtkO: '/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp',
-  'tvrtkO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp',
-  tuzlanka: '/assets/Gallery/QuestQRLocations/QuestQR/TuzlankaO.webp',
-  TuzlankaO: '/assets/Gallery/QuestQRLocations/QuestQR/TuzlankaO.webp',
-  'TuzlankaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/TuzlankaO.webp',
-  hukaO: '/assets/Gallery/QuestQRLocations/QuestQR/hukaO.webp',
-  'hukaO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/hukaO.webp',
-  sojO: '/assets/Gallery/QuestQRLocations/QuestQR/sojO.webp',
-  'sojO.webp': '/assets/Gallery/QuestQRLocations/QuestQR/sojO.webp',
-  marker: '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp',
+  panonika: '/assets/Gallery/QuestQRLocations/panonsko jezero.png',
+  slapovi: '/assets/Gallery/QuestQRLocations/tzslapovi.webp',
+  kapija: '/assets/Gallery/QuestQRLocations/kapija.webp',
+  atelje_ismet: '/assets/Gallery/QuestQRLocations/atelje.webp',
+  bingo_city_centar: '/assets/icons/Bingo-supermarket.webp',
+  mesa_selimovic: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp',
+  tvrtko_park: '/assets/Gallery/QuestQRLocations/ParkKraljaTvrtka.webp',
 };
 
 export const preloadPoiMarkerImages = async (mapInstance: maplibregl.Map) => {
@@ -103,7 +61,7 @@ export const preloadPoiMarkerImages = async (mapInstance: maplibregl.Map) => {
       if (res?.data && !mapInstance.hasImage(id)) {
         mapInstance.addImage(id, res.data);
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 };
 
@@ -115,7 +73,7 @@ export const handlePoiMarkerMissingImage = async (mapInstance: maplibregl.Map, i
     if (res?.data && !mapInstance.hasImage(id)) {
       mapInstance.addImage(id, res.data);
     }
-  } catch (_) {}
+  } catch (_) { }
 };
 
 
@@ -224,6 +182,15 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   useEffect(() => {
     if (!navigationTarget || !Number.isFinite(navigationTarget.lat) || !Number.isFinite(navigationTarget.lon)) return;
     handleStartNavigation(navigationTarget.name, navigationTarget.lat, navigationTarget.lon);
+    if (map.current) {
+      map.current.flyTo({
+        center: [navigationTarget.lon, navigationTarget.lat],
+        zoom: activeStyle === OFFLINE_STYLE ? 15 : 17.5,
+        pitch: 60,
+        bearing: -15,
+        duration: 2500
+      });
+    }
     onClearNavigation?.();
   }, [navigationTarget]);
 
@@ -412,21 +379,50 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       const matchedLoc = LOCATIONS.find((l) => l.id === target.id || l.id.toLowerCase() === target.id.toLowerCase() || l.name.bs.toLowerCase().includes(target.name.bs.toLowerCase()) || l.name.en.toLowerCase().includes(target.name.en.toLowerCase()));
       const coords = QUEST_TARGET_COORDS[target.id] || (matchedLoc ? { lat: matchedLoc.coordinates[0], lon: matchedLoc.coordinates[1] } : null);
       if (!coords) return;
-      const title = target.name[lang] || target.name.bs;
+      const title = target.name[lang] || target.name.en || target.name.bs;
       const imageUrl = target.Image || matchedLoc?.image || '/assets/Gallery/QuestQRLocations/trgslobode.webp';
-      const description = matchedLoc?.description?.[lang] || matchedLoc?.description?.bs || matchedLoc?.description?.en || (lang === 'bs' ? 'Kulturna i historijska znamenitost grada Tuzle.' : 'Cultural and historical landmark of Tuzla.');
       const customPoiColor = POI_COLORS[target.id] || '#3b82f6';
-      const poiThumb = QUEST_POI_THUMBNAILS[target.id] || QUEST_POI_THUMBNAILS[target.id.toLowerCase()] || '/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp';
+      const poiThumb = QUEST_POI_THUMBNAILS[target.id] || imageUrl;
       const el = document.createElement('div');
-      el.className = 'quest-target-marker select-none pointer-events-none';
+      el.className = 'quest-target-marker select-none cursor-pointer';
       el.style.width = '42px';
       el.style.height = '42px';
       el.style.display = 'flex';
       el.style.alignItems = 'center';
       el.style.justifyContent = 'center';
 
-      el.innerHTML = `<div class="relative flex items-center justify-center group pointer-events-none" title="${title}"><div class="w-10 h-10 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl border-2 pointer-events-none relative" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><img src="${poiThumb}" alt="${title}" class="w-8 h-8 rounded-xl object-cover pointer-events-none" onerror="this.style.display='none'" /><span class="absolute top-0.5 right-0.5 text-[9px] leading-none font-black drop-shadow pointer-events-none px-1 rounded-full ${isUnlocked ? 'bg-amber-400 text-black' : 'bg-slate-900/80 text-white'}">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm pointer-events-none" style="background-color: ${customPoiColor};"></div></div>`;
-      const marker = new maplibregl.Marker(el).setLngLat([coords.lon, coords.lat]).addTo(map.current!);
+      el.innerHTML = `<div class="relative flex items-center justify-center group" title="${title}"><div class="w-10 h-10 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl border-2 relative transition-transform duration-200 hover:scale-110 active:scale-95" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><img src="${poiThumb}" alt="${title}" class="w-8 h-8 rounded-xl object-cover pointer-events-none" onerror="this.style.display='none'" /><span class="absolute top-0.5 right-0.5 text-[9px] leading-none font-black drop-shadow pointer-events-none px-1 rounded-full ${isUnlocked ? 'bg-amber-400 text-black' : 'bg-slate-900/80 text-white'}">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm pointer-events-none" style="background-color: ${customPoiColor};"></div></div>`;
+
+      const popupHtml = generateQuestPopupHtml(
+        {
+          id: target.id,
+          name: target.name,
+          description: target.description,
+          Image: imageUrl,
+          audio: target.audio,
+          video: target.video,
+          panorama: target.panorama,
+          panoramaHaov: target.panoramaHaov,
+          coordinates: [coords.lat, coords.lon],
+          category: target.category || matchedLoc?.category,
+        },
+        lang,
+        isUnlocked,
+        true
+      );
+
+      const popup = new maplibregl.Popup({
+        offset: 24,
+        maxWidth: '300px',
+        closeButton: true,
+        closeOnClick: true,
+        className: 'quest-poi-map-popup',
+      }).setHTML(popupHtml);
+
+      const marker = new maplibregl.Marker(el)
+        .setLngLat([coords.lon, coords.lat])
+        .setPopup(popup)
+        .addTo(map.current!);
       markersRef.current[target.id] = marker;
     });
     return () => { Object.values(markersRef.current).forEach((m) => m.remove()); markersRef.current = {}; };
@@ -751,11 +747,24 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         />
       )}
 
-      {/* FLOATING ACTION BUTTONS (LOCATION, RULES, LAYERS) */}
+      {/* FLOATING ACTION BUTTONS (AR, LOCATION, RULES, LAYERS) */}
       <div
-        className="absolute z-30 flex items-center gap-1.5 transition-all duration-150 left-3"
+        className="absolute z-30 flex flex-col items-center gap-1.5 transition-all duration-150 left-3"
         style={showARGuide ? { bottom: `calc(${100 - splitHeight}% + 14px)` } : { bottom: '0.85rem' }}
       >
+        {/* AR guide button just above Location round button */}
+        <button
+          onClick={handleToggleARMode}
+          className={`w-9 h-9 flex items-center justify-center font-black text-xs rounded-full shadow-lg backdrop-blur-xl border transition-all active:scale-95 ${
+            showARGuide
+              ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 border-amber-300 ring-2 ring-amber-400/50 shadow-amber-500/30'
+              : 'bg-slate-900/90 text-amber-400 border-amber-400/40 hover:text-white hover:border-amber-400'
+          }`}
+          title={lang === 'bs' ? 'AR Vodič' : 'AR Guide'}
+        >
+          AR
+        </button>
+
         <button
           onClick={() => {
             if (userLocationRef.current && map.current) {
@@ -801,7 +810,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       {/* Layer Menu Dropdown */}
       <AnimatePresence>
         {showLayerMenu && (
-          <motion.div initial={{ opacity: 0, y: 10, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.9 }} className="absolute z-30 w-64 p-3 bg-slate-900/95 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-2xl space-y-1.5 transition-all duration-150 left-3" style={{ bottom: '4.5rem' }}>
+          <motion.div initial={{ opacity: 0, y: 10, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.9 }} className="absolute z-30 w-64 p-3 bg-slate-900/95 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-2xl space-y-1.5 transition-all duration-150 left-14" style={{ bottom: showARGuide ? `calc(${100 - splitHeight}% + 14px)` : '4.5rem' }}>
             <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2 py-1 border-b border-white/5 flex items-center justify-between"><span>{lang === 'bs' ? 'Sloj Mape' : 'Map Layer'}</span><Layers size={12} className="text-blue-400" /></div>
             {MAP_LAYER_OPTIONS.map((layerOpt) => {
               const isSelected = activeStyle === layerOpt.url;
@@ -819,7 +828,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       {/* Quest Game Rules Dialog */}
       <AnimatePresence>
         {showRules && (
-          <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute z-40 max-w-[300px] p-4 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-amber-500/40 shadow-2xl text-xs text-slate-200 left-3" style={{ bottom: '4.5rem' }}>
+          <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute z-40 max-w-[300px] p-4 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-amber-500/40 shadow-2xl text-xs text-slate-200 left-14" style={{ bottom: showARGuide ? `calc(${100 - splitHeight}% + 14px)` : '4.5rem' }}>
             <div className="flex items-center justify-between mb-2 pb-1 border-b border-white/10">
               <span className="font-black text-amber-400 uppercase tracking-wide text-[10px]">{QUEST_GAME_RULES[lang]?.title || QUEST_GAME_RULES.en.title}</span>
               <button onClick={() => setShowRules(false)} className="text-white/60 hover:text-white"><X size={14} /></button>
@@ -856,8 +865,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
               const isVertical = playingQuestVideo.url.includes('MesaSelimovic');
               return (
                 <div className={`w-full bg-black border-0 sm:border border-white/15 overflow-hidden shadow-2xl flex flex-col h-full sm:h-auto ${isVertical
-                    ? 'sm:max-w-[420px] sm:max-h-[92vh] rounded-none sm:rounded-[2.5rem]'
-                    : 'sm:max-w-2xl rounded-none sm:rounded-[2.5rem]'
+                  ? 'sm:max-w-[420px] sm:max-h-[92vh] rounded-none sm:rounded-[2.5rem]'
+                  : 'sm:max-w-2xl rounded-none sm:rounded-[2.5rem]'
                   }`}>
                   <div className="p-3.5 sm:p-4 flex items-center justify-between border-b border-white/10 bg-white/5 shrink-0">
                     <div className="flex items-center gap-2.5">
@@ -884,8 +893,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
                   </div>
 
                   <div className={`relative w-full bg-black flex items-center justify-center overflow-hidden ${isVertical
-                      ? 'flex-1 sm:flex-none sm:aspect-[9/16] sm:max-h-[75vh]'
-                      : 'flex-1 sm:flex-none aspect-video sm:max-h-[60vh]'
+                    ? 'flex-1 sm:flex-none sm:aspect-[9/16] sm:max-h-[75vh]'
+                    : 'flex-1 sm:flex-none aspect-video sm:max-h-[60vh]'
                     }`}>
                     <video
                       src={playingQuestVideo.url}

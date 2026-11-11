@@ -4,7 +4,7 @@ export const TUZLA_CENTER: [number, number] = [44.5388, 18.6750];
 
 const LOCATIONS_RAW: Location[] = [
   {
-    id: '1',
+    id: 'panonsko jezero',
     name: {
       en: 'Pannonian Lakes',
       bs: 'Panonska jezera',
@@ -25,7 +25,7 @@ const LOCATIONS_RAW: Location[] = [
   },
 
   {
-    id: '3',
+    id: 'sonitrg',
     name: {
       en: 'Salt Square',
       bs: 'Trg soli',
@@ -192,20 +192,20 @@ const LOCATIONS_RAW: Location[] = [
   {
     id: 'Palancinkara Bagi',
     name: {
-      en: 'Pancake Bagi',
-      bs: 'Palančikara Bagi',
-      de: 'Pancake Bagi',
-      tr: 'Pancake Bagi',
+      en: 'Bagi Crêperie',
+      bs: 'Palačinkara kod Bagija',
+      de: 'Crêperie Bagi',
+      tr: 'Bagi Krep',
     },
     description: {
-      en: 'A famous dessert spot in Tuzla, known for its creative sweet pancakes and pancake sushi.',
-      bs: 'Poznato mjesto za deserte u Tuzli, poznato po kreativnim slatkim palačinkama i sushi palačinkama.',
-      de: 'Ein berühmtes Dessert-Lokal in Tuzla, bekannt für seine kreativen süßen Pfannkuchen und Pancake-Sushi.',
-      tr: 'Tuzla\'da yaratıcı tatlı krepleri ve krep suşileriyle tanınan ünlü bir tatlı noktası.',
+      en: 'Tuzla\'s favorite dessert destination, famous for artisanal sweet and savory crêpes, pancake sushi, and delicious treats.',
+      bs: 'Omiljena tuzlanska slatka destinacija, poznata po vrhunskim slatkim i slanim palačinkama, sushi palačinkama i poslasticama.',
+      de: 'Tuzlas beliebtestes Dessert-Lokal, berühmt für süße und herzhafte Crêpes, Pancake-Sushi und köstliche Desserts.',
+      tr: 'Tuzla\'nın en sevilen tatlı mekanı; lezzetli tatlı ve tuzlu krepleri, krep suşisi ve enfes tatlılarıyla ünlüdür.',
     },
     image: '/assets/Gallery/Food/bagi.webp',
     coordinates: [44.5383762, 18.6775339],
-    category: 'culture',
+    category: 'food',
     qrCode: 'Palancinkara Bagi',
     discount: 'Sweet Reward',
     address: 'Trg Kapija, 75000 Tuzla, Bosnia and Herzegovina',
@@ -1085,8 +1085,8 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     rating: 4.7,
     user_ratings_total: 540,
     address: 'Patriotske lige 24, Tuzla',
-    latitude: 44.5394,
-    longitude: 18.6825,
+    latitude: 44.53915130911659,
+    longitude: 18.678306388990187,
     category: 'Fast Food',
     type: 'Dining',
     image: '/assets/Gallery/Food/limenka.webp',

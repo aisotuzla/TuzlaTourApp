@@ -266,7 +266,13 @@ const AppContent: React.FC = () => {
                   <Route path="/history" element={<History lang={lang} />} />
                   <Route path="/transportation" element={<Transportation lang={lang} />} />
                   <Route path="/map" element={
-                    <MapView lang={lang} features={features} unlockedRewards={unlockedRewards} />
+                    <MapView
+                      lang={lang}
+                      features={features}
+                      unlockedRewards={unlockedRewards}
+                      navigationTarget={navigationTarget}
+                      onClearNavigation={() => setNavigationTarget(null)}
+                    />
                   } />
                   <Route path="/quest" element={
                     <MapQuestView
@@ -289,7 +295,18 @@ const AppContent: React.FC = () => {
                     />
                   } />
                   <Route path="/task-manager" element={<TaskManager lang={lang} />} />
-                  <Route path="/food" element={<Food lang={lang} />} />
+                  <Route
+                    path="/food"
+                    element={
+                      <Food
+                        lang={lang}
+                        onNavigateToTarget={(target) => {
+                          setNavigationTarget(target);
+                          navigateToTab(AppTab.MAP);
+                        }}
+                      />
+                    }
+                  />
                   <Route path="/accommodation" element={<Accommodation lang={lang} />} />
                   <Route path="/ar" element={
                     <ARGuide

@@ -1,27 +1,31 @@
 import React, { useState } from 'react';
-import { Language } from '../types';
-import { TRANSLATIONS, ALL_TUZLA_VENUES } from '../constants';
+import { useNavigate } from 'react-router-dom';
+import { Language, LocationData } from '../types';
+import { TUZLA_DINING_DATA } from '../constants';
 import {
   ExternalLink,
   UtensilsCrossed,
   Navigation,
-  Star,
+  MapPin,
   Bike,
   Utensils,
-  Coffee,
   Plus,
-  Check,
-  ChevronRight
+  Check
 } from 'lucide-react';
-import { LocationData } from '../types';
 import { addToItinerary } from '../utils/itineraryUtils';
 import { useImage } from '../hooks/ImageContext';
 
 /* ─── All Venues Sub-component ─── */
-const AllVenuesSection: React.FC<{ lang: Language }> = ({ lang }) => {
+interface AllVenuesSectionProps {
+  lang: Language;
+  onNavigateToTarget?: (target: { name: string; lat: number; lon: number }) => void;
+}
+
+const AllVenuesSection: React.FC<AllVenuesSectionProps> = ({ lang, onNavigateToTarget }) => {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<'All' | 'Dining'>('All');
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
-  const filtered = filter === 'All' ? ALL_TUZLA_VENUES : ALL_TUZLA_VENUES.filter(v => v.type === filter);
+  const filtered = filter === 'All' ? TUZLA_DINING_DATA : TUZLA_DINING_DATA.filter(v => v.type === filter);
 
   const handleAddToItinerary = async (venue: LocationData) => {
     const type = venue.type === 'Dining' ? 'Restaurant' : 'Attraction';
@@ -31,6 +35,17 @@ const AllVenuesSection: React.FC<{ lang: Language }> = ({ lang }) => {
     }
   };
 
+  const handleNavigateToVenue = (venue: LocationData) => {
+    if (onNavigateToTarget) {
+      onNavigateToTarget({
+        name: venue.name,
+        lat: venue.latitude,
+        lon: venue.longitude,
+      });
+    } else {
+      navigate('/map');
+    }
+  };
 
   return (
     <div className="w-full flex flex-col gap-8">
@@ -64,68 +79,83 @@ const AllVenuesSection: React.FC<{ lang: Language }> = ({ lang }) => {
         {filtered.map((venue, idx) => (
           <div
             key={idx}
-            className="group bg-white p-6 rounded-[2rem] border border-blue-400/40 shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] hover:border-blue-400 transition-all hover:-translate-y-1 flex flex-col"
+            className="group bg-white p-6 rounded-[2rem] border border-blue-400/40 shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] hover:border-blue-400 transition-all hover:-translate-y-1 flex flex-col justify-between"
           >
-            {venue.image && (
-              <div className="w-full h-40 sm:h-48 rounded-2xl overflow-hidden mb-5 shadow-inner bg-blue-50/50">
-                <img
-                  src={venue.image}
-                  alt={venue.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-              </div>
-            )}
-            <div className="space-y-4 flex-grow">
-              <div className="flex justify-between items-start">
-                <h3 className="text-lg font-black text-blue-950 leading-tight group-hover:text-blue-600 transition-colors">
-                  {venue.name}
-                </h3>
-                <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg shrink-0 ml-2">
-                  <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                  <span className="text-[10px] font-black text-yellow-700">{venue.rating}</span>
+            <div>
+              {venue.image && (
+                <div className="w-full h-40 sm:h-48 rounded-2xl overflow-hidden mb-5 shadow-inner bg-blue-50/50">
+                  <img
+                    src={venue.image}
+                    alt={venue.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
                 </div>
-              </div>
+              )}
+              <div className="space-y-4">
+                <div className="flex justify-between items-start">
+                  <h3 className="text-lg font-black text-blue-950 leading-tight group-hover:text-blue-600 transition-colors">
+                    {venue.name}
+                  </h3>
+                </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-blue-600">
-                  <Star className="w-3.5 h-3.5 shrink-0" />
-                  <span className="text-xs font-bold leading-tight">{venue.address}</span>
-                </div>
-                <div className="flex items-center gap-2 text-blue-900/50">
-                  <UtensilsCrossed className="w-3.5 h-3.5 shrink-0" />
-                  <span className="text-xs font-semibold">{venue.category}</span>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-blue-600">
+                    <MapPin className="w-3.5 h-3.5 shrink-0 text-blue-500" />
+                    <span className="text-xs font-bold leading-tight text-slate-700">{venue.address}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-blue-900/50">
+                    <UtensilsCrossed className="w-3.5 h-3.5 shrink-0" />
+                    <span className="text-xs font-semibold">{venue.category}</span>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              {/* Website Link */}
-              <div className="flex flex-col gap-2">
-                {venue.website && (
+            {/* Bottom Actions */}
+            <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col gap-2.5">
+              {/* Navigation button linking to map and flyin to address */}
+              <button
+                onClick={() => handleNavigateToVenue(venue)}
+                className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-md shadow-blue-500/25 active:scale-95"
+              >
+                <Navigation className="w-3.5 h-3.5" />
+                {lang === 'en' ? 'Navigate on Map' : lang === 'bs' ? 'Navigacija na mapi' : lang === 'de' ? 'Auf Karte zeigen' : 'Haritada Gör'}
+              </button>
+
+              <div className="grid grid-cols-2 gap-2">
+                {venue.website ? (
                   <a
                     href={venue.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-blue-50 text-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                    className="flex items-center justify-center gap-1.5 w-full py-2.5 bg-blue-50 text-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-all shadow-sm"
                   >
-                    {lang === 'en' ? 'Visit' : lang === 'de' ? 'Besuchen' : 'Posjeti'}
+                    {lang === 'en' ? 'Visit' : lang === 'de' ? 'Web' : 'Web'}
                     <ExternalLink className="w-3 h-3" />
                   </a>
-                )}
-              </div>
-              <button
-                onClick={() => handleAddToItinerary(venue)}
-                disabled={addedIds.has(venue.name)}
-                className={`flex items-center justify-center gap-2 w-full py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-sm ${addedIds.has(venue.name)
-                    ? 'bg-green-50 text-green-600 border border-green-200 cursor-default'
-                    : 'bg-yellow-500 text-white hover:bg-yellow-600 active:scale-95'
-                  }`}
-              >
-                {addedIds.has(venue.name) ? (
-                  <><Check className="w-3.5 h-3.5" /> {lang === 'en' ? 'In Plan' : lang === 'de' ? 'In Plan' : 'U planu'}</>
                 ) : (
-                  <><Plus className="w-3.5 h-3.5" /> {lang === 'en' ? 'Itinerary' : lang === 'de' ? 'Plan' : 'Plan'}</>
+                  <div />
                 )}
-              </button>
+
+                <button
+                  onClick={() => handleAddToItinerary(venue)}
+                  disabled={addedIds.has(venue.name)}
+                  className={`flex items-center justify-center gap-1.5 w-full py-2.5 rounded-2xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm ${
+                    venue.website ? '' : 'col-span-2'
+                  } ${
+                    addedIds.has(venue.name)
+                      ? 'bg-green-50 text-green-600 border border-green-200 cursor-default'
+                      : 'bg-amber-500 text-white hover:bg-amber-600 active:scale-95'
+                  }`}
+                >
+                  {addedIds.has(venue.name) ? (
+                    <><Check className="w-3 h-3" /> {lang === 'en' ? 'In Plan' : 'U planu'}</>
+                  ) : (
+                    <><Plus className="w-3 h-3" /> {lang === 'en' ? 'Plan' : 'U plan'}</>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -173,11 +203,12 @@ const AllVenuesSection: React.FC<{ lang: Language }> = ({ lang }) => {
   );
 };
 
-interface FoodProps {
+export interface FoodProps {
   lang: Language;
+  onNavigateToTarget?: (target: { name: string; lat: number; lon: number }) => void;
 }
 
-const Food: React.FC<FoodProps> = ({ lang }) => {
+const Food: React.FC<FoodProps> = ({ lang, onNavigateToTarget }) => {
   const { openGallery } = useImage();
 
   const restaurantImages = [
@@ -212,7 +243,7 @@ const Food: React.FC<FoodProps> = ({ lang }) => {
       </header>
 
       <section className="w-full">
-        <AllVenuesSection lang={lang} />
+        <AllVenuesSection lang={lang} onNavigateToTarget={onNavigateToTarget} />
       </section>
 
       {/* 4 Image Scrollable Row */}

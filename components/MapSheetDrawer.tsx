@@ -18,12 +18,14 @@ import {
   Lock,
   Compass,
   MapPin,
-  ArrowRight
+  ArrowRight,
+  Utensils
 } from 'lucide-react';
 import { Language } from '../types';
 import { getDistance } from '../utils/geoUtils';
 import { tuzlaHotelData } from '../tuzlaHotelData';
 import { QUEST_TARGETS } from '../constants/questData';
+import { TUZLA_DINING_DATA } from '../constants';
 
 export type SheetSnapState = 'collapsed' | 'half' | 'expanded';
 
@@ -105,7 +107,7 @@ export const MapSheetDrawer: React.FC<MapSheetDrawerProps> = ({
   unlockedRewards = [],
   landmarks,
 }) => {
-  const [activeTab, setActiveTab] = useState<'landmarks' | 'hotels' | 'rewards' | 'layers'>('landmarks');
+  const [activeTab, setActiveTab] = useState<'landmarks' | 'hotels' | 'dinings' | 'rewards' | 'layers'>('landmarks');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Format distance helper
@@ -336,6 +338,21 @@ export const MapSheetDrawer: React.FC<MapSheetDrawerProps> = ({
             >
               <HotelIcon size={14} className={activeTab === 'hotels' ? 'text-white' : 'text-amber-400'} />
               <span>{lang === 'bs' ? 'Hoteli' : 'Hotels'}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab('dinings');
+                if (snapState === 'collapsed') onSnapChange('half');
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shrink-0 transition-all ${
+                activeTab === 'dinings' && snapState !== 'collapsed'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 ring-1 ring-blue-400'
+                  : 'bg-white/5 hover:bg-white/10 text-slate-300'
+              }`}
+            >
+              <Utensils size={14} className={activeTab === 'dinings' ? 'text-white' : 'text-orange-400'} />
+              <span>{lang === 'bs' ? 'Restorani' : 'Dinings'}</span>
             </button>
 
             <button
@@ -622,6 +639,92 @@ export const MapSheetDrawer: React.FC<MapSheetDrawerProps> = ({
                             lat: hotel.latitude,
                             lon: hotel.longitude,
                             category: 'Hotel',
+                          });
+                        }}
+                        className="p-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white transition-all shrink-0 group/btn"
+                        title={lang === 'bs' ? 'Započni rutu' : 'Start route'}
+                      >
+                        <Route size={16} className="group-hover/btn:scale-110 transition-transform" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* TAB DININGS (RESTORANI & HRANA) */}
+            {activeTab === 'dinings' && searchResults.length === 0 && (
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-slate-400 pt-1">
+                  <span className="flex items-center gap-1.5">
+                    <Utensils size={14} className="text-orange-400" />
+                    {lang === 'bs' ? 'Restorani i Hrana' : 'Dinings & Food'}
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500">{TUZLA_DINING_DATA.length}</span>
+                </div>
+
+                {TUZLA_DINING_DATA.map((dining, idx) => {
+                  const distance = formatDistance(dining.latitude, dining.longitude);
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() =>
+                        onSelectTarget({
+                          name: dining.name,
+                          lat: dining.latitude,
+                          lon: dining.longitude,
+                          category: dining.category,
+                          description: dining.address,
+                          image: dining.image,
+                        })
+                      }
+                      className="p-3.5 bg-white/5 hover:bg-blue-600/15 border border-white/5 hover:border-blue-500/40 rounded-2xl transition-all flex items-center justify-between group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        {dining.image ? (
+                          <img
+                            src={dining.image}
+                            alt={dining.name}
+                            className="w-12 h-12 rounded-xl object-cover border border-white/10 shrink-0"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="p-3 bg-orange-500/10 text-orange-400 rounded-xl group-hover:bg-orange-600 group-hover:text-white transition-all shrink-0">
+                            <Utensils size={20} />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <h4 className="font-extrabold text-sm text-white group-hover:text-blue-300 truncate">
+                            {dining.name}
+                          </h4>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[9px] uppercase font-black tracking-wider text-orange-400/90">
+                              {dining.category}
+                            </span>
+                            {distance && (
+                              <span className="text-[10px] font-bold text-slate-400 flex items-center gap-0.5">
+                                • {distance}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-400 truncate mt-0.5 font-medium">
+                            {dining.address}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onStartNavigation({
+                            name: dining.name,
+                            lat: dining.latitude,
+                            lon: dining.longitude,
+                            category: dining.category,
+                            description: dining.address,
+                            image: dining.image,
                           });
                         }}
                         className="p-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white transition-all shrink-0 group/btn"
