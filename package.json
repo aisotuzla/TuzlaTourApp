@@ -19,10 +19,11 @@
     "@capacitor/browser": "^8.0.3",
     "@capacitor/camera": "^8.0.2",
     "@capacitor/cli": "^8.4.1",
-    "@capacitor/core": "^8.6.0",
+    "@capacitor/core": "^8.4.1",
     "@capacitor/geolocation": "^8.2.0",
     "@capacitor/local-notifications": "^8.0.2",
     "@capacitor/preferences": "^8.0.1",
+    "@capacitor/push-notifications": "^8.0.2",
     "@emotion/is-prop-valid": "^1.4.0",
     "@makina-corpus/maplibre-offline-pmtiles": "^2.1.1",
     "@maplibre/geojson-vt": "^6.1.1",
@@ -90,7 +91,8 @@
     "usb@2.18.0": true,
     "node": true,
     "@google/genai@2.19.0": true,
-    "esbuild@0.27.0": true,
-    "msedge-tts@2.0.9": true
+    "msedge-tts@2.0.9": true,
+    "@firebase/util@1.15.3": true,
+    "esbuild@0.25.12": true
   }
 }

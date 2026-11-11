@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "243343684809",
+    "project_id": "tuzlatourguide",
+    "storage_bucket": "tuzlatourguide.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:243343684809:android:7d6d4d3e4feb1f22bb4918",
+        "android_client_info": {
+          "package_name": "com.tuzlatourguide"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiQZg1NaFGJpNdFNk7wq9YB0bwojtTRsM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

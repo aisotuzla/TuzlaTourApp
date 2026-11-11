@@ -21,8 +21,8 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || payload.data?.title || 'Tuzla Tour Guide';
   const notificationOptions = {
     body: payload.notification?.body || payload.data?.body || '',
-    icon: '/favicon.png',
-    badge: '/favicon.png',
+    icon: '/resources/TuzlaTourAppLogo192x192.png',
+    badge: '/resources/TuzlaTourAppLogo192x192.png',
     data: payload.data || {}
   };
 
@@ -32,18 +32,21 @@ messaging.onBackgroundMessage((payload) => {
 // Click notification handler to open or focus the app
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const urlToOpen = event.notification.data?.url || '/';
+  const requestedUrl = new URL(event.notification.data?.url || '/', self.location.origin);
+  const urlToOpen =
+    requestedUrl.origin === self.location.origin
+      ? requestedUrl
+      : new URL('/', self.location.origin);
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
-        if (client.url === urlToOpen && 'focus' in client) {
-          return client.focus();
+        if (new URL(client.url).origin === urlToOpen.origin && 'focus' in client) {
+          return client.navigate(urlToOpen.href).then(() => client.focus());
         }
       }
       if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
+        return clients.openWindow(urlToOpen.href);
       }
     })
   );
 });
-

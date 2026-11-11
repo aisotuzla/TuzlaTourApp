@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage, isSupported, Messaging } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, isSupported, Messaging, MessagePayload } from 'firebase/messaging';
 
 export const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCJ5LGNfZRB0yDT8Fh4tQu1czDNQrL99rk",
@@ -67,10 +67,11 @@ export const requestPushToken = async (): Promise<string | null> => {
     });
 
     if (currentToken) {
-      console.log('✅ FCM Push Token obtained:', currentToken);
       try {
         localStorage.setItem('tuzla_fcm_token', currentToken);
-      } catch (_) {}
+      } catch (error) {
+        console.warn('Unable to store the web FCM registration token locally:', error);
+      }
       return currentToken;
     } else {
       console.warn('No registration token available. Request permission to generate one.');
@@ -85,7 +86,7 @@ export const requestPushToken = async (): Promise<string | null> => {
 /**
  * Listen for messages while app is in foreground
  */
-export const onForegroundMessage = async (callback: (payload: any) => void) => {
+export const onForegroundMessage = async (callback: (payload: MessagePayload) => void) => {
   const messaging = await getFirebaseMessaging();
   if (!messaging) return () => {};
   return onMessage(messaging, (payload) => {
@@ -93,4 +94,3 @@ export const onForegroundMessage = async (callback: (payload: any) => void) => {
     callback(payload);
   });
 };
-

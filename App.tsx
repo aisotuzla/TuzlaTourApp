@@ -26,7 +26,7 @@ import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
 import { useGeofenceNotifications } from './hooks/useGeofenceNotifications';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import ARGuide from './components/ARGuide';
-import { requestPushToken, onForegroundMessage } from './utils/firebase';
+import { initializePushNotifications } from './utils/pushNotifications';
 
 const MapView = React.lazy(() => import('./components/MapView'));
 const History = React.lazy(() => import('./components/History'));
@@ -89,19 +89,42 @@ const AppContent: React.FC = () => {
   const { position: userGps } = useGeolocationWatcher({ enabled: true });
   useGeofenceNotifications({ userPosition: userGps, lang, enabled: true });
 
-  useEffect(() => {
-    requestPushToken().catch((err) => console.warn('FCM registration notice:', err));
-    const unsubscribePromise = onForegroundMessage((payload) => {
-      console.log('FCM Foreground Notification received:', payload);
-    });
-    return () => {
-      unsubscribePromise.then((unsub) => unsub && unsub());
-    };
-  }, []);
-
   const navigate = useNavigate();
   const location = useLocation();
   const activeTab = getTabFromPath(location.pathname);
+
+  useEffect(() => {
+    let active = true;
+    let unsubscribe = () => {};
+
+    void initializePushNotifications({
+      onToken: () => {
+        console.info('FCM registration token saved on this device.');
+      },
+      onMessage: (title, body) => {
+        console.info('Push notification received:', { title, body });
+      },
+      onAction: (data) => {
+        const route = data.route ?? data.url;
+        if (active && typeof route === 'string' && route.startsWith('/') && !route.startsWith('//')) {
+          navigate(route);
+        }
+      }
+    }).then((cleanup) => {
+      if (active) {
+        unsubscribe = cleanup;
+      } else {
+        cleanup();
+      }
+    }).catch((error: unknown) => {
+      console.error('Unable to initialize push notifications:', error);
+    });
+
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, [navigate]);
 
   const [navigationTarget, setNavigationTarget] = useState<any | null>(null);
   const [autoOpenScanner, setAutoOpenScanner] = useState(false);
