@@ -359,6 +359,8 @@ const App: React.FC = () => {
         <AudioGuideProvider>
           <BrowserRouter>
             <AppContent />
+            <Analytics />
+            <SpeedInsights />
           </BrowserRouter>
         </AudioGuideProvider>
       </GlobalAppProvider>
