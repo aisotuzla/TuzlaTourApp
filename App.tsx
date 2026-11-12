@@ -95,7 +95,7 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     let active = true;
-    let unsubscribe = () => {};
+    let unsubscribe = () => { };
 
     void initializePushNotifications({
       onToken: () => {
@@ -250,7 +250,7 @@ const AppContent: React.FC = () => {
             paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           }}
         >
-          <main className="flex-1 overflow-y-auto overflow-x-hidden">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
             <ErrorBoundary>
               <Suspense fallback={
                 <div className="h-full flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-50">

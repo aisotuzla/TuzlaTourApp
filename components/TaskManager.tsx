@@ -10,6 +10,7 @@ import {
   Headphones,
   MapPin,
   Plus,
+  StickyNote,
   Trash2,
 } from 'lucide-react';
 import { Language } from '../types';
@@ -18,9 +19,11 @@ import { EventCalendarView } from './EventCalendarView';
 import { MediaAudioGuideTab } from './MediaAudioGuideTab';
 import { ThreeDayPlanView } from './ThreeDayPlanView';
 import { PracticalTravelInfo } from './PracticalTravelInfo';
+import { StickyNotesBoard } from './StickyNotesBoard';
+import { AppFaqAndContact } from './AppFaqAndContact';
 
 type Mode = 'notebook' | 'calendar' | 'threeDayPlan' | 'practicalInfo' | 'media';
-type NotebookSubTab = 'all' | 'itinerary' | 'expenses';
+type NotebookSubTab = 'all' | 'itinerary' | 'expenses' | 'notes';
 
 type ExpenseItem = {
   id: number;
@@ -61,6 +64,7 @@ const copy = {
     itinerary: 'Itinerary',
     emptyItinerary: 'No itinerary items yet. Add hotels or restaurants from Tourist Info!',
     quickOverview: 'Quick Overview',
+    notes: 'Sticker Notes',
   },
   bs: {
     title: 'Lični planer',
@@ -79,6 +83,7 @@ const copy = {
     itinerary: 'Plan puta',
     emptyItinerary: 'Još nema stavki u planu. Dodaj hotele ili restorane iz Turističkih info!',
     quickOverview: 'Brzi pregled',
+    notes: 'Sticker Bilješke',
   },
   de: {
     title: 'Persönliches Notizbuch',
@@ -97,6 +102,7 @@ const copy = {
     itinerary: 'Reiseplan',
     emptyItinerary: 'Noch keine Reiseplan-Einträge. Füge Hotels oder Restaurants aus Tourist Info hinzu!',
     quickOverview: 'Schnellübersicht',
+    notes: 'Haftnotizen',
   },
   tr: {
     title: 'Kişisel Not Defteri',
@@ -115,6 +121,7 @@ const copy = {
     itinerary: 'Güzergah',
     emptyItinerary: 'Henüz güzergah öğesi yok. Turistik bilgilerden ekleyin!',
     quickOverview: 'Hızlı Bakış',
+    notes: 'Yapışkan Notlar',
   },
 } as const;
 
@@ -520,7 +527,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
         ) : view === 'notebook' ? (
           <div className="p-4 sm:p-8 space-y-6">
             {/* Notebook Sub-tabs navigation: Mobile segmented control style */}
-            <div className="grid grid-cols-3 sm:flex sm:w-fit items-center gap-1 sm:gap-2 rounded-2xl bg-slate-100/90 p-1.5 border border-slate-200/60">
+            <div className="grid grid-cols-2 sm:flex sm:w-fit items-center gap-1 sm:gap-2 rounded-2xl bg-slate-100/90 p-1.5 border border-slate-200/60">
               <button
                 onClick={() => setNotebookSubTab('all')}
                 className={`flex items-center justify-center rounded-xl py-2.5 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${
@@ -551,7 +558,18 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                 }`}
               >
                 <Banknote className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-600 shrink-0" />
-                <span className="truncate">{t.expenses} ({total} KM / €{totalEur})</span>
+                <span className="truncate">{t.expenses}</span>
+              </button>
+              <button
+                onClick={() => setNotebookSubTab('notes')}
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 sm:py-2 px-2 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${
+                  notebookSubTab === 'notes'
+                    ? 'bg-white text-blue-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <StickyNote className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 shrink-0" />
+                <span className="truncate">{t.notes}</span>
               </button>
             </div>
 
@@ -617,6 +635,11 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                     {renderExpensesContent()}
                   </div>
                 </div>
+
+                {/* Sticky Notes & Canvas Section in All View */}
+                <div className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-white p-4 sm:p-6 shadow-xs">
+                  <StickyNotesBoard lang={lang} />
+                </div>
               </div>
             ) : notebookSubTab === 'expenses' ? (
               /* Dedicated Expanded Expenses Tab View */
@@ -625,6 +648,11 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                   {renderExpensesContent()}
                 </div>
                 {renderQuickOverviewAside()}
+              </div>
+            ) : notebookSubTab === 'notes' ? (
+              /* Dedicated Full-Width Sticky Notes & Canvas Tab View */
+              <div className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-white p-4 sm:p-6 shadow-xs">
+                <StickyNotesBoard lang={lang} />
               </div>
             ) : (
               /* Dedicated Itinerary Tab View */
@@ -651,6 +679,9 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
           className="w-full h-auto object-cover"
         />
       </a>
+
+      {/* 6 FAQ Items with Explanations & Bottom Contact Form */}
+      <AppFaqAndContact lang={lang} />
 
       {/* Spacer for bottom navigation safety */}
       <div className="h-20" />
