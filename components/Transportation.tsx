@@ -903,7 +903,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
   return (
     <div className="w-full max-w-5xl mx-auto px-3 sm:px-6 py-6 pb-36 space-y-6">
       {/* 1. HERO HEADER */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 text-white p-6 sm:p-8 border border-blue-900/60 shadow-xl">
+      <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-950 via-blue-950 to-indigo-950 text-white p-6 sm:p-8 border border-blue-900/60 shadow-xl">
         <div className="absolute -right-16 -top-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-[11px] font-black uppercase tracking-widest">
@@ -921,23 +921,21 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
 
       {/* 2. MAIN SEGMENT SELECTOR */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
-        <button
-          type="button"
+        <button type="button"
           onClick={() => setActiveSection('bus')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'bus'
-            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            ? 'bg-gradient-to-r from-sky-400 via-sky-500 to-blue-600 border-sky-400 text-white shadow-blue-500/35 shadow-md ring-2 ring-sky-300/60'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >
           <Bus className="w-4 h-4 shrink-0" />
           <span>{currentT.busesTab}</span>
         </button>
-
         <button
           type="button"
           onClick={() => setActiveSection('internationalBus')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'internationalBus'
-            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/30 shadow-md ring-2 ring-blue-400/40'
+            ? 'bg-gradient-to-r from-sky-400 via-blue-500 to-blue-600 border-blue-500 text-white shadow-blue-500/35 shadow-md ring-2 ring-sky-300/60'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >
@@ -948,9 +946,8 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button
           type="button"
           onClick={() => setActiveSection('flights')}
-          style={activeSection === 'flights' ? { background: 'linear-gradient(to right, #ffc400c7, #ff4a008f)', borderColor: '#ff4a008f' } : undefined}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'flights'
-            ? 'text-white shadow-amber-500/30 shadow-md ring-2 ring-amber-300/40'
+            ? 'bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-600 border-pink-400 text-white shadow-pink-500/35 shadow-md ring-2 ring-pink-300/60'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >
@@ -974,7 +971,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
           type="button"
           onClick={() => setActiveSection('rentacar')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'rentacar'
-            ? 'bg-gradient-to-r from-blue-600 to-blue-800 border-blue-700 text-white shadow-blue-600/30 shadow-md ring-2 ring-blue-400/50'
+            ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-900 border-blue-500 text-white shadow-indigo-600/35 shadow-md ring-2 ring-indigo-400/60'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >
@@ -984,808 +981,818 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
       </div>
 
       {/* 3. SECTION 1: BUSES & GIPS LIVE */}
-      {activeSection === 'bus' && (
-        <div className="space-y-6">
-          {/* GRADSKI PARKING TUZLA – PARTNERSHIP BANNER */}
-          <a
-            href="https://gradskiparkingtuzla.vercel.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative flex items-center gap-4 w-full rounded-2xl px-5 py-4
+      {
+        activeSection === 'bus' && (
+          <div className="space-y-6">
+            {/* GRADSKI PARKING TUZLA – PARTNERSHIP BANNER */}
+            <a
+              href="https://gradskiparkingtuzla.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative flex items-center gap-4 w-full rounded-2xl px-5 py-4
               bg-[#2563EB] text-white
               shadow-[0_6px_0_0_#1741a6]
               active:shadow-[0_2px_0_0_#1741a6] active:translate-y-1
               hover:bg-[#1d57d8] hover:shadow-[0_6px_0_0_#1235a0]
               transition-all duration-150 ease-out cursor-pointer select-none"
-          >
-            {/* White square "P" badge */}
-            <div className="shrink-0 w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-sm">
-              <span className="text-[#2563EB] font-black text-2xl leading-none tracking-tighter">P</span>
-            </div>
-
-            {/* Text */}
-            <div className="flex-1 min-w-0">
-              <div className="font-black text-sm sm:text-base leading-tight">Gradski Parking Tuzla</div>
-              <div className="text-blue-100 text-xs font-medium mt-1 leading-snug">
-                SMS Smart Parking App -  SMS payment and gps navigation to parking zones in Tuzla
+            >
+              {/* White square "P" badge */}
+              <div className="shrink-0 w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                <span className="text-[#2563EB] font-black text-2xl leading-none tracking-tighter">P</span>
               </div>
-            </div>
 
-            {/* QR Parking Image replacing arrow */}
-            <div className="shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-white/40 group-hover:scale-105 transition-transform">
-              <img
-                src="/assets/Gallery/QuestQRLocations/qrparking.png"
-                alt="SMS Smart Parking App QR"
-                className="w-full h-full object-contain rounded-lg"
-              />
-            </div>
-          </a>
-
-          {/* GIPS LOGO & LIVE TRACKING BANNER */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-5 sm:p-7 border border-blue-700/50 shadow-lg">
-            <div className="flex flex-col md:flex-row items-center gap-6 justify-between">
-              <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
-                <div className="w-36 h-20 bg-white rounded-2xl p-2.5 flex items-center justify-center shrink-0 shadow-md border border-white/20">
-                  <img
-                    src="/assets/Gallery/gipslogo.png"
-                    alt="GIPS Tuzla Logo"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-lg sm:text-xl font-black text-white">
-                    {currentT.gipsBannerTitle}
-                  </h3>
-                  <p className="text-xs text-blue-200/90 leading-relaxed max-w-xl">
-                    {currentT.gipsBannerDesc}
-                  </p>
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <div className="font-black text-sm sm:text-base leading-tight">Gradski Parking Tuzla</div>
+                <div className="text-blue-100 text-xs font-medium mt-1 leading-snug">
+                  SMS Smart Parking App -  SMS payment and gps navigation to parking zones in Tuzla
                 </div>
               </div>
 
-              <a
-                href="https://www.gipstk.com/red-voznje/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs sm:text-sm font-black transition-all shadow-lg active:scale-95 shrink-0 uppercase tracking-wider"
-              >
-                <span>{currentT.gipsLiveCta}</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-
-          {/* BUS LINES SELECTOR (Ka, Kb, 2, 11, 34) */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-4 sm:p-6 shadow-sm space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-              <span className="text-xs font-black uppercase tracking-wider text-slate-700">
-                {currentT.selectLine}
-              </span>
-              <span className="text-xs text-slate-400 font-semibold">
-                5 {lang === 'bs' ? 'ključnih linija (Ka, Kb, 2, 11, 34)' : 'essential lines'}
-              </span>
-            </div>
-
-            {/* Pills grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-              {TOURIST_BUS_LINES.map((line) => {
-                const isSelected = selectedBusLine === line.lineNumber;
-                return (
-                  <button
-                    key={line.id}
-                    type="button"
-                    onClick={() => setSelectedBusLine(line.lineNumber)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all text-center relative ${isSelected
-                      ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500/30'
-                      : 'border-slate-200 bg-slate-50/50 hover:bg-slate-100/70 hover:border-slate-300'
-                      }`}
-                  >
-                    <span className={`text-xl font-black ${isSelected ? 'text-blue-700' : 'text-slate-800'}`}>
-                      {line.lineNumber}
-                    </span>
-                    <span className="text-[10px] font-bold text-slate-500 mt-0.5 truncate max-w-full">
-                      {line.badge[lang] || line.badge.en}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* SELECTED LINE DETAILS CARD */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-8 shadow-sm space-y-6">
-            {/* Header info */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-6">
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-black uppercase tracking-wider">
-                  <span>{currentLine.badge[lang] || currentLine.badge.en}</span>
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                  Linija {currentLine.lineNumber}: {currentLine.route}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">
-                  {currentLine.description[lang] || currentLine.description.en}
-                </p>
+              {/* QR Parking Image replacing arrow */}
+              <div className="shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-white/40 group-hover:scale-105 transition-transform">
+                <img
+                  src="/assets/Gallery/QuestQRLocations/qrparking.png"
+                  alt="SMS Smart Parking App QR"
+                  className="w-full h-full object-contain rounded-lg"
+                />
               </div>
+            </a>
 
-              {/* Badges */}
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="px-3.5 py-2 rounded-2xl bg-slate-100 border border-slate-200 text-center">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    {lang === 'bs' ? 'Cijena' : 'Fare'}
+            {/* GIPS LOGO & LIVE TRACKING BANNER */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-5 sm:p-7 border border-blue-700/50 shadow-lg">
+              <div className="flex flex-col md:flex-row items-center gap-6 justify-between">
+                <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+                  <div className="w-36 h-20 bg-white rounded-2xl p-2.5 flex items-center justify-center shrink-0 shadow-md border border-white/20">
+                    <img
+                      src="/assets/Gallery/gipslogo.png"
+                      alt="GIPS Tuzla Logo"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
-                  <div className="text-xs sm:text-sm font-black text-emerald-700">
-                    {currentLine.priceNotice.split('(')[0]}
+                  <div className="space-y-1">
+                    <h3 className="text-lg sm:text-xl font-black text-white">
+                      {currentT.gipsBannerTitle}
+                    </h3>
+                    <p className="text-xs text-blue-200/90 leading-relaxed max-w-xl">
+                      {currentT.gipsBannerDesc}
+                    </p>
                   </div>
-                </div>
-                <div className="px-3.5 py-2 rounded-2xl bg-slate-100 border border-slate-200 text-center">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    {lang === 'bs' ? 'Radno vrijeme' : 'Hours'}
-                  </div>
-                  <div className="text-xs sm:text-sm font-black text-slate-800">
-                    {currentLine.operatingHours}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ROUTE TIMELINE / STOPS */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-blue-600" />
-                <span>{currentT.routeTimeline}</span>
-              </h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {currentLine.stops.map((stop, idx) => (
-                  <div
-                    key={stop.name + idx}
-                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition-colors"
-                  >
-                    <div className="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shrink-0">
-                      {idx + 1}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-bold text-xs sm:text-sm text-slate-900 truncate">
-                        {stop.name}
-                      </div>
-                      {stop.description && (
-                        <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
-                          {stop.description[lang] || stop.description.en}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* INTERACTIVE TIMETABLE GRID */}
-            <div className="pt-4 border-t border-slate-100 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-0.5">
-                  <h4 className="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-blue-600" />
-                    <span>{currentT.timetableHeader}</span>
-                  </h4>
-                  <p className="text-xs text-slate-500">
-                    {activeDepartures.length} {currentT.departuresCount}
-                  </p>
-                </div>
-
-                {/* Day Switcher */}
-                <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl w-fit">
-                  <button
-                    type="button"
-                    onClick={() => setScheduleType('workday')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${scheduleType === 'workday'
-                      ? 'bg-white text-blue-900 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                  >
-                    {currentT.workdays}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setScheduleType('weekend')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${scheduleType === 'weekend'
-                      ? 'bg-white text-blue-900 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                  >
-                    {currentT.sunday}
-                  </button>
-                </div>
-              </div>
-
-              {/* Departure pills matrix */}
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-                {activeDepartures.map((time, idx) => (
-                  <div
-                    key={time + idx}
-                    className="p-2.5 rounded-xl bg-slate-100/80 border border-slate-200 text-center font-mono font-bold text-xs sm:text-sm text-slate-800 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors"
-                  >
-                    {time}
-                  </div>
-                ))}
-              </div>
-
-              {/* Cash notice & Official Web link */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 text-xs">
-                <div className="flex items-center gap-2 text-amber-800 bg-amber-50 border border-amber-200 px-3.5 py-2 rounded-xl">
-                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span>{currentT.cashNotice}</span>
                 </div>
 
                 <a
-                  href={currentLine.scheduleLink}
+                  href="https://www.gipstk.com/red-voznje/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-bold hover:underline shrink-0"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs sm:text-sm font-black transition-all shadow-lg active:scale-95 shrink-0 uppercase tracking-wider"
                 >
-                  <span>{currentT.openGipsWeb}</span>
+                  <span>{currentT.gipsLiveCta}</span>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* BUS LINES SELECTOR (Ka, Kb, 2, 11, 34) */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-4 sm:p-6 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <span className="text-xs font-black uppercase tracking-wider text-slate-700">
+                  {currentT.selectLine}
+                </span>
+                <span className="text-xs text-slate-400 font-semibold">
+                  5 {lang === 'bs' ? 'ključnih linija (Ka, Kb, 2, 11, 34)' : 'essential lines'}
+                </span>
+              </div>
+
+              {/* Pills grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                {TOURIST_BUS_LINES.map((line) => {
+                  const isSelected = selectedBusLine === line.lineNumber;
+                  return (
+                    <button
+                      key={line.id}
+                      type="button"
+                      onClick={() => setSelectedBusLine(line.lineNumber)}
+                      className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all text-center relative ${isSelected
+                        ? 'border-blue-600 bg-blue-50/80 shadow-md ring-2 ring-blue-500/30'
+                        : 'border-slate-200 bg-slate-50/50 hover:bg-slate-100/70 hover:border-slate-300'
+                        }`}
+                    >
+                      <span className={`text-xl font-black ${isSelected ? 'text-blue-700' : 'text-slate-800'}`}>
+                        {line.lineNumber}
+                      </span>
+                      <span className="text-[10px] font-bold text-slate-500 mt-0.5 truncate max-w-full">
+                        {line.badge[lang] || line.badge.en}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* SELECTED LINE DETAILS CARD */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-8 shadow-sm space-y-6">
+              {/* Header info */}
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-6">
+                <div className="space-y-1.5">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-black uppercase tracking-wider">
+                    <span>{currentLine.badge[lang] || currentLine.badge.en}</span>
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    Linija {currentLine.lineNumber}: {currentLine.route}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">
+                    {currentLine.description[lang] || currentLine.description.en}
+                  </p>
+                </div>
+
+                {/* Badges */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="px-3.5 py-2 rounded-2xl bg-slate-100 border border-slate-200 text-center">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                      {lang === 'bs' ? 'Cijena' : 'Fare'}
+                    </div>
+                    <div className="text-xs sm:text-sm font-black text-emerald-700">
+                      {currentLine.priceNotice.split('(')[0]}
+                    </div>
+                  </div>
+                  <div className="px-3.5 py-2 rounded-2xl bg-slate-100 border border-slate-200 text-center">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                      {lang === 'bs' ? 'Radno vrijeme' : 'Hours'}
+                    </div>
+                    <div className="text-xs sm:text-sm font-black text-slate-800">
+                      {currentLine.operatingHours}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ROUTE TIMELINE / STOPS */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-blue-600" />
+                  <span>{currentT.routeTimeline}</span>
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {currentLine.stops.map((stop, idx) => (
+                    <div
+                      key={stop.name + idx}
+                      className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition-colors"
+                    >
+                      <div className="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shrink-0">
+                        {idx + 1}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-bold text-xs sm:text-sm text-slate-900 truncate">
+                          {stop.name}
+                        </div>
+                        {stop.description && (
+                          <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
+                            {stop.description[lang] || stop.description.en}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* INTERACTIVE TIMETABLE GRID */}
+              <div className="pt-4 border-t border-slate-100 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <h4 className="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-blue-600" />
+                      <span>{currentT.timetableHeader}</span>
+                    </h4>
+                    <p className="text-xs text-slate-500">
+                      {activeDepartures.length} {currentT.departuresCount}
+                    </p>
+                  </div>
+
+                  {/* Day Switcher */}
+                  <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl w-fit">
+                    <button
+                      type="button"
+                      onClick={() => setScheduleType('workday')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${scheduleType === 'workday'
+                        ? 'bg-white text-blue-900 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                    >
+                      {currentT.workdays}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setScheduleType('weekend')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${scheduleType === 'weekend'
+                        ? 'bg-white text-blue-900 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                    >
+                      {currentT.sunday}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Departure pills matrix */}
+                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                  {activeDepartures.map((time, idx) => (
+                    <div
+                      key={time + idx}
+                      className="p-2.5 rounded-xl bg-slate-100/80 border border-slate-200 text-center font-mono font-bold text-xs sm:text-sm text-slate-800 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors"
+                    >
+                      {time}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Cash notice & Official Web link */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 text-xs">
+                  <div className="flex items-center gap-2 text-amber-800 bg-amber-50 border border-amber-200 px-3.5 py-2 rounded-xl">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>{currentT.cashNotice}</span>
+                  </div>
+
+                  <a
+                    href={currentLine.scheduleLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-bold hover:underline shrink-0"
+                  >
+                    <span>{currentT.openGipsWeb}</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* SPECIAL FEATURE: SIGHTSEEING TOURIST MINI-TRAIN (TURISTIČKI VOZIĆ - LJETNA ATRAKCIJA) */}
+            <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-amber-50 via-orange-50/40 to-amber-100/70 p-6 sm:p-8 shadow-md space-y-6">
+              {/* Ambient decorative background glow */}
+              <div className="absolute -top-16 -right-16 w-48 h-48 bg-gradient-to-br from-amber-300/40 to-orange-400/30 rounded-full blur-2xl pointer-events-none" />
+
+              {/* Header with badges & top right train image */}
+              <div className="relative flex flex-col md:flex-row md:items-start justify-between gap-5 border-b border-amber-200/80 pb-5">
+                <div className="space-y-2 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-black uppercase tracking-wider shadow-sm">
+                      <Sun className="w-3.5 h-3.5" />
+                      <span>{currentT.trainBadge}</span>
+                    </div>
+
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 text-blue-900 text-xs font-bold border border-amber-300 shadow-sm">
+                      <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                      <span>{currentT.trainBoardingPlace}</span>
+                    </div>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                    <span>{currentT.trainTitle}</span>
+                    <span className="text-xl">🚂</span>
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-slate-700 max-w-2xl leading-relaxed">
+                    {currentT.trainSubtitle}
+                  </p>
+                </div>
+
+                {/* Top right corner: Tourist Train image (90% opacity) + working hours graphic below it */}
+                <div className="flex flex-col items-start md:items-end gap-3 shrink-0">
+                  <div className="relative w-44 sm:w-52 h-28 sm:h-32 rounded-2xl overflow-hidden shadow-md border-2 border-amber-300/80 bg-white/70">
+                    <img
+                      src="/assets/Gallery/QuestQRLocations/voz.webp"
+                      alt="Turistički vozić Tuzla"
+                      className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+                    />
+                  </div>
+
+                  {/* Working hours graphic moved below image */}
+                  <div className="flex flex-col sm:flex-row md:flex-col items-start md:items-end gap-1.5 w-full md:w-auto">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-black shadow-sm">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>{currentT.trainDays}</span>
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-200/90 text-slate-700 text-[11px] font-bold">
+                      <AlertCircle className="w-3.5 h-3.5 text-slate-500" />
+                      <span>{currentT.trainMonday}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* BOARDING LOCATION (MJESTO POLASKA: TRG SLOBODE) */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-4.5 rounded-2xl bg-white/95 border-2 border-amber-200 shadow-sm">
+                <div className="flex items-start sm:items-center gap-3">
+                  <div className="p-2.5 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shrink-0 shadow-sm">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <div className="text-[11px] font-black uppercase tracking-wider text-amber-800">
+                      {currentT.trainBoardingTitle}
+                    </div>
+                    <div className="text-base sm:text-lg font-black text-slate-900 flex flex-wrap items-center gap-2">
+                      <span>{currentT.trainBoardingPlace}</span>
+                      <span className="text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-lg border border-amber-200">
+                        {lang === 'bs' ? 'Polazak & Povratak' : 'Departure & Return'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600">
+                      {currentT.trainBoardingDesc}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* DEPARTURES MATRIX (Svakog punog sata od 10:00 do 17:00) */}
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-amber-950 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-amber-600" />
+                    <span>{currentT.trainDeparturesTitle}</span>
+                  </h4>
+                  <span className="text-xs font-bold text-amber-800/80">
+                    8 {lang === 'bs' ? 'polazaka dnevno' : 'departures daily'} (10:00 – 17:00)
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                  {['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'].map((time) => (
+                    <div
+                      key={time}
+                      className="p-3 rounded-2xl bg-white/90 border-2 border-amber-200 text-center font-mono font-black text-xs sm:text-sm text-slate-900 shadow-sm hover:border-amber-400 hover:bg-amber-100/60 transition-all"
+                    >
+                      {time}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* TICKET PRICING CARDS */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-black uppercase tracking-wider text-amber-950 flex items-center gap-2">
+                  <Ticket className="w-4 h-4 text-amber-600" />
+                  <span>{currentT.trainTicketTitle}</span>
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Individual ticket */}
+                  <div className="rounded-2xl bg-white/95 border-2 border-amber-200 p-4 sm:p-5 shadow-sm space-y-2 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-amber-800">
+                          {currentT.trainSingleTicket}
+                        </span>
+                        <span className="p-1.5 rounded-xl bg-amber-100 text-amber-700">
+                          <Ticket className="w-4 h-4" />
+                        </span>
+                      </div>
+                      <div className="text-3xl font-black text-slate-950 mt-1">
+                        {currentT.trainSinglePrice}
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-600 pt-2 border-t border-slate-100">
+                      {currentT.trainSingleDesc}
+                    </p>
+                  </div>
+
+                  {/* Charter private train */}
+                  <div className="rounded-2xl bg-gradient-to-br from-white via-amber-50/40 to-orange-50/50 border-2 border-orange-200 p-4 sm:p-5 shadow-sm space-y-2 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-orange-900">
+                          {currentT.trainCharterTicket}
+                        </span>
+                        <span className="p-1.5 rounded-xl bg-orange-100 text-orange-700">
+                          <Users className="w-4 h-4" />
+                        </span>
+                      </div>
+                      <div className="text-3xl font-black text-slate-950 mt-1">
+                        {currentT.trainCharterPrice}
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-600 pt-2 border-t border-slate-100">
+                      {currentT.trainCharterDesc}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom seasonal notice */}
+              <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-amber-200/50 border border-amber-300 text-xs text-amber-950 font-medium">
+                <Sun className="w-4 h-4 text-amber-700 shrink-0" />
+                <span>{currentT.trainSummerNotice}</span>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* 4. SECTION 2: INTERCITY & INTERNATIONAL BUSES (TRANSTURIST) */}
+      {
+        activeSection === 'internationalBus' && (
+          <div className="space-y-6">
+            <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-950 p-6 sm:p-8 text-white space-y-4 shadow-xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-300 text-xs font-black uppercase tracking-wider border border-cyan-400/30">
+                <Globe className="w-3.5 h-3.5" />
+                <span>Transturist Tuzla d.d.</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-black tracking-tight">
+                {currentT.intlBusHeader}
+              </h3>
+              <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
+                {currentT.intlBusSub}
+              </p>
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <a
+                  href="https://buskarta.ba"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-5 py-3 text-xs sm:text-sm font-black transition-all shadow-lg active:scale-95 uppercase tracking-wider"
+                >
+                  <span>{currentT.bookBuskarta}</span>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://www.transturist.ba"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white px-5 py-3 text-xs sm:text-sm font-black transition-all border border-white/20 active:scale-95"
+                >
+                  <span>{currentT.transturistSite}</span>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Domestic line: Tuzla - Sarajevo */}
+            <div className="rounded-3xl border border-blue-200 bg-white p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="rounded-full bg-blue-100 text-blue-800 px-3 py-1 text-xs font-black uppercase tracking-wider">
+                  Domaća ekspres linija
+                </span>
+                <span className="text-xs font-mono font-bold text-slate-500">
+                  Transturist d.d.
+                </span>
+              </div>
+              <h4 className="text-xl font-black text-slate-900">{currentT.domesticTitle}</h4>
+              <p className="text-xs sm:text-sm text-slate-600">{currentT.domesticDesc}</p>
+
+              <div className="rounded-2xl bg-slate-50 p-4 space-y-2 border border-slate-100">
+                <div className="grid grid-cols-3 gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-2">
+                  <span>Polazak Tuzla</span>
+                  <span>Dolazak Sarajevo</span>
+                  <span>Dani vožnje</span>
+                </div>
+                {INTERNATIONAL_BUS_LINES[0].departures.map((dep, idx) => (
+                  <div key={idx} className="grid grid-cols-3 gap-2 text-xs sm:text-sm py-1.5 border-b border-slate-100">
+                    <span className="font-black text-slate-800">{dep.time}</span>
+                    <span className="text-slate-600">{INTERNATIONAL_BUS_LINES[0].arrivalTimes[idx]}</span>
+                    <span className="text-slate-500">{dep.days}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs">
+                <div className="text-slate-600">
+                  <span className="font-bold">Trajanje:</span> {INTERNATIONAL_BUS_LINES[0].duration} &nbsp;|&nbsp;
+                  <span className="font-bold">Cijena:</span> {INTERNATIONAL_BUS_LINES[0].price}
+                </div>
+                <a
+                  href={INTERNATIONAL_BUS_LINES[0].bookingLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-bold hover:underline"
+                >
+                  <span>Rezervacija na Buskarta.ba</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>
-          </div>
 
-          {/* SPECIAL FEATURE: SIGHTSEEING TOURIST MINI-TRAIN (TURISTIČKI VOZIĆ - LJETNA ATRAKCIJA) */}
-          <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-amber-50 via-orange-50/40 to-amber-100/70 p-6 sm:p-8 shadow-md space-y-6">
-            {/* Ambient decorative background glow */}
-            <div className="absolute -top-16 -right-16 w-48 h-48 bg-gradient-to-br from-amber-300/40 to-orange-400/30 rounded-full blur-2xl pointer-events-none" />
+            {/* International Lines Grid */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <Globe className="w-5 h-5 text-blue-600" />
+                <span>{currentT.intlTitle}</span>
+              </h4>
 
-            {/* Header with badges & top right train image */}
-            <div className="relative flex flex-col md:flex-row md:items-start justify-between gap-5 border-b border-amber-200/80 pb-5">
-              <div className="space-y-2 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-black uppercase tracking-wider shadow-sm">
-                    <Sun className="w-3.5 h-3.5" />
-                    <span>{currentT.trainBadge}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 text-blue-900 text-xs font-bold border border-amber-300 shadow-sm">
-                    <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
-                    <span>{currentT.trainBoardingPlace}</span>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
-                  <span>{currentT.trainTitle}</span>
-                  <span className="text-xl">🚂</span>
-                </h3>
-
-                <p className="text-xs sm:text-sm text-slate-700 max-w-2xl leading-relaxed">
-                  {currentT.trainSubtitle}
-                </p>
-              </div>
-
-              {/* Top right corner: Tourist Train image (90% opacity) + working hours graphic below it */}
-              <div className="flex flex-col items-start md:items-end gap-3 shrink-0">
-                <div className="relative w-44 sm:w-52 h-28 sm:h-32 rounded-2xl overflow-hidden shadow-md border-2 border-amber-300/80 bg-white/70">
-                  <img
-                    src="/assets/Gallery/QuestQRLocations/voz.webp"
-                    alt="Turistički vozić Tuzla"
-                    className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
-                  />
-                </div>
-
-                {/* Working hours graphic moved below image */}
-                <div className="flex flex-col sm:flex-row md:flex-col items-start md:items-end gap-1.5 w-full md:w-auto">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-black shadow-sm">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>{currentT.trainDays}</span>
-                  </div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-200/90 text-slate-700 text-[11px] font-bold">
-                    <AlertCircle className="w-3.5 h-3.5 text-slate-500" />
-                    <span>{currentT.trainMonday}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* BOARDING LOCATION (MJESTO POLASKA: TRG SLOBODE) */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-4.5 rounded-2xl bg-white/95 border-2 border-amber-200 shadow-sm">
-              <div className="flex items-start sm:items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shrink-0 shadow-sm">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div className="space-y-0.5">
-                  <div className="text-[11px] font-black uppercase tracking-wider text-amber-800">
-                    {currentT.trainBoardingTitle}
-                  </div>
-                  <div className="text-base sm:text-lg font-black text-slate-900 flex flex-wrap items-center gap-2">
-                    <span>{currentT.trainBoardingPlace}</span>
-                    <span className="text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-lg border border-amber-200">
-                      {lang === 'bs' ? 'Polazak & Povratak' : 'Departure & Return'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-600">
-                    {currentT.trainBoardingDesc}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* DEPARTURES MATRIX (Svakog punog sata od 10:00 do 17:00) */}
-            <div className="space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <h4 className="text-xs font-black uppercase tracking-wider text-amber-950 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-amber-600" />
-                  <span>{currentT.trainDeparturesTitle}</span>
-                </h4>
-                <span className="text-xs font-bold text-amber-800/80">
-                  8 {lang === 'bs' ? 'polazaka dnevno' : 'departures daily'} (10:00 – 17:00)
-                </span>
-              </div>
-
-              <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-                {['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'].map((time) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {INTERNATIONAL_BUS_LINES.slice(1).map((line) => (
                   <div
-                    key={time}
-                    className="p-3 rounded-2xl bg-white/90 border-2 border-amber-200 text-center font-mono font-black text-xs sm:text-sm text-slate-900 shadow-sm hover:border-amber-400 hover:bg-amber-100/60 transition-all"
+                    key={line.id}
+                    className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:border-blue-300 transition-all space-y-3 flex flex-col justify-between"
                   >
-                    {time}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h5 className="font-black text-slate-900 text-base">{line.route}</h5>
+                        <span className="text-xs text-blue-700 bg-blue-70 px-2 py-0.5 rounded-lg font-bold">
+                          {line.duration}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500">via {line.via}</p>
+                      <p className="text-xs text-slate-600">
+                        {line.description[lang] || line.description.en}
+                      </p>
+
+                      <div className="rounded-xl bg-slate-50 p-3 text-xs space-y-1.5 border border-slate-100">
+                        <div className="font-bold text-slate-600 text-[11px] uppercase tracking-wider">Polasci iz Tuzle:</div>
+                        {line.departures.map((dep, idx) => (
+                          <div key={idx} className="flex items-center justify-between text-slate-700">
+                            <span className="font-mono font-black">{dep.time}</span>
+                            <span className="text-slate-500 text-[11px]">{dep.days}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-500">{line.carrier}</span>
+                      <a
+                        href={line.bookingLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-black transition-all"
+                      >
+                        <span>Rezerviši</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* TICKET PRICING CARDS */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-black uppercase tracking-wider text-amber-950 flex items-center gap-2">
-                <Ticket className="w-4 h-4 text-amber-600" />
-                <span>{currentT.trainTicketTitle}</span>
-              </h4>
+            <div className="rounded-2xl bg-blue-50 border border-blue-200 p-4 text-xs text-slate-700 flex items-start gap-3">
+              <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <p>
+                Za detaljne informacije o peronima i polascima, posjetite <a href="https://buskarta.ba" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-700 hover:underline">buskarta.ba</a> ili kontaktirajte dispečerski centar Transturist Tuzla na <a href="tel:+38735320325" className="font-bold text-blue-700 hover:underline">+387 35 320-325</a>.
+              </p>
+            </div>
+          </div>
+        )
+      }
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Individual ticket */}
-                <div className="rounded-2xl bg-white/95 border-2 border-amber-200 p-4 sm:p-5 shadow-sm space-y-2 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold uppercase tracking-wider text-amber-800">
-                        {currentT.trainSingleTicket}
-                      </span>
-                      <span className="p-1.5 rounded-xl bg-amber-100 text-amber-700">
-                        <Ticket className="w-4 h-4" />
-                      </span>
-                    </div>
-                    <div className="text-3xl font-black text-slate-950 mt-1">
-                      {currentT.trainSinglePrice}
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-600 pt-2 border-t border-slate-100">
-                    {currentT.trainSingleDesc}
-                  </p>
+      {/* 5. SECTION 3: FLIGHTS (TZL AIRPORT) - LIGHT WIZZAIR VIOLET-PURPLE-PINK THEME */}
+      {
+        activeSection === 'flights' && (
+          <div className="space-y-6">
+            {/* Lighter Hero Banner with soft violet-pink tones */}
+            <div className="rounded-3xl border border-pink-200/80 bg-linear-gradient-to-br from-purple-150/150 to-pink-200/200 p-6 sm:p-8 space-y-4 shadow-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-100/90 text-pink-800 text-xs font-black uppercase tracking-wider border border-pink-200">
+                  <Plane className="w-3.5 h-3.5 text-pink-600" />
+                  <span>Tuzla International Airport (TZL)</span>
                 </div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-100/90 text-purple-800 text-xs font-black uppercase tracking-wider border border-purple-200">
+                  <Globe className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Wizz Air Hub</span>
+                </div>
+              </div>
 
-                {/* Charter private train */}
-                <div className="rounded-2xl bg-gradient-to-br from-white via-amber-50/40 to-orange-50/50 border-2 border-orange-200 p-4 sm:p-5 shadow-sm space-y-2 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold uppercase tracking-wider text-orange-900">
-                        {currentT.trainCharterTicket}
-                      </span>
-                      <span className="p-1.5 rounded-xl bg-orange-100 text-orange-700">
-                        <Users className="w-4 h-4" />
-                      </span>
-                    </div>
-                    <div className="text-3xl font-black text-slate-950 mt-1">
-                      {currentT.trainCharterPrice}
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-600 pt-2 border-t border-slate-100">
-                    {currentT.trainCharterDesc}
-                  </p>
-                </div>
+              <div className="space-y-1.5">
+                <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+                  {currentT.flightsHeader}
+                </h3>
+                <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
+                  {currentT.flightsSub}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <a
+                  href="https://wizzair.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-5 py-3 text-xs sm:text-sm font-black transition-all shadow-sm active:scale-95 uppercase tracking-wider"
+                >
+                  <span>{currentT.bookWizz}</span>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://tuzla-airport.ba"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 px-5 py-3 text-xs sm:text-sm font-black transition-all border border-slate-200 shadow-sm active:scale-95"
+                >
+                  <span>{currentT.airportSite}</span>
+                  <ExternalLink className="w-4 h-4 text-slate-400" />
+                </a>
               </div>
             </div>
 
-            {/* Bottom seasonal notice */}
-            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-amber-200/50 border border-amber-300 text-xs text-amber-950 font-medium">
-              <Sun className="w-4 h-4 text-amber-700 shrink-0" />
-              <span>{currentT.trainSummerNotice}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 4. SECTION 2: INTERCITY & INTERNATIONAL BUSES (TRANSTURIST) */}
-      {activeSection === 'internationalBus' && (
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-950 p-6 sm:p-8 text-white space-y-4 shadow-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-300 text-xs font-black uppercase tracking-wider border border-cyan-400/30">
-              <Globe className="w-3.5 h-3.5" />
-              <span>Transturist Tuzla d.d.</span>
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">
-              {currentT.intlBusHeader}
-            </h3>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
-              {currentT.intlBusSub}
-            </p>
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <a
-                href="https://buskarta.ba"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-5 py-3 text-xs sm:text-sm font-black transition-all shadow-lg active:scale-95 uppercase tracking-wider"
-              >
-                <span>{currentT.bookBuskarta}</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
-              <a
-                href="https://www.transturist.ba"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white px-5 py-3 text-xs sm:text-sm font-black transition-all border border-white/20 active:scale-95"
-              >
-                <span>{currentT.transturistSite}</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-
-          {/* Domestic line: Tuzla - Sarajevo */}
-          <div className="rounded-3xl border border-blue-200 bg-white p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="rounded-full bg-blue-100 text-blue-800 px-3 py-1 text-xs font-black uppercase tracking-wider">
-                Domaća ekspres linija
-              </span>
-              <span className="text-xs font-mono font-bold text-slate-500">
-                Transturist d.d.
-              </span>
-            </div>
-            <h4 className="text-xl font-black text-slate-900">{currentT.domesticTitle}</h4>
-            <p className="text-xs sm:text-sm text-slate-600">{currentT.domesticDesc}</p>
-
-            <div className="rounded-2xl bg-slate-50 p-4 space-y-2 border border-slate-100">
-              <div className="grid grid-cols-3 gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-2">
-                <span>Polazak Tuzla</span>
-                <span>Dolazak Sarajevo</span>
-                <span>Dani vožnje</span>
-              </div>
-              {INTERNATIONAL_BUS_LINES[0].departures.map((dep, idx) => (
-                <div key={idx} className="grid grid-cols-3 gap-2 text-xs sm:text-sm py-1.5 border-b border-slate-100">
-                  <span className="font-black text-slate-800">{dep.time}</span>
-                  <span className="text-slate-600">{INTERNATIONAL_BUS_LINES[0].arrivalTimes[idx]}</span>
-                  <span className="text-slate-500">{dep.days}</span>
+            {/* Destinations Grid with Soft Violet-Pink Badges */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              {FLIGHT_DESTINATIONS.map((f, i) => (
+                <div
+                  key={f.code + i}
+                  className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:border-pink-300 hover:shadow-md transition-all space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500">{f.country}</span>
+                    <div className="flex items-center gap-1.5">
+                      {f.airline === 'Wizz Air' && (
+                        <span className="text-[10px] font-bold text-fuchsia-700 bg-fuchsia-50 px-2 py-0.5 rounded-lg border border-fuchsia-100 uppercase tracking-wider">
+                          WIZZ
+                        </span>
+                      )}
+                      <span className="rounded-xl bg-pink-50 text-pink-700 border border-pink-100 px-2.5 py-1 text-xs font-bold tracking-wider">
+                        {f.code}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="font-black text-lg text-slate-900">
+                    {f.city}
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-slate-500 border-t border-slate-100 pt-3">
+                    <span className="flex items-center gap-1.5 font-medium text-slate-500">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      {f.time}
+                    </span>
+                    <span className="font-bold text-fuchsia-700">
+                      {f.freq}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs">
-              <div className="text-slate-600">
-                <span className="font-bold">Trajanje:</span> {INTERNATIONAL_BUS_LINES[0].duration} &nbsp;|&nbsp;
-                <span className="font-bold">Cijena:</span> {INTERNATIONAL_BUS_LINES[0].price}
+            {/* Direct Airport Shuttle Connection Banner */}
+            <div className="rounded-3xl border border-slate-200/90 bg-gradient-to-r from-purple-50/50 via-slate-50 to-pink-50/40 p-5 sm:p-6 text-slate-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-fuchsia-800">
+                  <Bus className="w-3.5 h-3.5 text-fuchsia-600" />
+                  <span>
+                    {lang === 'bs' ? 'Aerodromski transfer i prevoz' :
+                      lang === 'de' ? 'Flughafentransfer & Verbindung' :
+                        lang === 'tr' ? 'Havalimanı Ulaşımı' :
+                          'Airport Ground Transport'}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                  {lang === 'bs' ? 'Linija 34 (GIPS) vozi direktno ispred terminala aerodroma. Licencirani taksi prevoz dostupan je na izlazu (cca 30 KM do centra Tuzle).' :
+                    lang === 'de' ? 'Die Buslinie 34 (GIPS) hält direkt vor dem Terminal. Offizielle Taxis stehen am Ausgang bereit (ca. 30 BAM ins Zentrum).' :
+                      lang === 'tr' ? '34 numaralı GIPS otobüsü terminalin tam önünden kalkar. Çıkışta lisanslı taksiler mevcuttur (Tuzla merkezine yaklaşık 30 KM).' :
+                        'Bus Line 34 (GIPS) departs directly in front of the terminal. Official licensed taxis available at arrivals (~30 BAM to Tuzla center).'}
+                </p>
               </div>
-              <a
-                href={INTERNATIONAL_BUS_LINES[0].bookingLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-bold hover:underline"
+              <button
+                type="button"
+                onClick={() => setActiveSection('bus')}
+                className="shrink-0 inline-flex items-center gap-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 px-4 py-2.5 text-xs font-bold border border-slate-200 shadow-sm transition-all hover:border-slate-300 active:scale-95"
               >
-                <span>Rezervacija na Buskarta.ba</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
+                <Bus className="w-3.5 h-3.5 text-fuchsia-600" />
+                <span>
+                  {lang === 'bs' ? 'Red vožnje Linije 34' :
+                    lang === 'de' ? 'Fahrplan Linie 34' :
+                      lang === 'tr' ? 'Hat 34 Saatleri' :
+                        'View Line 34 Schedule'}
+                </span>
+              </button>
             </div>
           </div>
+        )
+      }
 
-          {/* International Lines Grid */}
-          <div className="space-y-4">
-            <h4 className="text-lg font-black text-slate-900 flex items-center gap-2">
-              <Globe className="w-5 h-5 text-blue-600" />
-              <span>{currentT.intlTitle}</span>
-            </h4>
+      {/* 6. SECTION 4: TAXI SERVICES (WITH DIRECT CALL HOOKS) */}
+      {
+        activeSection === 'taxi' && (
+          <div className="space-y-6">
+            <div className="rounded-3xl border border-amber-200 bg-linear-to-r from-amber-150 via-yellow-150 to-orange-150 p-6 space-y-2">
+              <h3 className="text-lg sm:text-xl font-black text-amber-950 flex items-center gap-2">
+                <Car className="w-5 h-5 text-amber-600" />
+                <span>{currentT.taxiHeader}</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-700 max-w-2xl leading-relaxed">
+                {currentT.taxiSub}
+              </p>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {INTERNATIONAL_BUS_LINES.slice(1).map((line) => (
+              {TAXI_SERVICES.map((taxi) => (
                 <div
-                  key={line.id}
-                  className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:border-blue-300 transition-all space-y-3 flex flex-col justify-between"
+                  key={taxi.name}
+                  className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4 hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between"
                 >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h5 className="font-black text-slate-900 text-base">{line.route}</h5>
-                      <span className="text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded-lg font-bold">
-                        {line.duration}
-                      </span>
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h4 className="font-black text-slate-900 text-lg">{taxi.name}</h4>
+                        <p className="text-xs text-slate-500 mt-0.5">{taxi.desc}</p>
+                      </div>
+                      {taxi.shortCall && (
+                        <span className="rounded-2xl bg-amber-400 text-slate-950 px-3 py-1 text-xs font-black tracking-wider shrink-0 shadow-sm">
+                          📞 {taxi.shortCall}
+                        </span>
+                      )}
                     </div>
-                    <p className="text-xs text-slate-500">via {line.via}</p>
-                    <p className="text-xs text-slate-600">
-                      {line.description[lang] || line.description.en}
-                    </p>
 
-                    <div className="rounded-xl bg-slate-50 p-3 text-xs space-y-1.5 border border-slate-100">
-                      <div className="font-bold text-slate-600 text-[11px] uppercase tracking-wider">Polasci iz Tuzle:</div>
-                      {line.departures.map((dep, idx) => (
-                        <div key={idx} className="flex items-center justify-between text-slate-700">
-                          <span className="font-mono font-black">{dep.time}</span>
-                          <span className="text-slate-500 text-[11px]">{dep.days}</span>
-                        </div>
-                      ))}
+                    <div className="rounded-2xl bg-slate-50 p-3.5 space-y-2 text-xs border border-slate-100">
+                      <div className="flex items-center justify-between text-slate-700">
+                        <span className="font-semibold text-slate-400">Telefon:</span>
+                        <a href={`tel:${taxi.rawPhone}`} className="font-black text-blue-600 hover:underline">
+                          {taxi.phone}
+                        </a>
+                      </div>
+                      <div className="flex items-center justify-between text-slate-700">
+                        <span className="font-semibold text-slate-400">Info:</span>
+                        <span className="font-medium text-slate-600">{taxi.altPhone}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-slate-700 border-t border-slate-200/60 pt-2">
+                        <span className="font-semibold text-slate-400">Aerodrom tarifa:</span>
+                        <span className="font-black text-emerald-700">{taxi.airportFare}</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500">{line.carrier}</span>
+                  {/* Direct Call Button Hook */}
+                  <a
+                    href={`tel:${taxi.rawPhone}`}
+                    className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 text-xs sm:text-sm font-black transition-all shadow-md active:scale-95 uppercase tracking-wider"
+                  >
+                    <Phone className="w-4 h-4" />
+                    <span>{currentT.callNow} ({taxi.shortCall || taxi.phone})</span>
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      {/* 7. SECTION 5: RENT-A-CAR (WITH DIRECT CALL & CONTACT HOOKS) */}
+      {
+        activeSection === 'rentacar' && (
+          <div className="space-y-6">
+            <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-250 to-indigo-350 p-6 space-y-2">
+              <h3 className="text-lg sm:text-xl font-black text-blue-950 flex items-center gap-2">
+                <KeyRound className="w-5 h-5 text-blue-700" />
+                <span>{currentT.rentacarHeader}</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
+                {currentT.rentacarSub}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {RENT_A_CAR_AGENCIES.map((agency) => (
+                <div
+                  key={agency.name}
+                  className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4 hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="font-black text-slate-900 text-lg">{agency.name}</h4>
+                      <p className="text-xs text-blue-700 font-semibold flex items-center gap-1 mt-0.5">
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>{agency.location}</span>
+                      </p>
+                    </div>
+
+                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                      {agency.features}
+                    </p>
+
+                    <div className="rounded-2xl bg-slate-50 p-3.5 space-y-1.5 text-xs border border-slate-100">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-400 font-semibold">Telefon:</span>
+                        <a href={`tel:${agency.rawPhone}`} className="font-black text-blue-600 hover:underline">
+                          {agency.phone}
+                        </a>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-400 font-semibold">E-mail:</span>
+                        <a href={`mailto:${agency.email}`} className="font-mono text-slate-700 hover:underline">
+                          {agency.email}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Direct Action Buttons Hook */}
+                  <div className="grid grid-cols-2 gap-2">
                     <a
-                      href={line.bookingLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-black transition-all"
+                      href={`tel:${agency.rawPhone}`}
+                      className="flex items-center justify-center gap-1.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white py-3 text-xs font-black transition-all active:scale-95"
                     >
-                      <span>Rezerviši</span>
-                      <ExternalLink className="w-3 h-3" />
+                      <Phone className="w-3.5 h-3.5" />
+                      <span>{currentT.callAgency}</span>
+                    </a>
+                    <a
+                      href={`mailto:${agency.email}`}
+                      className="flex items-center justify-center gap-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 py-3 text-xs font-black transition-all border border-slate-200 active:scale-95"
+                    >
+                      <Mail className="w-3.5 h-3.5 text-slate-500" />
+                      <span>{currentT.emailAgency}</span>
                     </a>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-
-          <div className="rounded-2xl bg-blue-50 border border-blue-200 p-4 text-xs text-slate-700 flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-            <p>
-              Za detaljne informacije o peronima i polascima, posjetite <a href="https://buskarta.ba" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-700 hover:underline">buskarta.ba</a> ili kontaktirajte dispečerski centar Transturist Tuzla na <a href="tel:+38735320325" className="font-bold text-blue-700 hover:underline">+387 35 320-325</a>.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* 5. SECTION 3: FLIGHTS (TZL AIRPORT) - LIGHT WIZZAIR VIOLET-PURPLE-PINK THEME */}
-      {activeSection === 'flights' && (
-        <div className="space-y-6">
-          {/* Lighter Hero Banner with soft violet-pink tones */}
-          <div className="rounded-3xl border border-pink-200/80 bg-gradient-to-br from-fuchsia-50/70 via-purple-50/50 to-pink-50/60 p-6 sm:p-8 space-y-4 shadow-sm">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-100/90 text-pink-800 text-xs font-black uppercase tracking-wider border border-pink-200">
-                <Plane className="w-3.5 h-3.5 text-pink-600" />
-                <span>Tuzla International Airport (TZL)</span>
-              </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-100/90 text-purple-800 text-xs font-black uppercase tracking-wider border border-purple-200">
-                <Globe className="w-3.5 h-3.5 text-purple-600" />
-                <span>Wizz Air Hub</span>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
-                {currentT.flightsHeader}
-              </h3>
-              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
-                {currentT.flightsSub}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 pt-1">
-              <a
-                href="https://wizzair.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-2xl bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-5 py-3 text-xs sm:text-sm font-black transition-all shadow-sm active:scale-95 uppercase tracking-wider"
-              >
-                <span>{currentT.bookWizz}</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
-              <a
-                href="https://tuzla-airport.ba"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 px-5 py-3 text-xs sm:text-sm font-black transition-all border border-slate-200 shadow-sm active:scale-95"
-              >
-                <span>{currentT.airportSite}</span>
-                <ExternalLink className="w-4 h-4 text-slate-400" />
-              </a>
-            </div>
-          </div>
-
-          {/* Destinations Grid with Soft Violet-Pink Badges */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {FLIGHT_DESTINATIONS.map((f, i) => (
-              <div
-                key={f.code + i}
-                className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:border-pink-300 hover:shadow-md transition-all space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-500">{f.country}</span>
-                  <div className="flex items-center gap-1.5">
-                    {f.airline === 'Wizz Air' && (
-                      <span className="text-[10px] font-bold text-fuchsia-700 bg-fuchsia-50 px-2 py-0.5 rounded-lg border border-fuchsia-100 uppercase tracking-wider">
-                        WIZZ
-                      </span>
-                    )}
-                    <span className="rounded-xl bg-pink-50 text-pink-700 border border-pink-100 px-2.5 py-1 text-xs font-bold tracking-wider">
-                      {f.code}
-                    </span>
-                  </div>
-                </div>
-                <div className="font-black text-lg text-slate-900">
-                  {f.city}
-                </div>
-                <div className="flex items-center justify-between text-xs text-slate-500 border-t border-slate-100 pt-3">
-                  <span className="flex items-center gap-1.5 font-medium text-slate-500">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
-                    {f.time}
-                  </span>
-                  <span className="font-bold text-fuchsia-700">
-                    {f.freq}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Direct Airport Shuttle Connection Banner */}
-          <div className="rounded-3xl border border-slate-200/90 bg-gradient-to-r from-purple-50/50 via-slate-50 to-pink-50/40 p-5 sm:p-6 text-slate-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-fuchsia-800">
-                <Bus className="w-3.5 h-3.5 text-fuchsia-600" />
-                <span>
-                  {lang === 'bs' ? 'Aerodromski transfer i prevoz' :
-                    lang === 'de' ? 'Flughafentransfer & Verbindung' :
-                      lang === 'tr' ? 'Havalimanı Ulaşımı' :
-                        'Airport Ground Transport'}
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-                {lang === 'bs' ? 'Linija 34 (GIPS) vozi direktno ispred terminala aerodroma. Licencirani taksi prevoz dostupan je na izlazu (cca 30 KM do centra Tuzle).' :
-                  lang === 'de' ? 'Die Buslinie 34 (GIPS) hält direkt vor dem Terminal. Offizielle Taxis stehen am Ausgang bereit (ca. 30 BAM ins Zentrum).' :
-                    lang === 'tr' ? '34 numaralı GIPS otobüsü terminalin tam önünden kalkar. Çıkışta lisanslı taksiler mevcuttur (Tuzla merkezine yaklaşık 30 KM).' :
-                      'Bus Line 34 (GIPS) departs directly in front of the terminal. Official licensed taxis available at arrivals (~30 BAM to Tuzla center).'}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setActiveSection('bus')}
-              className="shrink-0 inline-flex items-center gap-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 px-4 py-2.5 text-xs font-bold border border-slate-200 shadow-sm transition-all hover:border-slate-300 active:scale-95"
-            >
-              <Bus className="w-3.5 h-3.5 text-fuchsia-600" />
-              <span>
-                {lang === 'bs' ? 'Red vožnje Linije 34' :
-                  lang === 'de' ? 'Fahrplan Linie 34' :
-                    lang === 'tr' ? 'Hat 34 Saatleri' :
-                      'View Line 34 Schedule'}
-              </span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 6. SECTION 4: TAXI SERVICES (WITH DIRECT CALL HOOKS) */}
-      {activeSection === 'taxi' && (
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-amber-200 bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 p-6 space-y-2">
-            <h3 className="text-lg sm:text-xl font-black text-amber-950 flex items-center gap-2">
-              <Car className="w-5 h-5 text-amber-600" />
-              <span>{currentT.taxiHeader}</span>
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-700 max-w-2xl leading-relaxed">
-              {currentT.taxiSub}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {TAXI_SERVICES.map((taxi) => (
-              <div
-                key={taxi.name}
-                className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4 hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h4 className="font-black text-slate-900 text-lg">{taxi.name}</h4>
-                      <p className="text-xs text-slate-500 mt-0.5">{taxi.desc}</p>
-                    </div>
-                    {taxi.shortCall && (
-                      <span className="rounded-2xl bg-amber-400 text-slate-950 px-3 py-1 text-xs font-black tracking-wider shrink-0 shadow-sm">
-                        📞 {taxi.shortCall}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="rounded-2xl bg-slate-50 p-3.5 space-y-2 text-xs border border-slate-100">
-                    <div className="flex items-center justify-between text-slate-700">
-                      <span className="font-semibold text-slate-400">Telefon:</span>
-                      <a href={`tel:${taxi.rawPhone}`} className="font-black text-blue-600 hover:underline">
-                        {taxi.phone}
-                      </a>
-                    </div>
-                    <div className="flex items-center justify-between text-slate-700">
-                      <span className="font-semibold text-slate-400">Info:</span>
-                      <span className="font-medium text-slate-600">{taxi.altPhone}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-slate-700 border-t border-slate-200/60 pt-2">
-                      <span className="font-semibold text-slate-400">Aerodrom tarifa:</span>
-                      <span className="font-black text-emerald-700">{taxi.airportFare}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Direct Call Button Hook */}
-                <a
-                  href={`tel:${taxi.rawPhone}`}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 text-xs sm:text-sm font-black transition-all shadow-md active:scale-95 uppercase tracking-wider"
-                >
-                  <Phone className="w-4 h-4" />
-                  <span>{currentT.callNow} ({taxi.shortCall || taxi.phone})</span>
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 7. SECTION 5: RENT-A-CAR (WITH DIRECT CALL & CONTACT HOOKS) */}
-      {activeSection === 'rentacar' && (
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 space-y-2">
-            <h3 className="text-lg sm:text-xl font-black text-blue-950 flex items-center gap-2">
-              <KeyRound className="w-5 h-5 text-blue-600" />
-              <span>{currentT.rentacarHeader}</span>
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
-              {currentT.rentacarSub}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {RENT_A_CAR_AGENCIES.map((agency) => (
-              <div
-                key={agency.name}
-                className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4 hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-black text-slate-900 text-lg">{agency.name}</h4>
-                    <p className="text-xs text-blue-700 font-semibold flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span>{agency.location}</span>
-                    </p>
-                  </div>
-
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                    {agency.features}
-                  </p>
-
-                  <div className="rounded-2xl bg-slate-50 p-3.5 space-y-1.5 text-xs border border-slate-100">
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-400 font-semibold">Telefon:</span>
-                      <a href={`tel:${agency.rawPhone}`} className="font-black text-blue-600 hover:underline">
-                        {agency.phone}
-                      </a>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-400 font-semibold">E-mail:</span>
-                      <a href={`mailto:${agency.email}`} className="font-mono text-slate-700 hover:underline">
-                        {agency.email}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Direct Action Buttons Hook */}
-                <div className="grid grid-cols-2 gap-2">
-                  <a
-                    href={`tel:${agency.rawPhone}`}
-                    className="flex items-center justify-center gap-1.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white py-3 text-xs font-black transition-all active:scale-95"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>{currentT.callAgency}</span>
-                  </a>
-                  <a
-                    href={`mailto:${agency.email}`}
-                    className="flex items-center justify-center gap-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 py-3 text-xs font-black transition-all border border-slate-200 active:scale-95"
-                  >
-                    <Mail className="w-3.5 h-3.5 text-slate-500" />
-                    <span>{currentT.emailAgency}</span>
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 

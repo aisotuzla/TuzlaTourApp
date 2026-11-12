@@ -240,50 +240,86 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
             {/* LASER SCANNER FRAME */}
             <div className="relative w-full h-[40vh] flex flex-col items-center justify-center mb-12">
               {!isUtilityMode && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-12 bg-amber-500/10 blur-[40px] rounded-full" />
+                <>
+                  <div className="absolute top-0 left-1/3 -translate-x-1/2 -translate-y-1/2 w-64 h-24 bg-amber-500/20 blur-[50px] rounded-full pointer-events-none" />
+                  <div className="absolute top-0 right-1/3 translate-x-1/2 -translate-y-1/2 w-64 h-24 bg-sky-500/25 blur-[55px] rounded-full pointer-events-none" />
+                </>
               )}
 
               <div className="relative w-72 h-72">
                 {/* Real Camera Feed */}
                 <div
                   id={scannerContainerId}
-                  className="absolute inset-0 rounded-2xl overflow-clip bg-black border-2 border-white/10 shadow-[0_0_80px_rgba(245,158,11,0.1)]"
+                  className="absolute inset-0 rounded-2xl overflow-clip bg-black border-2 border-sky-400/30 shadow-[0_0_60px_rgba(56,189,248,0.25),0_0_90px_rgba(245,158,11,0.15)]"
                   style={{ backgroundColor: 'black', minWidth: '280px', minHeight: '280px' }}
                 />
 
                 {/* Cyber Frame Decor */}
                 <div className="absolute -inset-4 border-2 border-white/5 rounded-[2.5rem] pointer-events-none" />
                 <div
-                  className={`absolute -inset-1 border border-amber-500/50 rounded-[1.5rem] pointer-events-none ${
+                  className={`absolute -inset-1 border rounded-[1.5rem] pointer-events-none ${
                     enableInfiniteAnimations ? 'animate-pulse' : ''
                   }`}
+                  style={{
+                    borderColor: 'rgba(56, 189, 248, 0.4)',
+                    boxShadow: '0 0 25px rgba(56, 189, 248, 0.2), inset 0 0 20px rgba(245, 158, 11, 0.15)'
+                  }}
                 />
 
-                {/* Corner Accents */}
-                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-amber-500 rounded-tl-2xl" />
-                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-amber-500 rounded-tr-2xl" />
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-amber-500 rounded-bl-2xl" />
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-amber-500 rounded-br-2xl" />
+                {/* Modern Golden and Glowing Blue Corner Brackets */}
+                {/* Top-Left: Golden */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-amber-400 rounded-tl-2xl shadow-[0_0_15px_rgba(251,191,36,0.85)] z-20 pointer-events-none" />
+                {/* Top-Right: Glowing Blue */}
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-sky-400 rounded-tr-2xl shadow-[0_0_15px_rgba(56,189,248,0.9)] z-20 pointer-events-none" />
+                {/* Bottom-Left: Glowing Blue */}
+                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-sky-400 rounded-bl-2xl shadow-[0_0_15px_rgba(56,189,248,0.9)] z-20 pointer-events-none" />
+                {/* Bottom-Right: Golden */}
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-amber-400 rounded-br-2xl shadow-[0_0_15px_rgba(251,191,36,0.85)] z-20 pointer-events-none" />
 
-                {/* Animated Laser line with blur trail */}
+                {/* Central Targeting Reticle */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 opacity-30">
+                  <div className="w-12 h-12 border border-sky-400/50 rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-amber-400 rounded-full shadow-[0_0_8px_#fbbf24]" />
+                  </div>
+                </div>
+
+                {/* Modern and Powerful Laser Line: Golden Core with Glowing Blue Aura */}
                 {enableInfiniteAnimations ? (
                   <motion.div
-                    animate={{ top: ['0%', '100%', '0%'] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
-                    className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent z-10"
+                    animate={{ top: ['4%', '96%', '4%'] }}
+                    transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute left-0 w-full pointer-events-none z-20 flex flex-col items-center"
                   >
-                    <div className="absolute inset-0 bg-amber-400 blur-sm opacity-50" />
+                    {/* Glowing light curtain sweep trail (upwards) */}
+                    <div className="w-full h-8 bg-gradient-to-t from-amber-400/35 via-sky-400/20 to-transparent blur-xs -mb-1" />
+                    
+                    {/* Core Laser Bar */}
+                    <div className="relative w-full h-[3px] bg-gradient-to-r from-transparent via-sky-400 via-amber-300 via-amber-200 via-sky-400 to-transparent shadow-[0_0_16px_#fbbf24,0_0_32px_#38bdf8,0_0_50px_#0284c7]">
+                      <div className="absolute inset-0 h-[1.5px] bg-white blur-[0.5px]" />
+                      {/* Left & Right Plasma Focus Nodes */}
+                      <div className="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_#38bdf8,0_0_5px_#fbbf24]" />
+                      <div className="absolute -right-1 -top-1 w-2.5 h-2.5 rounded-full bg-sky-300 shadow-[0_0_10px_#fbbf24,0_0_5px_#38bdf8]" />
+                    </div>
+
+                    {/* Glowing light curtain sweep trail (downwards) */}
+                    <div className="w-full h-8 bg-gradient-to-b from-amber-400/35 via-sky-400/20 to-transparent blur-xs -mt-1" />
                   </motion.div>
                 ) : (
-                  <div className="absolute left-0 top-1/2 w-full h-1 -translate-y-1/2 bg-gradient-to-r from-transparent via-amber-500 to-transparent z-10" />
+                  <div className="absolute left-0 top-1/2 w-full h-[3px] -translate-y-1/2 bg-gradient-to-r from-transparent via-sky-400 via-amber-300 via-sky-400 to-transparent shadow-[0_0_20px_#fbbf24,0_0_35px_#38bdf8] z-20 pointer-events-none" />
                 )}
               </div>
 
               <div className="mt-8 flex flex-col items-center">
-                <span className="text-amber-400 font-black text-xs uppercase tracking-[0.3em] mb-2 animate-pulse">
-                  Scanning Signal
-                </span>
-                <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest text-center px-12 leading-relaxed">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400 shadow-[0_0_8px_#fbbf24]"></span>
+                  </span>
+                  <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-sky-400 bg-clip-text text-transparent font-black text-xs uppercase tracking-[0.3em]">
+                    Quantum Laser Scanner
+                  </span>
+                </div>
+                <span className="text-sky-100/60 text-[10px] font-bold uppercase tracking-widest text-center px-12 leading-relaxed">
                   Position QR code within the frame to unlock rewards
                 </span>
               </div>

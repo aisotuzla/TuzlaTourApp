@@ -136,17 +136,6 @@ const NAV_ITEMS: NavItemConfig[] = [
     activeBorder: 'border-yellow-200'
   },
   {
-    id: AppTab.TASK_MANAGER,
-    icon: CheckSquare,
-    label: { en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
-    inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
-    inactiveIconClass: 'text-blue-900',
-    inactiveBorderClass: 'border-blue-400/80',
-    activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
-    activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
-    activeBorder: 'border-amber-400'
-  },
-  {
     id: AppTab.QR_SCAN,
     label: { en: 'QR Scan', bs: 'QR skeniranje', de: 'QR Scan', tr: 'QR Tarama' },
     icon: QrCode,
@@ -156,6 +145,17 @@ const NAV_ITEMS: NavItemConfig[] = [
     activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black',
     activeGlow: 'shadow-[0_8px_25px_rgba(245,158,11,0.6)]',
     activeBorder: 'border-yellow-300'
+  },
+  {
+    id: AppTab.TASK_MANAGER,
+    icon: CheckSquare,
+    label: { en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
+    inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
+    inactiveIconClass: 'text-blue-900',
+    inactiveBorderClass: 'border-blue-400/80',
+    activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
+    activeBorder: 'border-amber-400'
   }
 ];
 
@@ -234,17 +234,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
                     )}
 
                     <div className={`p-1 rounded-lg transition-all duration-200 ${isActive
-                        ? 'bg-slate-950/10 text-slate-950'
-                        : `${item.inactiveIconClass} group-hover:scale-105`
+                      ? 'bg-slate-950/10 text-slate-950'
+                      : `${item.inactiveIconClass} group-hover:scale-105`
                       }`}>
                       <Icon className={`w-4.5 h-4.5 transition-transform duration-200 ${isActive ? 'scale-105' : ''}`} />
                     </div>
 
                     <span className={`tracking-wide transition-colors flex-1 ${isHeader
-                        ? 'text-sm font-black uppercase tracking-wider'
-                        : isSubItem
-                          ? 'text-xs font-bold'
-                          : 'text-xs font-extrabold'
+                      ? 'text-sm font-black uppercase tracking-wider'
+                      : isSubItem
+                        ? 'text-xs font-bold'
+                        : 'text-xs font-extrabold'
                       }`}>
                       {label}
                     </span>
@@ -259,9 +259,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
 
             {/* Footer */}
             <div className="p-3 border-t border-slate-100 flex items-center justify-center gap-1.5 text-center bg-white/40">
-              <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
               <span className="text-xs font-black tracking-wider text-slate-700">
-                Tuzla
+                AISO Tuzla
               </span>
             </div>
           </motion.aside>

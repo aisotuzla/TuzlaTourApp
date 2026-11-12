@@ -152,9 +152,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRMesaStatue.png',
     Image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp',
-    video: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/MesaSelimovic.mp4',
-    panorama: '/assets/Gallery/QuestQRLocations/Tvrko pannellum/mesa360.webp',
-    panoramaHaov: 270
+    video: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/MesaSelimovic.mp4'
   },
   {
     id: 'tvrtko_park',

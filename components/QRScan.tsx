@@ -218,7 +218,43 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                             <AnimatePresence>
                                 {isScanning && (
                                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                                        <div id="qrscan-reader" className="w-full rounded-2xl overflow-hidden border border-blue-200" />
+                                        <div className="relative w-full rounded-2xl overflow-hidden bg-black border-2 border-sky-400/40 shadow-[0_0_50px_rgba(56,189,248,0.25),0_0_80px_rgba(245,158,11,0.15)]">
+                                            <div id="qrscan-reader" className="w-full rounded-2xl overflow-hidden" />
+
+                                            {/* Golden & Glowing Blue Cyber Corner Brackets */}
+                                            <div className="absolute top-2 left-2 w-8 h-8 border-t-4 border-l-4 border-amber-400 rounded-tl-xl shadow-[0_0_15px_rgba(251,191,36,0.85)] pointer-events-none z-10" />
+                                            <div className="absolute top-2 right-2 w-8 h-8 border-t-4 border-r-4 border-sky-400 rounded-tr-xl shadow-[0_0_15px_rgba(56,189,248,0.9)] pointer-events-none z-10" />
+                                            <div className="absolute bottom-2 left-2 w-8 h-8 border-b-4 border-l-4 border-sky-400 rounded-bl-xl shadow-[0_0_15px_rgba(56,189,248,0.9)] pointer-events-none z-10" />
+                                            <div className="absolute bottom-2 right-2 w-8 h-8 border-b-4 border-r-4 border-amber-400 rounded-br-xl shadow-[0_0_15px_rgba(251,191,36,0.85)] pointer-events-none z-10" />
+
+                                            {/* Center Reticle */}
+                                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 opacity-30">
+                                                <div className="w-12 h-12 border border-sky-400/50 rounded-full flex items-center justify-center">
+                                                    <div className="w-2 h-2 bg-amber-400 rounded-full shadow-[0_0_8px_#fbbf24]" />
+                                                </div>
+                                            </div>
+
+                                            {/* Modern & Powerful Laser: Golden Core with Glowing Blue Aura */}
+                                            <motion.div
+                                                animate={{ top: ['4%', '96%', '4%'] }}
+                                                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                                                className="absolute left-0 w-full pointer-events-none z-20 flex flex-col items-center"
+                                            >
+                                                {/* Top sweep trail */}
+                                                <div className="w-full h-8 bg-gradient-to-t from-amber-400/35 via-sky-400/20 to-transparent blur-xs -mb-1" />
+                                                
+                                                {/* Core Laser Bar */}
+                                                <div className="relative w-full h-[3px] bg-gradient-to-r from-transparent via-sky-400 via-amber-300 via-amber-200 via-sky-400 to-transparent shadow-[0_0_16px_#fbbf24,0_0_32px_#38bdf8,0_0_50px_#0284c7]">
+                                                    <div className="absolute inset-0 h-[1.5px] bg-white blur-[0.5px]" />
+                                                    <div className="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_#38bdf8,0_0_5px_#fbbf24]" />
+                                                    <div className="absolute -right-1 -top-1 w-2.5 h-2.5 rounded-full bg-sky-300 shadow-[0_0_10px_#fbbf24,0_0_5px_#38bdf8]" />
+                                                </div>
+
+                                                {/* Bottom sweep trail */}
+                                                <div className="w-full h-8 bg-gradient-to-b from-amber-400/35 via-sky-400/20 to-transparent blur-xs -mt-1" />
+                                            </motion.div>
+                                        </div>
+
                                         <button onClick={stopScanner} className="mt-3 w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs uppercase tracking-widest rounded-xl transition-all">
                                             {t.cancel}
                                         </button>
