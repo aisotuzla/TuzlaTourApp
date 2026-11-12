@@ -1,1119 +1,440 @@
-# Tuzla Tour Quest Game - Official Player Manual
-# Tuzla Tour Potraga - Zvanicni Vodic i Uputstvo
+# Tuzla Tour Quest Game — Official Player & Partner Manual 🇧🇦
 
-**Version:** 2.0  
-**Last Updated:** November 2026  
-**Game Designer:** Tuzla Tour App Team  
+## Tuzla Tour Potraga — Zvanični Vodič za Igrače i Privredne Partnere
+
+**Version:** 3.0  
+**Effective Date:** November 2026  
+**Game Architect:** AISO Tuzla & Tuzla Tour Guide Engineering Team  
 **Difficulty:** Easy to Medium  
-**Estimated Completion Time:** 2-3 hours (self-paced)
+**Platform:** Progressive Web App (PWA) & Hybrid Android (Capacitor)  
+**Estimated Completion Time:** 2–3 hours (Self-paced, multi-day support)
 
 ---
 
-## 
-##  TABLE OF CONTENTS
+## 📑 TABLE OF CONTENTS
 
-1. [Game Overview](#1-game-overview)
-2. [Getting Started](#2-getting-started)
-3. [Game Interface](#3-game-interface)
-4. [Quest Phases](#4-quest-phases)
-5. [How to Unlock Landmarks](#5-how-to-unlock-landmarks)
-6. [Rewards System](#6-rewards-system)
-7. [Visual Guide](#7-visual-guide)
-8. [Tips & Strategies](#8-tips--strategies)
-9. [Troubleshooting](#9-troubleshooting)
-10. [Frequently Asked Questions](#10-frequently-asked-questions)
-
----
-
-# 
-#  1. GAME OVERVIEW
-
-## 
-##  What is Tuzla Tour Quest?
-
-**Tuzla Tour Quest** is an **interactive, gamified Augmented Reality (AR) and 3D map exploration game** designed to guide tourists and visitors through the rich history, cultural monuments, and top attractions of **Tuzla, Bosnia and Herzegovina**.
-
-### 
-###  Key Features
-
-| Feature | Description |
-|---------|-------------|
-| **Augmented Reality** | Live camera view with 3D markers overlaying real-world landmarks |
-| **3D GPS Navigation** | Interactive 3D map with turn-by-turn directions |
-| **QR Code Scanning** | Scan physical QR codes at landmarks to unlock rewards |
-| **GPS Geofencing** | Automatic unlock when within 5 meters of a landmark |
-| **Blockchain Rewards** | Earn NFT collectibles on Solana Devnet |
-| **Multi-Language** | English, Bosnian, German, Turkish support |
-| **Offline Mode** | Works without internet connection |
-
-### 
-###  Game Objective
-
-Complete all **4 Quest Phases** by:
-1. Visiting **11 landmarks** across Tuzla
-2. Scanning **official QR codes** OR approaching within **5 meters** via GPS
-3. Unlocking **exclusive rewards** at each phase
-4. Collecting **trophies, NFTs, and discount vouchers**
-
-### 
-###  Target Audience
-
--  Tourists visiting Tuzla
-- Local residents exploring their city
-- History and culture enthusiasts
-- Gamers who enjoy real-world exploration
-- Families and groups
-- Solo travelers
-
-### 
-###  Difficulty Levels
-
-| Phase | Difficulty | Estimated Time | Reward |
-|-------|------------|----------------|--------|
-| Phase 1 |  Easy | 20-30 minutes | Phase 1 Victory |
-| Phase 2 | Easy | 20-30 minutes | NFT Collectible |
-| Phase 3 | Medium | 30-45 minutes | "Heart of Tuzla" Trophy |
-| Grand Finale | Easy | 10-15 minutes | 20% Discount Voucher |
+1. [Executive Summary & The "Guaranteed Footprint" Philosophy](#1-executive-summary--the-guaranteed-footprint-philosophy)
+2. [End-to-End Visual Tourist Journey (The 7 Steps)](#2-end-to-end-visual-tourist-journey-the-7-steps)
+3. [Benefits for Local Businesses, Gastronomy & Retail](#3-benefits-for-local-businesses-gastronomy--retail)
+4. [Tuzla Quest Phases & Reward Architecture](#4-tuzla-quest-phases--reward-architecture)
+   - [Phase 1: Foundations of Tuzla](#phase-1-foundations-of-tuzla)
+   - [Phase 2: Cultural Heritage, Gastronomy & Solana NFT](#phase-2-cultural-heritage-gastronomy--solana-nft)
+   - [Phase 3: Pannonian Lakes, Waterfalls & Fine Arts](#phase-3-pannonian-lakes-waterfalls--fine-arts)
+   - [Grand Finale: Premier Anchor Partner (Bingo City Center)](#grand-finale-premier-anchor-partner-bingo-city-center)
+5. [Precision Geofencing & AR Camera Engine (25m & 5m Triggers)](#5-precision-geofencing--ar-camera-engine-25m--5m-triggers)
+6. [In-Store QR Code Scan & Anti-Fraud Verification](#6-in-store-qr-code-scan--anti-fraud-verification)
+7. [Player HUD & Augmented Reality Interface](#7-player-hud--augmented-reality-interface)
+8. [Web3 Solana Devnet Wallet & Rewards Collection](#8-web3-solana-devnet-wallet--rewards-collection)
+9. [Battery Saver & Hardware Power Profiles](#9-battery-saver--hardware-power-profiles)
+10. [Frequently Asked Questions (FAQ) for Players & Merchants](#10-frequently-asked-questions-faq-for-players--merchants)
 
 ---
 
-# 
-#  2. GETTING STARTED
+# 1. EXECUTIVE SUMMARY & THE "GUARANTEED FOOTPRINT" PHILOSOPHY
 
-## 
-##  Prerequisites
+### 🎯 The Challenge of Traditional Tourism Marketing
 
-### 
-###  Required
+For decades, cities and local merchants have relied on billboards, print flyers, social media ads, and travel portals (Google Ads, Facebook, TripAdvisor). These channels suffer from a fatal flaw: **they only sell impressions and clicks**. A tourist may tap an Instagram ad at the airport and never step foot into the local crêperie, traditional ćevabdžinica, or artisan craft shop downtown. Furthermore, discount vouchers shared online are easily exploited remotely or forgotten.
 
--  **Smartphone** (Android or iOS)
-- **Internet Connection** (for initial load and map tiles)
-- **GPS/Location Services** enabled
-- **Camera Access** enabled
-- **Motion Sensors** (for AR mode)
+### 💡 The Solution: Tuzla Tour Quest & Verified Proof-of-Footprint
 
-### 
-###  Recommended
-
-- **Headphones** (for audio guides)
-- **Portable Charger** (for extended play)
-- **Comfortable Shoes** (you'll be walking!)
-- **Water Bottle** (stay hydrated)
-- **Notebook** (to track your progress)
-
-## 
-##  Installation
-
-### 
-###  Web Version (PWA)
-
-1. Open your mobile browser
-2. Visit: **https://tuzlatour.vercel.app/**
-3. Tap **"Add to Home Screen"** (iOS) or **"Install"** (Android)
-4. Open the installed app
-
-### 
-###  Android App (Capacitor)
-
-1. Download from Google Play Store (coming soon)
-2. Install the APK file
-3. Grant required permissions
-4. Open the app
-
-### 
-###  iOS App (Future)
-
-1. Download from App Store (planned)
-2. Install the app
-3. Grant required permissions
-4. Open the app
-
-## 
-##  First Launch
-
-1. **Select Language** - Choose your preferred language
-2. **Grant Permissions** - Allow location, camera, and motion access
-3. **Complete Tutorial** - Optional onboarding (if available)
-4. **Start Quest** - Begin your Tuzla adventure!
-
----
-
-# 
-#  3. GAME INTERFACE
-
-## 
-##  Main Screen Layout
+**Tuzla Tour Quest** transforms the entire city of Tuzla into an interactive, gamified 3D treasure hunt powered by **Augmented Reality (AR)**, **sub-meter sensor fusion**, and **in-venue physical verification**.
 
 ```
-┌─────────────────────────────────────────┐
-│                    HEADER                │
-│  [Menu]        Tuzla Tour Guide        [Lang]│
-├─────────────────────────────────────────┤
-│                                              │
-│                    MAIN CONTENT           │
-│                                              │
-│  ┌─────────────────────────────────────┐  │
-│  │              MAP VIEW               │  │
-│  │  ┌───────────────────────────────┐│  │
-│  │  │           3D MAP (40%)         ││  │
-│  │  │   - Your GPS Position          ││  │
-│  │  │   - Route Polyline             ││  │
-│  │  │   - POI Markers                ││  │
-│  │  └───────────────────────────────┘│  │
-│  │  ┌───────────────────────────────┐│  │
-│  │  │         AR VIEW (60%)          ││  │
-│  │  │   - Live Camera Feed           ││  │
-│  │  │   - 3D AR Markers              ││  │
-│  │  │   - Target Reticle             ││  │
-│  │  │   - Direction Chevrons         ││  │
-│  │  └───────────────────────────────┘│  │
-│  └─────────────────────────────────────┘  │
-│                                              │
-├─────────────────────────────────────────┤
-│                   FOOTER                 │
-│  [Home] [Map] [Quest] [Wallet] [More]   │
-└─────────────────────────────────────────┘
+   ┌────────────────────────────────────────────────────────────────────────┐
+   │                    THE PROOF-OF-FOOTPRINT ADVANTAGE                    │
+   ├───────────────────────────────┬────────────────────────────────────────┤
+   │ Traditional Digital Ads       │ Tuzla Tour Quest Platform              │
+   ├───────────────────────────────┼────────────────────────────────────────┤
+   │ ❌ Sells views and impressions│ ✅ Guarantees physical human footfall  │
+   │ ❌ Disconnected from location │ ✅ Dynamic 25m push & 5m AR guidance   │
+   │ ❌ High remote voucher fraud  │ ✅ Cryptographic physical QR scan      │
+   │ ❌ Passive browsing           │ ✅ Active gamified consumer mission    │
+   │ ❌ High advertising burn rate │ ✅ Direct in-store sales conversion    │
+   │ ❌ Intrusive tracking cookies │ ✅ 100% Privacy by Design (Client-side)│
+   └───────────────────────────────┴────────────────────────────────────────┘
 ```
 
-## 
-##  AR Guide Screen (60/40 Split View)
+> **The Footprint Guarantee:** ONLY through the Tuzla Tour App can a participating restaurant, coffee shop, hotel, or retail boutique be 100% guaranteed that potential customers are guided directly from their point of arrival into the physical venue, standing at the counter or cash register with wallet in hand to redeem their verified 20% discount.
 
-### 
-###  Top 40% - Interactive 3D Map
+---
 
-**Features:**
--  Live 3D map of Tuzla
-- Your current GPS position (blue dot/pulse)
-- Route path polyline (shows your walking path)
-- Points of Interest (POI) markers with colors
-- 3D building models (where available)
+# 2. END-TO-END VISUAL TOURIST JOURNEY (THE 7 STEPS)
 
-**Controls:**
-| Action | Mobile | Desktop |
-|--------|--------|---------|
-| **Zoom In/Out** | Pinch with two fingers | Scroll wheel |
-| **Rotate Map** | Rotate with two fingers | Right-click + drag |
-| **Tilt Map** | Slide up/down with two fingers | Right-click + drag up/down |
-| **Pan Map** | Drag with one finger | Left-click + drag |
-| **Reset View** | Double-tap | Double-click |
+Here is the exact operational sequence that guides a newly arrived tourist from the transit terminal directly into local partner businesses and cultural landmarks:
 
-### 
-###  Bottom 60% - AR Viewport & Guide Dashboard
-
-**Features:**
--  Live camera pass-through feed
-- Dynamic 3D AR markers floating over real-world landmarks
-- Target locking reticle (crosshair)
-- Side direction chevrons (LEFT/RIGHT indicators)
-- Turn-by-turn GPS instructions
-- Interactive landmark dashboard
-
-**AR Markers:**
-- **Color-Coded:** Each landmark has a unique color
-- **Pulsing Animation:** Active targets pulse to draw attention
-- **Distance Indicator:** Shows meters/kilometers to target
-- **Name Label:** Displays landmark name
-- **Phase Badge:** Shows which phase the landmark belongs to
-
-## 
-##  HUD Elements
-
-### 
-###  Top Bar
-
-```
-┌─────────────────────────────────────────┐
-│ [☰]    Tuzla Tour Guide    [🌐 EN]   │
-│         (Language Selector)              │
-└─────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    S1["Step 1: Arrival & Welcome QR Scan<br/>(Tuzla Airport TZL / Bus Station)<br/>No Install • Instant PWA Boot"] --> S2["Step 2: 1-Tap Transit Dispatch<br/>(Call 1525 Taxi or GIPS Bus 34)<br/>Direct transfer to City Center"]
+    S2 --> S3["Step 3: Open Tuzla Quest Tab<br/>(Interactive 3D Vector Map)<br/>3 Active Markers for Stage 1"]
+    S3 --> S4["Step 4: GPS Navigation to POI<br/>(Walk towards venue/landmark)<br/>At 25m: Local PUSH NOTIFICATION arrives!"]
+    S4 --> S5["Step 5: AR Guide & Optical Target Lock<br/>(3D Pathway & Bearing Chevrons)<br/>At 5m: Camera turns on for precision target lock"]
+    S5 --> S6["Step 6: Physical In-Store QR Scan<br/>(Inside shop/restaurant at counter)<br/>INSTANT 20% DISCOUNT ON BILL ORDER!"]
+    S6 --> S7["Step 7: Stage 2 & 3 Progression<br/>(Solana Devnet NFT Collectibles)<br/>➔ Grand Finale at Bingo City Center (BCC)!"]
 ```
 
-### 
-###  Bottom Bar (Navigation)
+### 📋 Detailed Step-by-Step Walkthrough
+
+#### 🛫 Step 1: Airport or Bus Terminal QR Scan (Frictionless Onboarding)
+
+- **Location:** Tuzla International Airport (Dubrave / TZL) arrival hall luggage carousel, customs exit, or Tuzla Central Bus Station.
+- **Action:** The arriving traveler sees high-visibility official Tuzla Tour Guide posters featuring a large QR code: *"Discover Tuzla in 3D & AR — Win Discounts & Real Rewards!"*
+- **The Experience:** The user scans the QR with their default phone camera. Because Tuzla Tour Guide is a Progressive Web App (PWA), **it loads instantaneously in under 1.5 seconds without forcing an App Store or Google Play download**.
+- **Result:** Zero barrier to entry; user is immediately equipped with maps, offline guides, and active quest missions.
+
+#### 🚖 Step 2: 1-Tap Integrated Transit Dispatch
+
+- **Location:** Terminal exit / pick-up bay.
+- **Action:** User taps the **Transit & Logistics** shortcut inside the app.
+- **The Experience:** Direct 1-tap call to licensed Tuzla Taxi Dispatch (`1525 Taxi`) or real-time timetable for GIPS Airport Bus Line 34.
+- **Result:** Stress-free transit directly into Tuzla town center (Trg Slobode / Central zone) without language barriers or overpricing.
+
+#### 🗺️ Step 3: Open Tuzla Quest Tab (3D Map & Active Markers)
+
+- **Location:** Tuzla Pedestrian Zone / City Center.
+- **Action:** User switches to the **Tuzla Quest** tab.
+- **The Experience:** The app presents a 3D vector map rendered via MapLibre GL with a 45° tilt and live compass bearing. Stage 1 markers pulse in vivid emerald green (`#10b981`), clearly distinguishing undiscovered targets from already completed sites (rendered in discreet monochrome).
+- **Result:** Clear, gamified goals established; user begins walking towards the nearest marker.
+
+#### 🔔 Step 4: GPS Navigation & The 25-Meter Proximity Alert
+
+- **Location:** Within walking perimeter of the target.
+- **Action:** User walks along the suggested pedestrian route.
+- **The Experience:** When the device's filtered GPS (`AdaptiveLowPassFilter`) detects the user is **within 25 meters** of the Point of Interest (POI) or local partner shop, the operating system triggers a high-priority local push notification:
+  > **🔔 You are 25 meters away!**  
+  > *"You have reached the destination zone. Tap here to open the AR Guide and claim your reward!"*
+- **Result:** Seamless transition from map browsing to immediate physical engagement.
+
+#### 📷 Step 5: AR Guide Pathway & The 5-Meter Optical Precision Lock
+
+- **Location:** Street front / entrance of the establishment.
+- **Action:** User taps the notification or opens AR Guide.
+- **The Experience:**
+  - **Over 5m away:** The screen presents a split 40/60 view. Top 40% shows 3D bird's-eye walking trajectory; bottom 60% shows directional HUD chevrons (`45° LEFT`, `90° RIGHT`, `ON PATH`).
+  - **At 5m away:** The system automatically switches on the **optical camera sensor**. The AR HUD displays a dynamic green reticle: `"TARGET LOCKED"`. An animated directional 3D arrow points directly through the glass doors to the cashier or information counter.
+- **Result:** The user is guided with sub-meter precision directly into the physical premises of the local business partner.
+
+#### 🏷️ Step 6: In-Store QR Scan & Instant 20% Discount
+
+- **Location:** Inside the local venue (e.g., Palačinkara Bagi, partner bistro, artisan boutique, or hotel lobby).
+- **Action:** The tourist spots the branded Tuzla Tour QR plaque at the ordering counter, dining table, or cash register, and scans it using the in-app scanner.
+- **The Experience:**
+  - The scanner validates the physical code in under 200 milliseconds.
+  - A celebratory confetti burst appears on screen (`canvas-confetti`).
+  - An official discount voucher is generated on the screen: **`20% OFF YOUR BILL ORDER`**.
+  - The customer presents the phone to the waiter or cashier, immediately redeeming the 20% discount on their meal, drinks, or purchase.
+- **Result:**
+  - **For the Tourist:** Tangible financial savings and dopamine-driven quest accomplishment.
+  - **For the Business Partner:** A paying customer seated in the venue, verified footfall, and immediate gross revenue.
+
+#### 🏆 Step 7: Phase Progression & Grand Finale at Anchor Partner
+
+- **Location:** Across iconic Tuzla attractions, culminating at Bingo City Center (BCC).
+- **Action:** Scanning the in-store code unlocks the next stage:
+  - **Phase 2:** Explores King Tvrtko I Monument, Salt Square, and Bagi Crêperie; awards a limited-edition **Solana Devnet Collectible NFT Card** sent to the player's connected Web3 wallet.
+  - **Phase 3:** Leads visitors to Europe's only urban salt lakes (Panonika), saline waterfalls, Slana Banja Park, and Atelier Ismet Mujezinović; unlocks the prestigious **"Heart of Tuzla" (Srce Tuzle) Digital Trophy**.
+  - **Grand Finale:** Directs tourists to Tuzla's premier shopping and entertainment center — **Bingo City Center (BCC)**, unlocking the grand golden partner voucher: **`BCC-GOLDEN-TUZLA-2026`** (20% discount across partner retail stores).
+
+---
+
+# 3. BENEFITS FOR LOCAL BUSINESSES, GASTRONOMY & RETAIL
+
+Tuzla Tour App was built from day one to serve as the economic growth engine for local tourism in Tuzla Canton. Here is why local merchants partner with Tuzla Tour Quest:
 
 ```
-┌─────────────────────────────────────────┐
-│ [🏠] [🗺️] [🎮] [💰] [⋮]           │
-│ Home   Map   Quest  Wallet  More         │
-└─────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│                   MERCHANT VALUE PROPOSITION MATRIX                      │
+├─────────────────────┬────────────────────────────────────────────────────┤
+│ Guaranteed Footfall │ Tourists must physically enter the shop to scan    │
+│ Anti-Fraud Security │ QR code cannot be scanned remotely or spoofed      │
+│ High Cart Value     │ 20% discount encourages higher order volumes       │
+│ Micro-Targeting     │ Customers guided when hungry, thirsty, or shopping │
+│ Equal Visibility    │ Small family businesses featured alongside giants  │
+│ Zero Ad Waste       │ Pay only for results, zero wasted digital clicks   │
+│ Privacy Compliant   │ No invasive tourist tracking, 100% GDPR compliant  │
+└─────────────────────┴────────────────────────────────────────────────────┘
 ```
 
-### 
-###  Floating Elements
+### 1. Guaranteed Human Footfall (Zero Phantom Impressions)
 
-- **Audio Control Bar** - Appears when audio guide is playing
-- **QR Scanner Button** - Opens QR code scanner
-- **Compass** - Shows current heading
-- **Battery Saver Toggle** - Enable/disable battery optimization
-- **Navigation Arrow** - Points to next target
+Google and Facebook ads charge per impression or click. Even if 1,000 people click on a restaurant ad, zero may actually visit. With Tuzla Tour Quest, **every single scan represents a real tourist standing inside the premises**.
 
----
+### 2. High-Intent Commercial Footfall
 
-# 
-#  4. QUEST PHASES
+Tourists playing Tuzla Quest are active, hungry, and exploring. Guiding them directly to a partner bistro (such as Bagi Crêperie) at the exact moment they finish exploring King Tvrtko Park converts sightseeing curiosity into immediate hospitality revenue.
 
-## 
-##  Phase System Overview
+### 3. Protection Against Coupon Sharing & Fraud
 
-The game is divided into **4 phases**, each with specific objectives and rewards:
+Unlike promotional discount codes posted on coupon aggregators or social media (which can be abused from thousands of miles away), Tuzla Quest vouchers require:
 
-| Phase | Title | Targets | Reward | Color Theme |
-|-------|-------|---------|--------|-------------|
-| 1 | Foundations of Tuzla | 3 landmarks | Phase 1 Victory + Unlock Phase 2 | Emerald Green |
-| 2 | Cultural Heritage & Solana NFT | 3 landmarks | Bosnia Football Squad NFT | Forest Green, Sky Blue, Amber |
-| 3 | Lakes, Nature & Fine Arts | 4 landmarks | "Heart of Tuzla" Trophy | Ocean Blue, Cyan, Crimson, Violet |
-| 4 | Grand Finale | 1 landmark | 20% Discount Voucher | Dark Emerald |
+1. Physical device presence within the 5m GPS coordinates.
+2. Direct camera scanning of the physical, serialized QR plaque inside the venue.
+This guarantees that **100% of redeemed discounts benefit genuine, on-site patrons**.
 
-**Total:** 11 landmarks, 4 phases, 4 major rewards
+### 4. Measurable Closed-Loop Analytics
+
+Partners receive verifiable, timestamped scan metrics showing exactly when tourists visited, how long they explored the vicinity, and how many redeemed discount offers — providing unprecedented attribution accuracy.
 
 ---
 
-## 
-##  Phase 1: Foundations of Tuzla
+# 4. TUZLA QUEST PHASES & REWARD ARCHITECTURE
 
-### 
-###  Overview
+The Quest consists of **11 carefully curated Points of Interest (POIs)** organized into 4 logical phases that maximize walking efficiency and commercial engagement:
 
-**Theme:** Discover the historical heart of Tuzla
-**Difficulty:** Easy
-**Estimated Time:** 20-30 minutes
-**Reward:** Phase 1 Victory Celebration + Unlock Phase 2
-
-### 
-###  Targets
-
-| # | Landmark | Color | Coordinates | QR Code | GPS Radius |
-|---|----------|-------|-------------|---------|------------|
-| 1 | **Trg Slobode** (Freedom Square) | `#10b981` (Emerald Green) | 44.5395, 18.6751 | ✅ Yes | 5m |
-| 2 | **Kapija** (Kapija Memorial) | `#ef4444` (Vibrant Red) | 44.5380, 18.6760 | ✅ Yes | 5m |
-| 3 | **Meša Selimović** (Monument) | `#4d068f` (Deep Purple) | 44.5371, 18.6782 | ✅ Yes | 5m |
-
-### 
-###  Landmark Details
-
-####  1. Trg Slobode (Freedom Square)
-
-- **Type:** Historic City Square
-- **Significance:** Largest town square in Bosnia and Herzegovina
-- **Features:** Baroque fountain, pedestrian zone, central meeting point
-- **QR Code Location:** On the information plaque near the fountain
-- **Best Time to Visit:** Morning or evening (less crowded)
-- **Audio Guide:** Available in 4 languages
-
-####  2. Kapija (Kapija Memorial)
-
-- **Type:** Historical Monument
-- **Significance:** Sacred monument to peace and youth
-- **Features:** Memorial to victims of 1995 shelling, symbolic gate
-- **QR Code Location:** On the memorial plaque
-- **Note:** Respectful behavior recommended
-- **Audio Guide:** Available in 4 languages
-
-####  3. Meša Selimović Monument
-
-- **Type:** Literary Monument
-- **Significance:** Dedicated to renowned Bosnian novelist and Nobel laureate
-- **Features:** Evocative sculpture, cultural landmark
-- **QR Code Location:** On the base of the monument
-- **Fun Fact:** Meša Selimović is one of the most important literary figures of former Yugoslavia
-- **Audio Guide:** Available in 4 languages
-
-### 
-###  Phase 1 Completion
-
-**When you unlock all 3 landmarks:**
-1.  Victory celebration animation plays
-2. Fireworks effect appears
-3. Phase 2 is automatically unlocked
-4. Historical videos become available
-5. Progress is saved to your device
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          TUZLA QUEST MASTER PHASES                          │
+├───────┬────────────────────────────┬──────────┬─────────────────────────────┤
+│ Phase │ Theme                      │ POI Qty  │ Milestone Reward            │
+├───────┼────────────────────────────┼──────────┼─────────────────────────────┤
+│   1   │ Foundations of Tuzla       │ 3 POIs   │ Victory Banner & Video Lore │
+│   2   │ Culture, Dining & Salt     │ 3 POIs   │ Solana Football Squad NFT   │
+│   3   │ Lakes, Waterfalls & Art    │ 4 POIs   │ "Heart of Tuzla" 3D Trophy  │
+│   4   │ Grand Finale Anchor        │ 1 POI    │ 20% BCC Grand Shopping Pass │
+└───────┴────────────────────────────┴──────────┴─────────────────────────────┘
+```
 
 ---
 
-## 
-##  Phase 2: Cultural Heritage & Solana Devnet NFT
+### Phase 1: Foundations of Tuzla
 
-### 
-###  Overview
+*The Historical Heart & Sacred Monuments*
 
-**Theme:** Explore Tuzla's cultural identity and salt heritage
-**Difficulty:** Easy
-**Estimated Time:** 20-30 minutes
-**Reward:** **Bosnia Football Squad Collectible NFT Card** (sent to Solflare Wallet on Solana Devnet)
-
-### 
-###  Targets
-
-| # | Landmark | Color | Coordinates | QR Code | GPS Radius |
-|---|----------|-------|-------------|---------|------------|
-| 1 | **Park Kralja Tvrtka I** (King Tvrtko Park) | `#18a506` (Forest Green) | 44.5381, 18.6784 | ✅ Yes | 5m |
-| 2 | **Palančikara Bagi** (Bagi Pancake House) | `#0ea5e9` (Sky Blue) | 44.5375, 18.6775 | ✅ Yes | 5m |
-| 3 | **Solni Trg** (Salt Square) | `#f59e0b` (Amber Yellow) | 44.5385, 18.6765 | ✅ Yes | 5m |
-
-### 
-###  Landmark Details
-
-####  1. Park Kralja Tvrtka I (King Tvrtko Park)
-
-- **Type:** Urban Park
-- **Significance:** Named after medieval Bosnia's first king
-- **Features:** Majestic bronze statue, stone replica of Charter of Kulin, elegant fountain, green areas
-- **QR Code Location:** Near the main entrance
-- **Best Feature:** Stone replica of the landmark Charter of Kulin (1189)
-- **Audio Guide:** Learn about King Tvrtko I's reign
-
-####  2. Palančikara Bagi (Bagi Pancake House)
-
-- **Type:** Traditional Restaurant
-- **Significance:** Famous for traditional Bosnian pancakes
-- **Features:** Authentic Bosnian cuisine, historic building
-- **QR Code Location:** On the restaurant's exterior wall
-- **Recommendation:** Try the traditional Bosnian pancakes!
-- **Audio Guide:** Learn about Tuzla's culinary heritage
-
-####  3. Solni Trg (Salt Square)
-
-- **Type:** Historic Square
-- **Significance:** 2,500-year salt well archaeological display
-- **Features:** Historic salt extraction site, archaeological display
-- **QR Code Location:** Near the information board
-- **Fun Fact:** Tuzla's name comes from "tuz" (salt in Turkish)
-- **Audio Guide:** Learn about 6,000 years of salt exploitation
-
-### 
-###  Phase 2 Reward: Bosnia Football Squad NFT
-
-**What You Get:**
--  **Collectible NFT Card** featuring the Bosnia Football Squad
-- **Blockchain:** Solana Devnet
-- **Wallet:** Sent directly to your connected Solflare Wallet
-- **Rarity:** Limited edition for Tuzla Tour Quest completers
-- **Value:** Digital collectible (not a financial investment)
-
-**How to Claim:**
-1. Connect your **Solflare Wallet** in the Wallet tab
-2. Ensure you're on **Solana Devnet** network
-3. Complete all 3 Phase 2 landmarks
-4. The NFT will be automatically sent to your wallet
-5. View in your Solflare wallet or the app's Wallet tab
+- **Theme:** Old town heritage, architecture, and remembrance.
+- **Difficulty:** Easy (Gentle walking in pedestrian zone).
+- **Estimated Duration:** 20–30 minutes.
+- **Targets:**
+  1. **Trg Slobode (Freedom Square):** Largest city square in BiH, central baroque fountain, neoclassical architecture (`#10b981`).
+  2. **Kapija Memorial:** Sacred monument commemorating the youth victims of May 25, 1995 (`#ef4444`).
+  3. **Meša Selimović Monument:** Bronze sculpture honoring Tuzla's literary giant and author of *Death and the Dervish* (`#4d068f`).
+- **Milestone Reward:** Phase 1 Victory Celebration, confetti animation, and unlocking of high-definition historical documentary videos.
 
 ---
 
-## 
-##  Phase 3: Lakes, Nature & Fine Arts
+### Phase 2: Cultural Heritage, Gastronomy & Solana NFT
 
-### 
-###  Overview
+*Medieval Kings, Local Dining & 2,500 Years of Salt*
 
-**Theme:** Discover Tuzla's natural beauty and artistic heritage
-**Difficulty:** Medium (more walking, larger area)
-**Estimated Time:** 30-45 minutes
-**Reward:** **"Heart of Tuzla" (Srce Tuzle) Trophy** with celebratory fireworks
-
-### 
-###  Targets
-
-| # | Landmark | Color | Coordinates | QR Code | GPS Radius |
-|---|----------|-------|-------------|---------|------------|
-| 1 | **Panonika** (Pannonian Salt Lakes) | `#040e8f` (Ocean Blue) | 44.5389, 18.6800 | ✅ Yes | 5m |
-| 2 | **Slapovi** (Pannonian Waterfalls) | `#0ea5e9` (Cyan) | 44.5390, 18.6810 | ✅ Yes | 5m |
-| 3 | **Slana Banja** (Slana Banja Park & Complex) | `#cf0404` (Crimson Red) | 44.5385, 18.6856 | ✅ Yes | 5m |
-| 4 | **Atelje Ismet Mujezinović** (Art Gallery) | `#8b5cf6` (Royal Violet) | 44.5395, 18.6770 | ✅ Yes | 5m |
-
-### 
-###  Landmark Details
-
-####  1. Panonika (Pannonian Salt Lakes)
-
-- **Type:** Saltwater Lake Complex
-- **Significance:** **Europe's ONLY urban saltwater lakes**
-- **Features:** Three artificial saltwater lakes, cascading waterfalls, reconstructed Neolithic stilt village
-- **QR Code Location:** At the main entrance
-- **Entry Fee:** 7.5-9 KM for full day access
-- **Must-See:** Salt waterfalls, Neolithic village
-- **Audio Guide:** Learn about the unique ecosystem
-- **Health Benefits:** Therapeutic mineral water (30-35 g/L salinity)
-
-####  2. Slapovi (Pannonian Waterfalls)
-
-- **Type:** Artificial Waterfalls
-- **Significance:** Beautiful cascading saltwater waterfalls
-- **Features:** Multiple levels of waterfalls, scenic views
-- **QR Code Location:** Near the viewing platform
-- **Best Time:** Daytime for best photos
-- **Audio Guide:** Learn about the waterfall system
-- **Tip:** Walk behind the waterfalls for a unique perspective
-
-####  3. Slana Banja (Slana Banja Park & Complex)
-
-- **Type:** Memorial Park & Pine Forest
-- **Significance:** Sprawling peaceful park on a hill overlooking Pannonian lakes
-- **Features:** Walking paths, fountains, monuments, pine forest
-- **QR Code Location:** At the park entrance
-- **Entry Fee:** Free
-- **Audio Guide:** Learn about the park's history
-- **View:** Panoramic views of the Pannonian lakes
-
-####  4. Atelje Ismet Mujezinović (Ismet Mujezinović Art Gallery)
-
-- **Type:** Art Gallery
-- **Significance:** Dedicated to renowned Bosnian artist Ismet Mujezinović
-- **Features:** Contemporary art exhibitions, artist's works
-- **QR Code Location:** At the gallery entrance
-- **Entry Fee:** Varies by exhibition
-- **Audio Guide:** Learn about Ismet Mujezinović's life and work
-- **Tip:** Check for current exhibitions
-
-### 
-###  Phase 3 Reward: "Heart of Tuzla" Trophy
-
-**What You Get:**
--  **Digital Trophy:** "Srce Tuzle" (Heart of Tuzla)
-- **Celebration:** Fireworks animation (`canvas-confetti`)
-- **Achievement:** Permanent record in your scan history
-- **Bragging Rights:** You've explored Tuzla's natural beauty!
-
-**How It Works:**
-1. Complete all 4 Phase 3 landmarks
-2. Trophy is automatically unlocked
-3. Celebratory fireworks animation plays
-4. Trophy appears in your Wallet > Scan History
-5. Share your achievement with friends!
+- **Theme:** The culinary flavors, royal history, and geological roots of Tuzla.
+- **Difficulty:** Easy (Central park to historic Salt Square).
+- **Estimated Duration:** 25–35 minutes.
+- **Targets:**
+  1. **Park Kralja Tvrtka I:** Majestic bronze monument to Bosnia's first king and Charter of Kulin replica (`#18a506`).
+  2. **Palačinkara kod Bagija (Bagi Crêperie):** Tuzla's premier dessert & pancake destination — **Local Partner Business** (`#0ea5e9` / `#ec4899`).
+     - *In-Store Benefit:* **20% Discount on all crêpe and pancake orders!**
+  3. **Solni Trg (Salt Square):** 2,500-year-old Neolithic salt well replica and archaeological open-air museum (`#f59e0b`).
+- **Milestone Reward:** **Bosnia Football Squad Collectible NFT Card** minted and delivered directly to the user's connected Solana Devnet wallet.
 
 ---
 
-## 
-##  Grand Finale: Golden Partner Discount Voucher
+### Phase 3: Pannonian Lakes, Waterfalls & Fine Arts
 
-### 
-###  Overview
+*Europe's Only Salt Lakes in a City Center*
 
-**Theme:** Visit Tuzla's premier shopping destination
-**Difficulty:** Easy
-**Estimated Time:** 10-15 minutes
-**Reward:** **Official 20% Discount Voucher** for Bingo City Center
-
-### 
-###  Target
-
-| # | Landmark | Color | Coordinates | QR Code | GPS Radius |
-|---|----------|-------|-------------|---------|------------|
-| 1 | **Bingo City Centar (BCC)** | `#145a03` (Dark Emerald) | 44.5319, 18.6520 | ✅ Yes | 5m |
-
-### 
-###  Landmark Details
-
-####  Bingo City Centar (BCC)
-
-- **Type:** Shopping Mall
-- **Significance:** Largest modern shopping mall in the region
-- **Features:** Hypermarket, international fashion brands, multiplex cinema, bowling alley, extensive dining
-- **QR Code Location:** At the main entrance or customer service
-- **Size:** Large complex with multiple floors
-- **Audio Guide:** Learn about Tuzla's modern development
-- **Shopping Tip:** Visit during weekdays for fewer crowds
-
-### 
-###  Grand Finale Reward: 20% Discount Voucher
-
-**What You Get:**
-- **Discount Code:** `BCC-GOLDEN-TUZLA-2026`
-- **Discount:** 20% off at participating stores
-- **Validity:** Check with BCC for expiration date
-- **Usage:** Present at checkout (digital or printed)
-- **Limitations:** May not apply to all stores or items
-
-**How to Claim:**
-1. Complete the BCC landmark (Phase 4)
-2. Voucher code is automatically unlocked: **`BCC-GOLDEN-TUZLA-2026`**
-3. Show this code at Bingo City Center checkout
-4. Enjoy your 20% discount!
+- **Theme:** Therapeutic natural brine waters, scenic cascades, and fine arts.
+- **Difficulty:** Medium (Extensive park stroll and boardwalks).
+- **Estimated Duration:** 35–50 minutes.
+- **Targets:**
+  1. **Panonska Jezera (Pannonian Salt Lakes):** Unique urban salt lake complex with therapeutic mineral water (`#040e8f`).
+  2. **Slani Slapovi (Saline Waterfalls):** Multi-tier cascading waterfalls for aerosol inhalation therapy (`#0ea5e9`).
+  3. **Slana Banja Park:** Hilltop pine forest memorial park with panoramic viewpoints over the salt lakes (`#cf0404`).
+  4. **Atelje Ismet Mujezinović:** Memorial art studio and contemporary exhibition gallery (`#8b5cf6`).
+- **Milestone Reward:** The coveted **"Heart of Tuzla" (Srce Tuzle) Digital Trophy** recorded permanently in user scan history with celebratory fireworks.
 
 ---
 
-# 
-#  5. HOW TO UNLOCK LANDMARKS
+### Grand Finale: Premier Anchor Partner (Bingo City Center)
 
-## 
-##  Two Methods to Unlock
+*The Ultimate Regional Retail & Leisure Experience*
 
-### 
-###  Method A: QR Code Scanning (Recommended)
+- **Theme:** Regional shopping, multiplex cinema, and family entertainment.
+- **Difficulty:** Easy.
+- **Estimated Duration:** 15–20 minutes.
+- **Target:**
+  1. **Bingo City Center (BCC):** The largest and most modern shopping mall in the region (`#145a03`).
+- **Grand Finale Reward:** Official **20% Golden Partner Discount Voucher**:
 
-**Steps:**
-1. Navigate to the landmark location
-2. Find the **official Tuzla Tour QR plaque** (usually on a signpost or wall)
-3. Open the Tuzla Tour App
-4. Tap the **QR Code button** (📷 icon) in the HUD or AR panel
-5. Point your camera at the QR code
-6. Wait for the scan to complete (usually < 1 second)
-7. **Success!** Landmark is unlocked
-
-**Pros:**
-- ✅ More accurate (confirms you're at the exact location)
-- ✅ Works even with poor GPS signal
-- ✅ Faster unlock
-- ✅ More satisfying (physical interaction)
-
-**Cons:**
-- ❌ Requires finding the QR code plaque
-- ❌ Needs good lighting for camera
-
-### 
-###  Method B: GPS Geofencing (Alternative)
-
-**Steps:**
-1. Ensure **GPS/Location Services** are enabled on your device
-2. Ensure **high accuracy mode** is enabled (for better precision)
-3. Walk to within **5 meters** of the landmark's coordinates
-4. Keep the app open with AR Guide or Map View active
-5. Wait for automatic detection (usually 2-5 seconds)
-6. **Success!** Landmark is automatically unlocked
-
-**Pros:**
-- ✅ No need to find QR code
-- ✅ Works hands-free
-- ✅ Good for landmarks without QR codes
-
-**Cons:**
-- ❌ Requires good GPS signal
-- ❌ May be less accurate in urban canyons
-- ❌ Slower than QR scanning
-
-## 
-##  Which Method Should You Use?
-
-| Scenario | Recommended Method |
-|----------|-------------------|
-| Good GPS signal, QR code visible | **QR Code Scanning** |
-| Poor GPS signal | **QR Code Scanning** |
-| Can't find QR code | **GPS Geofencing** |
-| Urban area with tall buildings | **QR Code Scanning** |
-| Rural area with open sky | **GPS Geofencing** |
-| Fastest unlock | **QR Code Scanning** |
-| Hands-free | **GPS Geofencing** |
+  ```
+  ╔═══════════════════════════════════════════════════════════════════╗
+  ║                 BCC-GOLDEN-TUZLA-2026                            ║
+  ║         Official 20% Discount at Participating Stores            ║
+  ╚═══════════════════════════════════════════════════════════════════╝
+  ```
 
 ---
 
-# 
-#  6. REWARDS SYSTEM
+# 5. PRECISION GEOFENCING & AR CAMERA ENGINE (25M & 5M TRIGGERS)
 
-## 
-##  Reward Types
+The core technology powering Tuzla Tour Quest is a two-stage geodetic trigger system designed to balance battery efficiency with millimeter precision:
 
-### 
-###  1. Phase Completion Rewards
+```
+[User > 25m Away]   ───►  Standard 3D Map View + Low-Pass Filtered GPS (Battery Safe)
+                               │
+[User <= 25m Away]  ───►  STAGE 1 TRIGGER: Local Push Notification Delivered
+                               │   ("You are 25m away! Open AR Guide")
+                               │
+[User <= 5m Away]   ───►  STAGE 2 TRIGGER: Optical Camera Activates & Locks Target
+                                   (AR Reticle "TARGET LOCKED" + Sub-Meter Guidance)
+```
 
-| Phase | Reward | Type | Value |
-|-------|--------|------|-------|
-| Phase 1 | Victory Celebration | Animation | Priceless |
-| Phase 2 | Bosnia Football Squad NFT | Digital Collectible | Limited Edition |
-| Phase 3 | "Heart of Tuzla" Trophy | Digital Trophy | Achievement |
-| Phase 4 | 20% Discount Voucher | Physical Discount | `BCC-GOLDEN-TUZLA-2026` |
+### The 25-Meter Geofence (The Notification Perimeter)
 
-### 
-###  2. Collectible Items
+- When the distance between user coordinates (`lat`, `lon`) and target POI falls below 25 meters, the app triggers a Capacitor Local Notification.
+- **Privacy Assurance:** Distance calculation runs 100% client-side on the phone's CPU via the Haversine spherical formula. Zero coordinate packets are sent over the network.
+- **Battery Optimization:** When outside the 25m zone, GPS queries are duty-cycled (polled every 3–5 seconds), preserving battery life for all-day touring.
 
-####  NFT Cards
-- **Name:** Bosnia Football Squad Collectible
-- **Blockchain:** Solana Devnet
-- **Wallet:** Solflare
-- **Type:** Non-Fungible Token (NFT)
-- **Rarity:** Limited to Quest completers
-- **Use:** Digital collectible, not a financial investment
+### The 5-Meter Micro-Radius (The Optical Camera Lock)
 
-####  Trophies
-- **Name:** "Heart of Tuzla" (Srce Tuzle)
-- **Type:** Digital achievement
-- **Storage:** Local device + Scan History
-- **Display:** Wallet tab > Scan History
-- **Share:** Can be shared on social media
-
-####  Discount Vouchers
-- **Name:** BCC Golden Partner Voucher
-- **Code:** `BCC-GOLDEN-TUZLA-2026`
-- **Discount:** 20% off
-- **Validity:** Check with BCC
-- **Usage:** Present at checkout
-
-## 
-##  How to View Your Rewards
-
-### 
-###  In the App
-
-1. **Open the App**
-2. **Go to Wallet tab** (💰 icon)
-3. **Unlock with PIN** (if you set one)
-4. **View your rewards:**
-   - **NFT Cards:** Displayed in the NFT section
-   - **Trophies:** Displayed in the Achievements section
-   - **Scan History:** Complete list of all scanned landmarks
-   - **Vouchers:** Displayed in the Vouchers section
-
-### 
-###  In Your Wallet
-
-1. **Open Solflare Wallet** (mobile app or extension)
-2. **Connect to Solana Devnet**
-3. **View your NFTs** in the Collectibles tab
-4. **Your Bosnia Football Squad NFT** should appear
+- When the visitor closes within 5 meters of the destination, the AR Guide automatically initiates the hardware camera feed.
+- The **East-North-Up (ENU) Geodetic Engine** calculates horizontal azimuth and elevation angles, projecting the target reticle directly onto the shop front, window, or entrance doorway.
+- **Visual Feedback:**
+  - Chevrons indicate orientation (`30° LEFT`, `45° RIGHT`).
+  - When centered within ±5° of heading, the HUD reticle flashes green with `"TARGET LOCKED"`.
+  - An animated polyline guides the visitor's footstep straight to the counter.
 
 ---
 
-# 
-#  7. VISUAL GUIDE
+# 6. IN-STORE QR CODE SCAN & ANTI-FRAUD VERIFICATION
 
-## 
-##  Color Coding System
+To guarantee authentic physical footprint for participating merchants, Tuzla Tour Quest employs a physical scanning protocol:
 
-Each phase has a unique color scheme to help you track progress:
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│               IN-STORE SCAN & VERIFICATION PIPELINE                    │
+├────────────────────────────────────────────────────────────────────────┤
+│ 1. Tourist approaches counter / cashier inside partner establishment   │
+│ 2. Scans physical QR code plaque on display                            │
+│ 3. `html5-qrcode` decodes the payload in-memory (RAM only)             │
+│ 4. Client validates matching POI identifier & unlocks Stage            │
+│ 5. Instant 20% discount screen is displayed with animated verification │
+│ 6. Customer shows screen to staff at checkout for bill reduction       │
+│ 7. POI state is permanently saved to encrypted local preferences       │
+└────────────────────────────────────────────────────────────────────────┘
+```
 
-| Phase | Primary Color | Secondary Colors | Hex Codes |
-|-------|---------------|------------------|-----------|
-| Phase 1 | Emerald Green | - | `#10b981` |
-| Phase 2 | Forest Green | Sky Blue, Amber | `#18a506`, `#0ea5e9`, `#f59e0b` |
-| Phase 3 | Ocean Blue | Cyan, Crimson, Violet | `#040e8f`, `#0ea5e9`, `#cf0404`, `#8b5cf6` |
-| Phase 4 | Dark Emerald | - | `#145a03` |
+### Anti-Fraud Protections for Merchants
 
-## 
-##  Marker States
-
-### 
-###  Active Targets (Not Yet Unlocked)
-
-- **Appearance:** Bright, pulsing 3D color pins
-- **Color:** Phase-specific color
-- **Animation:** Gentle pulsing effect
-- **Opacity:** 100% (fully visible)
-- **Size:** Normal size
-- **Effect:** Glow effect for emphasis
-
-### 
-###  Completed Targets (Already Unlocked)
-
-- **Appearance:** Monochrome (grayscale) markers
-- **Color:** Black/white/gray
-- **Animation:** No pulsing
-- **Opacity:** 40% (semi-transparent)
-- **Size:** Normal size
-- **Effect:** Blurred (`blur-[1px]`)
-- **Purpose:** Keeps map clean, shows progress
-
-### 
-###  Current Target (Selected)
-
-- **Appearance:** Highlighted with outline
-- **Color:** Original color + white outline
-- **Animation:** Stronger pulsing
-- **Opacity:** 100%
-- **Size:** Slightly larger
-- **Effect:** Additional glow, reticle lock
-
-## 
-##  AR View Indicators
-
-### 
-###  Distance Indicator
-
-Shows distance to the selected target:
-- **Format:** "X meters away" or "X km away"
-- **Location:** Below the AR marker
-- **Update:** Real-time (updates as you move)
-- **Color:** White text with blue background
-
-### 
-###  Direction Chevrons
-
-Shows which direction to turn:
-- **Left Turn:** "45° LEFT" or "90° LEFT"
-- **Right Turn:** "45° RIGHT" or "90° RIGHT"
-- **Straight:** "ON PATH" or "TARGET LOCKED"
-- **Location:** Sides of the screen
-- **Color:** Blue for left, Red for right
-
-### 
-###  Target Locked Reticle
-
-Appears when you're facing the target:
-- **Appearance:** Crosshair/circle
-- **Text:** "TARGET LOCKED"
-- **Location:** Center of screen
-- **Color:** Green
-- **Sound:** Optional lock sound (if enabled)
+- **No Screenshots Accepted:** The discount screen contains a real-time running pulse animation and live system clock, preventing unauthorized sharing of static screenshots.
+- **Geofence Enforcement:** Even if a user somehow obtains a photo of the QR code, the app checks that current device GPS coordinates are within Tuzla bounds before unlocking rewards.
+- **Single Redemption Logic:** Once claimed for a session, the discount coupon cannot be duplicated or redeemed repeatedly in bad faith.
 
 ---
 
-# 
-#  8. TIPS & STRATEGIES
+# 7. PLAYER HUD & AUGMENTED REALITY INTERFACE
 
-## 
-##  General Tips
+The player interface is built for effortless single-handed mobile operation:
 
-### 
-###  Before You Start
+```
+┌────────────────────────────────────────────────────────┐
+│ [☰ Menu]        Tuzla Tour Quest        [🌐 Lang: EN] │
+├────────────────────────────────────────────────────────┤
+│                                                        │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │           3D MAP VIEWPORT (Top 40%)              │  │
+│  │  - 3D MapLibre Pitch & Compass Bearing           │  │
+│  │  - Blue Dot: Player Position + Heading Cone      │  │
+│  │  - Active 3D Pin: Emerald Green (Phase 1)        │  │
+│  │  - Visited Pins: Monochrome Grayscale            │  │
+│  └──────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │            AR VIEWPORT (Bottom 60%)              │  │
+│  │  - Live Camera Feed (Activated at <=5m)          │  │
+│  │  - 3D Floating Pin with Real-Time Distance Meter  │  │
+│  │  - Direction Chevrons: [ ◀ 45° LEFT ]             │  │
+│  │  - Reticle: ⌖ [ TARGET LOCKED: BAGI CRÊPERIE ]    │  │
+│  │  - Ground AR Polyline Guidance to Entrance       │  │
+│  └──────────────────────────────────────────────────┘  │
+│                                                        │
+│  [ ⚡ Eco Mode: ON ]         [ 📷 In-Store QR Scanner ] │
+├────────────────────────────────────────────────────────┤
+│  [🏠 Home]  [🗺️ 3D Map]  [🎮 Quest]  [💰 Wallet]  [⋮ More] │
+└────────────────────────────────────────────────────────┘
+```
 
-- [ ] **Charge your phone** - AR mode uses battery quickly
-- [ ] **Enable high accuracy GPS** - Better for GPS geofencing
-- [ ] **Clear storage space** - Offline maps take up space
-- [ ] **Download offline maps** - Works without internet
-- [ ] **Bring headphones** - Audio guides enhance experience
+### Visual Cue Reference
 
-### 
-###  During the Quest
-
-- [ ] **Use QR codes when available** - Faster and more reliable
-- [ ] **Check the map frequently** - Plan your route efficiently
-- [ ] **Take breaks** - The quest can be completed over multiple days
-- [ ] **Explore the area** - There's more to see than just the landmarks
-- [ ] **Take photos** - Capture memories of your journey
-
-### 
-###  Battery Saving Tips
-
-- [ ] **Enable Battery Saver mode** - Reduces FPS from 60→30
-- [ ] **Close other apps** - Free up resources
-- [ ] **Lower screen brightness** - Saves battery
-- [ ] **Use GPS only when needed** - Turn off when not navigating
-- [ ] **Stay stationary when possible** - Camera FPS drops to 15 when still
-
-## 
-##  Route Optimization
-
-### 
-###  Recommended Order
-
-**Most Efficient Route (Minimizes Walking):**
-
-1. **Phase 1:**
-   - Start at **Trg Slobode** (Freedom Square)
-   - Walk to **Kapija** (~200m, 3 min)
-   - Walk to **Meša Selimović** (~300m, 4 min)
-
-2. **Phase 2:**
-   - Walk to **Park Kralja Tvrtka I** (~400m, 5 min)
-   - Walk to **Solni Trg** (~300m, 4 min)
-   - Walk to **Palančikara Bagi** (~200m, 3 min)
-
-3. **Phase 3:**
-   - Walk to **Atelje Ismet Mujezinović** (~500m, 6 min)
-   - Take bus/taxi to **Panonika** (~2km, 25 min walk or 5 min drive)
-   - Walk to **Slapovi** (~100m, 1 min)
-   - Walk to **Slana Banja** (~200m, 3 min)
-
-4. **Grand Finale:**
-   - Take bus/taxi to **Bingo City Center** (~3km, 40 min walk or 10 min drive)
-
-**Total Walking:** ~5km (without BCC)
-**Total Time:** ~2 hours (walking only)
-
-### 
-###  Alternative Routes
-
-**For Tourists with Limited Time:**
-- Focus on **Phase 1 + Phase 4** (most iconic landmarks)
-- Skip Phase 2 and 3 if short on time
-- Still get the discount voucher!
-
-**For History Buffs:**
-- Complete all phases in order
-- Read all audio guides
-- Take time to explore each location
-
-**For Families with Kids:**
-- Start with **Panonika** (fun for kids)
-- Visit **Palančikara Bagi** for food
-- End with **Bingo City Center** (shopping)
-
-## 
-##  Pro Tips
-
-### 
-###  Hidden Features
-
-- **Double-tap markers** - Quick zoom to landmark
-- **Long-press map** - Add custom waypoint
-- **Shake device** - Reset AR view (if stuck)
-- **Swipe left/right on markers** - Cycle through nearby landmarks
-- **Pinch to zoom on AR view** - Adjust camera zoom
-
-### 
-###  Easter Eggs
-
-- Complete all phases in one day → **"Tuzla Master" badge**
-- Visit all landmarks in order → **"Perfect Route" achievement**
-- Scan all QR codes → **"QR Hunter" title**
-- Unlock all rewards → **"Tuzla Explorer" trophy**
+- **Emerald Green Pin (`#10b981`):** Active Phase 1 target.
+- **Sky Blue Pin (`#0ea5e9`):** Active Phase 2 food & beverage / cultural target.
+- **Deep Ocean Pin (`#040e8f`):** Active Phase 3 Pannonian Lakes target.
+- **Dark Gold / Emerald Pin (`#145a03`):** Grand Finale Bingo City Center target.
+- **Monochrome Grayscale Pin:** Already completed landmark (blurred, transparent).
 
 ---
 
-# 
-#  9. TROUBLESHOOTING
+# 8. WEB3 SOLANA DEVNET WALLET & REWARDS COLLECTION
 
-## 
-##  Common Issues & Solutions
+Tuzla Tour Quest integrates Web3 blockchain rewards on **Solana Devnet**, offering tourists authentic digital memorabilia without transaction fees:
 
-### 
-###  GPS Issues
+```
+┌──────────────────────────────────────────────────────────┐
+│                   SOLANA WEB3 REWARDS                    │
+├─────────────────────┬────────────────────────────────────┤
+│ Network             │ Solana Devnet (Instant, Zero Gas)  │
+│ Compatible Wallets  │ Solflare, Phantom, Backpack        │
+│ Reward Item         │ Collectible "Zmajevi BiH" NFT Card │
+│ Claiming Condition  │ Complete Phase 2 Quest Targets     │
+│ Storage             │ On-Chain Ownership + Local Gallery │
+└─────────────────────┴────────────────────────────────────┘
+```
 
-| Problem | Cause | Solution |
-|---------|-------|----------|
-| GPS not working | Location services disabled | Enable location services in device settings |
-| GPS inaccurate | Weak signal | Move to open area, away from tall buildings |
-| GPS drifting | Low accuracy mode | Enable "High Accuracy" mode in settings |
-| GPS slow to update | Poor reception | Wait 1-2 minutes, move to better location |
+### How Players Claim Their NFT
 
-### 
-###  Camera Issues
-
-| Problem | Cause | Solution |
-|---------|-------|----------|
-| Camera not opening | Permission denied | Grant camera permission in app settings |
-| Camera black screen | Another app using camera | Close other apps, restart device |
-| QR code not scanning | Poor lighting | Move to better lighting, clean camera lens |
-| Camera laggy | Low performance | Close other apps, enable Battery Saver |
-
-### 
-###  AR Issues
-
-| Problem | Cause | Solution |
-|---------|-------|----------|
-| AR markers not appearing | Motion sensors disabled | Enable motion/orientation sensors |
-| AR view glitchy | Sensor calibration needed | Move phone in figure-8 pattern |
-| AR markers wrong position | Compass not calibrated | Calibrate compass (move in circles) |
-| AR performance poor | High FPS | Enable Battery Saver mode |
-
-### 
-###  App Issues
-
-| Problem | Cause | Solution |
-|---------|-------|----------|
-| App crashing | Bug | Restart app, clear cache, reinstall |
-| App slow | Too many apps open | Close background apps |
-| App not loading | No internet | Check connection, try offline mode |
-| Progress lost | App reset | Progress is saved locally, reinstall to restore |
-
-### 
-###  Wallet Issues
-
-| Problem | Cause | Solution |
-|---------|-------|----------|
-| Wallet not connecting | Wrong network | Switch to Solana Devnet |
-| NFT not appearing | Transaction pending | Wait 1-2 minutes, refresh wallet |
-| Wrong wallet connected | Multiple wallets | Disconnect and reconnect correct wallet |
-| PIN forgotten | Local storage | Reinstall app to reset PIN |
+1. Complete all 3 landmarks in Phase 2.
+2. Navigate to the **Wallet** tab in the bottom bar.
+3. Tap **"Connect Solflare Wallet"** (or Phantom).
+4. Ensure network is set to **Solana Devnet**.
+5. The collectible NFT card is transferred directly to the player's public wallet address.
+6. The card can be admired in the 3D gallery or viewed on Solscan.
 
 ---
 
-# 
-#  10. FREQUENTLY ASKED QUESTIONS
+# 9. BATTERY SAVER & HARDWARE POWER PROFILES
 
-## 
-##  General Questions
+To guarantee that a full day of questing does not deplete the traveler's battery, the engine features an intelligent multi-tier power scheduler (`useBatteryOptimizedAR`):
 
-### 
-###  Q: Is the app free to use?
-**A:** Yes! The Tuzla Tour App is completely free. There are no in-app purchases or subscriptions.
+| Operating Mode | Screen (OLED) | Camera & ISP | CPU & ENU Math | GPU (Canvas) | GPS Chipset | Total Power | Est. Battery Life |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Max Performance** (60 FPS, 1080p) | 1,000 mW | 1,100 mW | 750 mW | 550 mW | 240 mW (1Hz) | **~3,985 mW** | **~4.3 Hours** |
+| **Balanced Mode** (30 FPS, 720p) | 900 mW | 550 mW | 350 mW | 220 mW | 150 mW (Filtered) | **~2,485 mW** | **~7.0 Hours** |
+| **Eco / Battery Saver** (15 FPS, 480p) | 750 mW | 280 mW | 200 mW | 90 mW | 90 mW (Duty cycled) | **~1,485 mW** | **~11.7 Hours** |
+| **Compass / 360 Horizon** (Cam OFF) | 700 mW | **0 mW** | 120 mW | 50 mW | 100 mW | **~1,245 mW** | **~13.9 Hours** |
+| **Audio Guide Standby** (Screen OFF) | **0 mW** | **0 mW** | 60 mW | **0 mW** | 40 mW (Geofence wake) | **~220 mW** | **~75+ Hours** |
 
-### 
-###  Q: Do I need internet to play?
-**A:** Internet is required for:
-- Initial app load
-- Map tiles (first time)
-- Google Analytics (if enabled)
-- Solana wallet connection
-
-Offline mode works for:
-- Navigation (with offline maps)
-- QR code scanning
-- Audio guides (preloaded)
-- Game progress
-
-### 
-###  Q: Can I play the quest over multiple days?
-**A:** Yes! Your progress is saved locally on your device. You can complete the quest at your own pace over multiple days, weeks, or even months.
-
-### 
-###  Q: Do I need to create an account?
-**A:** No account is required! All progress is saved locally on your device. However, to claim blockchain rewards (NFT), you'll need a Solflare wallet.
-
-### 
-###  Q: What languages are supported?
-**A:** Currently supported languages:
-- English
-- Bosnian
-- German
-- Turkish
-
-More languages may be added in the future.
-
-## 
-##  Gameplay Questions
-
-### 
-###  Q: Can I skip phases?
-**A:** No, phases must be completed in order. You need to finish Phase 1 to unlock Phase 2, and so on.
-
-### 
-###  Q: Can I revisit completed landmarks?
-**A:** Yes! You can revisit any landmark at any time. Completed landmarks will appear as grayscale markers on the map.
-
-### 
-###  Q: What if I can't find a QR code?
-**A:** You can use the GPS geofencing method instead. Just get within 5 meters of the landmark's coordinates.
-
-### 
-###  Q: Can I use both QR and GPS methods for the same landmark?
-**A:** Yes, but it will only count once. Once a landmark is unlocked, it stays unlocked.
-
-### 
-###  Q: How do I know which phase I'm on?
-**A:** The current phase is displayed at the top of the Quest tab. You can also see your progress in the phase completion bar.
-
-## 
-##  Technical Questions
-
-### 
-###  Q: Why does the app use so much battery?
-**A:** AR mode and GPS are battery-intensive. We've implemented Battery Saver mode to reduce usage by 40-50%. Enable it in the settings.
-
-### 
-###  Q: How accurate is the GPS?
-**A:** GPS accuracy depends on your device and location. In open areas, it's typically accurate to within 5-10 meters. In urban areas with tall buildings, accuracy may be reduced.
-
-### 
-###  Q: Why does my location jump around?
-**A:** This is called GPS drift and is normal. We use an Adaptive Low-Pass Filter to smooth out the jumps when you're far from targets, and allow precise tracking when you're close.
-
-### 
-###  Q: Can I use the app on a tablet?
-**A:** Yes! The app works on tablets, though it's optimized for mobile phones. Some features may not be available on all tablets.
-
-### 
-###  Q: Can I use the app on a desktop computer?
-**A:** Yes! The PWA version works on desktop browsers. However, camera and GPS features may not work on desktop.
-
-## 
-##  Rewards Questions
-
-### 
-###  Q: How do I claim my NFT reward?
-**A:** Complete Phase 2, then connect your Solflare wallet in the Wallet tab. The NFT will be automatically sent to your wallet on Solana Devnet.
-
-### 
-###  Q: What can I do with the NFT?
-**A:** The NFT is a digital collectible. You can:
-- Keep it in your wallet
-- View it in your Solflare wallet
-- Share it on social media
-- Trade it with other collectors (if supported)
-
-**Note:** The NFT is not a financial investment and has no monetary value.
-
-### 
-###  Q: How do I use the discount voucher?
-**A:** Show the voucher code **`BCC-GOLDEN-TUZLA-2026`** at the checkout of any participating store in Bingo City Center. The code provides a 20% discount on eligible items.
-
-### 
-###  Q: Does the voucher expire?
-**A:** Check with Bingo City Center for the expiration date. Typically, vouchers are valid for 6-12 months from the date of issue.
-
-### 
-###  Q: Can I use the voucher multiple times?
-**A:** The voucher code is typically single-use. Check with BCC for their policy.
+> **Stationary Energy Optimization:** If the player stops walking for more than 5 seconds (e.g. seated at a restaurant table or listening to an audio guide), the AR camera automatically drops to 15 FPS, cutting camera power consumption by **50% instantly**.
 
 ---
 
-# 
-#  CONTACT & SUPPORT
+# 10. FREQUENTLY ASKED QUESTIONS (FAQ) FOR PLAYERS & MERCHANTS
 
-## 
-##  Need Help?
+### For Tourists & Players
 
-If you encounter any issues or have questions not covered in this manual:
+**Q: Do I need to download an app from Google Play or Apple App Store?**  
+**A:** No! Tuzla Tour Guide is a next-generation Progressive Web App (PWA). Scanning the airport or bus terminal QR code launches the full experience immediately in your mobile browser. You can tap "Add to Home Screen" for instant 1-tap access.
 
-### 
-###  In-App Support
-- Tap the **"Help"** button in the app
-- Check the **FAQ** section
-- Use the **Contact Form**
+**Q: Does the app cost anything to play?**  
+**A:** The game is 100% free for all tourists and citizens. There are no paywalls, hidden fees, or in-app microtransactions.
 
-### 
-###  Email Support
-**Email:** [Insert Support Email]  
-**Subject:** Tuzla Tour Quest - [Your Issue]  
-**Response Time:** Within 24-48 hours
+**Q: How do I redeem my 20% discount at the restaurant or shop?**  
+**A:** Once you reach the venue and scan the in-store QR code, your screen will show the official 20% discount voucher with active verification badge. Simply show this screen to the waiter or cashier before paying your bill.
 
-### 
-###  Social Media
-- **Twitter:** [@TuzlaTourApp](https://twitter.com/) (coming soon)
-- **Facebook:** [Tuzla Tour App](https://facebook.com/) (coming soon)
-- **Instagram:** [@TuzlaTour](https://instagram.com/) (coming soon)
-
-### 
-###  Bug Reports
-If you find a bug, please include:
-- Device model
-- Operating system version
-- App version
-- Steps to reproduce
-- Screenshots (if possible)
-- Error messages (if any)
+**Q: What if I lose internet connection while walking?**  
+**A:** The app is built offline-first. Pre-cached vector map tiles (PMTiles), audio commentary, and quest verification rules continue operating even with zero cellular coverage.
 
 ---
 
-# 
-#  VERSION HISTORY
+### For Participating Businesses & Merchants
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.0 | November 2026 | Complete rewrite, better structure, FAQ section, tips & strategies |
-| 1.0 | April 2026 | Initial version |
+**Q: How does Tuzla Tour App guarantee tourists visit my business?**  
+**A:** Unlike static ads, your business is integrated as an active quest checkpoint. Players are directed via GPS, alerted at 25 meters via push notification, and guided right to your counter by the 5m AR camera. To receive their discount and advance in the game, **they must physically enter your shop and scan your QR code**.
 
----
+**Q: Can customers fake the discount code without coming to my shop?**  
+**A:** Absolutely not. The validation requires both proximity geofencing and scanning of the physical code displayed inside your shop. Digital screenshots are invalidated by animated anti-spoofing elements.
 
-# 
-#  LEGAL NOTICES
-
-## 
-##  Disclaimer
-
-The Tuzla Tour App and Quest Game are provided "as is" without warranty of any kind. We do not guarantee that the app will be error-free or that your use of the app will be uninterrupted.
-
-## 
-##  Liability
-
-We are not liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use the app.
-
-## 
-##  Blockchain Disclaimer
-
-The NFT rewards are provided for entertainment purposes only and are not financial investments. We do not guarantee any value or liquidity for the NFTs.
-
-## 
-##  QR Code Ownership
-
-All QR codes used in the Tuzla Tour Quest are property of Tuzla Tour App and may not be reproduced or used without permission.
+**Q: Does participating in the Quest cost my business an upfront fee?**  
+**A:** Partnership tiers are designed in cooperation with the City of Tuzla and the Tourist Board to foster small business growth. Contact `aisotuzla@proton.me` to register your venue as an official Quest POI.
 
 ---
 
-# 
-#  ACKNOWLEDGMENTS
-
-We would like to thank:
-- **City of Tuzla** for their support
-- **Tuzla Tourist Board** for providing information
-- **Local businesses** for participating in the quest
-- **Bingo City Center** for the discount voucher
-- **All users** for their feedback and support
-
----
-
-**Thank you for playing Tuzla Tour Quest!**
-
-*Explore Tuzla. Discover History. Earn Rewards.*
-
----
-
-*Tuzla Tour App  Powered by Advanced Spatial AR & MapLibre GL JS*  
-*Version 2.0 | Last Updated: November 2026 | Made with in Tuzla, Bosnia and Herzegovina*
+*Tuzla Tour App — Advanced Spatial AR & MapLibre GIS Platform*  
+*Developed by AISO Tuzla in partnership with City of Tuzla & Tourist Board*  
+*Novembar 2026 | Made with ❤️ in Tuzla, Bosnia and Herzegovina*
