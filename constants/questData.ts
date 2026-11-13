@@ -44,6 +44,26 @@ export const QUEST_TARGETS: QuestTarget[] = [
     rewardHtml: '/assets/PoveljaKulinaBana.html'
   },
   {
+    id: 'stara_cesma',
+    name: {
+      en: 'Stara Česma (Old Town Fountain)',
+      bs: 'Stara Česma',
+      de: 'Stara Česma (Historischer Brunnen)',
+      tr: 'Stara Česma (Tarihi Çeşme)'
+    },
+    description: {
+      en: 'The historical public stone fountain at Freedom Square, an enduring symbol of Tuzla\'s heritage, urban culture, and welcoming hospitality.',
+      bs: 'Historijska kamena česma na Trgu slobode, prepoznatljiv simbol tuzlanske tradicije, gradske kulture i gostoprimstva kroz vijekove.',
+      de: 'Historischer Steinbrunnen am Freiheitsplatz, ein bleibendes Symbol für Tuzlas Tradition, Stadtkultur und herzliche Gastfreundschaft.',
+      tr: 'Özgürlük Meydanı\'ndaki tarihi taş çeşme, Tuzla\'nın zengin mirasının, kent kültürünün ve misafirperverliğinin simgesidir.'
+    },
+    category: 'culture',
+    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRStaraCesma.png',
+    Image: '/assets/Gallery/QuestQRLocations/stara_cesma.webp',
+    audio: '/audio/FreedomSquare.mp3',
+    rewardHtml: '/StaraCesma.html'
+  },
+  {
     id: 'salt_square',
     name: { en: 'Salt Square', bs: 'Solni trg' },
     description: {
@@ -189,6 +209,7 @@ export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
   { name: { bs: "Panonska Jezera", en: "Pannonian Lakes" }, lat: 44.53888255374366, lon: 18.680032450849325, category: "nature", entryFee: "Paid 7.5 KM - 9 KM for entire day" },
   { name: { bs: "Slana Banja Park", en: "Slana Banja Park" }, lat: 44.53846734540082, lon: 18.685620782683003, category: "nature" },
   { name: { bs: "Trg Slobode", en: "Freedom Square" }, lat: 44.53954253369571, lon: 18.67508475352372, category: "culture" },
+  { name: { bs: "Stara Česma", en: "Old Town Fountain" }, lat: 44.5393, lon: 18.6776, category: "culture" },
   { name: { bs: "Spomenik Kralju Tvrtku (I)", en: "King Tvrtko Monument" }, lat: 44.53812247668793, lon: 18.678359094003866, category: "history" },
   { name: { bs: "Spomenik Meši Selimoviću", en: "Mesa Selimovic Monument" }, lat: 44.53710706292608, lon: 18.67822758905615, category: "culture" },
   { name: { bs: "Džamija Šarena (Atik)", en: "Atik Mosque" }, lat: 44.54001556181191, lon: 18.673365480509432, category: "religion" },
@@ -202,6 +223,7 @@ export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
 export const POI_COLORS: Record<string, string> = {
   'mesa_selimovic': '#4d068fff',
   'trg_slobode': '#10b981',
+  'stara_cesma': '#0ea5e9',
   'galerija': '#afcbf8ff',
   'panonika': '#040e8fff',
   'slapovi': '#0ea5e9',
@@ -217,6 +239,7 @@ export const POI_COLORS: Record<string, string> = {
 
 export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
+  stara_cesma: { lat: 44.5393, lon: 18.6776 },
   salt_square: { lat: 44.5382182, lon: 18.6759398 },
   palancinkara: { lat: 44.5383762, lon: 18.6775339 },
   palancikara: { lat: 44.5383762, lon: 18.6775339 },
@@ -230,7 +253,7 @@ export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> =
   tvrtko_park: { lat: 44.5380826, lon: 18.6783327 },
 };
 
-export const PHASE_1_POIS = ['trg_slobode', 'kapija', 'mesa_selimovic'];
+export const PHASE_1_POIS = ['trg_slobode', 'stara_cesma', 'kapija', 'mesa_selimovic'];
 export const PHASE_2_POIS = ['tvrtko_park', 'palancinkara', 'salt_square'];
 export const PHASE_3_POIS = ['panonika', 'slapovi', 'slana_banja', 'atelje_ismet'];
 export const GRAND_FINALE_POIS = ['bingo_city_centar'];

@@ -68,7 +68,7 @@ const HotelCardsSection: React.FC<{ lang: Language }> = ({ lang }) => {
             className="group relative bg-white rounded-[2.5rem] overflow-hidden border border-blue-400/40 shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] hover:border-blue-400 transition-all"
           >
             {/* Image */}
-            <div className="relative h-52 overflow-hidden bg-gradient-to-br from-blue-100 to-cyan-50">
+            <div className="relative h-52 overflow-hidden bg-linear-to-br from-blue-100 to-cyan-50">
               {hotel.image ? (
                 <img
                   src={hotel.image}

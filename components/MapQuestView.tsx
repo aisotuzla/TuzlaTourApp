@@ -29,16 +29,23 @@ export interface MapQuestViewProps {
 }
 
 const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
-  trg_slobode: { lat: 44.5395175, lon: 18.6749037 }, salt_square: { lat: 44.5382182, lon: 18.6759398 },
-  palancinkara: { lat: 44.5383762, lon: 18.6775339 }, slana_banja: { lat: 44.5378167, lon: 18.6875664 },
-  panonika: { lat: 44.5385, lon: 18.6767 }, slapovi: { lat: 44.5404243, lon: 18.6819408 },
-  kapija: { lat: 44.53863, lon: 18.676805 }, atelje_ismet: { lat: 44.5371465, lon: 18.6810454 },
-  bingo_city_centar: { lat: 44.532177, lon: 18.651743 }, mesa_selimovic: { lat: 44.5370993, lon: 18.6781216 },
+  trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
+  stara_cesma: { lat: 44.5393, lon: 18.6776 },
+  salt_square: { lat: 44.5382182, lon: 18.6759398 },
+  palancinkara: { lat: 44.5383762, lon: 18.6775339 },
+  slana_banja: { lat: 44.5378167, lon: 18.6875664 },
+  panonika: { lat: 44.5385, lon: 18.6767 },
+  slapovi: { lat: 44.5404243, lon: 18.6819408 },
+  kapija: { lat: 44.53863, lon: 18.676805 },
+  atelje_ismet: { lat: 44.5371465, lon: 18.6810454 },
+  bingo_city_centar: { lat: 44.532177, lon: 18.651743 },
+  mesa_selimovic: { lat: 44.5370993, lon: 18.6781216 },
   tvrtko_park: { lat: 44.5380826, lon: 18.6783327 },
 };
 
 export const QUEST_POI_THUMBNAILS: Record<string, string> = {
   trg_slobode: '/assets/Gallery/QuestQRLocations/trgslobode.webp',
+  stara_cesma: '/assets/Gallery/QuestQRLocations/stara_cesma.webp',
   salt_square: '/assets/Gallery/QuestQRLocations/sonitrg.webp',
   palancinkara: '/assets/Gallery/Food/bagi.webp',
   slana_banja: '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',

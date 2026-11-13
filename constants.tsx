@@ -251,6 +251,27 @@ const LOCATIONS_RAW: Location[] = [
     qrCode: 'QRTrgSlobode',
     discount: 'Special Reward',
     address: 'Trg slobode, 75000 Tuzla, Bosnia and Herzegovina',
+  },
+  {
+    id: 'stara_cesma',
+    name: {
+      en: 'Stara Česma (Old Town Fountain)',
+      bs: 'Stara Česma',
+      de: 'Stara Česma (Historischer Brunnen)',
+      tr: 'Stara Česma (Tarihi Çeşme)',
+    },
+    description: {
+      en: 'The historical public stone fountain at Freedom Square, an enduring symbol of Tuzla\'s heritage, urban culture, and welcoming hospitality.',
+      bs: 'Historijska kamena česma na Trgu slobode, prepoznatljiv simbol tuzlanske tradicije, gradske kulture i gostoprimstva kroz vijekove.',
+      de: 'Historischer Steinbrunnen am Freiheitsplatz, ein bleibendes Symbol für Tuzlas Tradition, Stadtkultur und herzliche Gastfreundschaft.',
+      tr: 'Özgürlük Meydanı\'ndaki tarihi taş çeşme, Tuzla\'nın zengin mirasının, kent kültürünün ve misafirperverliğinin simgesidir.',
+    },
+    image: '/assets/Gallery/QuestQRLocations/stara_cesma.webp',
+    coordinates: [44.5393, 18.6776],
+    category: 'culture',
+    qrCode: 'QRStaraCesma',
+    discount: 'Special Reward',
+    address: 'Trg slobode / Trg stare tržnice, 75000 Tuzla, Bosnia and Herzegovina',
   }
 ];
 

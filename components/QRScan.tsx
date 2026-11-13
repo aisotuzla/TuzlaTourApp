@@ -14,6 +14,7 @@ import {
     CircleCheck,
     ChevronDown,
     ChevronUp,
+    X,
 } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,6 +26,7 @@ import { Preferences } from '@capacitor/preferences';
 
 const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
     trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
+    stara_cesma: { lat: 44.5393, lon: 18.6776 },
     salt_square: { lat: 44.5382182, lon: 18.6759398 },
     palancinkara: { lat: 44.5383762, lon: 18.6775339 },
     slana_banja: { lat: 44.5378167, lon: 18.6875664 },
@@ -57,6 +59,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
     const [playingVideo, setPlayingVideo] = useState<string | null>(null);
     const [playingVideoError, setPlayingVideoError] = useState<string | null>(null);
     const [expandedPhaseId, setExpandedPhaseId] = useState<string | null>(null);
+    const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
 
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const isOnline = useNetwork();
@@ -144,6 +147,14 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                         setScannerFeedback({ text: lang === 'bs' ? `Otključana lokacija: ${target.name.bs}!` : `Unlocked location: ${target.name.en}!`, type: 'success' });
                         setTimeout(() => setScannerFeedback(null), 3000);
                         stopScanner();
+
+                        // Auto-open reward HTML if this target has one (e.g. StaraCesma.html or PoveljaKulinaBana.html)
+                        if ((target as any).rewardHtml) {
+                            const rewardTitle = target.name[lang as keyof typeof target.name] || target.name.en || target.name.bs;
+                            setTimeout(() => {
+                                setActiveRewardHtml({ url: (target as any).rewardHtml!, title: rewardTitle });
+                            }, 700);
+                        }
                     },
                     () => { }
                 );
@@ -242,7 +253,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                             >
                                                 {/* Top sweep trail */}
                                                 <div className="w-full h-8 bg-gradient-to-t from-amber-400/35 via-sky-400/20 to-transparent blur-xs -mb-1" />
-                                                
+
                                                 {/* Core Laser Bar */}
                                                 <div className="relative w-full h-[3px] bg-gradient-to-r from-transparent via-sky-400 via-amber-300 via-amber-200 via-sky-400 to-transparent shadow-[0_0_16px_#fbbf24,0_0_32px_#38bdf8,0_0_50px_#0284c7]">
                                                     <div className="absolute inset-0 h-[1.5px] bg-white blur-[0.5px]" />
@@ -415,11 +426,25 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                                     <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight truncate">{targetName}</h4>
                                                     <span className="text-[9px] text-slate-400 font-bold block mt-0.5">{entry.timestamp}</span>
                                                 </div>
-                                                {(target as any).video && (
-                                                    <button onClick={() => { setPlayingVideoError(null); setPlayingVideo((target as any).video); }} className="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl transition-all shrink-0 active:scale-90" title={t.watchCinematic}>
-                                                        <Play size={14} className="fill-emerald-600" />
-                                                    </button>
-                                                )}
+                                                <div className="flex items-center gap-1.5 shrink-0">
+                                                    {(target as any).rewardHtml && (
+                                                        <button
+                                                            onClick={() => {
+                                                                const rewardTitle = target.name[lang as keyof typeof target.name] || target.name.en || target.name.bs;
+                                                                setActiveRewardHtml({ url: (target as any).rewardHtml!, title: rewardTitle });
+                                                            }}
+                                                            className="p-2 bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-xl transition-all active:scale-90"
+                                                            title={lang === 'bs' ? 'Pogledaj nagradu' : 'View reward'}
+                                                        >
+                                                            <BookOpen size={14} className="text-amber-600" />
+                                                        </button>
+                                                    )}
+                                                    {(target as any).video && (
+                                                        <button onClick={() => { setPlayingVideoError(null); setPlayingVideo((target as any).video); }} className="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl transition-all active:scale-90" title={t.watchCinematic}>
+                                                            <Play size={14} className="fill-emerald-600" />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         );
                                     })
@@ -483,6 +508,67 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                 <video src={playingVideo} autoPlay controls className="w-full max-h-[70vh]" onError={() => setPlayingVideoError('Video nije pronađen.')} />
                             )}
                         </motion.div>
+                    </motion.div>
+                )}
+
+                {/* Reward HTML Showcase Modal */}
+                {activeRewardHtml && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[7000] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-3 sm:p-6"
+                    >
+                        <div className="w-full h-full max-w-3xl max-h-[90vh] bg-black border border-amber-500/30 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col">
+                            {/* Header */}
+                            <div className="p-4 flex items-center justify-between border-b border-amber-500/20 bg-gradient-to-r from-amber-950/80 to-slate-950/80 shrink-0">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
+                                        <BookOpen className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider block">
+                                            {lang === 'bs' ? '🏆 Nagrada' : '🏆 Reward'}
+                                        </span>
+                                        <h3 className="text-base font-black text-white uppercase tracking-tight">
+                                            {activeRewardHtml.title}
+                                        </h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setActiveRewardHtml(null)}
+                                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+                                    aria-label="Close"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Iframe Content */}
+                            <div className="flex-1 relative bg-[#1b1511]">
+                                <iframe
+                                    src={activeRewardHtml.url}
+                                    title={activeRewardHtml.title}
+                                    className="w-full h-full border-0"
+                                    style={{ minHeight: '400px' }}
+                                    allow="accelerometer; autoplay; gyroscope"
+                                    sandbox="allow-scripts allow-same-origin"
+                                />
+                            </div>
+
+                            {/* Footer */}
+                            <div className="p-4 border-t border-amber-500/20 bg-gradient-to-r from-amber-950/80 to-slate-950/80 flex items-center justify-between shrink-0">
+                                <span className="text-xs font-bold text-amber-400/70">
+                                    {lang === 'bs' ? 'Tuzla Quest — Interaktivna Nagrada' : 'Tuzla Quest — Interactive Reward'}
+                                </span>
+                                <button
+                                    onClick={() => setActiveRewardHtml(null)}
+                                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 text-white font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
+                                >
+                                    {lang === 'bs' ? 'Zatvori' : 'Close'}
+                                </button>
+                            </div>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
