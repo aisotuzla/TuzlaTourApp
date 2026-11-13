@@ -407,6 +407,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
           description: target.description,
           Image: imageUrl,
           audio: target.audio,
+          audioByLang: target.audioByLang,
           video: target.video,
           panorama: target.panorama,
           panoramaHaov: target.panoramaHaov,

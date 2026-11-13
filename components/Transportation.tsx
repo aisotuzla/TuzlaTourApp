@@ -924,7 +924,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
         <button type="button"
           onClick={() => setActiveSection('bus')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'bus'
-            ? 'bg-gradient-to-r from-sky-400 via-sky-500 to-blue-600 border-sky-400 text-white shadow-blue-500/35 shadow-md ring-2 ring-sky-300/60'
+            ? 'bg-gradient-to-r from-sky-200 via-sky-400 to-blue-400 border-sky-400 text-white shadow-blue-500/35 shadow-md ring-2 ring-sky-300/60'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >
@@ -935,7 +935,7 @@ export const Transportation: React.FC<TransportationProps> = ({ lang }) => {
           type="button"
           onClick={() => setActiveSection('internationalBus')}
           className={`flex items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all shadow-sm ${activeSection === 'internationalBus'
-            ? 'bg-gradient-to-r from-sky-400 via-blue-500 to-blue-600 border-blue-500 text-white shadow-blue-500/35 shadow-md ring-2 ring-sky-300/60'
+            ? 'bg-gradient-to-r from-sky-500 via-blue-600 to-blue-700 border-blue-500 text-white shadow-blue-500/35 shadow-md ring-2 ring-sky-300/60'
             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
             }`}
         >

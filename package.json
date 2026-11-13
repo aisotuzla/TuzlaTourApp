@@ -13,6 +13,7 @@
     "sync:android": "npm run build && npx cap sync android"
   },
   "dependencies": {
+    "@andresaya/edge-tts": "^1.9.1",
     "@capacitor/android": "^8.2.0",
     "@capacitor/app": "^8.1.0",
     "@capacitor/app-launcher": "^8.0.1",
@@ -37,6 +38,8 @@
     "@vercel/speed-insights": "^2.1.0",
     "blob": "^0.1.0",
     "canvas-confetti": "^1.9.4",
+    "edge-tts": "^1.0.1",
+    "edge-tts-universal": "^1.4.0",
     "firebase": "^13.3.0",
     "framer-motion": "^12.38.0",
     "glob": "^13.0.4",
@@ -79,8 +82,6 @@
   },
   "allowScripts": {
     "@stellar/stellar-sdk@14.2.0": true,
-    "protobufjs@7.4.0": true,
-    "protobufjs@7.5.5": true,
     "blake-hash@2.0.0": true,
     "bufferutil@4.1.0": true,
     "cpu-features@0.0.10": true,
@@ -93,6 +94,7 @@
     "@google/genai@2.19.0": true,
     "msedge-tts@2.0.9": true,
     "@firebase/util@1.15.3": true,
-    "esbuild@0.27.0": true
+    "esbuild@0.27.0": true,
+    "protobufjs@7.6.6": true
   }
 }

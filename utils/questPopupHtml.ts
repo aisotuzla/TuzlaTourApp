@@ -25,7 +25,13 @@ export const generateQuestPopupHtml = (
   const coords = loc.coordinates || [44.5388, 18.6750];
   const catKey = loc.category || 'culture';
   const categoryLabel = (CATEGORY_TAGS[catKey] && CATEGORY_TAGS[catKey][lang]) || (lang === 'bs' ? '📍 Znamenitost' : '📍 Landmark');
-  const hasAudio = Boolean(loc.audio && String(loc.audio).trim().length > 0);
+  const hasAudio = Boolean(loc.audio && String(loc.audio).trim().length > 0) || Boolean(loc.audioByLang);
+  // Resolve audio path: prefer audioByLang for current language, fallback chain: lang → en → bs → audio
+  const resolvedAudio: string = (loc.audioByLang?.[lang as 'bs'|'en'|'de']
+    || loc.audioByLang?.en
+    || loc.audioByLang?.bs
+    || loc.audio
+    || '') as string;
   const hasVideo = Boolean(loc.video);
   const hasPanorama = Boolean(loc.panorama);
 
@@ -64,7 +70,7 @@ export const generateQuestPopupHtml = (
           </button>
           
           ${hasAudio ? `
-            <button onclick="window.playPoiAudio && window.playPoiAudio('${loc.id}', '${escapedTitle}', '${loc.audio}')" style="flex: 1; padding: 10px 8px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.03em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(37,99,235,0.35);">
+            <button onclick="window.playPoiAudio && window.playPoiAudio('${loc.id}', '${escapedTitle}', '${resolvedAudio}')" style="flex: 1; padding: 10px 8px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.03em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(37,99,235,0.35);">
               🎧 Audio
             </button>
           ` : ''}

@@ -10,6 +10,8 @@ export interface QuestTarget {
   Html5Qrcode: string;
   Image: string;
   audio?: string;
+  /** Multilingual TTS audio: keys are language codes (bs, en, de) */
+  audioByLang?: { bs?: string; en?: string; de?: string };
   video?: string;
   website?: string;
   panorama?: string;
@@ -40,7 +42,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRTrgSlobode.png',
     Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp',
-    audio: '/audio/FreedomSquare.mp3',
+    audio: '/audio/pois/en/01_freedom_square.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/01_freedom_square.mp3',
+      en: '/audio/pois/en/01_freedom_square.mp3',
+      de: '/audio/pois/de/01_freedom_square.mp3',
+    },
     rewardHtml: '/assets/PoveljaKulinaBana.html'
   },
   {
@@ -60,7 +67,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRStaraCesma.png',
     Image: '/assets/Gallery/QuestQRLocations/stara_cesma.webp',
-    audio: '/audio/FreedomSquare.mp3',
+    audio: '/audio/pois/en/01_freedom_square.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/01_freedom_square.mp3',
+      en: '/audio/pois/en/01_freedom_square.mp3',
+      de: '/audio/pois/de/01_freedom_square.mp3',
+    },
     rewardHtml: '/StaraCesma.html'
   },
   {
@@ -74,7 +86,13 @@ export const QUEST_TARGETS: QuestTarget[] = [
     },
     category: 'history',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRsonitrg.png',
-    Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp'
+    Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp',
+    audio: '/audio/pois/en/03_salt_square.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/03_salt_square.mp3',
+      en: '/audio/pois/en/03_salt_square.mp3',
+      de: '/audio/pois/de/03_salt_square.mp3',
+    }
   },
   {
     id: 'palancinkara',
@@ -101,7 +119,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'nature',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRBanja.png',
     Image: '/assets/Gallery/QuestQRLocations/banjaO.webp',
-    audio: '/audio/SaltPark.mp3'
+    audio: '/audio/pois/en/07_slana_banja.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/07_slana_banja.mp3',
+      en: '/audio/pois/en/07_slana_banja.mp3',
+      de: '/audio/pois/de/07_slana_banja.mp3',
+    }
   },
   {
     id: 'kapija',
@@ -115,7 +138,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRkapija.png',
     Image: '/assets/Gallery/QuestQRLocations/kapija.webp',
-    audio: '/audio/Kapija.mp3'
+    audio: '/audio/pois/en/04_kapija.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/04_kapija.mp3',
+      en: '/audio/pois/en/04_kapija.mp3',
+      de: '/audio/pois/de/04_kapija.mp3',
+    }
   },
   {
     id: 'slapovi',
@@ -143,7 +171,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'art',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRAtelje.png',
     Image: '/assets/Gallery/QuestQRLocations/atelje.webp',
-    audio: '/audio/Atelier.mp3'
+    audio: '/audio/pois/en/05_mesa_i_ismet.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/05_mesa_i_ismet.mp3',
+      en: '/audio/pois/en/05_mesa_i_ismet.mp3',
+      de: '/audio/pois/de/05_mesa_i_ismet.mp3',
+    }
   },
   {
     id: 'bingo_city_centar',
@@ -172,6 +205,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRMesaStatue.png',
     Image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp',
+    audio: '/audio/pois/en/05_mesa_i_ismet.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/05_mesa_i_ismet.mp3',
+      en: '/audio/pois/en/05_mesa_i_ismet.mp3',
+      de: '/audio/pois/de/05_mesa_i_ismet.mp3',
+    },
     video: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/MesaSelimovic.mp4'
   },
   {
@@ -186,7 +225,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'history',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRtvrtko.png',
     Image: '/assets/Gallery/QuestQRLocations/ParkKraljaTvrtka.webp',
-    audio: '/audio/tvrtkoPark.mp3',
+    audio: '/audio/pois/en/06_king_tvrtko.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/06_king_tvrtko.mp3',
+      en: '/audio/pois/en/06_king_tvrtko.mp3',
+      de: '/audio/pois/de/06_king_tvrtko.mp3',
+    },
     video: '/assets/Gallery/QuestQRLocations/Ismetvid.mp4'
   },
   {
@@ -201,7 +245,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'nature',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpanonika.png',
     Image: '/assets/Gallery/QuestQRLocations/panonsko jezero.png',
-    audio: '/audio/Panonica.mp3'
+    audio: '/audio/pois/en/02_pannonica.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/02_pannonica.mp3',
+      en: '/audio/pois/en/02_pannonica.mp3',
+      de: '/audio/pois/de/02_pannonica.mp3',
+    }
   },
 ];
 
