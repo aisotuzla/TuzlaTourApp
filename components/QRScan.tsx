@@ -26,7 +26,7 @@ import { Preferences } from '@capacitor/preferences';
 
 const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
     trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
-    stara_cesma: { lat: 44.5393, lon: 18.6776 },
+    stara_cesma: { lat: 44.538982, lon: 18.675580 },
     salt_square: { lat: 44.5382182, lon: 18.6759398 },
     palancinkara: { lat: 44.5383762, lon: 18.6775339 },
     slana_banja: { lat: 44.5378167, lon: 18.6875664 },

@@ -181,22 +181,21 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          18.661546,
-          44.540812
+          18.675580,
+          44.538982
         ]
       },
       "properties": {
-        "name": "Stadion \"Tusanj\"",
-        "name_bs": "Stadion \"Tušanj\"",
-        "category": "Sport",
+        "name": "Drinking Fountain",
+        "name_bs": "Stara Česma",
+        "category": "culture",
         "marker-color": "rgba(195, 0, 0, 1)",
         "marker-size": "medium",
-        "image": "trgslobodeO.webp",
-        "icon": "trgslobodeO",
-        "icon-image": "trgslobodeO",
-        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp",
-        "marker-symbol": "trgslobodeO",
-        "visibility": false
+        "image": "/assets/Gallery/QuestQRLocations/cesma13.webp",
+        "icon": "cesma13.webp",
+        "icon-image": "cesma13.webp",
+        "marker-image": "/assets/Gallery/QuestQRLocations/cesma12.webp",
+        "marker-symbol": "cesma12"
       }
     },
     {
@@ -260,8 +259,8 @@
         "marker-size": "large",
         "image": "tvrtko.png",
         "popup-image": "/assets/Gallery/QuestQRLocations/tvrtko.png",
-        "icon": "tvrtkO",
-        "icon-image": "tvrtkO.webp",
+        "icon": "tvrtko",
+        "icon-image": "tvrtko.png",
         "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/tvrtkO.webp",
         "marker-symbol": "tvrtkO"
       }

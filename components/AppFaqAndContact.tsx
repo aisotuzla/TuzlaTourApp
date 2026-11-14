@@ -7,7 +7,7 @@ import {
   Copy,
   Check,
   Bell,
-  Sparkles,
+  Globe,
   ShieldCheck,
   Compass,
   QrCode,
@@ -104,7 +104,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
     {
       id: 1,
       category: 'Tuzla Quest',
-      icon: <Sparkles className="h-5 w-5 text-amber-500" />,
+      icon: <Globe className="h-5 w-5 text-amber-500" />,
       question:
         lang === 'bs'
           ? 'Šta je Tuzla Tour App i kako funkcionišu Tuzla Quest nagrade?'
@@ -115,7 +115,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
               : 'What is Tuzla Tour App & how does the Tuzla Quest reward system work?',
       answer:
         lang === 'bs'
-          ? 'Tuzla Tour App je interaktivni turistički vodič sa 3D GPS navigacijom, kamerom sa AR vodičem i nagradnom igrom Tuzla Quest. Šetnjom kroz grad otkrivate kulturne znamenitosti i partnerske lokale (restorane, kafiće, hotele). Skeniranjem QR koda na licu mjesta ostvarujete garantovanih 20% popusta na račun, otključavate naredne faze i osvajate digitalne bedževe do Velikog Finala!'
+          ? 'Tuzla Tour App je interaktivni turistički vodič sa 3D GPS navigacijom, kamerom sa AR vodičem i nagradnom igrom Tuzla Quest. Šetnjom kroz grad, sa preciznom navigacijom, otkrivate kulturne znamenitosti i uslužne objekte (restorane, kafiće, hotele) kroz Tuzla Quest igru. Dolazkom na zadatu lokaciju, skeniranjem QR koda na licu mjesta otključavate naredne faze, sadržaje i osvajate adekvatne nagrade, popuste i napredujete do Velikog Finala!'
           : lang === 'de'
             ? 'Die Tuzla Tour App ist ein interaktiver Reiseführer mit 3D-GPS-Navigation, AR-Kamera-Führung und dem Abenteuerspiel Tuzla Quest. Beim Erkunden historischer Orte und Partnerlokale (Restaurants, Hotels, Geschäfte) scannen Sie vor Ort QR-Codes und erhalten sofort 20 % Rabatt auf Ihre Rechnung sowie digitale Belohnungen.'
             : lang === 'tr'
@@ -157,7 +157,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
               : 'What is the Camera AR Guide & 5-meter High-Accuracy Target Lock?',
       answer:
         lang === 'bs'
-          ? 'Kada se nađete na 5 metara od partnera, uključuje se Augmented Reality (AR) pogled kamere. Kroz prikaz kamere vidite 3D holografske strelice i markere sa tačnom udaljenošću koji vas navode ravno do vrata, pulta ili stola lokalnog partnera, garantujući da nikad ne zalutate.'
+          ? 'Kada se nađete na 5 metara od lokacije uključuje se Augmented Reality (AR) pogled kamere. Kroz prikaz kamere vidite 3D holografske strelice i markere sa tačnom udaljenošću koji vas navode ravno do lokacije, garantujući da nikad ne zalutate.'
           : lang === 'de'
             ? 'Innerhalb von 5 Metern vor dem Ziel schaltet die App die Augmented-Reality-Kamera ein. Holografische Richtungspfeile und Distanz-Marker blenden sich in das Live-Kamerabild ein und führen Sie präzise zum Eingang oder Tresen des Partners.'
             : lang === 'tr'
@@ -170,7 +170,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
       icon: <QrCode className="h-5 w-5 text-indigo-500" />,
       question:
         lang === 'bs'
-          ? 'Kako skenirati QR kodove i preuzeti popuste u radnjama?'
+          ? 'Kako skenirati QR kodove i osvojiti nagrade?'
           : lang === 'de'
             ? 'Wie scanne ich QR-Codes und erhalte Rabatte in Geschäften?'
             : lang === 'tr'
@@ -178,7 +178,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
               : 'How do I scan QR codes and redeem partner discounts?',
       answer:
         lang === 'bs'
-          ? 'U aplikaciji otvorite tab "QR Scan" sa laserskim nišanom. Usmjerite kameru prema službenom Tuzla Tour Guide QR kodu postavljenom na šanku ili ulazu lokala. Aplikacija bilježi "Proof-of-Footprint" (dokaz posjete), prikazuje vam digitalni vaučer za 20% popusta pri plaćanju i otključava sljedeću etapu grada!'
+          ? 'U aplikaciji otvorite tab "QR Scan" sa laserskim nišanom. Usmjerite kameru prema službenom Tuzla Tour Guide QR kodu postavljenom na lokaciji. Aplikacija bilježi "Proof-of-Footprint" (dokaz posjete), otkriva nagradu i (npr. digitalni vaučer za 5%-20% popusta pri plaćanju) otključava sljedeću etapu!'
           : lang === 'de'
             ? 'Öffnen Sie den Reiter "QR Scan" mit dem leuchtenden Laser. Richten Sie die Kamera auf den offiziellen QR-Code am Tresen des Partnerlokals. Der Besuch wird verifiziert ("Proof-of-Footprint"), Ihr 20%-Rabattgutschein wird freigeschaltet und die nächste Stufe beginnt!'
             : lang === 'tr'
@@ -199,7 +199,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
               : 'Can I use the app and maps offline without internet or roaming?',
       answer:
         lang === 'bs'
-          ? 'Da! Tuzla Tour App koristi napredne vektorske PMTiles offline mape i lokalno keširanje. Sve bilješke, planovi puta, evidencija troškova, zvučni vodiči i važne turističke informacije rade u potpunosti offline bez trošenja roaming podataka.'
+          ? 'Da! Nakon prvog otvaranja aplikacije, svi podaci su dostupni i offline. Tuzla Tour App koristi napredne vektorske PMTiles offline mape i lokalno keširanje. Sve bilješke, planovi puta, evidencija troškova, zvučni vodiči i važne turističke informacije rade u potpunosti offline bez trošenja roaming podataka. Apikaciju ne morate ni instalirati na telefon.'
           : lang === 'de'
             ? 'Ja! Die Tuzla Tour App verwendet moderne PMTiles-Vektorkarten und lokales Caching. Alle Notizen, Reisepläne, Ausgabenprotokolle und Offline-Reiseführer funktionieren auch ohne mobile Daten oder Roaming.'
             : lang === 'tr'
@@ -220,7 +220,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
               : 'Where are my notes, itinerary, and personal data stored?',
       answer:
         lang === 'bs'
-          ? '100% Privacy by Design: sve vaše bilješke, crteži na platnu, to-do stavke, evidencija troškova i quest napredak pohranjeni su isključivo lokalno u memoriji vašeg telefona. Podaci se ne šalju na vanjske servere niti se prate vaše privatne zabilješke.'
+          ? '100% Privacy by Design: sve vaše bilješke, crteži na platnu, to-do stavke, evidencija troškova i quest napredak pohranjeni su isključivo lokalno u memoriji vašeg telefona. Podaci se ne šalju na nikakve vanjske servere niti se prate vaše privatne zabilješke. Sukladno Zakonu o zaštiti ličnih podataka FBIH i (GDPR), poduzete su sve mjere kako bi se osigurala maksimalna privatnost korisnika.'
           : lang === 'de'
             ? '100 % Datenschutz durch Technikgestaltung: Alle Ihre handschriftlichen Notizen, Zeichnungen, To-Do-Punkte und Ausgaben werden ausschließlich lokal auf Ihrem Gerät gespeichert. Es findet kein Tracking oder Server-Upload Ihrer persönlichen Einträge statt.'
             : lang === 'tr'
@@ -267,8 +267,8 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
               <div
                 key={item.id}
                 className={`overflow-hidden rounded-2xl border transition-all ${isOpen
-                    ? 'border-blue-300 bg-blue-50/40 shadow-xs'
-                    : 'border-slate-200/80 bg-white hover:border-blue-200'
+                  ? 'border-blue-300 bg-blue-50/40 shadow-xs'
+                  : 'border-slate-200/80 bg-white hover:border-blue-200'
                   }`}
               >
                 <button

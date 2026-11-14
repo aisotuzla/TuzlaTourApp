@@ -66,7 +66,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
     },
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRStaraCesma.png',
-    Image: '/assets/Gallery/QuestQRLocations/stara_cesma.webp',
+    Image: '/assets/Gallery/QuestQRLocations/cesma13.webp',
     audio: '/audio/pois/en/01_freedom_square.mp3',
     audioByLang: {
       bs: '/audio/pois/bs/01_freedom_square.mp3',
@@ -288,7 +288,7 @@ export const POI_COLORS: Record<string, string> = {
 
 export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
-  stara_cesma: { lat: 44.5393, lon: 18.6776 },
+  stara_cesma: { lat: 44.538982, lon: 18.675580 },
   salt_square: { lat: 44.5382182, lon: 18.6759398 },
   palancinkara: { lat: 44.5383762, lon: 18.6775339 },
   palancikara: { lat: 44.5383762, lon: 18.6775339 },
