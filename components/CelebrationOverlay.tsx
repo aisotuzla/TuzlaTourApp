@@ -21,7 +21,7 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-sm p-6 overflow-hidden text-center bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-amber-400/40 rounded-3xl shadow-2xl"
+          className="relative w-full max-w-sm p-6 overflow-hidden text-center bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 border border-amber-400/40 rounded-3xl shadow-2xl"
         >
           {/* Decorative background glow */}
           <div className="absolute -top-24 -left-24 w-48 h-48 rounded-full bg-amber-500/20 blur-3xl pointer-events-none" />
@@ -38,7 +38,7 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
           {/* Badge Icon */}
           <div className="relative inline-flex items-center justify-center mb-4">
             <div className="absolute inset-0 bg-amber-400 rounded-full blur-xl opacity-50 animate-pulse" />
-            <div className="relative flex items-center justify-center w-20 h-20 bg-gradient-to-tr from-amber-500 to-amber-300 rounded-full shadow-xl border-2 border-white/40">
+            <div className="relative flex items-center justify-center w-20 h-20 bg-linear-to-tr from-amber-500 to-amber-300 rounded-full shadow-xl border-2 border-white/40">
               <Trophy className="w-10 h-10 text-slate-950" />
             </div>
           </div>
@@ -81,7 +81,7 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
 
           <button
             onClick={onClose}
-            className="w-full py-3 px-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg active:scale-95 transition-all"
+            className="w-full py-3 px-4 bg-linear-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg active:scale-95 transition-all"
           >
             Nastavi Potragu 🚀
           </button>

@@ -10,6 +10,8 @@ export interface QuestTarget {
   Html5Qrcode: string;
   Image: string;
   audio?: string;
+  /** Multilingual TTS audio: keys are language codes (bs, en, de) */
+  audioByLang?: { bs?: string; en?: string; de?: string };
   video?: string;
   website?: string;
   panorama?: string;
@@ -40,8 +42,38 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRTrgSlobode.png',
     Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp',
-    audio: '/audio/FreedomSquare.mp3',
+    audio: '/audio/pois/en/01_freedom_square.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/01_freedom_square.mp3',
+      en: '/audio/pois/en/01_freedom_square.mp3',
+      de: '/audio/pois/de/01_freedom_square.mp3',
+    },
     rewardHtml: '/assets/PoveljaKulinaBana.html'
+  },
+  {
+    id: 'stara_cesma',
+    name: {
+      en: 'Stara Česma (Old Town Fountain)',
+      bs: 'Stara Česma',
+      de: 'Stara Česma (Historischer Brunnen)',
+      tr: 'Stara Česma (Tarihi Çeşme)'
+    },
+    description: {
+      en: 'The historical public stone fountain at Freedom Square, an enduring symbol of Tuzla\'s heritage, urban culture, and welcoming hospitality.',
+      bs: 'Historijska kamena česma na Trgu slobode, prepoznatljiv simbol tuzlanske tradicije, gradske kulture i gostoprimstva kroz vijekove.',
+      de: 'Historischer Steinbrunnen am Freiheitsplatz, ein bleibendes Symbol für Tuzlas Tradition, Stadtkultur und herzliche Gastfreundschaft.',
+      tr: 'Özgürlük Meydanı\'ndaki tarihi taş çeşme, Tuzla\'nın zengin mirasının, kent kültürünün ve misafirperverliğinin simgesidir.'
+    },
+    category: 'culture',
+    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRStaraCesma.png',
+    Image: '/assets/Gallery/QuestQRLocations/cesma13.webp',
+    audio: '/audio/pois/en/01_freedom_square.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/01_freedom_square.mp3',
+      en: '/audio/pois/en/01_freedom_square.mp3',
+      de: '/audio/pois/de/01_freedom_square.mp3',
+    },
+
   },
   {
     id: 'salt_square',
@@ -54,7 +86,13 @@ export const QUEST_TARGETS: QuestTarget[] = [
     },
     category: 'history',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRsonitrg.png',
-    Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp'
+    Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp',
+    audio: '/audio/pois/en/03_salt_square.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/03_salt_square.mp3',
+      en: '/audio/pois/en/03_salt_square.mp3',
+      de: '/audio/pois/de/03_salt_square.mp3',
+    }
   },
   {
     id: 'palancinkara',
@@ -80,8 +118,13 @@ export const QUEST_TARGETS: QuestTarget[] = [
     },
     category: 'nature',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRBanja.png',
-    Image: '/assets/Gallery/QuestQRLocations/banjaO.webp',
-    audio: '/audio/SaltPark.mp3'
+    Image: '/assets/Gallery/QuestQRLocations/Slana_Banja.webp',
+    audio: '/audio/pois/en/07_slana_banja.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/07_slana_banja.mp3',
+      en: '/audio/pois/en/07_slana_banja.mp3',
+      de: '/audio/pois/de/07_slana_banja.mp3',
+    }
   },
   {
     id: 'kapija',
@@ -95,7 +138,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRkapija.png',
     Image: '/assets/Gallery/QuestQRLocations/kapija.webp',
-    audio: '/audio/Kapija.mp3'
+    audio: '/audio/pois/en/04_kapija.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/04_kapija.mp3',
+      en: '/audio/pois/en/04_kapija.mp3',
+      de: '/audio/pois/de/04_kapija.mp3',
+    }
   },
   {
     id: 'slapovi',
@@ -121,9 +169,14 @@ export const QUEST_TARGETS: QuestTarget[] = [
       tr: 'Bosna Hersek\'in en önemli ressamlarından Ismet Mujezinović\'in anısına adanmış atölye ve sanat galerisi.'
     },
     category: 'art',
-    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRAtelje.png',
+    Html5Qrcode: '',
     Image: '/assets/Gallery/QuestQRLocations/atelje.webp',
-    audio: '/audio/Atelier.mp3'
+    audio: '/audio/pois/en/05_mesa_i_ismet.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/05_mesa_i_ismet.mp3',
+      en: '/audio/pois/en/05_mesa_i_ismet.mp3',
+      de: '/audio/pois/de/05_mesa_i_ismet.mp3',
+    }
   },
   {
     id: 'bingo_city_centar',
@@ -152,6 +205,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRMesaStatue.png',
     Image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp',
+    audio: '/audio/pois/en/05_mesa_i_ismet.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/05_mesa_i_ismet.mp3',
+      en: '/audio/pois/en/05_mesa_i_ismet.mp3',
+      de: '/audio/pois/de/05_mesa_i_ismet.mp3',
+    },
     video: 'https://cki4usi56q35b3t6.public.blob.vercel-storage.com/MesaSelimovic.mp4'
   },
   {
@@ -166,8 +225,12 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'history',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRtvrtko.png',
     Image: '/assets/Gallery/QuestQRLocations/ParkKraljaTvrtka.webp',
-    audio: '/audio/tvrtkoPark.mp3',
-    video: '/assets/Gallery/QuestQRLocations/Ismetvid.mp4'
+    audio: '/audio/pois/en/06_king_tvrtko.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/06_king_tvrtko.mp3',
+      en: '/audio/pois/en/06_king_tvrtko.mp3',
+      de: '/audio/pois/de/06_king_tvrtko.mp3',
+    }
   },
   {
     id: 'panonika',
@@ -181,14 +244,20 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'nature',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpanonika.png',
     Image: '/assets/Gallery/QuestQRLocations/panonsko jezero.png',
-    audio: '/audio/Panonica.mp3'
+    audio: '/audio/pois/en/02_pannonica.mp3',
+    audioByLang: {
+      bs: '/audio/pois/bs/02_pannonica.mp3',
+      en: '/audio/pois/en/02_pannonica.mp3',
+      de: '/audio/pois/de/02_pannonica.mp3',
+    }
   },
 ];
 
 export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
-  { name: { bs: "Panonska Jezera", en: "Pannonian Lakes" }, lat: 44.53888255374366, lon: 18.680032450849325, category: "nature", entryFee: "Paid 7.5 KM - 9 KM for entire day" },
-  { name: { bs: "Slana Banja Park", en: "Slana Banja Park" }, lat: 44.53846734540082, lon: 18.685620782683003, category: "nature" },
+  { name: { bs: "Panonska Jezera", en: "Pannonian Lakes" }, lat: 44.539076, lon: 18.679488, category: "nature", entryFee: "Paid 7.5 KM - 9 KM for entire day" },
+  { name: { bs: "Slana Banja Park", en: "Slana Banja Park" }, lat: 44.536961, lon: 18.687983, category: "nature" },
   { name: { bs: "Trg Slobode", en: "Freedom Square" }, lat: 44.53954253369571, lon: 18.67508475352372, category: "culture" },
+  { name: { bs: "Stara Česma", en: "Old Town Fountain" }, lat: 44.538982, lon: 18.675580, category: "culture" },
   { name: { bs: "Spomenik Kralju Tvrtku (I)", en: "King Tvrtko Monument" }, lat: 44.53812247668793, lon: 18.678359094003866, category: "history" },
   { name: { bs: "Spomenik Meši Selimoviću", en: "Mesa Selimovic Monument" }, lat: 44.53710706292608, lon: 18.67822758905615, category: "culture" },
   { name: { bs: "Džamija Šarena (Atik)", en: "Atik Mosque" }, lat: 44.54001556181191, lon: 18.673365480509432, category: "religion" },
@@ -202,6 +271,7 @@ export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
 export const POI_COLORS: Record<string, string> = {
   'mesa_selimovic': '#4d068fff',
   'trg_slobode': '#10b981',
+  'stara_cesma': '#0ea5e9',
   'galerija': '#afcbf8ff',
   'panonika': '#040e8fff',
   'slapovi': '#0ea5e9',
@@ -217,11 +287,12 @@ export const POI_COLORS: Record<string, string> = {
 
 export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
+  stara_cesma: { lat: 44.538982, lon: 18.675580 },
   salt_square: { lat: 44.5382182, lon: 18.6759398 },
   palancinkara: { lat: 44.5383762, lon: 18.6775339 },
   palancikara: { lat: 44.5383762, lon: 18.6775339 },
-  slana_banja: { lat: 44.5378167, lon: 18.6875664 },
-  panonika: { lat: 44.5385, lon: 18.6767 },
+  slana_banja: { lat: 44.536961, lon: 18.687983 },
+  panonika: { lat: 44.539076, lon: 18.679488 },
   slapovi: { lat: 44.5404243, lon: 18.6819408 },
   kapija: { lat: 44.53863, lon: 18.676805 },
   atelje_ismet: { lat: 44.5371465, lon: 18.6810454 },
@@ -230,7 +301,7 @@ export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> =
   tvrtko_park: { lat: 44.5380826, lon: 18.6783327 },
 };
 
-export const PHASE_1_POIS = ['trg_slobode', 'kapija', 'mesa_selimovic'];
+export const PHASE_1_POIS = ['trg_slobode', 'stara_cesma', 'kapija', 'mesa_selimovic'];
 export const PHASE_2_POIS = ['tvrtko_park', 'palancinkara', 'salt_square'];
 export const PHASE_3_POIS = ['panonika', 'slapovi', 'slana_banja', 'atelje_ismet'];
 export const GRAND_FINALE_POIS = ['bingo_city_centar'];

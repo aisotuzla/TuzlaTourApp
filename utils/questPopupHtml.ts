@@ -25,12 +25,18 @@ export const generateQuestPopupHtml = (
   const coords = loc.coordinates || [44.5388, 18.6750];
   const catKey = loc.category || 'culture';
   const categoryLabel = (CATEGORY_TAGS[catKey] && CATEGORY_TAGS[catKey][lang]) || (lang === 'bs' ? '📍 Znamenitost' : '📍 Landmark');
-  const hasAudio = Boolean(loc.audio && String(loc.audio).trim().length > 0);
+  const hasAudio = Boolean(loc.audio && String(loc.audio).trim().length > 0) || Boolean(loc.audioByLang);
+  // Resolve audio path: prefer audioByLang for current language, fallback chain: lang → en → bs → audio
+  const resolvedAudio: string = (loc.audioByLang?.[lang as 'bs'|'en'|'de']
+    || loc.audioByLang?.en
+    || loc.audioByLang?.bs
+    || loc.audio
+    || '') as string;
   const hasVideo = Boolean(loc.video);
   const hasPanorama = Boolean(loc.panorama);
 
   return `
-    <div style="padding: 14px 14px 16px; font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif; background: #0f172a; color: #ffffff; border-radius: 20px; border: 1.5px solid ${markerColor}66; box-shadow: 0 20px 40px rgba(0,0,0,0.6); width: 270px; max-width: 90vw; box-sizing: border-box;">
+    <div style="padding: 14px 14px 16px; font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif; background: #0f172a; color: #ffffff; border-radius: 20px; border: 1.5px solid ${markerColor}66; box-shadow: 0 20px 40px rgba(0,0,0,0.6); width: 280px; max-width: calc(100vw - 32px); box-sizing: border-box;">
       ${previewImg ? `
         <div style="position: relative; width: 100%; height: 120px; margin-bottom: 10px; border-radius: 14px; overflow: hidden; background: #1e293b;">
           <img src="${previewImg}" alt="${title}" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.style.display='none'" />
@@ -59,32 +65,38 @@ export const generateQuestPopupHtml = (
       <div style="display: flex; flex-direction: column; gap: 6px;">
         <!-- Top Row: AR Guide & Audio Guide -->
         <div style="display: flex; gap: 6px; width: 100%;">
-          <button onclick="window.startArTrailFromPopup && window.startArTrailFromPopup('${loc.id}', '${escapedTitle}', ${coords[0]}, ${coords[1]})" style="flex: 1; padding: 10px 8px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.03em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(245,158,11,0.35);">
+          <button onclick="window.startArTrailFromPopup && window.startArTrailFromPopup('${loc.id}', '${escapedTitle}', ${coords[0]}, ${coords[1]})" style="flex: 1; min-height: 38px; padding: 10px 6px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(245,158,11,0.35); box-sizing: border-box; white-space: nowrap;">
             🧭 ${lang === 'bs' ? 'AR Vodič' : 'AR Guide'}
           </button>
           
           ${hasAudio ? `
-            <button onclick="window.playPoiAudio && window.playPoiAudio('${loc.id}', '${escapedTitle}', '${loc.audio}')" style="flex: 1; padding: 10px 8px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.03em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(37,99,235,0.35);">
+            <button onclick="window.playPoiAudio && window.playPoiAudio('${loc.id}', '${escapedTitle}', '${resolvedAudio}')" style="flex: 1; min-height: 38px; padding: 10px 6px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(37,99,235,0.35); box-sizing: border-box; white-space: nowrap;">
               🎧 Audio
             </button>
           ` : ''}
         </div>
 
-        <!-- Second Row: GPS Navigation -->
-        <button onclick="window.startNavigationFromPopup && window.startNavigationFromPopup('${escapedTitle}', ${coords[0]}, ${coords[1]})" style="width: 100%; padding: 9px 8px; background: #1e293b; color: #f1f5f9; border: 1px solid #334155; border-radius: 12px; font-weight: 800; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.03em; display: flex; align-items: center; justify-content: center; gap: 5px;">
-          🚗 ${lang === 'bs' ? 'Navigacija' : 'Navigate'}
-        </button>
+        <!-- Second Row: GPS Navigation & QR Scanner (Same size as AR Guide and Audio) -->
+        <div style="display: flex; gap: 6px; width: 100%;">
+          <button onclick="window.startNavigationFromPopup && window.startNavigationFromPopup('${escapedTitle}', ${coords[0]}, ${coords[1]})" style="flex: 1; min-height: 38px; padding: 10px 6px; background: #1e293b; color: #f1f5f9; border: 1px solid #334155; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-sizing: border-box; white-space: nowrap;">
+            🚗 ${lang === 'bs' ? 'Navigacija' : lang === 'de' ? 'Route' : lang === 'tr' ? 'Navigasyon' : 'Navigate'}
+          </button>
+
+          <button onclick="window.openQrScannerFromPopup && window.openQrScannerFromPopup('${loc.id}')" style="flex: 1; min-height: 38px; padding: 10px 6px; background: linear-gradient(135deg, #0f172a, #1e293b); color: #fbbf24; border: 1.5px solid #fbbf2466; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 0 12px rgba(251,191,36,0.2); box-sizing: border-box; white-space: nowrap;">
+            📷 ${lang === 'bs' ? 'Skeniraj QR' : lang === 'de' ? 'QR Scannen' : lang === 'tr' ? 'QR Tara' : 'Scan QR'}
+          </button>
+        </div>
 
         <!-- Optional: Video Button -->
         ${hasVideo ? `
-          <button onclick="window.playQuestVideo && window.playQuestVideo('${loc.video}', '${escapedTitle}')" style="width: 100%; padding: 8px; background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 10px; font-weight: 800; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+          <button onclick="window.playQuestVideo && window.playQuestVideo('${loc.video}', '${escapedTitle}')" style="width: 100%; min-height: 34px; padding: 8px; background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 10px; font-weight: 800; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; box-sizing: border-box;">
             🎬 ${lang === 'bs' ? 'Pogledaj Video' : 'Watch Video'}
           </button>
         ` : ''}
 
         <!-- Optional: 360 Panorama Button -->
         ${hasPanorama ? `
-          <button onclick="window.openQuestPanorama && window.openQuestPanorama('${loc.panorama}', '${escapedTitle}', ${loc.panoramaHaov || 270})" style="width: 100%; padding: 8px; background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); border-radius: 10px; font-weight: 800; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+          <button onclick="window.openQuestPanorama && window.openQuestPanorama('${loc.panorama}', '${escapedTitle}', ${loc.panoramaHaov || 270})" style="width: 100%; min-height: 34px; padding: 8px; background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); border-radius: 10px; font-weight: 800; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; box-sizing: border-box;">
             🔄 ${lang === 'bs' ? '360° Panorama' : '360° Panorama'}
           </button>
         ` : ''}

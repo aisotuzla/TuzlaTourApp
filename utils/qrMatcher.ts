@@ -15,7 +15,7 @@ export const findQuestTargetFromQr = (decodedText: string) => {
   const normalized = normalizeQrText(raw);
 
   // Extract last path segment if raw text is a URL or file path (e.g. /QRTrgSlobode.png -> QRTrgSlobode)
-  const urlSegment = raw.includes('/') ? raw.split('/').filter(Boolean).pop()?.split('.')[0] : '';
+  const urlSegment = raw.includes('/') ? raw.split(/[/?#]/).filter(Boolean).pop()?.split('.')[0] : '';
   const normalizedUrlSeg = urlSegment ? normalizeQrText(urlSegment) : '';
 
   return QUEST_TARGETS.find((target) => {
@@ -43,8 +43,7 @@ export const findQuestTargetFromQr = (decodedText: string) => {
     return candidates.some(
       (candidate) =>
         candidate === normalized ||
-        (normalizedUrlSeg && candidate === normalizedUrlSeg) ||
-        (candidate.length >= 3 && (candidate.includes(normalized) || normalized.includes(candidate)))
+        (normalizedUrlSeg && candidate === normalizedUrlSeg)
     );
   });
 };

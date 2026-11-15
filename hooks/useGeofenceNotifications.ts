@@ -39,6 +39,25 @@ export const DEFAULT_GEOFENCES: GeofenceZone[] = [
     },
   },
   {
+    id: 'stara_cesma',
+    lat: QUEST_TARGET_COORDS.stara_cesma.lat,
+    lon: QUEST_TARGET_COORDS.stara_cesma.lon,
+    radiusMeters: 25,
+    exitRadiusMeters: 60,
+    title: {
+      en: '💧 Historical Fountain (Stara Česma)',
+      bs: '💧 Stara Česma',
+      de: '💧 Historischer Brunnen (Stara Česma)',
+      tr: '💧 Tarihi Çeşme (Stara Česma)',
+    },
+    body: {
+      en: 'You are within 25m of Stara Česma! Turn on your AR guide and scan the QR code to unlock your reward.',
+      bs: 'Nalazite se na 25m od Stare Česme! Uključite AR vodič i skenirajte QR kod za nagradu.',
+      de: 'Sie sind 25 m vom Brunnen entfernt! Starten Sie den AR-Guide und scannen Sie den QR-Code.',
+      tr: 'Tarihi Çeşmeye 25 metre mesafedesiniz! AR rehberini açın ve ödül için QR kodunu tarayın.',
+    },
+  },
+  {
     id: 'salt_square',
     lat: QUEST_TARGET_COORDS.salt_square.lat,
     lon: QUEST_TARGET_COORDS.salt_square.lon,

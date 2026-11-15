@@ -167,22 +167,38 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
   // Attempt autoplay immediately (muted for mobile compatibility)
   useEffect(() => {
-    if (heroVideoRef.current) {
-      heroVideoRef.current.defaultMuted = true;
-      heroVideoRef.current.muted = true;
-      setIsHeroMuted(true);
-      const playPromise = heroVideoRef.current.play();
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    video.defaultMuted = true;
+    video.muted = true;
+    setIsHeroMuted(true);
+
+    let isMounted = true;
+    const timer = setTimeout(() => {
+      if (!isMounted || !video) return;
+      const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            setIsHeroPlaying(true);
-            setIsHeroReady(true);
+            if (isMounted) {
+              setIsHeroPlaying(true);
+              setIsHeroReady(true);
+            }
           })
           .catch((err) => {
             console.warn("Autoplay was prevented (hero image visible as background/fallback):", err);
+            if (isMounted) {
+              setIsHeroPlaying(false);
+            }
           });
       }
-    }
+    }, 150);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
   }, [videoSrc]);
 
   const toggleHeroVideo = () => {
@@ -250,9 +266,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
     if (videoSrc !== remoteHeroVideo) {
       console.warn(`Video failed to load from ${videoSrc}. Falling back to remote asset: ${remoteHeroVideo}`);
       setVideoSrc(remoteHeroVideo);
-      if (heroVideoRef.current) {
-        heroVideoRef.current.load();
-      }
     } else {
       console.warn("Hero video failed to load. Background hero image remains as active fallback.");
       setIsHeroPlaying(false);
@@ -300,6 +313,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             padding: 8px; /* Tanji okvir */
             transition: all 0.3s ease;
             margin: 0 auto;
+            touch-action: pan-y;
         }
 
         /* Unutrašnji ekran na desktopu - crna unutrašnjost */
@@ -307,11 +321,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             position: relative;
             width: 100%;
             height: 100%;
-            background-color: #000;
+            background-color: #ffffff;
             border-radius: 36px; 
             border: 1px solid rgba(184, 199, 219, 0.18);
             overflow: hidden; 
             z-index: 1;
+            touch-action: pan-y;
         }
 
         /* Video element */
@@ -319,6 +334,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             width: 100%;
             height: 100%;
             object-fit: cover; 
+            pointer-events: none;
         }
 
         /* Prednja selfie kamera na vrhu (Samsung punch-hole) */
@@ -361,6 +377,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 height: calc(100vh - 56px - env(safe-area-inset-top, 0px)) !important;
                 height: calc(100dvh - 56px - env(safe-area-inset-top, 0px)) !important;
                 min-height: calc(100dvh - 56px - env(safe-area-inset-top, 0px)) !important;
+                touch-action: pan-y;
             }
 
             /* Pretvaramo okvir u full-screen kontejner */
@@ -373,6 +390,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 padding: 0 !important;
                 box-shadow: none !important;
                 background-color: transparent !important;
+                touch-action: pan-y;
             }
 
             /* Ekran telefona zauzima 100% mobilnog ekrana */
@@ -381,7 +399,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 height: 100% !important;
                 border-radius: 0 !important;
                 border: none !important;
-                background-color: transparent !important;
+                background-color: #ffffff !important;
+                touch-action: pan-y;
             }
 
             /* Sakrivamo selfie kameru jer je korisnik na pravom telefonu */
@@ -434,11 +453,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 }`}
             />
 
+            {/* Solid white background cover while video is loading up (hides gray play sign on phone) */}
+            {!isHeroPlaying && (
+              <div className="absolute inset-0 z-[15] bg-white pointer-events-none transition-opacity duration-500" />
+            )}
+
             {/* Video koji na mobilnom postaje Full Size - pušta se 2 puta */}
             <video
               ref={heroVideoRef}
               autoPlay
               muted={isHeroMuted}
+              playsInline
+              preload="metadata"
+              disablePictureInPicture
+              controls={false}
+              poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect width='1' height='1' fill='white'/%3E"
+              src={videoSrc}
               onPlay={() => {
                 setIsHeroPlaying(true);
                 setIsHeroReady(true);
@@ -446,10 +476,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               onLoadedData={() => setIsHeroReady(true)}
               onError={handleVideoError}
               onEnded={handleHeroVideoEnd}
-              className={`w-full h-full object-cover transition-opacity duration-700 ${isHeroPlaying ? 'opacity-100' : 'opacity-0'
+              style={{ backgroundColor: '#ffffff' }}
+              className={`w-full h-full object-cover transition-opacity duration-700 pointer-events-none select-none ${isHeroPlaying ? 'opacity-100' : 'opacity-0'
                 }`}
             >
-              <source src={videoSrc} type="video/mp4" />
               Vaš browser ne podržava video element.
             </video>
 
@@ -499,11 +529,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               </div>
             )}
 
-            {/* Mobile Scroll Indicator */}
-            <div className="absolute bottom-5 left-4 z-30 md:hidden flex items-center gap-1.5 text-white pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            {/* Mobile Scroll Indicator - Tap to scroll down instantly */}
+            <button
+              type="button"
+              onClick={() => cardsSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
+              className="absolute bottom-5 left-4 z-30 md:hidden flex items-center gap-1.5 text-white pointer-events-auto bg-black/40 hover:bg-black/60 backdrop-blur-xs px-2.5 py-1.5 rounded-full border border-white/20 active:scale-95 transition-all drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] cursor-pointer"
+              title="Scroll to explore"
+              aria-label="Scroll to explore"
+            >
               <ArrowDown className="w-4 h-4 animate-bounce text-cyan-300 drop-shadow" />
               <span className="text-[11px] font-bold uppercase tracking-wider text-white drop-shadow">{t.heroScroll}</span>
-            </div>
+            </button>
           </div>
         </div>
       </section>

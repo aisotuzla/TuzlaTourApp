@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Lock, Play, X, Trophy, BookOpen } from 'lucide-react';
+import { CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, AlertCircle } from 'lucide-react';
 import { Language } from '../types';
 import { QUEST_TARGETS, NFT_REWARD_IDS, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
@@ -31,6 +31,8 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   scannerFps = 15,
 }) => {
   const [scannerFeedback, setScannerFeedback] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [isStartingCamera, setIsStartingCamera] = useState<boolean>(false);
   const [activeVideoModal, setActiveVideoModal] = useState<{ url: string; title: string } | null>(null);
   const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
@@ -66,9 +68,11 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
     const container = document.getElementById(scannerContainerId);
     if (!container) {
       console.warn('[QR Scanner] Container not found:', scannerContainerId);
-      onClose();
       return;
     }
+
+    setCameraError(null);
+    setIsStartingCamera(true);
 
     // Stop any existing scanner instance first
     if (html5QrCodeRef.current) {
@@ -170,13 +174,14 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
       };
 
       const qrConfig = {
-        fps: Math.max(scannerFps, 20),
+        fps: Math.max(scannerFps, 15),
         qrbox: { width: Math.min(window.innerWidth * 0.7, 260), height: Math.min(window.innerWidth * 0.7, 260) },
         disableFlip: false,
       };
 
       try {
         await html5QrCode.start({ facingMode: 'environment' }, qrConfig, onScanSuccess, () => {});
+        setIsStartingCamera(false);
         if (!isOpenRef.current) {
           stopScanner();
           return;
@@ -186,7 +191,9 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         try {
           const devices = await Html5Qrcode.getCameras();
           if (devices && devices.length > 0) {
-            await html5QrCode.start(devices[0].id, qrConfig, onScanSuccess, () => {});
+            const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
+            await html5QrCode.start(backCam.id, qrConfig, onScanSuccess, () => {});
+            setIsStartingCamera(false);
             if (!isOpenRef.current) {
               stopScanner();
               return;
@@ -194,16 +201,24 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           } else {
             throw new Error('No cameras found on device.');
           }
-        } catch (fallbackErr) {
+        } catch (fallbackErr: any) {
           console.error('[QR Scanner] Fallback failed:', fallbackErr);
-          onClose();
-          setScannerFeedback({ text: 'Camera error: Could not access camera', type: 'error' });
-          setTimeout(() => setScannerFeedback(null), 3000);
+          setIsStartingCamera(false);
+          setCameraError(
+            lang === 'bs'
+              ? 'Kamera nije dostupna ili nema dozvole. Omogućite pristup kameri i pokušajte ponovo.'
+              : 'Camera unavailable or permission denied. Enable camera access and try again.'
+          );
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('[QR Scanner] Initialization error:', err);
-      onClose();
+      setIsStartingCamera(false);
+      setCameraError(
+        lang === 'bs'
+          ? 'Greška pri pokretanju kamere. Pokušajte ponovo.'
+          : 'Error initializing camera. Please retry.'
+      );
     }
   };
 
@@ -253,6 +268,31 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                   className="absolute inset-0 rounded-2xl overflow-clip bg-black border-2 border-sky-400/30 shadow-[0_0_60px_rgba(56,189,248,0.25),0_0_90px_rgba(245,158,11,0.15)]"
                   style={{ backgroundColor: 'black', minWidth: '280px', minHeight: '280px' }}
                 />
+
+                {/* Camera Starting State */}
+                {isStartingCamera && (
+                  <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/95 rounded-2xl p-4 text-center gap-2">
+                    <div className="relative w-10 h-10">
+                      <div className="absolute inset-0 rounded-full border-2 border-sky-400/30 border-t-amber-400 animate-spin" />
+                      <Camera className="w-4 h-4 text-sky-400 absolute inset-0 m-auto" />
+                    </div>
+                    <span className="text-xs font-bold text-sky-300 uppercase tracking-wider">
+                      {lang === 'bs' ? 'Pokretanje kamere...' : 'Starting camera...'}
+                    </span>
+                  </div>
+                )}
+
+                {/* Camera Error State with Retry */}
+                {cameraError && (
+                  <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/95 rounded-2xl p-5 text-center gap-2.5">
+                    <AlertCircle className="w-8 h-8 text-amber-400" />
+                    <p className="text-xs font-bold text-slate-200 leading-snug">{cameraError}</p>
+                    <button onClick={() => startScanner()} className="w-full mt-2 py-2 px-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1 active:scale-95 transition-all shadow-md">
+                      <RefreshCw size={12} />
+                      {lang === 'bs' ? 'Ponovo' : 'Retry'}
+                    </button>
+                  </div>
+                )}
 
                 {/* Cyber Frame Decor */}
                 <div className="absolute -inset-4 border-2 border-white/5 rounded-[2.5rem] pointer-events-none" />

@@ -1,0 +1,186 @@
+{
+    "city": "Tuzla",
+    "country": "Bosnia and Herzegovina",
+    "supportedLanguages": [
+        "bs",
+        "en",
+        "de"
+    ],
+    "pois": [
+        {
+            "id": "01_freedom_square",
+            "order": 1,
+            "category": "square",
+            "coordinates": {
+                "lat": 44.5384,
+                "lng": 18.6752
+            },
+            "radiusMeters": 40,
+            "title": {
+                "bs": "Trg slobode",
+                "en": "Freedom Square",
+                "de": "Freiheitsplatz"
+            },
+            "description": {
+                "bs": "Nalazimo se na Trgu slobode, najvećem trgu u Bosni i Hercegovini i centralnom mjestu okupljanja Tuzlaka. Ovdje dominira zgrada Barok, obnovljena u austrougarskom stilu, te Čaršijska česma. Prema lokalnoj legendi, ko se jednom napije vode sa ove česme, sigurno će se ponovo vratiti u Tuzlu.",
+                "en": "We are standing on Freedom Square, the largest square in Bosnia and Herzegovina and the central gathering place for the people of Tuzla. It is dominated by the Barok building, restored in the Austro-Hungarian style, and the Čaršijska Fountain. According to local legend, whoever drinks water from this fountain once is sure to return to Tuzla.",
+                "de": "Wir befinden uns auf dem Freiheitsplatz, dem größten Platz in Bosnien und Herzegowina und dem zentralen Treffpunkt der Menschen aus Tuzla. Hier dominieren das im österreichisch-ungarischen Stil restaurierte Barockgebäude und der Čaršijska-Brunnen. Einer lokalen Legende nach kehrt jeder, der einmal Wasser aus diesem Brunnen trinkt, sicher wieder nach Tuzla zurück."
+            },
+            "audio": {
+                "bs": "/audio/pois/bs/01_freedom_square.mp3",
+                "en": "/audio/pois/en/01_freedom_square.mp3",
+                "de": "/audio/pois/de/01_freedom_square.mp3"
+            }
+        },
+        {
+            "id": "02_pannonica",
+            "order": 2,
+            "category": "nature_recreation",
+            "coordinates": {
+                "lat": 44.5403,
+                "lng": 18.6789
+            },
+            "radiusMeters": 60,
+            "title": {
+                "bs": "Panonska jezera (Panonika)",
+                "en": "Pannonica (Pannonian Lakes)",
+                "de": "Pannonica (Pannonische Seen)"
+            },
+            "description": {
+                "bs": "Samo nekoliko minuta hoda od starog gradskog jezgra nalaze se Panonska jezera, poznatija kao Panonika — jedina slana jezera u Evropi smještena u samom centru grada. Nastala na mjestu nekadašnjeg Panonskog mora, ova tri jezera sa slanim slapovima i arheološkim parkom neolitskog sojeničkog naselja predstavljaju pravu ljetnu oazu.",
+                "en": "Just a few minutes' walk from the old city center is Pannonica — the only salt lakes in Europe located right in the city center. Formed on the site of the former Pannonian Sea, these three lakes with salt waterfalls and an archaeological park of a Neolithic stilt-house settlement represent a true summer oasis.",
+                "de": "Nur wenige Gehminuten vom alten Stadtkern entfernt befindet sich Pannonica – die einzigen Salzseen Europas mitten im Stadtzentrum. Entstanden an der Stelle des ehemaligen Pannonischen Meeres, stellen diese drei Seen mit ihren Salzwasserfällen und dem Archäologischen Park einer neolithischen Pfahlbausiedlung eine echte Sommeroase dar."
+            },
+            "audio": {
+                "bs": "/audio/pois/bs/02_pannonica.mp3",
+                "en": "/audio/pois/en/02_pannonica.mp3",
+                "de": "/audio/pois/de/02_pannonica.mp3"
+            }
+        },
+        {
+            "id": "03_salt_square",
+            "order": 3,
+            "category": "heritage",
+            "coordinates": {
+                "lat": 44.5391,
+                "lng": 18.6766
+            },
+            "radiusMeters": 30,
+            "title": {
+                "bs": "Soni trg",
+                "en": "Salt Square",
+                "de": "Salzplatz"
+            },
+            "description": {
+                "bs": "Soni trg čuva uspomenu na ono po čemu je Tuzla dobila ime — riječ 'tuz' na turskom jeziku znači so. U središtu trga nalazi se replika neolitske posude za isoljavanje, jer se so na ovom području proizvodila još prije više od šest hiljada godina.",
+                "en": "Salt Square preserves the memory of how Tuzla got its name — the word 'tuz' in Turkish means salt. In the center of the square is a replica of a Neolithic salt-harvesting vessel, because salt has been produced in this area for over six thousand years.",
+                "de": "Der Salzplatz bewahrt die Erinnerung daran, wie Tuzla zu seinem Namen kam – das Wort ‚tuz‘ bedeutet auf Türkisch Salz. In der Mitte des Platzes befindet sich die Nachbildung eines neolithischen Salzgewinnungsgefäßes, denn in dieser Gegend wird bereits seit über sechstausend Jahren Salz produziert."
+            },
+            "audio": {
+                "bs": "/audio/pois/bs/03_salt_square.mp3",
+                "en": "/audio/pois/en/03_salt_square.mp3",
+                "de": "/audio/pois/de/03_salt_square.mp3"
+            }
+        },
+        {
+            "id": "04_kapija",
+            "order": 4,
+            "category": "memorial_heritage",
+            "coordinates": {
+                "lat": 44.5376,
+                "lng": 18.6768
+            },
+            "radiusMeters": 25,
+            "title": {
+                "bs": "Kapija",
+                "en": "Kapija (The Gate)",
+                "de": "Kapija (Das Tor)"
+            },
+            "description": {
+                "bs": "Šetajući kroz Korzo dolazimo do Kapije, mjesta susreta mladih, ali i mjesta dubokog pijeteta posvećenog stradaloj tuzlanskoj mladosti 25. maja 1995. godine. U neposrednoj blizini nalazi se i Turalibegova džamija iz 16. vijeka, poznata po svojoj specifičnoj arhitekturi.",
+                "en": "Walking through the Korzo, we come to Kapija, a traditional meeting place for young people, and also a place of deep reverence dedicated to the youth of Tuzla who lost their lives on May 25, 1995. Nearby stands the 16th-century Turalibeg Mosque, known for its distinctive architecture.",
+                "de": "Wenn wir durch den Korzo gehen, erreichen wir die Kapija, einen traditionellen Treffpunkt für junge Leute, aber auch einen Ort tiefen Respekts, gewidmet der Jugend von Tuzla, die am 25. Mai 1995 ihr Leben verlor. In unmittelbarer Nähe befindet sich auch die Turalibeg-Moschee aus dem 16. Jahrhundert."
+            },
+            "audio": {
+                "bs": "/audio/pois/bs/04_kapija.mp3",
+                "en": "/audio/pois/en/04_kapija.mp3",
+                "de": "/audio/pois/de/04_kapija.mp3"
+            }
+        },
+        {
+            "id": "05_mesa_i_ismet",
+            "order": 5,
+            "category": "monument",
+            "coordinates": {
+                "lat": 44.5381,
+                "lng": 18.6761
+            },
+            "radiusMeters": 20,
+            "title": {
+                "bs": "Spomenik Meši Selimoviću i Ismetu Mujezinoviću",
+                "en": "Meša Selimović and Ismet Mujezinović Statues",
+                "de": "Statuen von Meša Selimović und Ismet Mujezinović"
+            },
+            "description": {
+                "bs": "U samom srcu pješačke zone stoje statue dvojice velikana rođenih u Tuzli — književnika Meše Selimovića i slikara Ismeta Mujezinovića. Prikazani u prirodnoj veličini dok šetaju gradom, ovi spomenici simbolizuju bogato kulturno i umjetničko naslijeđe Tuzle.",
+                "en": "In the very heart of the pedestrian zone stand the statues of two greats born in Tuzla — the writer Meša Selimović and the painter Ismet Mujezinović. Depicted in life size as if strolling through the city, these monuments symbolize the rich cultural and artistic heritage of Tuzla.",
+                "de": "Im Herzen der Fußgängerzone stehen die Statuen zweier in Tuzla geborener Größen – des Schriftstellers Meša Selimović und des Malers Ismet Mujezinović. Lebensgroß dargestellt, als würden sie durch die Stadt spazieren, symbolisieren diese Denkmäler das reiche kulturelle und künstlerische Erbe Tuzlas."
+            },
+            "audio": {
+                "bs": "/audio/pois/bs/05_mesa_i_ismet.mp3",
+                "en": "/audio/pois/en/05_mesa_i_ismet.mp3",
+                "de": "/audio/pois/de/05_mesa_i_ismet.mp3"
+            }
+        },
+        {
+            "id": "06_king_tvrtko",
+            "order": 6,
+            "category": "monument",
+            "coordinates": {
+                "lat": 44.5387,
+                "lng": 18.6736
+            },
+            "radiusMeters": 30,
+            "title": {
+                "bs": "Spomenik kralju Tvrtku I Kotromaniću",
+                "en": "King Tvrtko I Kotromanić Monument",
+                "de": "Denkmal für König Tvrtko I. Kotromanić"
+            },
+            "description": {
+                "bs": "U gradskom parku nalazi se monumentalni spomenik prvom bosanskom kralju, Tvrtku I Kotromaniću, podignut na mjestu gdje je nekada stajala srednjovjekovna tvrđava. Spomenik podsjeća na povelju iz 14. vijeka i doba procvata srednjovjekovne bosanske države.",
+                "en": "In the city park stands a monumental statue of the first Bosnian king, Tvrtko I Kotromanić, erected on the site where a medieval fortress once stood. The monument commemorates 14th-century charters and the golden age of the medieval Bosnian state.",
+                "de": "Im Stadtpark steht ein monumentales Denkmal des ersten bosnischen Königs, Tvrtko I. Kotromanić, errichtet an der Stelle, an der einst eine mittelalterliche Festung stand. Das Denkmal erinnert an Urkunden aus dem 14. Jahrhundert und an die Blütezeit des mittelalterlichen bosnischen Staates."
+            },
+            "audio": {
+                "bs": "/audio/pois/bs/06_king_tvrtko.mp3",
+                "en": "/audio/pois/en/06_king_tvrtko.mp3",
+                "de": "/audio/pois/de/06_king_tvrtko.mp3"
+            }
+        },
+        {
+            "id": "07_slana_banja",
+            "order": 7,
+            "category": "park_memorial",
+            "coordinates": {
+                "lat": 44.5416,
+                "lng": 18.6805
+            },
+            "radiusMeters": 75,
+            "title": {
+                "bs": "Slana Banja",
+                "en": "Slana Banja (Salt Park)",
+                "de": "Slana Banja (Salzpark)"
+            },
+            "description": {
+                "bs": "Iznad centra grada prostire se Slana Banja, veliki zeleni park i omiljeno šetalište Tuzlaka. Pored uređenih staza, vidikovaca i sportskih terena, ovaj memorijalni kompleks čuva spomenike iz Drugog svjetskog rata, kao i Aleju mladosti posvećenu žrtvama sa Kapije.",
+                "en": "Rising above the city center is Slana Banja (Salt Park), a vast green park and a favorite promenade for locals. Alongside landscaped walking paths, viewpoints, and sports courts, this memorial complex preserves World War II monuments as well as the Alley of Youth dedicated to the victims of Kapija.",
+                "de": "Oberhalb des Stadtzentrums erstreckt sich der Slana Banja (Salzpark), eine weitläufige Grünanlage und beliebte Promenade der Einheimischen. Neben gepflegten Spazierwegen, Aussichtspunkten und Sportplätzen bewahrt dieser Gedenkkomplex Denkmäler aus dem Zweiten Weltkrieg sowie die Allee der Jugend, die den Opfern der Kapija gewidmet ist."
+            },
+            "audio": {
+                "bs": "/audio/pois/bs/07_slana_banja.mp3",
+                "en": "/audio/pois/en/07_slana_banja.mp3",
+                "de": "/audio/pois/de/07_slana_banja.mp3"
+            }
+        }
+    ]
+}

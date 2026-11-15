@@ -18,7 +18,7 @@ const LOCATIONS_RAW: Location[] = [
       tr: 'Şehir merkezinde bulunan Avrupa\'nın tek tuz gölleri. Tıbbi özelliklere sahip üç gölden oluşan eşsiz bir kompleks.',
     },
     image: '/assets/Gallery/QuestQRLocations/Panonsko jezero.png',
-    coordinates: [44.5385, 18.6767],
+    coordinates: [44.539076, 18.679488],
     category: 'nature',
     qrCode: 'Pannonian Lakes',
     discount: '10%',
@@ -182,8 +182,8 @@ const LOCATIONS_RAW: Location[] = [
       de: 'Ein Gedenkpark und Erholungsgebiet mit schönen Wanderwegen und historischen Denkmälern.',
       tr: 'Güzel yürüyüş yolları ve tarihi anıtların bulunduğu bir anıt parkı og dinlenme alanı.',
     },
-    image: '/assets/Gallery/QuestQRLocations/QR Banja.png',
-    coordinates: [44.5378167, 18.6875664],
+    image: '/assets/Gallery/QuestQRLocations/Slana_Banja.webp',
+    coordinates: [44.536961, 18.687983],
     category: 'nature',
     qrCode: 'QR Banja',
     discount: 'Health Reward',
@@ -251,6 +251,27 @@ const LOCATIONS_RAW: Location[] = [
     qrCode: 'QRTrgSlobode',
     discount: 'Special Reward',
     address: 'Trg slobode, 75000 Tuzla, Bosnia and Herzegovina',
+  },
+  {
+    id: 'stara_cesma',
+    name: {
+      en: 'Stara Česma (Old Town Fountain)',
+      bs: 'Stara Česma',
+      de: 'Stara Česma (Historischer Brunnen)',
+      tr: 'Stara Česma (Tarihi Çeşme)',
+    },
+    description: {
+      en: 'The historical public stone fountain at Freedom Square, an enduring symbol of Tuzla\'s heritage, urban culture, and welcoming hospitality.',
+      bs: 'Historijska kamena česma na Trgu slobode, prepoznatljiv simbol tuzlanske tradicije, gradske kulture i gostoprimstva kroz vijekove.',
+      de: 'Historischer Steinbrunnen am Freiheitsplatz, ein bleibendes Symbol für Tuzlas Tradition, Stadtkultur und herzliche Gastfreundschaft.',
+      tr: 'Özgürlük Meydanı\'ndaki tarihi taş çeşme, Tuzla\'nın zengin mirasının, kent kültürünün ve misafirperverliğinin simgesidir.',
+    },
+    image: '/assets/Gallery/QuestQRLocations/cesma13.webp',
+    coordinates: [44.538982, 18.675580],
+    category: 'culture',
+    qrCode: 'QRStaraCesma',
+    discount: 'Special Reward',
+    address: 'Trg slobode / Trg stare tržnice, 75000 Tuzla, Bosnia and Herzegovina',
   }
 ];
 

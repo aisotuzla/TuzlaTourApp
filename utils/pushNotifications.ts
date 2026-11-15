@@ -87,6 +87,22 @@ const registerNativePushNotifications = async (
       return () => {};
     }
 
+    // On Android 8.0+ create high-priority notification channel
+    if (Capacitor.getPlatform() === 'android') {
+      try {
+        await PushNotifications.createChannel({
+          id: 'tuzla_default_channel',
+          name: 'Tuzla Tour Notifications',
+          description: 'General notifications and quest updates for Tuzla Tour Guide',
+          importance: 5,
+          visibility: 1,
+          vibration: true
+        });
+      } catch (channelError) {
+        console.warn('Unable to create Android notification channel:', channelError);
+      }
+    }
+
     await PushNotifications.register();
     return () => {
       void removeListeners().catch((error: unknown) => {
@@ -143,4 +159,12 @@ export const initializePushNotifications = async (
     });
 
   return unsubscribe;
+};
+
+export const getStoredPushToken = (): string | null => {
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
 };

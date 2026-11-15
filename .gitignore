@@ -49,6 +49,7 @@ pannellum-2.5.7/
 docs
 .env
 .env.*
+!.env.example
 .env*.local
 *.env
 .deepsec

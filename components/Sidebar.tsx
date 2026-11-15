@@ -139,23 +139,23 @@ const NAV_ITEMS: NavItemConfig[] = [
     id: AppTab.QR_SCAN,
     label: { en: 'QR Scan', bs: 'QR skeniranje', de: 'QR Scan', tr: 'QR Tarama' },
     icon: QrCode,
-    inactiveClass: 'bg-gradient-to-r from-blue-300 via-indigo-300 to-sky-300 text-slate-950 hover:from-blue-400 hover:to-indigo-400 font-bold',
-    inactiveIconClass: 'text-blue-950',
-    inactiveBorderClass: 'border-blue-500/80',
-    activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black',
-    activeGlow: 'shadow-[0_8px_25px_rgba(245,158,11,0.6)]',
-    activeBorder: 'border-yellow-300'
-  },
-  {
-    id: AppTab.TASK_MANAGER,
-    icon: CheckSquare,
-    label: { en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
     inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
     inactiveIconClass: 'text-blue-900',
     inactiveBorderClass: 'border-blue-400/80',
     activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
     activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
     activeBorder: 'border-amber-400'
+  },
+  {
+    id: AppTab.TASK_MANAGER,
+    icon: CheckSquare,
+    label: { en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
+    inactiveClass: 'bg-gradient-to-r from-blue-300 via-indigo-300 to-sky-300 text-slate-950 hover:from-blue-400 hover:to-indigo-400 font-bold',
+    inactiveIconClass: 'text-blue-950',
+    inactiveBorderClass: 'border-blue-500/80',
+    activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_25px_rgba(245,158,11,0.6)]',
+    activeBorder: 'border-yellow-300'
   }
 ];
 

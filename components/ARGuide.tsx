@@ -461,9 +461,18 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       if (cameraActive) stopCamera();
       return;
     }
-    if (viewMode === 'AR' && !cameraActive) startCamera();
-    else if (viewMode === 'HORIZON' && cameraActive) stopCamera();
-  }, [viewMode, permissionGranted, isForeground, cameraActive, startCamera, stopCamera]);
+    // In AR mode, live camera feed activates when within 5-10 meters (<= 10m) of POI location
+    const isWithinCameraRange = targetDistance !== null && targetDistance <= 10;
+    if (viewMode === 'AR') {
+      if (isWithinCameraRange && !cameraActive) {
+        startCamera();
+      } else if (!isWithinCameraRange && cameraActive) {
+        stopCamera();
+      }
+    } else if (viewMode === 'HORIZON' && cameraActive) {
+      stopCamera();
+    }
+  }, [viewMode, permissionGranted, isForeground, cameraActive, targetDistance, startCamera, stopCamera]);
 
   const { position: rawGeoPosition, hasPermission: geoPermission } = useGeolocationWatcher({
     enabled: permissionGranted && isForeground,
@@ -793,16 +802,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
           />
         ) : (
-          <div className="absolute inset-0 w-full h-full bg-slate-950">
-            <iframe
-              src="/assets/Gallery/QuestQRLocations/Tvrko%20pannellum/pannellum/pannellum.htm?panorama=../tz.jpg&autoLoad=true"
-              className="w-full h-full border-none pointer-events-auto opacity-80"
-              title="Tuzla 360 Panorama"
-              allow="gyroscope; accelerometer"
-              allowFullScreen
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
-          </div>
+          <div className="absolute inset-0 w-full h-full bg-black" />
         )}
 
         {permissionGranted && (

@@ -1,10 +1,28 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { timingSafeEqual } from 'node:crypto';
 import { fetchPublicVerifiedEvents, saveVerifiedEvents, normalizeImportedEvents, deleteEventById } from '../../utils/eventsDb';
+
+const MAX_EVENT_IMPORT_BYTES = 1_000_000;
+
+function hasAdminAuthorization(req: VercelRequest): boolean {
+  const expectedToken = process.env.EVENTS_ADMIN_TOKEN;
+  const authorization = req.headers.authorization;
+
+  // Fail closed until a private admin token has been configured in Vercel.
+  if (!expectedToken || typeof authorization !== 'string') return false;
+  const prefix = 'Bearer ';
+  if (!authorization.startsWith(prefix)) return false;
+
+  const supplied = Buffer.from(authorization.slice(prefix.length));
+  const expected = Buffer.from(expectedToken);
+  return supplied.length === expected.length && timingSafeEqual(supplied, expected);
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Vary', 'Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -17,14 +35,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json(events);
     }
 
+    if (req.method === 'POST' || req.method === 'DELETE') {
+      if (!hasAdminAuthorization(req)) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      res.setHeader('Cache-Control', 'no-store');
+    }
+
     if (req.method === 'POST') {
       let body = req.body;
       if (typeof body === 'string') {
+        if (Buffer.byteLength(body, 'utf8') > MAX_EVENT_IMPORT_BYTES) {
+          return res.status(413).json({ error: 'Event import payload is too large.' });
+        }
         try {
           body = JSON.parse(body);
         } catch {
-          // ignore
+          return res.status(400).json({ error: 'Request body must contain valid JSON.' });
         }
+      } else if (Buffer.byteLength(JSON.stringify(body ?? null), 'utf8') > MAX_EVENT_IMPORT_BYTES) {
+        return res.status(413).json({ error: 'Event import payload is too large.' });
       }
 
       const rawItems = Array.isArray(body) ? body : (body && typeof body === 'object' ? [body] : []);
@@ -50,17 +80,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method === 'DELETE') {
       const id = (req.query.id as string) || req.body?.id;
-      if (!id) {
-        return res.status(400).json({ error: 'Event ID required' });
+      if (typeof id !== 'string' || !id.trim() || id.length > 255) {
+        return res.status(400).json({ error: 'A valid event ID is required.' });
       }
       await deleteEventById(id);
       return res.status(200).json({ success: true, deletedId: id });
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('API /api/events error:', error);
-    return res.status(500).json({ error: error?.message || 'Server error processing request' });
+    return res.status(500).json({ error: 'Server error processing events.' });
   }
 }
-
