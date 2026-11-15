@@ -26,6 +26,7 @@ import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
 import { useGeofenceNotifications } from './hooks/useGeofenceNotifications';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import ARGuide from './components/ARGuide';
+import CookieConsentBanner from './components/CookieConsentBanner';
 import { initializePushNotifications } from './utils/pushNotifications';
 
 const MapView = React.lazy(() => import('./components/MapView'));
@@ -348,6 +349,7 @@ const AppContent: React.FC = () => {
       )}
 
       <FullScreenImageViewer />
+      <CookieConsentBanner lang={lang} />
     </ImageProvider>
   );
 };

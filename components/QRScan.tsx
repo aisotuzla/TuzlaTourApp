@@ -121,8 +121,8 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
 
         const loadTodos = async () => {
             try {
-                const { supabase } = await import('../lib/supabaseclient');
-                const { data, error } = await supabase.from('todos').select('id, name');
+                const { supabase } = await import('../lib/supabaseClient');
+                const { data, error } = await (supabase as any).from('todos').select('id, name');
 
                 if (error) {
                     console.error('Unable to load todos from Supabase:', error);
@@ -130,7 +130,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                     return;
                 }
 
-                if (isActive) setTodos(data ?? []);
+                if (isActive) setTodos((data as any) ?? []);
             } catch (error: unknown) {
                 console.error('Unable to load todos from Supabase:', error);
                 if (isActive) {

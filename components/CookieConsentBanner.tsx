@@ -172,14 +172,18 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
           const saved = JSON.parse(value);
           // Check if consent version matches
           if (saved.version === COOKIE_CONSENT_VERSION) {
-            setState(prev => ({
-              ...prev,
-              necessary: true, // Always true
+            const consentObj = {
+              necessary: true,
               performance: saved.performance || false,
               functional: saved.functional || false,
               marketing: saved.marketing || false,
+            };
+            setState(prev => ({
+              ...prev,
+              ...consentObj,
               showBanner: false,
             }));
+            applyConsent(consentObj);
           } else {
             // Version mismatch, show banner for re-consent
             setState(prev => ({ ...prev, showBanner: true }));
@@ -202,14 +206,18 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed.version === COOKIE_CONSENT_VERSION) {
-            setState(prev => ({
-              ...prev,
+            const consentObj = {
               necessary: true,
               performance: parsed.performance || false,
               functional: parsed.functional || false,
               marketing: parsed.marketing || false,
+            };
+            setState(prev => ({
+              ...prev,
+              ...consentObj,
               showBanner: false,
             }));
+            applyConsent(consentObj);
             return;
           }
         }
@@ -264,34 +272,23 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
     }
   };
 
-  // Apply consent to tracking scripts
-  const applyConsent = (consent: Omit<CookieConsentState, 'showBanner' | 'showSettings'>) => {
-    // Google Analytics
-    if (typeof window !== 'undefined') {
+  // Apply consent to tracking scripts via Google Consent Mode v2
+  const applyConsent = (consent: { performance?: boolean; marketing?: boolean; functional?: boolean }) => {
+    if (typeof window === 'undefined') return;
+
+    if ((window as any).gtag) {
+      (window as any).gtag('consent', 'update', {
+        'analytics_storage': consent.performance ? 'granted' : 'denied',
+        'ad_storage': consent.marketing ? 'granted' : 'denied',
+        'ad_user_data': consent.marketing ? 'granted' : 'denied',
+        'ad_personalization': consent.marketing ? 'granted' : 'denied',
+      });
+
       if (consent.performance) {
-        // Enable Google Analytics
-        if ((window as any).gtag) {
-          // Already loaded
-        } else {
-          // Load Google Analytics
-          const script = document.createElement('script');
-          script.async = true;
-          script.src = 'https://www.googletagmanager.com/gtag/js?id=G-988LD92552';
-          script.onload = () => {
-            (window as any).dataLayer = (window as any).dataLayer || [];
-            (window as any).gtag = function() {
-              (window as any).dataLayer.push(arguments);
-            };
-            (window as any).gtag('js', new Date());
-            (window as any).gtag('config', 'G-988LD92552', { anonymize_ip: true });
-          };
-          document.head.appendChild(script);
-        }
-      } else {
-        // Disable Google Analytics
-        if ((window as any).gtag) {
-          (window as any).gtag('config', 'G-988LD92552', { send_page_view: false });
-        }
+        (window as any).gtag('config', 'G-988LD92552', {
+          anonymize_ip: true,
+          send_page_view: true,
+        });
       }
     }
   };
