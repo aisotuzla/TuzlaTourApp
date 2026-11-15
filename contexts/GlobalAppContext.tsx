@@ -16,6 +16,7 @@ const GlobalAppContext = createContext<GlobalAppContextProps | undefined>(undefi
 export const GlobalAppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [lang, setLang] = useState<Language>('bs');
   const [unlockedRewards, setUnlockedRewards] = useState<string[]>([]);
+  const [hasLoadedUnlocked, setHasLoadedUnlocked] = useState(false);
   const features = getAppFeatures();
 
   useEffect(() => {
@@ -25,18 +26,26 @@ export const GlobalAppProvider: React.FC<React.PropsWithChildren> = ({ children 
         try {
           setUnlockedRewards(JSON.parse(value));
         } catch {
-          setUnlockedRewards(['mesa_selimovic']);
+          setUnlockedRewards([]);
         }
       } else {
-        setUnlockedRewards(['mesa_selimovic']);
+        // New players start with no completed POIs; tutorial state must not grant rewards.
+        setUnlockedRewards([]);
       }
+      setHasLoadedUnlocked(true);
     };
-    loadUnlocked();
+    loadUnlocked().catch((error) => {
+      console.error('[Quest progress] Unable to load local progress:', error);
+      setUnlockedRewards([]);
+      setHasLoadedUnlocked(true);
+    });
   }, []);
 
   useEffect(() => {
-    Preferences.set({ key: 'tuzla_unlocked', value: JSON.stringify(unlockedRewards) });
-  }, [unlockedRewards]);
+    if (!hasLoadedUnlocked) return;
+    Preferences.set({ key: 'tuzla_unlocked', value: JSON.stringify(unlockedRewards) })
+      .catch((error) => console.error('[Quest progress] Unable to save local progress:', error));
+  }, [unlockedRewards, hasLoadedUnlocked]);
 
   return (
     <GlobalAppContext.Provider
