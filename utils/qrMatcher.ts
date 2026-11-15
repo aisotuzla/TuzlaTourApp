@@ -14,9 +14,19 @@ export const findQuestTargetFromQr = (decodedText: string) => {
   const raw = decodedText.trim();
   const normalized = normalizeQrText(raw);
 
-  // Extract last path segment if raw text is a URL or file path (e.g. /QRTrgSlobode.png -> QRTrgSlobode)
+  // Extract last path segment if raw text is a URL or file path (e.g. /QRTrgSlobode.png -> QRTrgSlobode, /quest/panonika -> panonika)
   const urlSegment = raw.includes('/') ? raw.split(/[/?#]/).filter(Boolean).pop()?.split('.')[0] : '';
   const normalizedUrlSeg = urlSegment ? normalizeQrText(urlSegment) : '';
+
+  // Extract query parameter if raw text contains query (e.g. geo:...?q=Pannonic%20Lakes%20(Panonska%20jezera))
+  let queryText = '';
+  if (raw.includes('?q=') || raw.includes('&q=')) {
+    try {
+      const qPart = raw.split(/[?&]q=/)[1]?.split('&')[0];
+      if (qPart) queryText = decodeURIComponent(qPart);
+    } catch (_) {}
+  }
+  const normalizedQuery = queryText ? normalizeQrText(queryText) : '';
 
   return QUEST_TARGETS.find((target) => {
     const constLocation = LOCATIONS.find(
@@ -43,7 +53,9 @@ export const findQuestTargetFromQr = (decodedText: string) => {
     return candidates.some(
       (candidate) =>
         candidate === normalized ||
-        (normalizedUrlSeg && candidate === normalizedUrlSeg)
+        (normalizedUrlSeg && candidate === normalizedUrlSeg) ||
+        (normalizedQuery && (candidate === normalizedQuery || normalizedQuery.includes(candidate))) ||
+        (candidate.length >= 6 && normalized.includes(candidate))
     );
   });
 };

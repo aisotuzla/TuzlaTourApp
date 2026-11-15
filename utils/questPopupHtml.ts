@@ -61,31 +61,26 @@ export const generateQuestPopupHtml = (
         ${desc}
       </p>
 
-      <!-- Action Buttons Grid -->
-      <div style="display: flex; flex-direction: column; gap: 6px;">
-        <!-- Top Row: AR Guide & Audio Guide -->
-        <div style="display: flex; gap: 6px; width: 100%;">
-          <button onclick="window.startArTrailFromPopup && window.startArTrailFromPopup('${loc.id}', '${escapedTitle}', ${coords[0]}, ${coords[1]})" style="flex: 1; min-height: 38px; padding: 10px 6px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(245,158,11,0.35); box-sizing: border-box; white-space: nowrap;">
-            🧭 ${lang === 'bs' ? 'AR Vodič' : 'AR Guide'}
+      <!-- Action Buttons Grid: AR Guide, Audio, Navigation, and QR Scanner (Identical sizing) -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%;">
+        <button onclick="window.startArTrailFromPopup && window.startArTrailFromPopup('${loc.id}', '${escapedTitle}', ${coords[0]}, ${coords[1]})" style="${hasAudio ? '' : 'grid-column: span 2;'} min-height: 38px; height: 38px; padding: 0 6px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(245,158,11,0.35); box-sizing: border-box; white-space: nowrap;">
+          🧭 ${lang === 'bs' ? 'AR Vodič' : 'AR Guide'}
+        </button>
+        
+        ${hasAudio ? `
+          <button onclick="window.playPoiAudio && window.playPoiAudio('${loc.id}', '${escapedTitle}', '${resolvedAudio}')" style="min-height: 38px; height: 38px; padding: 0 6px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(37,99,235,0.35); box-sizing: border-box; white-space: nowrap;">
+            🎧 Audio
           </button>
-          
-          ${hasAudio ? `
-            <button onclick="window.playPoiAudio && window.playPoiAudio('${loc.id}', '${escapedTitle}', '${resolvedAudio}')" style="flex: 1; min-height: 38px; padding: 10px 6px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; border: none; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px rgba(37,99,235,0.35); box-sizing: border-box; white-space: nowrap;">
-              🎧 Audio
-            </button>
-          ` : ''}
-        </div>
+        ` : ''}
 
-        <!-- Second Row: GPS Navigation & QR Scanner (Same size as AR Guide and Audio) -->
-        <div style="display: flex; gap: 6px; width: 100%;">
-          <button onclick="window.startNavigationFromPopup && window.startNavigationFromPopup('${escapedTitle}', ${coords[0]}, ${coords[1]})" style="flex: 1; min-height: 38px; padding: 10px 6px; background: #1e293b; color: #f1f5f9; border: 1px solid #334155; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-sizing: border-box; white-space: nowrap;">
-            🚗 ${lang === 'bs' ? 'Navigacija' : lang === 'de' ? 'Route' : lang === 'tr' ? 'Navigasyon' : 'Navigate'}
-          </button>
+        <button onclick="window.startNavigationFromPopup && window.startNavigationFromPopup('${escapedTitle}', ${coords[0]}, ${coords[1]})" style="min-height: 38px; height: 38px; padding: 0 6px; background: #1e293b; color: #f1f5f9; border: 1px solid #334155; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-sizing: border-box; white-space: nowrap;">
+          🚗 ${lang === 'bs' ? 'Navigacija' : lang === 'de' ? 'Route' : lang === 'tr' ? 'Navigasyon' : 'Navigate'}
+        </button>
 
-          <button onclick="window.openQrScannerFromPopup && window.openQrScannerFromPopup('${loc.id}')" style="flex: 1; min-height: 38px; padding: 10px 6px; background: linear-gradient(135deg, #0f172a, #1e293b); color: #fbbf24; border: 1.5px solid #fbbf2466; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 0 12px rgba(251,191,36,0.2); box-sizing: border-box; white-space: nowrap;">
-            📷 ${lang === 'bs' ? 'Skeniraj QR' : lang === 'de' ? 'QR Scannen' : lang === 'tr' ? 'QR Tara' : 'Scan QR'}
-          </button>
-        </div>
+        <button onclick="window.openQrScannerFromPopup && window.openQrScannerFromPopup('${loc.id}')" style="min-height: 38px; height: 38px; padding: 0 6px; background: linear-gradient(135deg, #0f172a, #1e293b); color: #fbbf24; border: 1.5px solid #fbbf2466; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 0 12px rgba(251,191,36,0.2); box-sizing: border-box; white-space: nowrap;">
+          📷 ${lang === 'bs' ? 'Skeniraj QR' : lang === 'de' ? 'QR Scannen' : lang === 'tr' ? 'QR Tara' : 'Scan QR'}
+        </button>
+      </div>
 
         <!-- Optional: Video Button -->
         ${hasVideo ? `

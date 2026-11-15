@@ -792,7 +792,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       )}
 
       {/* FULL BLEED AR VIEWPORT */}
-      <div ref={arViewportRef} className="relative w-full h-full flex-1 bg-slate-950 overflow-hidden">
+      <div ref={arViewportRef} className="relative w-full h-full flex-1 bg-black overflow-hidden">
         {cameraActive ? (
           <video
             ref={videoRef}
