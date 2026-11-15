@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, Upload, Image, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, AlertCircle } from 'lucide-react';
 import { Language } from '../types';
 import { QUEST_TARGETS, NFT_REWARD_IDS, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
@@ -36,7 +36,6 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   const [activeVideoModal, setActiveVideoModal] = useState<{ url: string; title: string } | null>(null);
   const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const isOpenRef = useRef(isOpen);
   useEffect(() => {
     isOpenRef.current = isOpen;
@@ -207,8 +206,8 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           setIsStartingCamera(false);
           setCameraError(
             lang === 'bs'
-              ? 'Kamera nije dostupna ili nema dozvole. Možete odabrati sliku s QR kodom.'
-              : 'Camera unavailable or permission denied. You can scan from a photo.'
+              ? 'Kamera nije dostupna ili nema dozvole. Omogućite pristup kameri i pokušajte ponovo.'
+              : 'Camera unavailable or permission denied. Enable camera access and try again.'
           );
         }
       }
@@ -217,62 +216,10 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
       setIsStartingCamera(false);
       setCameraError(
         lang === 'bs'
-          ? 'Greška pri pokretanju kamere. Pokušajte ponovo ili odaberite sliku.'
-          : 'Error initializing camera. Please retry or select a photo.'
+          ? 'Greška pri pokretanju kamere. Pokušajte ponovo.'
+          : 'Error initializing camera. Please retry.'
       );
     }
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setScannerFeedback({
-      text: lang === 'bs' ? 'Skeniram fotografiju...' : 'Analyzing photo...',
-      type: 'success',
-    });
-    try {
-      let tempDiv = document.getElementById('map-quest-file-temp');
-      if (!tempDiv) {
-        tempDiv = document.createElement('div');
-        tempDiv.id = 'map-quest-file-temp';
-        tempDiv.style.display = 'none';
-        document.body.appendChild(tempDiv);
-      }
-      const fileScanner = new Html5Qrcode('map-quest-file-temp', { verbose: false });
-      const decodedText = await fileScanner.scanFile(file, true);
-      const trimmedText = decodedText?.trim() ?? '';
-      const target = findQuestTargetFromQr(trimmedText);
-      if (target) {
-        if (!unlockedRewards.includes(target.id)) {
-          onRewardFound(target.id);
-        }
-        setScannerFeedback({
-          text: lang === 'bs' ? `Nagrada za ${target.name.bs} otključana!` : `Reward unlocked for ${target.name.en}!`,
-          type: 'success',
-        });
-        setTimeout(() => setScannerFeedback(null), 3000);
-        onClose();
-        if (target.rewardHtml) {
-          const rewardTitle = target.name[lang as keyof typeof target.name] || target.name.en || target.name.bs;
-          setTimeout(() => {
-            setActiveRewardHtml({ url: target.rewardHtml!, title: rewardTitle });
-          }, 800);
-        }
-      } else {
-        setScannerFeedback({
-          text: lang === 'bs' ? 'Nepoznat QR kod lokacije.' : 'Unknown location QR code.',
-          type: 'error',
-        });
-      }
-      fileScanner.clear();
-    } catch (err) {
-      setScannerFeedback({
-        text: lang === 'bs' ? 'QR kod nije pronađen na slici.' : 'No QR code found on image.',
-        type: 'error',
-      });
-      setTimeout(() => setScannerFeedback(null), 3500);
-    }
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const stopScanner = async () => {
@@ -335,50 +282,17 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                   </div>
                 )}
 
-                {/* Camera Error State with Retry & Photo fallback */}
+                {/* Camera Error State with Retry */}
                 {cameraError && (
                   <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/95 rounded-2xl p-5 text-center gap-2.5">
                     <AlertCircle className="w-8 h-8 text-amber-400" />
-                    <p className="text-xs font-bold text-slate-200 leading-snug">
-                      {cameraError}
-                    </p>
-                    <div className="flex gap-2 w-full mt-2">
-                      <button
-                        onClick={() => startScanner()}
-                        className="flex-1 py-2 px-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1 active:scale-95 transition-all shadow-md"
-                      >
-                        <RefreshCw size={12} />
-                        {lang === 'bs' ? 'Ponovo' : 'Retry'}
-                      </button>
-                      <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="flex-1 py-2 px-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1 active:scale-95 transition-all shadow-md"
-                      >
-                        <Upload size={12} />
-                        {lang === 'bs' ? 'Iz slike' : 'From photo'}
-                      </button>
-                    </div>
+                    <p className="text-xs font-bold text-slate-200 leading-snug">{cameraError}</p>
+                    <button onClick={() => startScanner()} className="w-full mt-2 py-2 px-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1 active:scale-95 transition-all shadow-md">
+                      <RefreshCw size={12} />
+                      {lang === 'bs' ? 'Ponovo' : 'Retry'}
+                    </button>
                   </div>
                 )}
-
-                {/* Top Action Badge: Scan from photo */}
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute top-2 right-2 z-20 px-2.5 py-1 bg-slate-900/80 hover:bg-slate-800 text-amber-300 border border-amber-400/40 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1 backdrop-blur-md shadow-md active:scale-95 transition-all"
-                  title={lang === 'bs' ? 'Skeniraj iz slike' : 'Scan from photo'}
-                >
-                  <Image size={11} />
-                  {lang === 'bs' ? 'Foto' : 'Photo'}
-                </button>
-
-                {/* Hidden input for photo scanning */}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileUpload}
-                />
 
                 {/* Cyber Frame Decor */}
                 <div className="absolute -inset-4 border-2 border-white/5 rounded-[2.5rem] pointer-events-none" />
