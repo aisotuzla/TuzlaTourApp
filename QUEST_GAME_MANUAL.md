@@ -167,9 +167,10 @@ Tourists playing Tuzla Quest are active, hungry, and exploring. Guiding them dir
 
 Unlike promotional discount codes posted on coupon aggregators or social media (which can be abused from thousands of miles away), Tuzla Quest vouchers require:
 
-1. Physical device presence within the 5m GPS coordinates.
-2. Direct camera scanning of the physical, serialized QR plaque inside the venue.
-This guarantees that **100% of redeemed discounts benefit genuine, on-site patrons**.
+1. A valid POI QR identifier.
+2. A server-side GPS distance check within that POI's configured radius (planned default: 20 metres).
+3. A one-time completion record tied to the signed-in player.
+During the current QR-only testing stage, GPS is not enforced and local unlocks are not secure proof of a visit. Static QR codes can be photographed or replayed; the production backend will combine QR and GPS checks.
 
 ### 4. Measurable Closed-Loop Analytics
 
@@ -179,7 +180,7 @@ Partners receive verifiable, timestamped scan metrics showing exactly when touri
 
 # 4. TUZLA QUEST PHASES & REWARD ARCHITECTURE
 
-The Quest consists of **11 carefully curated Points of Interest (POIs)** organized into 4 logical phases that maximize walking efficiency and commercial engagement:
+The current implementation contains **12 Points of Interest (POIs)** organized into 4 logical phases that maximize walking efficiency and commercial engagement:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -205,8 +206,9 @@ The Quest consists of **11 carefully curated Points of Interest (POIs)** organiz
 - **Estimated Duration:** 20–30 minutes.
 - **Targets:**
   1. **Trg Slobode (Freedom Square):** Largest city square in BiH, central baroque fountain, neoclassical architecture (`#10b981`).
-  2. **Kapija Memorial:** Sacred monument commemorating the youth victims of May 25, 1995 (`#ef4444`).
-  3. **Meša Selimović Monument:** Bronze sculpture honoring Tuzla's literary giant and author of *Death and the Dervish* (`#4d068f`).
+  2. **Stara Česma (Old Town Fountain):** Historical stone fountain at Freedom Square.
+  3. **Kapija Memorial:** Sacred monument commemorating the youth victims of May 25, 1995 (`#ef4444`).
+  4. **Meša Selimović Monument:** Bronze sculpture honoring Tuzla's literary giant and author of *Death and the Dervish* (`#4d068f`).
 - **Milestone Reward:** Phase 1 Victory Celebration, confetti animation, and unlocking of high-definition historical documentary videos.
 
 ---
@@ -265,7 +267,7 @@ The Quest consists of **11 carefully curated Points of Interest (POIs)** organiz
 
 # 5. PRECISION GEOFENCING & AR CAMERA ENGINE (25M & 5M TRIGGERS)
 
-The core technology powering Tuzla Tour Quest is a two-stage geodetic trigger system designed to balance battery efficiency with millimeter precision:
+The app uses client-side GPS for navigation and proximity prompts. Quest completion verification is being upgraded separately; the target backend geofence is 20 metres per POI. GPS and AR overlays are not centimetre-accurate proof of presence.
 
 ```
 [User > 25m Away]   ───►  Standard 3D Map View + Low-Pass Filtered GPS (Battery Safe)
@@ -305,7 +307,7 @@ To guarantee authentic physical footprint for participating merchants, Tuzla Tou
 │ 1. Tourist approaches counter / cashier inside partner establishment   │
 │ 2. Scans physical QR code plaque on display                            │
 │ 3. `html5-qrcode` decodes the payload in-memory (RAM only)             │
-│ 4. Client validates matching POI identifier & unlocks Stage            │
+│ 4. QR-only test mode matches the POI identifier & unlocks locally     │
 │ 5. Instant 20% discount screen is displayed with animated verification │
 │ 6. Customer shows screen to staff at checkout for bill reduction       │
 │ 7. POI state is permanently saved to encrypted local preferences       │
@@ -314,9 +316,9 @@ To guarantee authentic physical footprint for participating merchants, Tuzla Tou
 
 ### Anti-Fraud Protections for Merchants
 
-- **No Screenshots Accepted:** The discount screen contains a real-time running pulse animation and live system clock, preventing unauthorized sharing of static screenshots.
-- **Geofence Enforcement:** Even if a user somehow obtains a photo of the QR code, the app checks that current device GPS coordinates are within Tuzla bounds before unlocking rewards.
-- **Single Redemption Logic:** Once claimed for a session, the discount coupon cannot be duplicated or redeemed repeatedly in bad faith.
+- **Testing stage:** only live camera QR scanning is accepted; selecting a QR image from the photo gallery is disabled. A QR displayed on another screen can still be replayed.
+- **Production stage:** server-side validation will require a matching POI QR identifier and GPS distance within 20 metres of that POI, with one completion per signed-in player.
+- **Limitations:** client GPS can be spoofed. The combined checks deter casual abuse but do not provide absolute anti-cheat protection.
 
 ---
 
