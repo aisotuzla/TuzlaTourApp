@@ -1,621 +1,169 @@
-# Privacy Policy for Tuzla Tour App
+# Privacy Policy — Tuzla Tour Guide
 
-**Last Updated:** November 2026  
-**Effective Date:** November 2026  
-**Version:** 3.0
+**Last reviewed:** 15 November 2026  
+**Applies to:** Tuzla Tour Guide website, Progressive Web App (PWA) and supported Capacitor mobile builds.
 
----
+This policy explains the information that may be processed when you use Tuzla Tour Guide. It is written to describe the implementation currently visible in the project. Some account and quest-backend features are being prepared but are not yet connected to the player app; planned processing is identified separately below.
 
-## 1. Introduction
+> **Important:** This is a project documentation draft, not a legal opinion or a certification of compliance. Before public release, the project operator should confirm its legal identity, contact/address details, service-provider contracts, international-transfer arrangements and actual production data flows with a qualified data-protection adviser.
 
-Welcome to the **Tuzla Tour App** ("we", "our", "us", or "the App"). We are committed to protecting your privacy and ensuring your personal data is handled securely and in accordance with applicable data protection laws.
+## 1. Who operates the service?
 
-This Privacy Policy explains:
+The repository currently identifies the project as **AISO Tuzla / Tuzla Tour Guide**.
 
-- What data we collect
-- How we use your data
-- How we protect your data
-- Your rights regarding your data
-- How to contact us
+- **Project contact:** [aisotuzla@proton.me](mailto:aisotuzla@proton.me)
+- **Location currently stated by the project:** Tuzla, Bosnia and Herzegovina
+- **Data controller:** The natural or legal person that formally determines why and how personal data is processed. The project must confirm the full registered name and postal address of that controller before publication. “AISO Tuzla” is the project name currently used in the repository and should not be assumed to be a registered legal entity.
 
-This Privacy Policy is designed to comply with:
+For privacy questions or requests, email the project contact above and use the subject **Privacy request — Tuzla Tour Guide**.
 
-- **Law on Personal Data Protection of Bosnia and Herzegovina** (Zakon o zastiti licnih podataka BiH)
-- **General Data Protection Regulation (GDPR)** (EU Regulation 2016/679)
-- **ePrivacy Directive** (2002/58/EC as amended)
-- **California Consumer Privacy Act (CCPA)**
+## 2. What the app does
 
----
+Tuzla Tour Guide provides city information, maps, location-assisted navigation, camera-based AR and QR scanning, audio content, trip-planning tools and a location-discovery game.
 
-## 2. Who is the Data Controller?
+The app can be used in a browser/PWA and in a supported Capacitor mobile build. Feature availability depends on the device, browser, permissions and network connection.
 
-**Data Controller:** AISO tuzla (Tuzla Tour App Team)
+## 3. Information processed
 
-**Hosting Providers:**
+The categories below describe information the app or its service providers may process. The exact data depends on which features you choose to use.
 
-- Vercel Inc. (Primary hosting)
-- Netlify Inc. (Secondary hosting)
+### 3.1 Location and device sensors
 
-**Important:** Your location data, camera access, and Web3 wallet data are **processed locally on your device** and are **NOT stored on our servers** or any third-party servers, except as explicitly described in this Policy.
+If you grant location permission, the app can use your device's location to show your position, calculate distance to points of interest and support navigation. Device orientation and compass information may also be used for directional or AR overlays.
 
----
+- Location access is optional and controlled by your browser or operating system.
+- The current QR-only quest test flow does not submit GPS coordinates to Supabase as proof of completion.
+- Navigation calculations are generally performed in the app on your device.
+- The app should not be treated as a background location-tracking service. Review device permission indicators and settings to control access.
 
-## 3. Data We Collect and How We Use It
+**Planned backend feature:** The production quest-verification flow is intended to send a one-time location sample, its reported accuracy and timestamp, the quest/QR identifier and the signed-in player's account identifier to the server. The server is intended to check whether the sample is within the POI's configured 20-metre radius. This verification is not yet active in the player app. The project should update this policy and its consent/permission screens before enabling that data flow.
 
-We follow the principles of **data minimization** and **privacy by design**. Our App is built to process as much information locally on your device as possible, without sending personal data to external servers.
+### 3.2 Camera and QR scanning
 
-### 3.1 Categories of Data
+If you grant camera permission, the app can display a live camera view for AR guidance and read QR codes.
 
-#### A. Location Data & Proximity Geofencing (25-Meter Alert Perimeter)
+- Camera access is started when you use a camera feature.
+- The QR scanner analyses the camera stream to recognise a code.
+- The app's current test flow uses live camera scanning; selecting an image from the photo gallery is not an accepted quest-unlock route in the updated scanner branch.
+- The app is not designed to identify people or perform facial recognition.
+- Do not point the camera at people or private material without their permission.
 
-**Purpose:**
+The app's QR scanner needs to read the QR content to identify the relevant quest point. Static QR codes can be photographed or replayed; a QR scan alone is not reliable proof that a person physically visited a place.
 
-- Calculate real-time walking distance and pedestrian routing to Points of Interest (POIs)
-- Trigger on-device local push notifications when approaching within a 25-meter radius of a Quest POI or local partner business ("You are close! Open AR Guide")
-- Enable GPS geofencing verification for quest progression and landmark discovery
-- Compute local device bearing and distance for the 3D map and AR compass
+### 3.3 Quest progress and preferences
 
-**Processing:**
+The current testing build stores unlocked quest rewards locally on the device using Capacitor Preferences. The web app also uses browser storage for selected settings and consent preferences.
 
-- Location data is processed **strictly locally on your device** (client-side sensor fusion and geodetic math)
-- We **do NOT** track or broadcast your location in the background to any remote server or ad network
-- Location coordinates are **NOT** stored on our servers or shared with commercial entities
-- Proximity alerts are evaluated client-side via local device notifications; no location pings leave your phone
+Local data can include language/quality settings, cookie-consent choices and locally stored quest progress. Clearing site data, resetting app storage or uninstalling the app may remove local progress.
 
-**Legal Basis:**
+**Backend status:** A Supabase project and database schema have been prepared, but player registration, login and cloud quest-progress synchronisation are not yet integrated into the player experience. The project should publish an updated policy before enabling accounts or server-side player records.
 
-- Your explicit consent (granted when you allow location permissions on your browser or device)
-- GDPR Article 6(1)(a) - Consent
-- Law on Personal Data Protection of Bosnia and Herzegovina
+### 3.4 Events and public content
 
-**Retention:**
+The app includes an events feed. The current server-side event storage code can read event records from Vercel Blob and/or a Vercel-connected PostgreSQL database. Public event responses may include event names, dates, times, venue/location, prices and source/verification information.
 
-- Ephemeral: Processed in active device memory only while the App is open and in use
-- Discarded when the App session ends or permissions are revoked
+The event feed is not the same as a player account or quest-completion database. Administrative event imports and deletions are intended to be restricted to a trusted server-side process.
 
-#### B. Camera Access, High-Precision AR & QR Recognition (5-Meter Micro-Radius)
+### 3.5 Technical and diagnostic information
 
-**Purpose:**
+When the app or its content is requested over the internet, hosting, CDN, map, font, analytics or other infrastructure providers may receive standard connection information such as IP address, request time, requested resource, browser/device headers and error/performance information. The exact fields and retention periods depend on the provider and configuration.
 
-- Display Augmented Reality (AR) markers, directional chevrons, and ground polyline navigation
-- Activate high-accuracy camera guidance when within a 5-meter micro-radius of a destination (e.g. entrance of a local shop or historic monument) to assist precise target localization
-- Scan physical QR codes placed inside participating local establishments (e.g., dining, cafes, shops) to redeem instant order discounts (e.g., 20% off) and unlock quest stages
+### 3.6 Audio and external content
 
-**Processing:**
+Audio files, map styles/tiles, fonts, images, video and other content may be served from the app host or third-party content providers. A request to an external provider can disclose technical connection information to that provider. The app does not need your microphone to play an audio guide.
 
-- Camera feed is processed **strictly locally in volatile RAM** on your device using HTML5 Canvas and WebAssembly (`html5-qrcode`)
-- We **do NOT** capture photographs, record video streams, or perform biometric facial analysis
-- Camera frames are analyzed in real time for optical QR patterns and immediately purged from memory
-- No visual or optical data is ever uploaded, stored, or transferred to our servers or third parties
+### 3.7 Wallets and blockchain
 
-**Legal Basis:**
+The repository contains experimental Web3/Solana reward assets and dependencies. Do not assume that wallet connection, NFT issuance or on-chain rewards are active in the current public app. If a wallet feature is enabled, a public wallet address and public blockchain transactions may be visible to the relevant wallet provider and blockchain network. Never share a seed phrase or private key with the app or project team.
 
-- Your explicit consent (granted when you allow camera permissions)
-- GDPR Article 6(1)(a) - Consent
+## 4. Cookies, local storage and similar technologies
 
-**Retention:**
+The web app uses browser storage for settings and a cookie-consent record. The consent component stores a record under the key `tuzla_cookie_consent` in browser local storage and, in supported Capacitor builds, in Capacitor Preferences.
 
-- Volatile in-memory processing only while the camera viewport is actively active
-- Zero storage; completely cleared as soon as camera mode is closed
+The website also contains Google Tag Manager and Google Analytics configuration. The current code has a consent implementation that needs further technical verification: the GTM script is included in the page before the user makes a cookie choice, while the consent component separately loads/configures GA4 when performance consent is saved. Therefore, the current code should not be interpreted as proof that every analytics tag is blocked until consent. See the [Cookie Policy](COOKIE_POLICY.md).
 
-#### C. Local Business In-Store Verification ("Proof-of-Footprint") & Zero-Profiling
+## 5. Purposes and legal grounds
 
-**Purpose:**
+Depending on the feature and applicable law, processing may be based on:
 
-- Verify physical presence of the visitor inside participating local businesses (restaurants, cafes, hotels, boutiques) to unlock promotional partner discounts (such as 20% off food or retail bills)
-- Prevent fraudulent or remote coupon exploitation without compromising user privacy
+- **Providing a feature you request:** for example, using location to show your position or camera access to scan a QR code.
+- **Consent:** where a permission or non-essential analytics technology requires it. You can withdraw consent by changing the relevant setting or device permission.
+- **Legitimate interests:** operating, securing and troubleshooting the service, subject to applicable legal requirements and your rights.
+- **Legal obligations:** where the project is required to retain or disclose information by law.
 
-**Processing:**
+The project must confirm the final legal basis for each production data flow before enabling account-based progress, GPS verification or analytics.
 
-- Footprint verification relies on a physical, in-venue QR code scanned by the user's device
-- The validation is verified **client-side** against quest logic: no tourist profile, phone number, real name, or payment credentials are shared with or stored by the merchant
-- Participating businesses receive only aggregate, non-personal proof of discount redemption (e.g. voucher code validated at cashier)
+## 6. Who may receive information?
 
-**Legal Basis:**
+Depending on deployment and the features you use, information may be processed by:
 
-- GDPR Article 6(1)(b) - Contractual performance (delivering promotion/quest reward)
-- GDPR Article 6(1)(f) - Legitimate interest in anti-fraud coupon verification
+- **Hosting and deployment providers:** Vercel and/or Netlify.
+- **Google services:** Google Tag Manager, Google Analytics and Google Fonts where loaded.
+- **Map and content providers:** providers supplying map styles, map tiles, fonts, media or other external resources used by the app.
+- **Vercel storage/database services:** for the public events feed and related server-side event records.
+- **Supabase:** the project database has been prepared, but the player app's account and quest-progress integration is not yet active. When enabled, Supabase will process the data described in the updated policy.
+- **Authorities or advisers:** where disclosure is required by law or necessary to establish, exercise or defend legal claims.
 
-#### C. Web3 Wallet Data (Solana)
+The project does not state that it sells personal data. It should not be assumed that data is anonymous merely because a provider is described as an analytics or hosting service.
 
-**Purpose:**
+## 7. International processing
 
-- Allow you to unlock digital rewards via blockchain
-- Verify NFT ownership and transactions
-- Connect to Solana blockchain (Devnet and Mainnet)
+Some service providers may process technical or other data outside Bosnia and Herzegovina, including in countries where their infrastructure or subprocessors operate. The exact locations and safeguards depend on the services and project configuration in use at the time.
 
-**Processing:**
+Before production release, the controller should document applicable data-processing agreements, transfer mechanisms and provider locations. This policy does not claim that every provider or transfer has already been legally assessed.
 
-- The App **only reads your public wallet address**
-- We **absolutely never** ask for your private keys or seed phrases
-- We **do NOT** have access to your private keys or seed phrases
-- Transaction history is managed by your **external wallet provider** (e.g., Solflare, Phantom)
-- We **do NOT** store your wallet address on our servers
+## 8. Retention
 
-**Legal Basis:**
+The project aims to keep information only for as long as needed for the relevant purpose. Exact retention periods for provider logs and hosted content are determined by the relevant service configuration and provider terms.
 
-- Processing is necessary for the performance of the service (delivering rewards)
-- GDPR Article 6(1)(b) - Contract performance
+| Information | Current or intended retention |
+| --- | --- |
+| Live location used for navigation | Used while the relevant feature is active; the current QR-only flow does not submit it as quest proof |
+| Camera stream | Used while the camera feature is active; the app is not designed to save camera recordings |
+| Local preferences and test progress | Until cleared by the user, app reset or uninstall, subject to platform behaviour |
+| Cookie-consent record | Until cleared or replaced by a newer consent version |
+| Public event records | While the records remain published or are deleted under the event-management process |
+| Hosting/security logs | According to provider settings, contracts and retention policies |
+| Future account and quest records | Not active in the player app yet; retention must be specified before launch |
 
-**Retention:**
+## 9. Your choices and rights
 
-- Only while the wallet is connected
-- Not stored after disconnection
+You can:
 
-#### D. Device Storage (Preferences)
+- deny or revoke location, camera, orientation or notification permissions in your browser or device settings;
+- stop using a feature that requires a permission;
+- clear browser site data or reset/uninstall the mobile app to remove locally stored preferences and test progress;
+- manage the cookie categories presented by the consent interface, subject to the implementation limitation described in the Cookie Policy;
+- contact the project to ask what personal data is held about you or to request access, correction, deletion, restriction, portability or objection where those rights apply.
 
-**Purpose:**
+To make a request, email [aisotuzla@proton.me](mailto:aisotuzla@proton.me). The project may need reasonable information to verify that a request concerns your data. Do not send passwords, private keys, seed phrases or unnecessary identity documents.
 
-- Save your disabled/enabled settings
-- Store selected language preference
-- Store list of unlocked rewards
-- Provide seamless experience when reopening the App
+Your rights depend on the law that applies to you and may be subject to exceptions. If you are in Bosnia and Herzegovina, you may also contact the **Personal Data Protection Agency of Bosnia and Herzegovina**: [azlp.ba](https://www.azlp.ba/). If GDPR applies to you, you may contact your competent data-protection supervisory authority.
 
-**Processing:**
+## 10. Children
 
-- Stored **locally on your device** using Capacitor Preferences
-- Encrypted on Android (via Android Keystore)
-- Secure on iOS (via iOS Keychain)
+The app is a general travel and city-guide service and is not specifically designed to collect information from children. Parents or guardians who believe a child has provided personal data should contact the project. The operator should confirm and publish an age policy appropriate to the jurisdictions and features in which the app is offered.
 
-**Data Stored:**
+## 11. Security
 
-- Language preference
-- Quest progress (unlocked landmarks)
-- Wallet PIN (encrypted)
-- Battery saver preferences
-- App settings
+The project uses HTTPS for deployed web access and applies access controls to backend resources. Security also depends on the hosting, database, device and account configuration. No internet service or storage method can be guaranteed completely secure.
 
-**Legal Basis:**
+Never place server secrets in frontend environment variables, and never share account credentials, wallet seed phrases or private keys with the project.
 
-- Your explicit consent (by using the app and saving preferences)
-- GDPR Article 6(1)(a) - Consent
+## 12. Changes to this policy
 
-**Retention:**
+This policy may be updated when app features, service providers, data flows or legal requirements change. The latest version will be published in the repository and linked from the app. Material changes should be communicated where required by law.
 
-- Until you uninstall the app or clear app data
+## 13. Contact
 
-#### E. Cookie Data
+**Project contact:** AISO Tuzla / Tuzla Tour Guide  
+**Email:** [aisotuzla@proton.me](mailto:aisotuzla@proton.me)  
+**Location stated by the project:** Tuzla, Bosnia and Herzegovina
 
-**Purpose:**
+The formal controller name and postal address must be confirmed and added before this document is treated as the final legal notice.
 
-- Improve user experience
-- Provide analytics and usage statistics
-- Remember user preferences
-- Enable essential app functionality
+## Related documents
 
-**Types of Cookies:**
-
-1. **Strictly Necessary Cookies**
-   - Essential for the app to function
-   - No consent required (GDPR exemption)
-   - Cannot be disabled
-   - Example: Session cookies, security cookies
-
-2. **Performance/Analytical Cookies**
-   - Help us understand how users interact with the app
-   - Require **explicit consent** (opt-in)
-   - Can be disabled
-   - Example: Google Analytics cookies
-
-3. **Functional Cookies**
-   - Remember user preferences
-   - Require **explicit consent** (opt-in)
-   - Can be disabled
-   - Example: Language preference, game progress
-
-**For detailed information about cookies, please see our [Cookie Policy](COOKIE_POLICY.md).**
-
-**Legal Basis:**
-
-- Strictly Necessary: GDPR Article 6(1)(f) - Legitimate interest
-- Performance/Functional: GDPR Article 6(1)(a) - Consent
-
-**Retention:**
-
-- Varies by cookie type (see Cookie Policy for details)
-
-#### F. Analytics Data
-
-**Purpose:**
-
-- Understand how users interact with our App
-- Identify popular features and content
-- Detect and fix bugs and errors
-- Improve user experience and performance
-
-**Third-Party Analytics Providers:**
-
-1. **Google Analytics (GA4)**
-   - **Provider:** Google LLC
-   - **Data Collected:**
-     - Anonymous user IDs
-     - Session duration
-     - Pages visited
-     - Referring URLs
-     - Device information (browser, OS, screen resolution)
-     - Geographic location (country/city level)
-   - **Data Processing:** Google processes data on servers in the United States
-   - **Legal Basis:** Consent (opt-in, can be disabled)
-   - **Privacy Policy:** [Google Analytics Privacy](https://policies.google.com/technologies/partner-sites)
-   - **Opt-Out:** [Google Analytics Opt-out Browser Add-on](https://tools.google.com/dlpage/gaoptout/)
-
-2. **Vercel Analytics**
-   - **Provider:** Vercel Inc.
-   - **Data Collected:**
-     - Page views
-     - Performance metrics
-     - Error tracking
-     - User interactions
-   - **Data Processing:** Vercel processes data on servers in the United States
-   - **Legal Basis:** Consent (opt-in, can be disabled)
-   - **Privacy Policy:** [Vercel Privacy Policy](https://vercel.com/legal/privacy)
-
-**Important:**
-
-- Analytics data is **anonymous and aggregated**
-- We **do NOT** collect or store personal identifiers
-- Analytics can be **disabled** in the Cookie Consent banner
-
-#### G. Error and Crash Data
-
-**Purpose:**
-
-- Detect and fix bugs
-- Improve app stability
-- Monitor app performance
-
-**Data Collected:**
-
-- Error messages
-- Stack traces
-- Device information (model, OS version)
-- App version
-- Timestamp of error
-
-**Processing:**
-
-- Collected automatically when errors occur
-- Used for debugging and improvement
-- Not linked to personal identifiers
-
-**Legal Basis:**
-
-- GDPR Article 6(1)(f) - Legitimate interest (app improvement)
-
----
-
-## 4. Do We Share Your Data?
-
-### 4.1 General Rule
-
-**No.** Because we process your location, camera feed, and app progress **locally on your own device**, we **do NOT sell, rent, or share any of your personal data with third parties** for marketing or profiling purposes.
-
-### 4.2 Exceptions
-
-We may share data in the following limited circumstances:
-
-#### A. Third-Party Service Providers
-
-We share **anonymous, aggregated data** with the following service providers:
-
-| Provider | Purpose | Data Shared | Location |
-|----------|---------|-------------|----------|
-| Google Analytics | Website analytics | Anonymous usage data | United States |
-| Vercel Inc. | Hosting and analytics | Anonymous usage data | United States |
-
-**Important:**
-
-- Only **anonymous and aggregated** data is shared
-- **No personal identifiers** are shared
-- Data is shared **only with your consent** (for cookies that require consent)
-
-#### B. Legal Requirements
-
-We may disclose data if required by law or in response to valid legal requests, such as:
-
-- Court orders
-- Subpoenas
-- Government investigations
-- Legal compliance requests
-
-**Legal Basis:** GDPR Article 6(1)(c) - Legal obligation
-
-#### C. Business Transfers
-
-In the event of a merger, acquisition, or sale of assets, data may be transferred to the acquiring entity. We will notify you of any such transfer.
-
-**Legal Basis:** GDPR Article 6(1)(f) - Legitimate interest
-
-#### D. With Your Explicit Consent
-
-We may share data with third parties if you provide **explicit, informed consent** for specific purposes.
-
----
-
-## 5. Data Retention
-
-### 5.1 General Principle
-
-We retain data for **no longer than necessary** to fulfill the purposes for which it was collected.
-
-### 5.2 Retention Periods
-
-| Data Type | Retention Period | Reason |
-| ----------- | ------------------ | -------- |
-| Location Data | Session only | Not stored after use |
-| Camera Data | Session only | Not stored after use |
-| Wallet Data | Session only | Not stored after disconnection |
-| Device Storage | Until uninstall | User-controlled |
-| Analytics Data | 2 years (Google) | Standard analytics retention |
-| Error Data | 30 days | Debugging and improvement |
-
-### 5.3 Your Control
-
-You can control data retention by:
-
-- **Uninstalling the app** - Deletes all local data
-- **Clearing app cache** - Removes stored preferences
-- **Revoke permissions** - Stops data collection
-- **Disable cookies** - Prevents cookie-based tracking
-
----
-
-## 6. Your Rights Under Data Protection Laws
-
-Under the **Law on Personal Data Protection of Bosnia and Herzegovina** and **GDPR**, you have the following rights regarding your personal data:
-
-### 6.1 Right to Information & Access (GDPR Article 15)
-
-You have the right to:
-
-- Know what data is being processed
-- Request access to your personal data
-- Receive a copy of your personal data
-
-**How to Exercise:** Contact us with a data access request
-
-### 6.2 Right to Rectification (GDPR Article 16)
-
-You have the right to:
-
-- Request correction of inaccurate personal data
-- Complete incomplete personal data
-
-**How to Exercise:** Contact us with correction details
-
-### 6.3 Right to Erasure ("Right to be Forgotten") (GDPR Article 17)
-
-You have the right to request deletion of your personal data, subject to certain exceptions (e.g., legal obligations).
-
-**How to Exercise:**
-
-- Uninstall the application
-- Clear the App's storage cache in your phone settings
-- Contact us with an erasure request
-
-### 6.4 Right to Restrict Processing (GDPR Article 18)
-
-You have the right to request restriction of processing of your personal data in certain circumstances.
-
-**How to Exercise:** Contact us with a restriction request
-
-### 6.5 Right to Data Portability (GDPR Article 20)
-
-You have the right to:
-
-- Receive your personal data in a structured, commonly used, and machine-readable format
-- Transfer your data to another service provider
-
-**How to Exercise:** Contact us with a portability request
-
-### 6.6 Right to Object (GDPR Article 21)
-
-You have the right to object to processing of your personal data for:
-
-- Direct marketing purposes
-- Profiling
-- Other legitimate interests
-
-**How to Exercise:** Contact us with an objection request
-
-### 6.7 Right to Withdraw Consent (GDPR Article 7(3))
-
-You have the right to withdraw your consent at any time for:
-
-- Location permissions
-- Camera permissions
-- Cookie consent
-- Analytics consent
-
-**How to Exercise:**
-
-- Revoke permissions via your device's operating system settings
-- Use the Cookie Consent banner to manage cookie preferences
-- Contact us to withdraw consent
-
-**Note:** Withdrawing consent will **not** affect the lawfulness of processing based on consent before its withdrawal.
-
-### 6.8 Right to Lodge a Complaint (GDPR Article 77)
-
-You have the right to lodge a complaint with a supervisory authority, particularly in the Member State of your habitual residence, place of work, or place of the alleged infringement.
-
-**For Bosnia and Herzegovina Users:**
-
-- **Supervisory Authority:** Agencija za zastitu licnih podataka BiH (Personal Data Protection Agency of Bosnia and Herzegovina)
-- **Website:** [https://www.azlp.ba/](https://www.azlp.ba/)
-- **Address:** [Insert Agency Address]
-
-**For EU/EEA Users:**
-
-- Find your local supervisory authority: [https://edpb.europa.eu/about-edpb/board/members_en](https://edpb.europa.eu/about-edpb/board/members_en)
-
----
-
-## 7. Security Measures
-
-We implement robust security protocols to protect your data:
-
-### 7.1 Technical Measures
-
-- **Encryption:** Data is encrypted in transit (HTTPS/TLS 1.3)
-- **Secure Storage:** Local data is encrypted on Android (Android Keystore) and iOS (iOS Keychain)
-- **Access Controls:** Limited access to data for authorized personnel only
-- **Regular Audits:** Security reviews and penetration testing
-- **Data Minimization:** Only collect necessary data
-
-### 7.2 Organizational Measures
-
-- **Privacy by Design:** Privacy considerations in all development processes
-- **Data Protection Impact Assessments (DPIAs):** For high-risk processing activities
-- **Staff Training:** Regular privacy and security training
-- **Incident Response:** Procedures for data breaches
-
-### 7.3 Your Responsibilities
-
-While we implement security measures, you are responsible for:
-
-- Maintaining the security of your device
-- Protecting your Web3 wallet accounts and private keys
-- Using strong passwords/PINs
-- Keeping your device software up to date
-
----
-
-## 8. International Data Transfers
-
-### 8.1 Cross-Border Data Flows
-
-Our third-party service providers (Google, Vercel) process data on servers located in the **United States**.
-
-### 8.2 Legal Basis for Transfers
-
-For users in the European Economic Area (EEA), United Kingdom, or Switzerland:
-
-- **Google LLC:** Certified under the **EU-U.S. Data Privacy Framework (DPF)**
-- **Vercel Inc.:** Uses **Standard Contractual Clauses (SCCs)** for international data transfers
-
-### 8.3 Safeguards
-
-We implement the following safeguards for international data transfers:
-
-- **Data Minimization:** Only collect necessary data
-- **Anonymization:** Where possible, data is anonymized
-- **Encryption:** Data is encrypted in transit (HTTPS/TLS)
-- **Contractual Protections:** Data Processing Agreements with all third parties
-- **User Consent:** Explicit consent for data transfers to third countries
-
----
-
-## 9. Children's Privacy
-
-Our App is **not directed at children under the age of 16**. We do not knowingly collect personal information from children under 16.
-
-If you are a parent or guardian and believe your child has provided us with personal information, please contact us immediately. We will take steps to remove such information from our systems.
-
-**Note:** The minimum age may vary by jurisdiction (e.g., 13 in the US, 16 in the EU).
-
----
-
-## 10. Cookie Consent and Management
-
-### 10.1 Cookie Consent Banner
-
-When you first visit our App, you will see a **Cookie Consent Banner** that:
-
-- Informs you about the use of cookies
-- Explains the purpose of each cookie category
-- Provides granular consent options
-- Allows you to accept, reject, or customize cookie settings
-
-### 10.2 Cookie Categories
-
-| Category | Purpose | Consent Required | Can Be Disabled |
-| ---------- | --------- | ------------------ | ----------------- |
-| Strictly Necessary | Essential for app functionality | No | No |
-| Performance/Analytical | Usage statistics and analytics | Yes | Yes |
-| Functional | User preferences | Yes | Yes |
-| Marketing | Advertising (not currently used) | Yes | Yes |
-
-### 10.3 Managing Cookie Preferences
-
-You can manage your cookie preferences at any time by:
-
-1. Clicking the **"Cookie Settings"** link in the app
-2. Accessing the **Cookie Consent Banner**
-3. Clearing your browser cookies and re-visiting the site
-
-### 10.4 Browser Settings
-
-You can also control cookies through your browser settings:
-
-- **Chrome:** Settings > Privacy and Security > Cookies
-- **Firefox:** Options > Privacy & Security > Cookies
-- **Safari:** Preferences > Privacy
-- **Edge:** Settings > Privacy, search, and services > Cookies
-
-**Note:** Disabling cookies may affect app functionality.
-
----
-
-## 11. Changes to This Policy
-
-We may update this Privacy Policy from time to time to reflect:
-
-- Changes in our data practices
-- Changes in applicable laws or regulations
-- Changes in our service providers
-- Feedback from users or regulators
-
-**Notification:** We will notify you of any significant changes by:
-
-- Posting a notice on our website
-- Updating the "Last Updated" date at the top of this Policy
-- For material changes: Sending an email (if we have your contact information)
-
-**Continuing Use:** Your continued use of the App after any changes constitutes your acceptance of the updated Policy.
-
----
-
-## 12. Contact Us
-
-If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us at:
-
-**Email:** <aisotuzla@proton.me>  
-**Address:** Tuzla, Bosnia and Herzegovina  
-**Subject:** Privacy Request - [Your Concern]
-
-**Response Time:** Within 30 days (GDPR requirement)
-
-We may request additional information to verify your identity before processing your request.
-
----
-
-## 13. Related Documents
-
-- [Cookie Policy](COOKIE_POLICY.md) - Detailed information about our use of cookies
-- [Terms of Service](TERMS_OF_SERVICE.md) - Terms and conditions for using the App (if available)
-- [Quest Game Manual](QUEST_GAME_MANUAL.md) - How to play the Tuzla Tour Quest
-
----
-
-## 14. Definitions
-
-| Term | Definition |
-| ------ | ------------ |
-| **Personal Data** | Any information relating to an identified or identifiable natural person |
-| **Processing** | Any operation performed on personal data (collection, storage, use, etc.) |
-| **Data Controller** | The entity that determines the purposes and means of processing personal data |
-| **Data Processor** | The entity that processes personal data on behalf of the controller |
-| **GDPR** | General Data Protection Regulation (EU Regulation 2016/679) |
-| **Consent** | Freely given, specific, informed, and unambiguous indication of wishes |
-| **Anonymization** | Processing data so that it can no longer identify an individual |
-
----
-
-**Last Updated:** November 2026  
-**Effective Date:** November 2026  
-**Version:** 3.0
-
----
-
-*This Privacy Policy is part of the Tuzla Tour App's commitment to transparency, privacy, and user trust.*
+- [Cookie Policy](COOKIE_POLICY.md)
+- [README and technical setup](README.md)
+- [Tuzla Quest Player Manual](QUEST_GAME_MANUAL.md)
