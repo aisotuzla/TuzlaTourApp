@@ -354,7 +354,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
       </section>
 
       {/* Contact Form Card at very bottom */}
-      <section className="rounded-2xl sm:rounded-4xl border-2 border-amber-300/90 bg-gradient-to-br from-[#fffbeb] via-[#fef3c7] to-[#fde68a] p-5 sm:p-8 text-slate-900 shadow-[0_16px_40px_rgba(245,158,11,0.22)] relative overflow-hidden">
+      <section className="rounded-2xl sm:rounded-4xl border-2 border-amber-300/90 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-5 sm:p-8 text-white shadow-[0_16px_40px_rgba(245,158,11,0.22)] relative overflow-hidden">
         {/* Subtle golden ambient glow */}
         <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-amber-400/20 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-gradient-to-tr from-[#080ccf]/20 to-[#050775]/10 blur-3xl pointer-events-none" />
@@ -365,14 +365,14 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-r from-[#080ccf] to-[#050775] text-white">
                 <Mail className="h-4 w-4" />
               </span>
-              <span className="bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent">
+              <span className="text-white">
                 {lang === 'bs' ? 'Kontakt & Pitanja' : 'Contact & Support'}
               </span>
             </div>
-            <h3 className="mt-1 text-2xl sm:text-3xl font-black bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent tracking-tight">
+            <h3 className="mt-1 text-2xl sm:text-3xl font-black text-white tracking-tight">
               {lang === 'bs' ? 'Pošaljite nam poruku' : 'Ask Us Anything'}
             </h3>
-            <p className="mt-1 text-xs sm:text-sm font-medium bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent">
+            <p className="mt-1 text-xs sm:text-sm text-blue-100 font-medium">
               {lang === 'bs'
                 ? 'Imate prijedlog za turistički vodič, partnersku lokaciju ili pitanje?'
                 : 'Have feedback, a partnership inquiry, or a question about Tuzla?'}
@@ -403,7 +403,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
         <form onSubmit={handleSubmitQuestion} className="relative z-10 mt-6 space-y-4">
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent mb-1.5">
+              <label className="block text-xs font-black uppercase tracking-wider text-white mb-1.5">
                 {lang === 'bs' ? 'Vaše Ime' : 'Your Name'}
               </label>
               <input
@@ -417,7 +417,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent mb-1.5">
+              <label className="block text-xs font-black uppercase tracking-wider text-white mb-1.5">
                 {lang === 'bs' ? 'Email za kontakt' : 'Contact Destination'}
               </label>
               <input
@@ -430,7 +430,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent mb-1.5">
+            <label className="block text-xs font-black uppercase tracking-wider text-white mb-1.5">
               {lang === 'bs' ? 'Vaše Pitanje / Poruka' : 'Your Question / Message'}
             </label>
             <textarea
@@ -448,7 +448,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
-            <span className="text-xs font-semibold bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent">
+            <span className="text-xs font-semibold text-blue-100">
               {lang === 'bs'
                 ? 'Klikom na dugme otvara se vaša email aplikacija sa pripremljenim upitom.'
                 : 'Clicking Send opens your default email client with your message pre-filled.'}

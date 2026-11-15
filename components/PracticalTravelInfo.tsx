@@ -1050,22 +1050,22 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
                     {lang === 'bs' ? 'Otkrij Tuzlu i okolinu' : lang === 'de' ? 'Tuzla und Umgebung entdecken' : lang === 'tr' ? 'Tuzla ve çevresini keşfedin' : 'Discover Tuzla & the region'}
                   </div>
                   <h3 className="mt-3 text-2xl sm:text-3xl font-black tracking-tight">
-                    {lang === 'bs' ? 'Turističke agencije i doživljaji' : lang === 'de' ? 'Reiseagenturen & Erlebnisse' : lang === 'tr' ? 'Tur Acenteleri ve Deneyimler' : 'Tour Agencies & Experiences'}
+                    {lang === 'bs' ? 'Turističke agencije i turističke zajednice' : lang === 'de' ? 'Reiseagenturen & Tourismusverbände' : lang === 'tr' ? 'Tur Acenteleri ve Turizm Kurulları' : 'Tour Agencies & Tourism Boards'}
                   </h3>
                   <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-blue-100/85">
                     {lang === 'bs'
-                      ? 'Pronađite lokalne organizatore, raspitajte se o vođenim turama, jednodnevnim izletima, prevozu i prilagođenim programima.'
+                      ? 'Pronađite lokalne organizatore i zvanične turističke zajednice za informacije o turama, izletima i atrakcijama regije.'
                       : lang === 'de'
-                      ? 'Finden Sie Reiseveranstalter und fragen Sie nach geführten Touren, Tagesausflügen, Transfers und individuellen Reiseprogrammen.'
+                      ? 'Entdecken Sie lokale Anbieter und offizielle Tourismusverbände mit Informationen zu Führungen, Ausflügen und regionalen Sehenswürdigkeiten.'
                       : lang === 'tr'
-                      ? 'Yerel tur operatörlerini keşfedin; rehberli turlar, günübirlik geziler, ulaşım ve özel programlar hakkında bilgi alın.'
-                      : 'Discover tour operators and enquire about guided tours, day trips, transport, and tailor-made experiences.'}
+                      ? 'Yerel tur acentelerini ve rehberli turlar, günübirlik geziler ve bölgesel cazibe merkezleri hakkında bilgi sunan resmî turizm kuruluşlarını keşfedin.'
+                      : 'Find local tour operators and official tourism boards for guided tours, day trips, visitor information, and regional attractions.'}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
-                  <div className="text-2xl font-black">5</div>
+                  <div className="text-2xl font-black">7</div>
                   <div className="mt-0.5 text-[11px] font-bold uppercase tracking-wider text-blue-100">
-                    {lang === 'bs' ? 'Organizatora za kontakt' : lang === 'de' ? 'Ansprechpartner' : lang === 'tr' ? 'Tur operatörü' : 'Operators to contact'}
+                    {lang === 'bs' ? 'Organizacija u imeniku' : lang === 'de' ? 'Organisationen im Verzeichnis' : lang === 'tr' ? 'Rehberdeki kuruluşlar' : 'Organizations listed'}
                   </div>
                 </div>
               </div>
@@ -1080,12 +1080,12 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
                   </strong>
                   {' '}
                   {lang === 'bs'
-                    ? 'Ovi organizatori su potencijalni pružaoci usluga. Ponude, cijene, termini, dostupnost i mogućnost rezervacije moraju se direktno potvrditi kod agencije.'
+                    ? 'Ovaj imenik obuhvata turističke organizacije i pružaoce usluga. Ponude, cijene, termini, dostupnost i rezervacije potvrdite direktno kod navedene organizacije.'
                     : lang === 'de'
-                    ? 'Die Anbieter sind potenzielle Dienstleister. Angebote, Preise, Termine, Verfügbarkeit und Buchungsmöglichkeiten müssen direkt beim Anbieter bestätigt werden.'
+                    ? 'Dieses Verzeichnis umfasst Tourismusorganisationen und Anbieter. Angebote, Preise, Termine, Verfügbarkeit und Buchungen sollten direkt bei der jeweiligen Organisation bestätigt werden.'
                     : lang === 'tr'
-                    ? 'Bunlar potansiyel hizmet sağlayıcılardır. Tur içeriği, fiyatlar, tarihler, müsaitlik ve rezervasyon doğrudan acenteyle teyit edilmelidir.'
-                    : 'These operators are prospective providers. Tour details, prices, dates, availability, and booking arrangements must be confirmed directly with each agency.'}
+                    ? 'Bu rehber turizm kuruluşlarını ve hizmet sağlayıcılarını içerir. Tur ayrıntılarını, fiyatları, tarihleri, müsaitliği ve rezervasyonları doğrudan ilgili kuruluşla teyit edin.'
+                    : 'This directory includes tourism organizations and service providers. Confirm current offers, prices, dates, availability, and bookings directly with the relevant organization.'}
                 </div>
               </div>
 
@@ -1136,13 +1136,28 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
                     phone: '+387 35 258 311',
                     secondaryPhone: undefined,
                   },
+                  {
+                    name: lang === 'bs' ? 'Turistička zajednica grada Tuzle' : lang === 'de' ? 'Tourismusverband der Stadt Tuzla' : lang === 'tr' ? 'Tuzla Şehri Turizm Kurulu' : 'Tourist Board of the City of Tuzla',
+                    category: lang === 'bs' ? 'Zvanična turistička zajednica grada' : lang === 'de' ? 'Offizielle Tourismusorganisation der Stadt' : lang === 'tr' ? 'Şehrin resmî turizm kuruluşu' : 'Official city tourism organization',
+                    detail: lang === 'bs' ? 'Zvanični portal za posjetioce Tuzle s informacijama o Panonskim jezerima, Trgu slobode, Arheološkom parku, Muzeju soli i gradskim događajima.' : lang === 'de' ? 'Offizielles Besucherportal für Tuzla mit Informationen zu den Panonschen Seen, dem Freiheitsplatz, dem archäologischen Park, dem Salzmuseum und lokalen Veranstaltungen.' : lang === 'tr' ? 'Tuzla’nın Panonska Gölleri, Özgürlük Meydanı, Arkeoloji Parkı, Tuz Müzesi ve şehir etkinlikleri hakkında bilgi sunan resmî ziyaretçi portalı.' : 'Official visitor portal for Tuzla, featuring the Panonian Lakes, Freedom Square, the archaeological park, the Salt Museum, and city events.',
+                    website: 'https://tztz.ba',
+                    email: 'info@tztz.ba',
+                    phone: '+387 35 257 499',
+                  },
+                  {
+                    name: lang === 'bs' ? 'Turistička zajednica Tuzlanskog kantona' : lang === 'de' ? 'Tourismusverband des Kantons Tuzla' : lang === 'tr' ? 'Tuzla Kantonu Turizm Kurulu' : 'Tourist Board of Tuzla Canton',
+                    category: lang === 'bs' ? 'Zvanična turistička zajednica kantona' : lang === 'de' ? 'Offizielle Tourismusorganisation des Kantons' : lang === 'tr' ? 'Kantonun resmî turizm kuruluşu' : 'Official cantonal tourism organization',
+                    detail: lang === 'bs' ? 'Zvanični turistički portal kantona s atrakcijama iz cijele regije, uključujući zaštićeni pejzaž Konjuh, Panonska jezera, Stari grad Srebrenik i jezero Modrac.' : lang === 'de' ? 'Offizielles Tourismusportal des Kantons mit Ausflugszielen aus der Region, darunter der Naturpark Konjuh, die Panonischen Seen, die Altstadt Srebrenik und der Modrac-See.' : lang === 'tr' ? 'Konjuh Koruma Alanı, Panonska Gölleri, Srebrenik Eski Şehri ve Modrac Gölü dâhil bölgedeki gezilecek yerleri tanıtan resmî kanton turizm portalı.' : 'Official visitor portal for Tuzla Canton, featuring regional attractions such as Konjuh Protected Landscape, the Panonian Lakes, Srebrenik Old Town, and Modrac Lake.',
+                    website: 'https://tourism-tk.ba',
+                    email: '',
+                  },
                 ] as Array<{
                   name: string;
                   category: string;
                   detail: string;
                   website: string;
                   email: string;
-                  phone: string;
+                  phone?: string;
                   secondaryPhone?: string;
                 }>).map((agency) => (
                   <article key={agency.name} className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md">
@@ -1166,9 +1181,11 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
                           <span className="w-4 text-center">✉</span>{agency.email}
                         </a>
                       )}
-                      <a href={`tel:${agency.phone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-blue-700">
-                        <PhoneCall className="h-3.5 w-3.5" />{agency.phone}
-                      </a>
+                      {agency.phone && (
+                        <a href={`tel:${agency.phone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-blue-700">
+                          <PhoneCall className="h-3.5 w-3.5" />{agency.phone}
+                        </a>
+                      )}
                       {agency.secondaryPhone && (
                         <a href={`tel:${agency.secondaryPhone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-blue-700">
                           <PhoneCall className="h-3.5 w-3.5" />{agency.secondaryPhone}
