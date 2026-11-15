@@ -20,7 +20,6 @@ import { MediaAudioGuideTab } from './MediaAudioGuideTab';
 import { ThreeDayPlanView } from './ThreeDayPlanView';
 import { PracticalTravelInfo } from './PracticalTravelInfo';
 import { StickyNotesBoard } from './StickyNotesBoard';
-import { AppFaqAndContact } from './AppFaqAndContact';
 
 type Mode = 'notebook' | 'calendar' | 'threeDayPlan' | 'practicalInfo' | 'media';
 type NotebookSubTab = 'all' | 'itinerary' | 'expenses' | 'notes';
@@ -679,9 +678,6 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
           className="w-full h-auto object-cover"
         />
       </a>
-
-      {/* 6 FAQ Items with Explanations & Bottom Contact Form */}
-      <AppFaqAndContact lang={lang} />
 
       {/* Spacer for bottom navigation safety */}
       <div className="h-20" />

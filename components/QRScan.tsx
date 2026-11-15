@@ -27,6 +27,7 @@ import { useGlobalApp } from '../contexts/GlobalAppContext';
 import { QUEST_TARGETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, isPoiRewardUnlocked } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
 import { Preferences } from '@capacitor/preferences';
+import { AppFaqAndContact } from './AppFaqAndContact';
 
 const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
     trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
@@ -53,6 +54,18 @@ interface LedgerEntry {
     timestamp: string;
 }
 
+interface Todo {
+    id: string | number;
+    name: string;
+}
+
+const TODO_LABELS: Record<Language, { title: string; loading: string; empty: string; error: string }> = {
+    en: { title: 'Todos', loading: 'Loading todos...', empty: 'No todos found.', error: 'Could not load todos.' },
+    bs: { title: 'Zadaci', loading: 'Učitavanje zadataka...', empty: 'Nema zadataka.', error: 'Učitavanje zadataka nije uspjelo.' },
+    de: { title: 'Aufgaben', loading: 'Aufgaben werden geladen...', empty: 'Keine Aufgaben gefunden.', error: 'Aufgaben konnten nicht geladen werden.' },
+    tr: { title: 'Görevler', loading: 'Görevler yükleniyor...', empty: 'Görev bulunamadı.', error: 'Görevler yüklenemedi.' },
+};
+
 const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
     const [bamValue, setBamValue] = useState<string>('');
     const [conversionMode, setConversionMode] = useState<'BAM_TO_EUR' | 'EUR_TO_BAM'>('BAM_TO_EUR');
@@ -69,6 +82,9 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
     const [playingVideoError, setPlayingVideoError] = useState<string | null>(null);
     const [expandedPhaseId, setExpandedPhaseId] = useState<string | null>(null);
     const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
+    const [todos, setTodos] = useState<Todo[]>([]);
+    const [todosLoading, setTodosLoading] = useState(true);
+    const [todosError, setTodosError] = useState<string | null>(null);
 
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const isOnline = useNetwork();
@@ -101,6 +117,37 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
             }
         };
         loadLedger();
+    }, []);
+
+    useEffect(() => {
+        let isActive = true;
+
+        const loadTodos = async () => {
+            try {
+                const { supabase } = await import('../lib/supabaseclient');
+                const { data, error } = await supabase.from('todos').select('id, name');
+
+                if (error) {
+                    console.error('Unable to load todos from Supabase:', error);
+                    if (isActive) setTodosError(error.message);
+                    return;
+                }
+
+                if (isActive) setTodos(data ?? []);
+            } catch (error: unknown) {
+                console.error('Unable to load todos from Supabase:', error);
+                if (isActive) {
+                    setTodosError(error instanceof Error ? error.message : 'An unexpected error occurred.');
+                }
+            } finally {
+                if (isActive) setTodosLoading(false);
+            }
+        };
+
+        void loadTodos();
+        return () => {
+            isActive = false;
+        };
     }, []);
 
     // Cleanup scanner on unmount
@@ -593,6 +640,40 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                             )}
                         </div>
 
+                        {/* Supabase Todos */}
+                        <section className="p-4 sm:p-6 bg-white border border-blue-100 rounded-[2rem] shadow-xl space-y-4" aria-labelledby="supabase-todos-title">
+                            <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                                <div className="flex items-center gap-2">
+                                    <BookOpen className="w-5 h-5 text-blue-600" />
+                                    <h3 id="supabase-todos-title" className="text-sm font-black text-slate-800 uppercase tracking-tight">
+                                        {TODO_LABELS[lang].title}
+                                    </h3>
+                                </div>
+                                {!todosLoading && !todosError && (
+                                    <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">
+                                        {todos.length}
+                                    </span>
+                                )}
+                            </div>
+                            {todosLoading ? (
+                                <p className="text-xs text-slate-500" aria-live="polite">{TODO_LABELS[lang].loading}</p>
+                            ) : todosError ? (
+                                <p className="text-xs text-red-700" role="alert">
+                                    {TODO_LABELS[lang].error} {todosError}
+                                </p>
+                            ) : todos.length === 0 ? (
+                                <p className="text-xs text-slate-500">{TODO_LABELS[lang].empty}</p>
+                            ) : (
+                                <ul className="space-y-2">
+                                    {todos.map((todo) => (
+                                        <li key={todo.id} className="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2.5 text-xs font-semibold text-slate-700">
+                                            {todo.name}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </section>
+
                         {/* Scan History Ledger */}
                         <div className="p-4 sm:p-6 bg-white border border-amber-400 rounded-[2rem] shadow-[0_0_25px_rgba(251,191,36,0.35)] space-y-4 flex flex-col relative min-h-[280px]">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
@@ -694,6 +775,11 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* ── FAQ & Contact Us Section ── */}
+                <div className="mt-12">
+                    <AppFaqAndContact lang={lang} />
                 </div>
             </div>
 

@@ -25,6 +25,9 @@ interface ImportMetaEnv {
 
   readonly VITE_VERCEL_BLOB_HERO_WEB?: string;
   readonly VITE_GEOAPIFY_ROUTING_API: string;
+  readonly VITE_SUPABASE_URL?: string;
+  readonly VITE_SUPABASE_PROJECT_URL?: string;
+  readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string;
 }
 
 interface ImportMeta {

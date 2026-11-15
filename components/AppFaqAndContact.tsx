@@ -354,17 +354,25 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
       </section>
 
       {/* Contact Form Card at very bottom */}
-      <section className="rounded-2xl sm:rounded-4xl border border-blue-200 bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_100%)] p-5 sm:p-8 text-white shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/10">
+      <section className="rounded-2xl sm:rounded-4xl border-2 border-amber-300/90 bg-gradient-to-br from-[#fffbeb] via-[#fef3c7] to-[#fde68a] p-5 sm:p-8 text-slate-900 shadow-[0_16px_40px_rgba(245,158,11,0.22)] relative overflow-hidden">
+        {/* Subtle golden ambient glow */}
+        <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-amber-400/20 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-gradient-to-tr from-[#080ccf]/20 to-[#050775]/10 blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-amber-300/80">
           <div>
-            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-cyan-400">
-              <Mail className="h-4 w-4" />
-              {lang === 'bs' ? 'Kontakt & Pitanja' : 'Contact & Support'}
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em]">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-r from-[#080ccf] to-[#050775] text-white">
+                <Mail className="h-4 w-4" />
+              </span>
+              <span className="bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent">
+                {lang === 'bs' ? 'Kontakt & Pitanja' : 'Contact & Support'}
+              </span>
             </div>
-            <h3 className="mt-1 text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h3 className="mt-1 text-2xl sm:text-3xl font-black bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent tracking-tight">
               {lang === 'bs' ? 'Pošaljite nam poruku' : 'Ask Us Anything'}
             </h3>
-            <p className="mt-1 text-xs sm:text-sm text-slate-300">
+            <p className="mt-1 text-xs sm:text-sm font-medium bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent">
               {lang === 'bs'
                 ? 'Imate prijedlog za turistički vodič, partnersku lokaciju ili pitanje?'
                 : 'Have feedback, a partnership inquiry, or a question about Tuzla?'}
@@ -372,11 +380,11 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
           </div>
 
           {/* Contact email pill with copy button */}
-          <div className="flex items-center gap-2 rounded-2xl bg-white/10 p-2 sm:px-4 sm:py-2.5 backdrop-blur-md border border-white/10">
-            <Mail className="h-4 w-4 text-cyan-300 shrink-0" />
+          <div className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#080ccf] to-[#050775] px-3.5 py-2 sm:px-4 sm:py-2.5 shadow-md border border-[#050775] shrink-0">
+            <Mail className="h-4 w-4 text-amber-400 shrink-0" />
             <a
               href={`mailto:${contactEmail}`}
-              className="text-xs sm:text-sm font-black text-cyan-200 hover:underline truncate"
+              className="text-xs sm:text-sm font-black text-amber-300 hover:text-amber-200 hover:underline truncate"
             >
               {contactEmail}
             </a>
@@ -384,18 +392,18 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
               type="button"
               onClick={handleCopyEmail}
               title="Copy Email"
-              className="ml-1 rounded-lg bg-white/20 p-1.5 text-white hover:bg-white/30 transition-colors"
+              className="ml-1 rounded-lg bg-gradient-to-r from-[#080ccf] to-[#050775] p-1.5 text-amber-300 transition-colors"
             >
-              {copiedEmail ? <Check className="h-3.5 w-3.5 text-green-300" /> : <Copy className="h-3.5 w-3.5" />}
+              {copiedEmail ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
           </div>
         </div>
 
         {/* Contact Form */}
-        <form onSubmit={handleSubmitQuestion} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmitQuestion} className="relative z-10 mt-6 space-y-4">
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+              <label className="block text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent mb-1.5">
                 {lang === 'bs' ? 'Vaše Ime' : 'Your Name'}
               </label>
               <input
@@ -404,25 +412,25 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
                 value={senderName}
                 onChange={(e) => setSenderName(e.target.value)}
                 placeholder={lang === 'bs' ? 'npr. Mirza ili Sarah' : 'e.g. Sarah Jenkins'}
-                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-medium text-white placeholder:text-slate-400 outline-none focus:border-cyan-400 focus:bg-white/15 focus:ring-2 focus:ring-cyan-400/20"
+                className="w-full rounded-xl border-2 border-[#050775] bg-gradient-to-br from-[#080ccf] to-[#050775] px-4 py-3 text-sm font-medium text-white placeholder:text-slate-300 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/25 transition-all shadow-inner"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+              <label className="block text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent mb-1.5">
                 {lang === 'bs' ? 'Email za kontakt' : 'Contact Destination'}
               </label>
               <input
                 type="text"
                 readOnly
                 value={contactEmail}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-cyan-300 outline-none cursor-default"
+                className="w-full rounded-xl border-2 border-[#050775] bg-gradient-to-br from-[#080ccf] to-[#050775] px-4 py-3 text-sm font-bold text-amber-300 outline-none cursor-default shadow-inner"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+            <label className="block text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent mb-1.5">
               {lang === 'bs' ? 'Vaše Pitanje / Poruka' : 'Your Question / Message'}
             </label>
             <textarea
@@ -435,12 +443,12 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
                   ? 'Napišite pitanje u vezi Tuzla Quest nagradne igre, preporuke lokala ili rada aplikacije...'
                   : 'Write your question regarding Tuzla Quest rewards, POI recommendations, or app features...'
               }
-              className="w-full resize-none rounded-xl border border-white/20 bg-white/10 p-4 text-sm font-medium text-white placeholder:text-slate-400 outline-none focus:border-cyan-400 focus:bg-white/15 focus:ring-2 focus:ring-cyan-400/20"
+              className="w-full resize-none rounded-xl border-2 border-[#050775] bg-gradient-to-br from-[#080ccf] to-[#050775] p-4 text-sm font-medium text-white placeholder:text-slate-300 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/25 transition-all shadow-inner"
             />
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
-            <span className="text-xs text-slate-400">
+            <span className="text-xs font-semibold bg-gradient-to-r from-[#080ccf] to-[#050775] bg-clip-text text-transparent">
               {lang === 'bs'
                 ? 'Klikom na dugme otvara se vaša email aplikacija sa pripremljenim upitom.'
                 : 'Clicking Send opens your default email client with your message pre-filled.'}
@@ -448,9 +456,9 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
 
             <button
               type="submit"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 text-sm font-black text-slate-950 shadow-lg shadow-cyan-500/25 transition-all hover:bg-cyan-400 active:scale-95"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#080ccf] to-[#050775] px-7 py-3 text-sm font-black uppercase tracking-wider text-amber-300 border-2 border-amber-400/50 shadow-lg shadow-[#050775]/25 transition-all hover:scale-[1.02] hover:border-amber-300 hover:shadow-[#050775]/40 active:scale-95 cursor-pointer"
             >
-              <Send className="h-4 w-4" />
+              <Send className="h-4 w-4 text-amber-400" />
               <span>{lang === 'bs' ? 'Pošalji Upit' : 'Send Question'}</span>
             </button>
           </div>
