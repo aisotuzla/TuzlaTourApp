@@ -38,7 +38,7 @@ For decades, cities and local merchants have relied on billboards, print flyers,
 
 ### 💡 The Solution: Tuzla Tour Quest & Verified Proof-of-Footprint
 
-**Tuzla Tour Quest** transforms the entire city of Tuzla into an interactive, gamified 3D treasure hunt powered by **Augmented Reality (AR)**, **sub-meter sensor fusion**, and **in-venue physical verification**.
+**Tuzla Tour Quest** transforms the entire city of Tuzla into an interactive, gamified 3D treasure hunt powered by **Augmented Reality (AR)**, GPS-assisted navigation, camera-based QR scanning, and a staged verification model.
 
 ```
    ┌────────────────────────────────────────────────────────────────────────┐
@@ -51,11 +51,11 @@ For decades, cities and local merchants have relied on billboards, print flyers,
    │ ❌ High remote voucher fraud  │ ✅ Cryptographic physical QR scan      │
    │ ❌ Passive browsing           │ ✅ Active gamified consumer mission    │
    │ ❌ High advertising burn rate │ ✅ Direct in-store sales conversion    │
-   │ ❌ Intrusive tracking cookies │ ✅ 100% Privacy by Design (Client-side)│
+   │ ❌ Intrusive tracking cookies │ ✅ Privacy-first, minimal location data│
    └───────────────────────────────┴────────────────────────────────────────┘
 ```
 
-> **The Footprint Guarantee:** ONLY through the Tuzla Tour App can a participating restaurant, coffee shop, hotel, or retail boutique be 100% guaranteed that potential customers are guided directly from their point of arrival into the physical venue, standing at the counter or cash register with wallet in hand to redeem their verified 20% discount.
+> **The On-Site Verification Plan:** GPS and AR currently help players navigate to participating venues; they do not prove entry or guarantee a physical visit. The production quest backend will combine a POI-specific QR identifier with a 20-metre server-side GPS radius and one completion per signed-in player.
 
 ---
 
@@ -112,7 +112,7 @@ flowchart TD
 - **The Experience:**
   - **Over 5m away:** The screen presents a split 40/60 view. Top 40% shows 3D bird's-eye walking trajectory; bottom 60% shows directional HUD chevrons (`45° LEFT`, `90° RIGHT`, `ON PATH`).
   - **At 5m away:** The system automatically switches on the **optical camera sensor**. The AR HUD displays a dynamic green reticle: `"TARGET LOCKED"`. An animated directional 3D arrow points directly through the glass doors to the cashier or information counter.
-- **Result:** The user is guided with sub-meter precision directly into the physical premises of the local business partner.
+- **Result:** The user is guided towards the POI using device GPS and AR direction cues; these are navigation aids, not proof of presence.
 
 #### 🏷️ Step 6: In-Store QR Scan & Instant 20% Discount
 
@@ -151,7 +151,7 @@ Tuzla Tour App was built from day one to serve as the economic growth engine for
 │ Micro-Targeting     │ Customers guided when hungry, thirsty, or shopping │
 │ Equal Visibility    │ Small family businesses featured alongside giants  │
 │ Zero Ad Waste       │ Pay only for results, zero wasted digital clicks   │
-│ Privacy Compliant   │ No invasive tourist tracking, 100% GDPR compliant  │
+│ Privacy Compliant   │ No invasive tourist tracking, designed to support privacy compliance  │
 └─────────────────────┴────────────────────────────────────────────────────┘
 ```
 
@@ -282,7 +282,7 @@ The app uses client-side GPS for navigation and proximity prompts. Quest complet
 ### The 25-Meter Geofence (The Notification Perimeter)
 
 - When the distance between user coordinates (`lat`, `lon`) and target POI falls below 25 meters, the app triggers a Capacitor Local Notification.
-- **Privacy Assurance:** Distance calculation runs 100% client-side on the phone's CPU via the Haversine spherical formula. Zero coordinate packets are sent over the network.
+- **Privacy:** Navigation proximity checks currently run on-device. Production completion will send a location sample and accuracy metadata for a one-time 20-metre check; continuous location tracking is not required.
 - **Battery Optimization:** When outside the 25m zone, GPS queries are duty-cycled (polled every 3–5 seconds), preserving battery life for all-day touring.
 
 ### The 5-Meter Micro-Radius (The Optical Camera Lock)
@@ -298,7 +298,7 @@ The app uses client-side GPS for navigation and proximity prompts. Quest complet
 
 # 6. IN-STORE QR CODE SCAN & ANTI-FRAUD VERIFICATION
 
-To guarantee authentic physical footprint for participating merchants, Tuzla Tour Quest employs a physical scanning protocol:
+Quest verification is being implemented in stages. The current testing stage accepts live camera QR scans only; GPS enforcement is planned for the production backend:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -310,7 +310,7 @@ To guarantee authentic physical footprint for participating merchants, Tuzla Tou
 │ 4. QR-only test mode matches the POI identifier & unlocks locally     │
 │ 5. Instant 20% discount screen is displayed with animated verification │
 │ 6. Customer shows screen to staff at checkout for bill reduction       │
-│ 7. POI state is permanently saved to encrypted local preferences       │
+│ 7. Test progress is saved locally; production progress will be server-side │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -430,7 +430,7 @@ To guarantee that a full day of questing does not deplete the traveler's battery
 **A:** Unlike static ads, your business is integrated as an active quest checkpoint. Players are directed via GPS, alerted at 25 meters via push notification, and guided right to your counter by the 5m AR camera. To receive their discount and advance in the game, **they must physically enter your shop and scan your QR code**.
 
 **Q: Can customers fake the discount code without coming to my shop?**  
-**A:** Absolutely not. The validation requires both proximity geofencing and scanning of the physical code displayed inside your shop. Digital screenshots are invalidated by animated anti-spoofing elements.
+**A:** During testing, QR scans can be replayed and do not prove physical presence. The planned production backend will require a matching QR identifier and a GPS fix within 20 metres of the POI. GPS spoofing remains possible, so this is a casual anti-abuse measure rather than absolute fraud prevention.
 
 **Q: Does participating in the Quest cost my business an upfront fee?**  
 **A:** Partnership tiers are designed in cooperation with the City of Tuzla and the Tourist Board to foster small business growth. Contact `aisotuzla@proton.me` to register your venue as an official Quest POI.
