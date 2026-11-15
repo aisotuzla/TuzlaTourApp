@@ -188,7 +188,7 @@ The current implementation contains **12 Points of Interest (POIs)** organized i
 ├───────┬────────────────────────────┬──────────┬─────────────────────────────┤
 │ Phase │ Theme                      │ POI Qty  │ Milestone Reward            │
 ├───────┼────────────────────────────┼──────────┼─────────────────────────────┤
-│   1   │ Foundations of Tuzla       │ 3 POIs   │ Victory Banner & Video Lore │
+│   1   │ Foundations of Tuzla       │ 4 POIs   │ Victory Banner & Video Lore │
 │   2   │ Culture, Dining & Salt     │ 3 POIs   │ Solana Football Squad NFT   │
 │   3   │ Lakes, Waterfalls & Art    │ 4 POIs   │ "Heart of Tuzla" 3D Trophy  │
 │   4   │ Grand Finale Anchor        │ 1 POI    │ 20% BCC Grand Shopping Pass │
