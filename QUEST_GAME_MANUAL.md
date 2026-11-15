@@ -48,7 +48,7 @@ For decades, cities and local merchants have relied on billboards, print flyers,
    ├───────────────────────────────┼────────────────────────────────────────┤
    │ ❌ Sells views and impressions│ ✅ Guarantees physical human footfall  │
    │ ❌ Disconnected from location │ ✅ Dynamic 25m push & 5m AR guidance   │
-   │ ❌ High remote voucher fraud  │ ✅ Cryptographic physical QR scan      │
+   │ ❌ High remote voucher fraud  │ ✅ Live camera QR scan      │
    │ ❌ Passive browsing           │ ✅ Active gamified consumer mission    │
    │ ❌ High advertising burn rate │ ✅ Direct in-store sales conversion    │
    │ ❌ Intrusive tracking cookies │ ✅ Privacy-first, minimal location data│
