@@ -17,8 +17,6 @@ import {
     X,
     Camera,
     RefreshCw,
-    Upload,
-    Image,
 } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -75,7 +73,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
     const [scannerError, setScannerError] = useState<string | null>(null);
     const [availableCameras, setAvailableCameras] = useState<Array<{ id: string; label: string }>>([]);
     const [activeCameraId, setActiveCameraId] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [ledger, setLedger] = useState<LedgerEntry[]>([]);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [playingVideo, setPlayingVideo] = useState<string | null>(null);
@@ -289,8 +286,8 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
             setScannerStatus('error');
             setScannerError(
                 lang === 'bs'
-                    ? 'Kamera nije dostupna ili nema dozvole. Možete odabrati fotografiju s QR kodom.'
-                    : 'Camera unavailable or permission denied. You can scan from a photo instead.'
+                    ? 'Kamera nije dostupna ili nema dozvole. Omogućite pristup kameri i pokušajte ponovo.'
+                    : 'Camera unavailable or permission denied. Enable camera access and try again.'
             );
         }
     };
@@ -306,35 +303,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
             } catch (_) {}
         }
         startScanner(nextCam.id);
-    };
-
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        setScannerFeedback({
-            text: lang === 'bs' ? 'Skeniram fotografiju...' : 'Analyzing photo...',
-            type: 'success'
-        });
-        try {
-            let tempDiv = document.getElementById('qrscan-file-temp');
-            if (!tempDiv) {
-                tempDiv = document.createElement('div');
-                tempDiv.id = 'qrscan-file-temp';
-                tempDiv.style.display = 'none';
-                document.body.appendChild(tempDiv);
-            }
-            const fileScanner = new Html5Qrcode('qrscan-file-temp', { verbose: false });
-            const decodedText = await fileScanner.scanFile(file, true);
-            await processDecodedQr(decodedText);
-            fileScanner.clear();
-        } catch (err) {
-            setScannerFeedback({
-                text: lang === 'bs' ? 'QR kod nije pronađen na slici. Pokušajte s jasnijom fotografijom.' : 'No QR code found on image. Please try with a clearer photo.',
-                type: 'error'
-            });
-            setTimeout(() => setScannerFeedback(null), 3500);
-        }
-        if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
     const handleClearLedger = async () => {
@@ -414,7 +382,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                                         {lang === 'bs' ? 'Problem s kamerom' : 'Camera Issue'}
                                                     </p>
                                                     <p className="text-[11px] text-slate-300 leading-relaxed max-w-[260px]">
-                                                        {scannerError || (lang === 'bs' ? 'Kamera nije dostupna. Možete odabrati sliku s QR kodom.' : 'Camera unavailable. You can scan from a photo.')}
+                                                        {scannerError || (lang === 'bs' ? 'Kamera nije dostupna. Omogućite pristup kameri i pokušajte ponovo.' : 'Camera unavailable. Enable camera access and try again.')}
                                                     </p>
                                                     <div className="flex flex-col sm:flex-row gap-2 w-full mt-2">
                                                         <button
@@ -423,13 +391,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                                         >
                                                             <RefreshCw size={13} />
                                                             {lang === 'bs' ? 'Pokušaj ponovo' : 'Retry Camera'}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => fileInputRef.current?.click()}
-                                                            className="flex-1 py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-md"
-                                                        >
-                                                            <Upload size={13} />
-                                                            {lang === 'bs' ? 'Učitaj sliku' : 'Scan Photo'}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -449,13 +410,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                                             {lang === 'bs' ? 'Okreni kameru' : 'Switch Cam'}
                                                         </button>
                                                     ) : <div />}
-                                                    <button
-                                                        onClick={() => fileInputRef.current?.click()}
-                                                        className="px-2.5 py-1.5 bg-slate-900/80 hover:bg-slate-800 text-amber-300 border border-amber-400/40 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 backdrop-blur-md shadow-md active:scale-95 transition-all"
-                                                    >
-                                                        <Image size={11} />
-                                                        {lang === 'bs' ? 'Foto' : 'Photo'}
-                                                    </button>
                                                 </div>
                                             )}
 
@@ -502,15 +456,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                 )}
                             </AnimatePresence>
 
-                            {/* Hidden file input for photo/image upload fallback */}
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleFileUpload}
-                            />
-
                             {scannerFeedback && (
                                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-xs font-bold ${scannerFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
                                     <AlertCircle size={14} className="shrink-0" />
@@ -530,14 +475,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                     >
                                         <Camera size={16} />
                                         {t.startScanner}
-                                    </button>
-                                    <button
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="h-14 sm:w-44 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-black uppercase tracking-widest rounded-xl shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                                        title={lang === 'bs' ? 'Skeniraj iz galerije slika' : 'Scan from gallery photo'}
-                                    >
-                                        <Upload size={16} className="text-slate-500" />
-                                        {lang === 'bs' ? 'Iz slike' : lang === 'de' ? 'Aus Foto' : 'From Photo'}
                                     </button>
                                 </div>
                             )}
