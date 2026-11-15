@@ -33,8 +33,8 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   stara_cesma: { lat: 44.538982, lon: 18.675580 },
   salt_square: { lat: 44.5382182, lon: 18.6759398 },
   palancinkara: { lat: 44.5383762, lon: 18.6775339 },
-  slana_banja: { lat: 44.5378167, lon: 18.6875664 },
-  panonika: { lat: 44.5385, lon: 18.6767 },
+  slana_banja: { lat: 44.536961, lon: 18.687983 },
+  panonika: { lat: 44.539076, lon: 18.679488 },
   slapovi: { lat: 44.5404243, lon: 18.6819408 },
   kapija: { lat: 44.53863, lon: 18.676805 },
   atelje_ismet: { lat: 44.5371465, lon: 18.6810454 },
@@ -45,17 +45,17 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
 
 export const QUEST_POI_THUMBNAILS: Record<string, string> = {
   trg_slobode: '/assets/Gallery/QuestQRLocations/trgslobode.webp',
-  stara_cesma: '/assets/Gallery/QuestQRLocations/QuestQR/stara_cesmaO.webp',
+  stara_cesma: '/assets/Gallery/QuestQRLocations/cesma13.webp',
   salt_square: '/assets/Gallery/QuestQRLocations/sonitrg.webp',
   palancinkara: '/assets/Gallery/Food/bagi.webp',
-  slana_banja: '/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp',
-  panonika: '/assets/Gallery/QuestQRLocations/panonsko jezero.png',
+  slana_banja: '/assets/Gallery/QuestQRLocations/Slana_Banja.webp',
+  panonika: '/assets/Gallery/QuestQRLocations/panonsko_jezero.webp',
   slapovi: '/assets/Gallery/QuestQRLocations/tzslapovi.webp',
   kapija: '/assets/Gallery/QuestQRLocations/kapija.webp',
   atelje_ismet: '/assets/Gallery/QuestQRLocations/atelje.webp',
   bingo_city_centar: '/assets/icons/Bingo-supermarket.webp',
   mesa_selimovic: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp',
-  tvrtko_park: '/assets/Gallery/QuestQRLocations/ParkKraljaTvrtka.webp',
+  tvrtko_park: '/assets/Gallery/QuestQRLocations/tvrtko.webp',
 };
 
 export const preloadPoiMarkerImages = async (mapInstance: maplibregl.Map) => {
@@ -264,11 +264,19 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         audioSrc
       });
     };
+    (window as any).openQrScannerFromPopup = (poiId?: string) => {
+      const popups = document.getElementsByClassName('maplibregl-popup');
+      for (let i = 0; i < popups.length; i++) {
+        (popups[i] as HTMLElement).remove();
+      }
+      setIsScannerOpen(true);
+    };
     return () => {
       delete (window as any).startNavigationFromPopup;
       delete (window as any).playQuestVideo;
       delete (window as any).openQuestPanorama;
       delete (window as any).playPoiAudio;
+      delete (window as any).openQrScannerFromPopup;
     };
   }, [activeStyle, lang, currentNarration, isPlaying, playNarration, pauseNarration, isNavigating]);
 
@@ -764,8 +772,8 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         <button
           onClick={handleToggleARMode}
           className={`w-9 h-9 flex items-center justify-center font-black text-xs rounded-full shadow-lg backdrop-blur-xl border transition-all active:scale-95 ${showARGuide
-              ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 border-amber-300 ring-2 ring-amber-400/50 shadow-amber-500/30'
-              : 'bg-slate-900/90 text-amber-400 border-amber-400/40 hover:text-white hover:border-amber-400'
+            ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 border-amber-300 ring-2 ring-amber-400/50 shadow-amber-500/30'
+            : 'bg-slate-900/90 text-amber-400 border-amber-400/40 hover:text-white hover:border-amber-400'
             }`}
           title={lang === 'bs' ? 'AR Vodič' : 'AR Guide'}
         >

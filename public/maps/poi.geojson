@@ -6,8 +6,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          18.680213,
-          44.539067
+          18.679488,
+          44.539076
         ]
       },
       "properties": {
@@ -73,8 +73,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          18.68567,
-          44.538425
+          18.687983,
+          44.536961
         ]
       },
       "properties": {
@@ -83,7 +83,7 @@
         "category": "nature",
         "marker-color": "rgba(235, 201, 34, 1)",
         "marker-size": "large",
-        "image": "BanjaO.webp",
+        "image": "Slana_Banja.webp",
         "icon": "banjaO",
         "icon-image": "banjaO",
         "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp",

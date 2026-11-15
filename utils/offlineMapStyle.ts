@@ -6,7 +6,7 @@ export const POI_GEOJSON_DATA = {
   features: [
     {
       type: "Feature",
-      geometry: { type: "Point", coordinates: [18.680213, 44.539067] },
+      geometry: { type: "Point", coordinates: [18.679488, 44.539076] },
       properties: {
         name: "Pannonian Lakes",
         name_bs: "Panonska jezera",
@@ -54,14 +54,14 @@ export const POI_GEOJSON_DATA = {
     },
     {
       type: "Feature",
-      geometry: { type: "Point", coordinates: [18.68567, 44.538425] },
+      geometry: { type: "Point", coordinates: [18.687983, 44.536961] },
       properties: {
         name: "Slana Banja",
         name_bs: "Slana Banja",
         category: "nature",
         "marker-color": "rgba(235, 201, 34, 1)",
         "marker-size": "large",
-        image: "banjaO.webp",
+        image: "Slana_Banja.webp",
         icon: "banjaO",
         "icon-image": "banjaO",
         "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/banjaO.webp",

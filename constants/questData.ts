@@ -73,7 +73,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
       en: '/audio/pois/en/01_freedom_square.mp3',
       de: '/audio/pois/de/01_freedom_square.mp3',
     },
-    rewardHtml: '/StaraCesma.html'
+
   },
   {
     id: 'salt_square',
@@ -118,7 +118,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
     },
     category: 'nature',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRBanja.png',
-    Image: '/assets/Gallery/QuestQRLocations/banjaO.webp',
+    Image: '/assets/Gallery/QuestQRLocations/Slana_Banja.webp',
     audio: '/audio/pois/en/07_slana_banja.mp3',
     audioByLang: {
       bs: '/audio/pois/bs/07_slana_banja.mp3',
@@ -169,7 +169,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
       tr: 'Bosna Hersek\'in en önemli ressamlarından Ismet Mujezinović\'in anısına adanmış atölye ve sanat galerisi.'
     },
     category: 'art',
-    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRAtelje.png',
+    Html5Qrcode: '',
     Image: '/assets/Gallery/QuestQRLocations/atelje.webp',
     audio: '/audio/pois/en/05_mesa_i_ismet.mp3',
     audioByLang: {
@@ -230,8 +230,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
       bs: '/audio/pois/bs/06_king_tvrtko.mp3',
       en: '/audio/pois/en/06_king_tvrtko.mp3',
       de: '/audio/pois/de/06_king_tvrtko.mp3',
-    },
-    video: '/assets/Gallery/QuestQRLocations/Ismetvid.mp4'
+    }
   },
   {
     id: 'panonika',
@@ -255,10 +254,10 @@ export const QUEST_TARGETS: QuestTarget[] = [
 ];
 
 export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
-  { name: { bs: "Panonska Jezera", en: "Pannonian Lakes" }, lat: 44.53888255374366, lon: 18.680032450849325, category: "nature", entryFee: "Paid 7.5 KM - 9 KM for entire day" },
-  { name: { bs: "Slana Banja Park", en: "Slana Banja Park" }, lat: 44.53846734540082, lon: 18.685620782683003, category: "nature" },
+  { name: { bs: "Panonska Jezera", en: "Pannonian Lakes" }, lat: 44.539076, lon: 18.679488, category: "nature", entryFee: "Paid 7.5 KM - 9 KM for entire day" },
+  { name: { bs: "Slana Banja Park", en: "Slana Banja Park" }, lat: 44.536961, lon: 18.687983, category: "nature" },
   { name: { bs: "Trg Slobode", en: "Freedom Square" }, lat: 44.53954253369571, lon: 18.67508475352372, category: "culture" },
-  { name: { bs: "Stara Česma", en: "Old Town Fountain" }, lat: 44.5393, lon: 18.6776, category: "culture" },
+  { name: { bs: "Stara Česma", en: "Old Town Fountain" }, lat: 44.538982, lon: 18.675580, category: "culture" },
   { name: { bs: "Spomenik Kralju Tvrtku (I)", en: "King Tvrtko Monument" }, lat: 44.53812247668793, lon: 18.678359094003866, category: "history" },
   { name: { bs: "Spomenik Meši Selimoviću", en: "Mesa Selimovic Monument" }, lat: 44.53710706292608, lon: 18.67822758905615, category: "culture" },
   { name: { bs: "Džamija Šarena (Atik)", en: "Atik Mosque" }, lat: 44.54001556181191, lon: 18.673365480509432, category: "religion" },
@@ -292,8 +291,8 @@ export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> =
   salt_square: { lat: 44.5382182, lon: 18.6759398 },
   palancinkara: { lat: 44.5383762, lon: 18.6775339 },
   palancikara: { lat: 44.5383762, lon: 18.6775339 },
-  slana_banja: { lat: 44.5378167, lon: 18.6875664 },
-  panonika: { lat: 44.5385, lon: 18.6767 },
+  slana_banja: { lat: 44.536961, lon: 18.687983 },
+  panonika: { lat: 44.539076, lon: 18.679488 },
   slapovi: { lat: 44.5404243, lon: 18.6819408 },
   kapija: { lat: 44.53863, lon: 18.676805 },
   atelje_ismet: { lat: 44.5371465, lon: 18.6810454 },

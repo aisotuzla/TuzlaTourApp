@@ -94,6 +94,11 @@ export const generateQuestPopupHtml = (
             🔄 ${lang === 'bs' ? '360° Panorama' : '360° Panorama'}
           </button>
         ` : ''}
+
+        <!-- QR Scan Button — always shown -->
+        <button onclick="window.openQrScannerFromPopup && window.openQrScannerFromPopup('${loc.id}')" style="width: 100%; padding: 9px 8px; background: linear-gradient(135deg, #0f172a, #1e293b); color: #fbbf24; border: 1.5px solid #fbbf2466; border-radius: 12px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 0 12px rgba(251,191,36,0.2);">
+          📷 ${lang === 'bs' ? 'Skeniraj QR' : lang === 'de' ? 'QR Scannen' : 'Scan QR'}
+        </button>
       </div>
     </div>
   `;

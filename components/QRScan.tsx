@@ -15,6 +15,10 @@ import {
     ChevronDown,
     ChevronUp,
     X,
+    Camera,
+    RefreshCw,
+    Upload,
+    Image,
 } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,8 +33,8 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
     stara_cesma: { lat: 44.538982, lon: 18.675580 },
     salt_square: { lat: 44.5382182, lon: 18.6759398 },
     palancinkara: { lat: 44.5383762, lon: 18.6775339 },
-    slana_banja: { lat: 44.5378167, lon: 18.6875664 },
-    panonika: { lat: 44.5385, lon: 18.6767 },
+    slana_banja: { lat: 44.536961, lon: 18.687983 },
+    panonika: { lat: 44.539076, lon: 18.679488 },
     slapovi: { lat: 44.5404243, lon: 18.6819408 },
     kapija: { lat: 44.53863, lon: 18.676805 },
     atelje_ismet: { lat: 44.5371465, lon: 18.6810454 },
@@ -54,6 +58,11 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
     const [conversionMode, setConversionMode] = useState<'BAM_TO_EUR' | 'EUR_TO_BAM'>('BAM_TO_EUR');
     const [isScanning, setIsScanning] = useState(false);
     const [scannerFeedback, setScannerFeedback] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+    const [scannerStatus, setScannerStatus] = useState<'idle' | 'loading' | 'active' | 'error'>('idle');
+    const [scannerError, setScannerError] = useState<string | null>(null);
+    const [availableCameras, setAvailableCameras] = useState<Array<{ id: string; label: string }>>([]);
+    const [activeCameraId, setActiveCameraId] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [ledger, setLedger] = useState<LedgerEntry[]>([]);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [playingVideo, setPlayingVideo] = useState<string | null>(null);
@@ -103,80 +112,182 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
         };
     }, []);
 
-    const startScanner = async () => {
-        setIsScanning(true);
-        setScannerFeedback(null);
-        setTimeout(async () => {
-            const containerId = 'qrscan-reader';
-            if (!document.getElementById(containerId)) return;
-            try {
-                const scanner = new Html5Qrcode(containerId);
-                scannerRef.current = scanner;
-                await scanner.start(
-                    { facingMode: 'environment' },
-                    { fps: 12, qrbox: { width: 220, height: 220 } },
-                    async (decodedText) => {
-                        const trimmed = decodedText?.trim() ?? '';
-                        const target = findQuestTargetFromQr(trimmed);
-                        if (!target) {
-                            setScannerFeedback({ text: lang === 'bs' ? 'Nepoznat QR kod lokacije.' : 'Unknown location QR code.', type: 'error' });
-                            return;
-                        }
+    const processDecodedQr = async (decodedText: string) => {
+        const trimmed = decodedText?.trim() ?? '';
+        const target = findQuestTargetFromQr(trimmed);
+        if (!target) {
+            setScannerFeedback({ text: lang === 'bs' ? 'Nepoznat QR kod lokacije.' : 'Unknown location QR code.', type: 'error' });
+            return;
+        }
 
-                        const now = new Date();
-                        const timeStr = now.toLocaleTimeString(lang === 'bs' ? 'bs-BA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
-                        const dateStr = now.toLocaleDateString(lang === 'bs' ? 'bs-BA' : 'en-US', { month: 'short', day: 'numeric' });
-                        const timestamp = `${dateStr}, ${timeStr}`;
+        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+            try { navigator.vibrate([100, 50, 100]); } catch (_) {}
+        }
 
-                        const exists = ledger.some(item => item.id === target.id);
-                        if (exists) {
-                            setScannerFeedback({ text: lang === 'bs' ? `${target.name.bs} je već u vašoj knjizi.` : `${target.name.en} is already in your ledger.`, type: 'success' });
-                            setTimeout(() => setScannerFeedback(null), 3000);
-                            stopScanner();
-                            return;
-                        }
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString(lang === 'bs' ? 'bs-BA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = now.toLocaleDateString(lang === 'bs' ? 'bs-BA' : 'en-US', { month: 'short', day: 'numeric' });
+        const timestamp = `${dateStr}, ${timeStr}`;
 
-                        const newLedger = [{ id: target.id, timestamp }, ...ledger];
-                        setLedger(newLedger);
-                        await Preferences.set({ key: 'tuzla_scan_ledger', value: JSON.stringify(newLedger) });
+        const exists = ledger.some(item => item.id === target.id);
+        if (exists) {
+            setScannerFeedback({ text: lang === 'bs' ? `${target.name.bs} je već u vašoj knjizi.` : `${target.name.en} is already in your ledger.`, type: 'success' });
+            setTimeout(() => setScannerFeedback(null), 3000);
+            stopScanner();
+            return;
+        }
 
-                        if (!unlockedRewards.includes(target.id)) {
-                            setUnlockedRewards(prev => [...prev, target.id]);
-                        }
+        const newLedger = [{ id: target.id, timestamp }, ...ledger];
+        setLedger(newLedger);
+        await Preferences.set({ key: 'tuzla_scan_ledger', value: JSON.stringify(newLedger) });
 
-                        setScannerFeedback({ text: lang === 'bs' ? `Otključana lokacija: ${target.name.bs}!` : `Unlocked location: ${target.name.en}!`, type: 'success' });
-                        setTimeout(() => setScannerFeedback(null), 3000);
-                        stopScanner();
+        if (!unlockedRewards.includes(target.id)) {
+            setUnlockedRewards(prev => [...prev, target.id]);
+        }
 
-                        // Auto-open reward HTML if this target has one (e.g. StaraCesma.html or PoveljaKulinaBana.html)
-                        if ((target as any).rewardHtml) {
-                            const rewardTitle = target.name[lang as keyof typeof target.name] || target.name.en || target.name.bs;
-                            setTimeout(() => {
-                                setActiveRewardHtml({ url: (target as any).rewardHtml!, title: rewardTitle });
-                            }, 700);
-                        }
-                    },
-                    () => { }
-                );
-            } catch (err) {
-                console.error('Scanner error', err);
-                setIsScanning(false);
-                setScannerFeedback({ text: lang === 'bs' ? 'Nije moguće pokrenuti kameru.' : 'Could not start camera.', type: 'error' });
-                setTimeout(() => setScannerFeedback(null), 3000);
-            }
-        }, 150);
+        setScannerFeedback({ text: lang === 'bs' ? `Otključana lokacija: ${target.name.bs}!` : `Unlocked location: ${target.name.en}!`, type: 'success' });
+        setTimeout(() => setScannerFeedback(null), 3000);
+        stopScanner();
+
+        // Auto-open reward HTML if this target has one (e.g. StaraCesma.html or PoveljaKulinaBana.html)
+        if ((target as any).rewardHtml) {
+            const rewardTitle = target.name[lang as keyof typeof target.name] || target.name.en || target.name.bs;
+            setTimeout(() => {
+                setActiveRewardHtml({ url: (target as any).rewardHtml!, title: rewardTitle });
+            }, 700);
+        }
     };
 
-    const stopScanner = () => {
+    const stopScanner = async () => {
         if (scannerRef.current) {
-            scannerRef.current.stop().then(() => {
-                scannerRef.current?.clear();
-                scannerRef.current = null;
-                setIsScanning(false);
-            }).catch(() => setIsScanning(false));
-        } else {
-            setIsScanning(false);
+            try {
+                if (scannerRef.current.isScanning) {
+                    await scannerRef.current.stop();
+                }
+                scannerRef.current.clear();
+            } catch (_) {}
+            scannerRef.current = null;
         }
+        setIsScanning(false);
+        setScannerStatus('idle');
+        setScannerError(null);
+    };
+
+    const startScanner = async (preferredCamId?: string) => {
+        setIsScanning(true);
+        setScannerStatus('loading');
+        setScannerError(null);
+        setScannerFeedback(null);
+
+        // Allow container to mount and compute layout box
+        await new Promise(r => setTimeout(r, 380));
+
+        const containerId = 'qrscan-reader';
+        const container = document.getElementById(containerId);
+        if (!container) {
+            setScannerStatus('error');
+            setScannerError(lang === 'bs' ? 'Kamera nije spremna. Pokušajte ponovo.' : 'Scanner container not ready. Please try again.');
+            return;
+        }
+
+        if (scannerRef.current) {
+            try {
+                if (scannerRef.current.isScanning) {
+                    await scannerRef.current.stop();
+                }
+                scannerRef.current.clear();
+            } catch (_) {}
+            scannerRef.current = null;
+        }
+
+        try {
+            const scanner = new Html5Qrcode(containerId, { verbose: false });
+            scannerRef.current = scanner;
+
+            const qrConfig = {
+                fps: 15,
+                qrbox: { width: Math.min(window.innerWidth * 0.7, 240), height: Math.min(window.innerWidth * 0.7, 240) },
+                disableFlip: false
+            };
+
+            let cameras: Array<{ id: string; label: string }> = [];
+            try {
+                cameras = await Html5Qrcode.getCameras();
+                setAvailableCameras(cameras);
+            } catch (_) {}
+
+            if (preferredCamId) {
+                await scanner.start(preferredCamId, qrConfig, processDecodedQr, () => {});
+                setActiveCameraId(preferredCamId);
+                setScannerStatus('active');
+                return;
+            }
+
+            try {
+                await scanner.start({ facingMode: 'environment' }, qrConfig, processDecodedQr, () => {});
+                setScannerStatus('active');
+            } catch (envErr) {
+                console.warn('[QRScan] Environment camera failed, trying fallback...', envErr);
+                if (cameras.length > 0) {
+                    const backCam = cameras.find(c => /back|rear|environment/i.test(c.label)) || cameras[cameras.length - 1];
+                    await scanner.start(backCam.id, qrConfig, processDecodedQr, () => {});
+                    setActiveCameraId(backCam.id);
+                    setScannerStatus('active');
+                } else {
+                    throw envErr;
+                }
+            }
+        } catch (err: any) {
+            console.error('[QRScan] Scanner error:', err);
+            setScannerStatus('error');
+            setScannerError(
+                lang === 'bs'
+                    ? 'Kamera nije dostupna ili nema dozvole. Možete odabrati fotografiju s QR kodom.'
+                    : 'Camera unavailable or permission denied. You can scan from a photo instead.'
+            );
+        }
+    };
+
+    const switchCamera = async () => {
+        if (availableCameras.length < 2) return;
+        const currentIndex = availableCameras.findIndex(c => c.id === activeCameraId);
+        const nextIndex = (currentIndex + 1) % availableCameras.length;
+        const nextCam = availableCameras[nextIndex];
+        if (scannerRef.current && scannerRef.current.isScanning) {
+            try {
+                await scannerRef.current.stop();
+            } catch (_) {}
+        }
+        startScanner(nextCam.id);
+    };
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setScannerFeedback({
+            text: lang === 'bs' ? 'Skeniram fotografiju...' : 'Analyzing photo...',
+            type: 'success'
+        });
+        try {
+            let tempDiv = document.getElementById('qrscan-file-temp');
+            if (!tempDiv) {
+                tempDiv = document.createElement('div');
+                tempDiv.id = 'qrscan-file-temp';
+                tempDiv.style.display = 'none';
+                document.body.appendChild(tempDiv);
+            }
+            const fileScanner = new Html5Qrcode('qrscan-file-temp', { verbose: false });
+            const decodedText = await fileScanner.scanFile(file, true);
+            await processDecodedQr(decodedText);
+            fileScanner.clear();
+        } catch (err) {
+            setScannerFeedback({
+                text: lang === 'bs' ? 'QR kod nije pronađen na slici. Pokušajte s jasnijom fotografijom.' : 'No QR code found on image. Please try with a clearer photo.',
+                type: 'error'
+            });
+            setTimeout(() => setScannerFeedback(null), 3500);
+        }
+        if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
     const handleClearLedger = async () => {
@@ -229,8 +340,77 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                             <AnimatePresence>
                                 {isScanning && (
                                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                                        <div className="relative w-full rounded-2xl overflow-hidden bg-black border-2 border-sky-400/40 shadow-[0_0_50px_rgba(56,189,248,0.25),0_0_80px_rgba(245,158,11,0.15)]">
-                                            <div id="qrscan-reader" className="w-full rounded-2xl overflow-hidden" />
+                                        <div className="relative w-full rounded-2xl overflow-hidden bg-black border-2 border-sky-400/40 shadow-[0_0_50px_rgba(56,189,248,0.25),0_0_80px_rgba(245,158,11,0.15)] min-h-[280px] flex items-center justify-center">
+                                            {/* Camera loading state */}
+                                            {scannerStatus === 'loading' && (
+                                                <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/95 p-6 text-center gap-3">
+                                                    <div className="relative w-12 h-12">
+                                                        <div className="absolute inset-0 rounded-full border-2 border-sky-400/30 border-t-amber-400 animate-spin" />
+                                                        <Camera className="w-5 h-5 text-sky-400 absolute inset-0 m-auto" />
+                                                    </div>
+                                                    <p className="text-xs font-bold text-sky-300 uppercase tracking-wider">
+                                                        {lang === 'bs' ? 'Pokretanje kamere...' : lang === 'de' ? 'Kamera wird gestartet...' : 'Starting camera...'}
+                                                    </p>
+                                                    <p className="text-[10px] text-slate-400 max-w-[220px]">
+                                                        {lang === 'bs' ? 'Molimo omogućite pristup kameri ako se to zatraži.' : 'Please allow camera permission if prompted.'}
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {/* Camera error state with retry & photo fallback */}
+                                            {scannerStatus === 'error' && (
+                                                <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/95 p-6 text-center gap-3">
+                                                    <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400">
+                                                        <AlertCircle size={22} />
+                                                    </div>
+                                                    <p className="text-xs font-black text-red-400 uppercase tracking-tight">
+                                                        {lang === 'bs' ? 'Problem s kamerom' : 'Camera Issue'}
+                                                    </p>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed max-w-[260px]">
+                                                        {scannerError || (lang === 'bs' ? 'Kamera nije dostupna. Možete odabrati sliku s QR kodom.' : 'Camera unavailable. You can scan from a photo.')}
+                                                    </p>
+                                                    <div className="flex flex-col sm:flex-row gap-2 w-full mt-2">
+                                                        <button
+                                                            onClick={() => startScanner()}
+                                                            className="flex-1 py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-md"
+                                                        >
+                                                            <RefreshCw size={13} />
+                                                            {lang === 'bs' ? 'Pokušaj ponovo' : 'Retry Camera'}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => fileInputRef.current?.click()}
+                                                            className="flex-1 py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-md"
+                                                        >
+                                                            <Upload size={13} />
+                                                            {lang === 'bs' ? 'Učitaj sliku' : 'Scan Photo'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div id="qrscan-reader" className="w-full min-h-[280px] rounded-2xl overflow-hidden" />
+
+                                            {/* Top Control Bar over live camera */}
+                                            {scannerStatus === 'active' && (
+                                                <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-20 pointer-events-auto">
+                                                    {availableCameras.length > 1 ? (
+                                                        <button
+                                                            onClick={switchCamera}
+                                                            className="px-2.5 py-1.5 bg-slate-900/80 hover:bg-slate-800 text-sky-300 border border-sky-400/40 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 backdrop-blur-md shadow-md active:scale-95 transition-all"
+                                                        >
+                                                            <RefreshCw size={11} />
+                                                            {lang === 'bs' ? 'Okreni kameru' : 'Switch Cam'}
+                                                        </button>
+                                                    ) : <div />}
+                                                    <button
+                                                        onClick={() => fileInputRef.current?.click()}
+                                                        className="px-2.5 py-1.5 bg-slate-900/80 hover:bg-slate-800 text-amber-300 border border-amber-400/40 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 backdrop-blur-md shadow-md active:scale-95 transition-all"
+                                                    >
+                                                        <Image size={11} />
+                                                        {lang === 'bs' ? 'Foto' : 'Photo'}
+                                                    </button>
+                                                </div>
+                                            )}
 
                                             {/* Golden & Glowing Blue Cyber Corner Brackets */}
                                             <div className="absolute top-2 left-2 w-8 h-8 border-t-4 border-l-4 border-amber-400 rounded-tl-xl shadow-[0_0_15px_rgba(251,191,36,0.85)] pointer-events-none z-10" />
@@ -246,24 +426,26 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                             </div>
 
                                             {/* Modern & Powerful Laser: Golden Core with Glowing Blue Aura */}
-                                            <motion.div
-                                                animate={{ top: ['4%', '96%', '4%'] }}
-                                                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-                                                className="absolute left-0 w-full pointer-events-none z-20 flex flex-col items-center"
-                                            >
-                                                {/* Top sweep trail */}
-                                                <div className="w-full h-8 bg-gradient-to-t from-amber-400/35 via-sky-400/20 to-transparent blur-xs -mb-1" />
+                                            {scannerStatus === 'active' && (
+                                                <motion.div
+                                                    animate={{ top: ['4%', '96%', '4%'] }}
+                                                    transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                                                    className="absolute left-0 w-full pointer-events-none z-20 flex flex-col items-center"
+                                                >
+                                                    {/* Top sweep trail */}
+                                                    <div className="w-full h-8 bg-gradient-to-t from-amber-400/35 via-sky-400/20 to-transparent blur-xs -mb-1" />
 
-                                                {/* Core Laser Bar */}
-                                                <div className="relative w-full h-[3px] bg-gradient-to-r from-transparent via-sky-400 via-amber-300 via-amber-200 via-sky-400 to-transparent shadow-[0_0_16px_#fbbf24,0_0_32px_#38bdf8,0_0_50px_#0284c7]">
-                                                    <div className="absolute inset-0 h-[1.5px] bg-white blur-[0.5px]" />
-                                                    <div className="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_#38bdf8,0_0_5px_#fbbf24]" />
-                                                    <div className="absolute -right-1 -top-1 w-2.5 h-2.5 rounded-full bg-sky-300 shadow-[0_0_10px_#fbbf24,0_0_5px_#38bdf8]" />
-                                                </div>
+                                                    {/* Core Laser Bar */}
+                                                    <div className="relative w-full h-[3px] bg-gradient-to-r from-transparent via-sky-400 via-amber-300 via-amber-200 via-sky-400 to-transparent shadow-[0_0_16px_#fbbf24,0_0_32px_#38bdf8,0_0_50px_#0284c7]">
+                                                        <div className="absolute inset-0 h-[1.5px] bg-white blur-[0.5px]" />
+                                                        <div className="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_#38bdf8,0_0_5px_#fbbf24]" />
+                                                        <div className="absolute -right-1 -top-1 w-2.5 h-2.5 rounded-full bg-sky-300 shadow-[0_0_10px_#fbbf24,0_0_5px_#38bdf8]" />
+                                                    </div>
 
-                                                {/* Bottom sweep trail */}
-                                                <div className="w-full h-8 bg-gradient-to-b from-amber-400/35 via-sky-400/20 to-transparent blur-xs -mt-1" />
-                                            </motion.div>
+                                                    {/* Bottom sweep trail */}
+                                                    <div className="w-full h-8 bg-gradient-to-b from-amber-400/35 via-sky-400/20 to-transparent blur-xs -mt-1" />
+                                                </motion.div>
+                                            )}
                                         </div>
 
                                         <button onClick={stopScanner} className="mt-3 w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs uppercase tracking-widest rounded-xl transition-all">
@@ -272,6 +454,15 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                     </motion.div>
                                 )}
                             </AnimatePresence>
+
+                            {/* Hidden file input for photo/image upload fallback */}
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleFileUpload}
+                            />
 
                             {scannerFeedback && (
                                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-xs font-bold ${scannerFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
@@ -285,10 +476,23 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                             </div>
 
                             {!isScanning && (
-                                <button onClick={startScanner} className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
-                                    <QrCode size={16} />
-                                    {t.startScanner}
-                                </button>
+                                <div className="flex flex-col sm:flex-row gap-2.5 w-full">
+                                    <button
+                                        onClick={() => startScanner()}
+                                        className="flex-1 h-14 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                                    >
+                                        <Camera size={16} />
+                                        {t.startScanner}
+                                    </button>
+                                    <button
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="h-14 sm:w-44 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-black uppercase tracking-widest rounded-xl shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                                        title={lang === 'bs' ? 'Skeniraj iz galerije slika' : 'Scan from gallery photo'}
+                                    >
+                                        <Upload size={16} className="text-slate-500" />
+                                        {lang === 'bs' ? 'Iz slike' : lang === 'de' ? 'Aus Foto' : 'From Photo'}
+                                    </button>
+                                </div>
                             )}
                         </div>
 

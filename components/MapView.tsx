@@ -52,16 +52,16 @@ interface RoutePoiPreset {
 const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
   {
     name: { bs: 'Panonska Jezera', en: 'Pannonian Lakes' },
-    lat: 44.53888255374366,
-    lon: 18.680032450849325,
+    lat: 44.539076,
+    lon: 18.679488,
     category: 'nature',
     entryFee: "Paid 7.5 KM - 9 KM for entire day",
     description: "The Pannonian Lakes are a unique complex of three salt lakes located in the heart of Tuzla. Created during mineral extraction activities in the late 19th and early 20th centuries, the lakes have since transformed into a popular recreational destination. Rich in minerals and natural beauty, the largest lake, Panonsko Jezero I, offers swimming, sunbathing, and numerous amenities including restaurants, sports facilities, and event spaces. The entire complex provides a refreshing urban oasis with its blend of natural landscapes and modern tourist infrastructure."
   },
   {
     name: { bs: 'Slana Banja Park', en: 'Slana Banja Park' },
-    lat: 44.53846734540082,
-    lon: 18.685620782683003,
+    lat: 44.536961,
+    lon: 18.687983,
     category: 'nature',
     entryFee: "free",
     description: "A sprawling, peaceful memorial park and pine forest on a hill overlooking the Pannonian lakes. It contains walking paths, fountains, and monuments dedicated to anti-fascist heroes and veterans."

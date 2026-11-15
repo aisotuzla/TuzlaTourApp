@@ -321,7 +321,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             position: relative;
             width: 100%;
             height: 100%;
-            background-color: #000;
+            background-color: #ffffff;
             border-radius: 36px; 
             border: 1px solid rgba(184, 199, 219, 0.18);
             overflow: hidden; 
@@ -399,7 +399,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 height: 100% !important;
                 border-radius: 0 !important;
                 border: none !important;
-                background-color: transparent !important;
+                background-color: #ffffff !important;
                 touch-action: pan-y;
             }
 
@@ -453,6 +453,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 }`}
             />
 
+            {/* Solid white background cover while video is loading up (hides gray play sign on phone) */}
+            {!isHeroPlaying && (
+              <div className="absolute inset-0 z-[15] bg-white pointer-events-none transition-opacity duration-500" />
+            )}
+
             {/* Video koji na mobilnom postaje Full Size - pušta se 2 puta */}
             <video
               ref={heroVideoRef}
@@ -462,6 +467,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               preload="metadata"
               disablePictureInPicture
               controls={false}
+              poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect width='1' height='1' fill='white'/%3E"
               src={videoSrc}
               onPlay={() => {
                 setIsHeroPlaying(true);
@@ -470,6 +476,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               onLoadedData={() => setIsHeroReady(true)}
               onError={handleVideoError}
               onEnded={handleHeroVideoEnd}
+              style={{ backgroundColor: '#ffffff' }}
               className={`w-full h-full object-cover transition-opacity duration-700 pointer-events-none select-none ${isHeroPlaying ? 'opacity-100' : 'opacity-0'
                 }`}
             >
