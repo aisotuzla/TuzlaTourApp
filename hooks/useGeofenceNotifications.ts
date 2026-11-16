@@ -274,8 +274,9 @@ export function useGeofenceNotifications({
   const insideZonesRef = useRef<Set<string>>(new Set());
   const lastTriggeredTimeRef = useRef<Map<string, number>>(new Map());
   const permissionsInitializedRef = useRef(false);
+  const notificationsAllowedRef = useRef(false);
 
-  // Initialize notification channel and permissions on startup
+  // Check existing notification permissions on startup. Never prompt automatically.
   useEffect(() => {
     if (!enabled || permissionsInitializedRef.current) return;
     permissionsInitializedRef.current = true;
@@ -296,15 +297,10 @@ export function useGeofenceNotifications({
             console.warn('LocalNotifications createChannel warn:', err);
           });
 
-          // Check & request permissions
           const perm = await LocalNotifications.checkPermissions();
-          if (perm.display !== 'granted') {
-            await LocalNotifications.requestPermissions();
-          }
+          notificationsAllowedRef.current = perm.display === 'granted';
         } else if (typeof window !== 'undefined' && 'Notification' in window) {
-          if (Notification.permission === 'default') {
-            await Notification.requestPermission();
-          }
+          notificationsAllowedRef.current = Notification.permission === 'granted';
         }
       } catch (e) {
         console.warn('Notification setup notice:', e);
@@ -319,6 +315,8 @@ export function useGeofenceNotifications({
     if (!enabled || !userPosition) return;
 
     const triggerNotification = async (zone: GeofenceZone) => {
+      if (!notificationsAllowedRef.current) return;
+
       const title = zone.title[lang] || zone.title.en || zone.title.bs;
       const body = zone.body[lang] || zone.body.en || zone.body.bs;
       const notifId = getZoneNotificationId(zone.id);
