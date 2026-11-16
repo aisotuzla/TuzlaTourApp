@@ -5,7 +5,7 @@
 
 This policy explains the cookies and similar browser technologies used by Tuzla Tour Guide. A native Capacitor app may use platform storage rather than browser cookies for some preferences.
 
-> **Implementation note:** The current repository includes a Google Tag Manager script in `index.html` that is loaded before the visitor makes a choice in the consent interface. The consent component separately loads/configures Google Analytics 4 when performance consent is saved. The current code therefore does not yet demonstrate that all tags are held back until consent, or that a previously saved choice is fully re-applied on every visit. This must be corrected and tested before the project can claim complete pre-consent blocking.
+> **Implementation status (16 November 2026):** The app code now removes the page-load Google tag and GTM snippets and injects the single GTM container only after a saved or newly selected optional category (Performance or Marketing) permits it. Saved choices are re-applied when the consent component starts. This is a Basic Consent Mode approach: no GTM/Google tag request should occur before optional consent. The live GTM container still needs to be audited and configured so each tag has the correct consent checks; this repository change alone cannot guarantee that every custom or third-party tag behaves correctly. Verify the production container in a clean browser session before making a compliance claim.
 
 ## 1. What are cookies and similar technologies?
 
@@ -43,7 +43,7 @@ The banner provides **Accept All**, **Reject All** and **Customize** choices. Ne
 
 ### Google Tag Manager
 
-The page source currently includes a Google Tag Manager container:
+The app loads the Google Tag Manager container only after optional Performance or Marketing consent has been granted:
 
 - Container ID: `GTM-TSZC4L5L`
 - Provider: Google
@@ -53,7 +53,7 @@ The exact tags, cookies, storage keys and data transfers depend on the live cont
 
 ### Google Analytics 4
 
-The consent component contains a GA4 measurement ID:
+The consent component uses the GA4 measurement ID as the analytics consent-control target for tags configured through GTM:
 
 - Measurement ID: `G-988LD92552`
 - Provider: Google
@@ -97,7 +97,7 @@ For mobile builds, app preferences may be stored by Capacitor and may be cleared
 
 You can change your selection through the cookie settings interface where available, or clear the stored consent record in browser/app settings.
 
-Withdrawing consent should stop future non-essential processing. The current tag-loading behaviour needs the technical correction described above so that already loaded tags are also disabled and do not continue collecting analytics after withdrawal.
+Withdrawing consent updates Google Consent Mode to denied for the withdrawn categories and disables future GA4 collection in the current page session. A GTM script that has already loaded cannot be unloaded from the page; therefore every tag in the container must have appropriate consent checks. Test custom HTML tags and third-party tags individually to ensure they stop firing after withdrawal.
 
 Withdrawal does not make processing that occurred before withdrawal unlawful.
 
