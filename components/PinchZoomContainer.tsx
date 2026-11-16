@@ -206,7 +206,7 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
   }, [maxScale, minScale, resetZoom]);
 
   return (
-    <div className="relative w-full h-full flex-1 flex flex-col overflow-hidden">
+    <div className="relative w-full min-h-full flex-1 flex flex-col">
       {/* Zoom Indicator and Quick Reset Button (Visible only when zoomed in) */}
       {scale > 1.05 && (
         <div className="fixed top-16 right-4 z-[9999] flex items-center gap-2 bg-slate-900/90 text-amber-300 border border-amber-400/50 shadow-2xl rounded-full px-3 py-1.5 backdrop-blur-md animate-in fade-in zoom-in duration-200">
@@ -226,7 +226,7 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
       {/* Scalable Viewport Target */}
       <div
         ref={containerRef}
-        className="w-full h-full flex-1 flex flex-col will-change-transform"
+        className="w-full min-h-full flex-1 flex flex-col will-change-transform"
         style={{
           touchAction: 'pan-x pan-y pinch-zoom',
         }}
