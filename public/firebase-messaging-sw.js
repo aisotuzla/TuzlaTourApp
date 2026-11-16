@@ -7,8 +7,7 @@ const firebaseConfig = {
   projectId: "tuzlatourguide",
   storageBucket: "tuzlatourguide.firebasestorage.app",
   messagingSenderId: "243343684809",
-  appId: "1:243343684809:web:8835b25710cc8988bb4918",
-  measurementId: "G-FHZ2NMYPG3"
+  appId: "1:243343684809:web:8835b25710cc8988bb4918"
 };
 
 firebase.initializeApp(firebaseConfig);
