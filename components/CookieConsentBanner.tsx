@@ -18,6 +18,8 @@ interface CookieConsentState {
 
 const COOKIE_CONSENT_KEY = 'tuzla_cookie_consent';
 const COOKIE_CONSENT_VERSION = 'v1_202611';
+const GTM_CONTAINER_ID = 'GTM-TSZC4L5L';
+const GA4_MEASUREMENT_ID = 'G-988LD92552';
 
 // Translations
 const translations: Record<string, any> = {
@@ -272,25 +274,62 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
     }
   };
 
-  // Apply consent to tracking scripts via Google Consent Mode v2
+  // Load GTM only after optional consent (Basic Consent Mode).
+  // Every GA4, advertising, custom HTML and third-party tag must also have
+  // the appropriate consent checks configured inside the GTM container.
   const applyConsent = (consent: { performance?: boolean; marketing?: boolean; functional?: boolean }) => {
     if (typeof window === 'undefined') return;
 
-    if ((window as any).gtag) {
-      (window as any).gtag('consent', 'update', {
-        'analytics_storage': consent.performance ? 'granted' : 'denied',
-        'ad_storage': consent.marketing ? 'granted' : 'denied',
-        'ad_user_data': consent.marketing ? 'granted' : 'denied',
-        'ad_personalization': consent.marketing ? 'granted' : 'denied',
-      });
+    const w = window as any;
+    const mayLoadGtm = Boolean(consent.performance || consent.marketing);
+    const gtmAlreadyRequested = Boolean(w.__tuzlaGtmRequested);
 
-      if (consent.performance) {
-        (window as any).gtag('config', 'G-988LD92552', {
-          anonymize_ip: true,
-          send_page_view: true,
-        });
-      }
+    // No optional consent and no previously loaded container: make no Google requests.
+    if (!mayLoadGtm && !gtmAlreadyRequested) return;
+
+    w.dataLayer = w.dataLayer || [];
+    w.gtag = w.gtag || function () {
+      w.dataLayer.push(arguments);
+    };
+
+    if (!w.__tuzlaConsentInitialized) {
+      w.gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        functionality_storage: consent.functional ? 'granted' : 'denied',
+        security_storage: 'granted',
+      });
+      w.__tuzlaConsentInitialized = true;
     }
+
+    w.gtag('consent', 'update', {
+      analytics_storage: consent.performance ? 'granted' : 'denied',
+      ad_storage: consent.marketing ? 'granted' : 'denied',
+      ad_user_data: consent.marketing ? 'granted' : 'denied',
+      ad_personalization: consent.marketing ? 'granted' : 'denied',
+      functionality_storage: consent.functional ? 'granted' : 'denied',
+      security_storage: 'granted',
+    });
+
+    // Prevent GA4 collection when analytics consent is absent, including after withdrawal.
+    w[`ga-disable-${GA4_MEASUREMENT_ID}`] = !consent.performance;
+
+    if (!mayLoadGtm || gtmAlreadyRequested) return;
+
+    w.__tuzlaGtmRequested = true;
+    w.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+
+    const script = document.createElement('script');
+    script.id = 'tuzla-gtm-script';
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtm.js?id=${GTM_CONTAINER_ID}`;
+    script.onerror = () => {
+      w.__tuzlaGtmRequested = false;
+      console.error('Unable to load Google Tag Manager.');
+    };
+    document.head.appendChild(script);
   };
 
   // Handle accept all
@@ -299,7 +338,7 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
       necessary: true,
       performance: true,
       functional: true,
-      marketing: false,
+      marketing: true,
     });
   };
 
