@@ -210,21 +210,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
                 },
               },
             },
-            // 8. CDN scripts (Google Analytics)
-            {
-              urlPattern: /^https:\/\/(www\.googletagmanager\.com)\/.*/i,
-              handler: 'StaleWhileRevalidate',
-              options: {
-                cacheName: 'cdn-scripts-cache',
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
           ],
         },
       })
