@@ -306,7 +306,7 @@ const AppContent: React.FC = () => {
         />
 
         <div
-          className="flex-1 flex flex-col overflow-hidden"
+          className="flex-1 min-h-0 flex flex-col overflow-hidden"
           style={{
             height: 'calc(100dvh - 58px - env(safe-area-inset-top, 0px))',
             minHeight: 'calc(100dvh - 58px - env(safe-area-inset-top, 0px))',
@@ -314,7 +314,7 @@ const AppContent: React.FC = () => {
           }}
         >
           <main
-            className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain flex flex-col"
+            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-auto flex flex-col"
             style={{
               WebkitOverflowScrolling: 'touch',
               touchAction: 'pan-x pan-y pinch-zoom',

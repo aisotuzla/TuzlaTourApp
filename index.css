@@ -5,12 +5,23 @@
 html,
 body,
 #root {
+    min-height: 100%;
     touch-action: pan-x pan-y pinch-zoom;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+#root {
+    width: 100%;
 }
 
 body {
     font-family: 'Quicksand', sans-serif;
     overflow-x: hidden;
+    overflow-y: auto;
     background: #ffffff;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior: none;
