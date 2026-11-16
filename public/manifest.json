@@ -1,7 +1,9 @@
 {
+  "manifest_version": 3,
+  "version": "1",
   "name": "Tuzla Tour Guide App",
-  "short_name": "Tuzla Tour Guide",
-  "description": "Multilingual interactive tour guide for Tuzla, Bosnia and Herzegovina. Features 3D GPS navigation, AR Quests with QR code scanning and collecting rewards, audio guides, personal itinerary planner with expense ledger, transportation info, verified hotel and dining directories, it is the only app you will need for full exploration of City of Tuzla.",
+  "short_name": "Tuzla Guide",
+  "description": "Multilingual tour guide for Tuzla with GPS, AR quests, audio guides, itinerary, and all local info to explore the city of Tuzla.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
