@@ -80,7 +80,7 @@ The repository contains experimental Web3/Solana reward assets and dependencies.
 
 The web app uses browser storage for settings and a cookie-consent record. The consent component stores a record under the key `tuzla_cookie_consent` in browser local storage and, in supported Capacitor builds, in Capacitor Preferences.
 
-The website also contains Google Tag Manager and Google Analytics configuration. The current code has a consent implementation that needs further technical verification: the GTM script is included in the page before the user makes a cookie choice, while the consent component separately loads/configures GA4 when performance consent is saved. Therefore, the current code should not be interpreted as proof that every analytics tag is blocked until consent. See the [Cookie Policy](COOKIE_POLICY.md).
+The website uses Vercel Web Analytics and Speed Insights. It does not intentionally load Google Tag Manager, Google Analytics 4 or advertising trackers. See the [Cookie Policy](COOKIE_POLICY.md) for the current storage and service summary.
 
 ## 5. Purposes and legal grounds
 
@@ -98,7 +98,9 @@ The project must confirm the final legal basis for each production data flow bef
 Depending on deployment and the features you use, information may be processed by:
 
 - **Hosting and deployment providers:** Vercel and/or Netlify.
-- **Google services:** Google Tag Manager, Google Analytics and Google Fonts where loaded.
+- **Vercel:** hosting, Web Analytics and Speed Insights.
+- **Firebase:** Cloud Messaging for push notifications when the visitor enables notifications, plus device-local proximity notifications. Notification permission should be requested only after an explicit user action.
+- **Google Fonts:** fonts may be requested from Google Fonts where configured; this is a font delivery request, not Google Analytics.
 - **Map and content providers:** providers supplying map styles, map tiles, fonts, media or other external resources used by the app.
 - **Vercel storage/database services:** for the public events feed and related server-side event records.
 - **Supabase:** the project database has been prepared, but the player app's account and quest-progress integration is not yet active. When enabled, Supabase will process the data described in the updated policy.
@@ -133,7 +135,7 @@ You can:
 - deny or revoke location, camera, orientation or notification permissions in your browser or device settings;
 - stop using a feature that requires a permission;
 - clear browser site data or reset/uninstall the mobile app to remove locally stored preferences and test progress;
-- manage the cookie categories presented by the consent interface, subject to the implementation limitation described in the Cookie Policy;
+- dismiss the short privacy notice and clear local site/app storage through their browser or device settings;
 - contact the project to ask what personal data is held about you or to request access, correction, deletion, restriction, portability or objection where those rights apply.
 
 To make a request, email [aisotuzla@proton.me](mailto:aisotuzla@proton.me). The project may need reasonable information to verify that a request concerns your data. Do not send passwords, private keys, seed phrases or unnecessary identity documents.
