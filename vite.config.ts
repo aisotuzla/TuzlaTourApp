@@ -14,63 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-import type { UserConfig, ConfigEnv, Plugin } from 'vite';
-
-function getFirebaseConfig(env: Record<string, string>) {
-  const requiredKeys = [
-    'VITE_FIREBASE_API_KEY',
-    'VITE_FIREBASE_AUTH_DOMAIN',
-    'VITE_FIREBASE_PROJECT_ID',
-    'VITE_FIREBASE_STORAGE_BUCKET',
-    'VITE_FIREBASE_MESSAGING_SENDER_ID',
-    'VITE_FIREBASE_APP_ID',
-  ] as const;
-  const missingKeys = requiredKeys.filter((key) => !env[key]);
-
-  if (missingKeys.length > 0) {
-    throw new Error(
-      `Missing Firebase configuration: ${missingKeys.join(', ')}. Set these in .env.local or your deployment environment.`
-    );
-  }
-
-  return {
-    apiKey: env.VITE_FIREBASE_API_KEY,
-    authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: env.VITE_FIREBASE_APP_ID,
-    measurementId: env.VITE_FIREBASE_MEASUREMENT_ID || undefined,
-  };
-}
-
-function firebaseMessagingWorkerPlugin(env: Record<string, string>): Plugin {
-  const templatePath = path.resolve(__dirname, 'scripts/firebase-messaging-sw.template.js');
-  const template = fs.readFileSync(templatePath, 'utf8');
-  const renderWorker = () =>
-    template.replace('__FIREBASE_CONFIG__', () => JSON.stringify(getFirebaseConfig(env), null, 2));
-
-  return {
-    name: 'firebase-messaging-worker',
-    configureServer(server) {
-      server.middlewares.use('/firebase-messaging-sw.js', (_req, res, next) => {
-        try {
-          res.setHeader('Content-Type', 'application/javascript');
-          res.end(renderWorker());
-        } catch (error) {
-          next(error);
-        }
-      });
-    },
-    generateBundle() {
-      this.emitFile({
-        type: 'asset',
-        fileName: 'firebase-messaging-sw.js',
-        source: renderWorker(),
-      });
-    },
-  };
-}
+import type { UserConfig, ConfigEnv } from 'vite';
 
 export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, '.', '');
@@ -89,7 +33,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     plugins: [
       basicSsl(),
       react(),
-      firebaseMessagingWorkerPlugin(env),
       nodePolyfills({
         include: ['buffer', 'process', 'crypto', 'stream', 'util', 'events', 'vm'],
         globals: {
@@ -126,6 +69,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'maps/sprite@2x.png',
           'maps/poi.geojson',
           'maps/offline-vector-style.json',
+          'firebase-messaging-sw.js',
         ],
         manifest: {
           name: 'Tuzla Tour Guide',

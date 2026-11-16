@@ -84,8 +84,6 @@ VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
 
 A Supabase publishable key is intended for use in a browser when Row Level Security (RLS) is correctly configured. **Never put a Supabase secret/service-role key, database password, Vercel token or other server credential in a `VITE_*` variable or commit it to Git.**
 
-Firebase web and push-notification configuration is provided through the `VITE_FIREBASE_*` variables in `.env.local` and the deployment environment. These are client configuration values, not secrets: Vite includes the values in the built app and Firebase messaging service worker. Restrict the Firebase API key to the app's domains and required APIs in Google Cloud, and protect Firebase data with Security Rules and App Check. Never put service-account credentials or other privileged keys in `VITE_*` variables.
-
 Some optional integrations may require additional environment variables. Check the relevant feature code and deployment environment before enabling them.
 
 ### 4. Start the development server
