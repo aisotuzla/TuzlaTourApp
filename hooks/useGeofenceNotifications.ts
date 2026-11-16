@@ -274,7 +274,6 @@ export function useGeofenceNotifications({
   const insideZonesRef = useRef<Set<string>>(new Set());
   const lastTriggeredTimeRef = useRef<Map<string, number>>(new Map());
   const permissionsInitializedRef = useRef(false);
-  const notificationsAllowedRef = useRef(false);
 
   // Check existing notification permissions on startup. Never prompt automatically.
   useEffect(() => {
@@ -297,10 +296,7 @@ export function useGeofenceNotifications({
             console.warn('LocalNotifications createChannel warn:', err);
           });
 
-          const perm = await LocalNotifications.checkPermissions();
-          notificationsAllowedRef.current = perm.display === 'granted';
-        } else if (typeof window !== 'undefined' && 'Notification' in window) {
-          notificationsAllowedRef.current = Notification.permission === 'granted';
+          // Permission is checked immediately before each local notification.
         }
       } catch (e) {
         console.warn('Notification setup notice:', e);
