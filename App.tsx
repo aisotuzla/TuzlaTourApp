@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { App as CapApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
@@ -146,11 +146,11 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const activeTab = getTabFromPath(location.pathname);
 
-  useEffect(() => {
-    let active = true;
-    let unsubscribe = () => { };
+  const pushCleanupRef = useRef<() => void>(() => {});
 
-    void initializePushNotifications({
+  const setupPushNotifications = useCallback(async (requestPermission: boolean) => {
+    pushCleanupRef.current();
+    const cleanup = await initializePushNotifications({
       onToken: () => {
         console.info('FCM registration token saved on this device.');
       },
@@ -159,25 +159,28 @@ const AppContent: React.FC = () => {
       },
       onAction: (data) => {
         const route = data.route ?? data.url;
-        if (active && typeof route === 'string' && route.startsWith('/') && !route.startsWith('//')) {
+        if (typeof route === 'string' && route.startsWith('/') && !route.startsWith('//')) {
           navigate(route);
         }
       }
-    }).then((cleanup) => {
-      if (active) {
-        unsubscribe = cleanup;
-      } else {
-        cleanup();
-      }
-    }).catch((error: unknown) => {
+    }, requestPermission);
+    pushCleanupRef.current = cleanup;
+  }, [navigate]);
+
+  useEffect(() => {
+    void setupPushNotifications(false).catch((error: unknown) => {
       console.error('Unable to initialize push notifications:', error);
     });
-
     return () => {
-      active = false;
-      unsubscribe();
+      pushCleanupRef.current();
     };
-  }, [navigate]);
+  }, [setupPushNotifications]);
+
+  const handleEnableNotifications = useCallback(() => {
+    void setupPushNotifications(true).catch((error: unknown) => {
+      console.error('Unable to enable push notifications:', error);
+    });
+  }, [setupPushNotifications]);
 
   const [navigationTarget, setNavigationTarget] = useState<any | null>(null);
   const [autoOpenScanner, setAutoOpenScanner] = useState(false);
@@ -303,6 +306,7 @@ const AppContent: React.FC = () => {
           activeTab={activeTab}
           onSelectTab={navigateToTab}
           lang={lang}
+          onEnableNotifications={handleEnableNotifications}
         />
 
         <div
