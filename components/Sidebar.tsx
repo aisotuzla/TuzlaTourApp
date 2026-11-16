@@ -14,7 +14,8 @@ import {
   X,
   History as HistoryIcon,
   Heart,
-  Bus
+  Bus,
+  BellRing
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -23,6 +24,7 @@ interface SidebarProps {
   activeTab: AppTab;
   onSelectTab: (tab: AppTab) => void;
   lang: Language;
+  onEnableNotifications: () => void;
 }
 
 interface NavItemConfig {
@@ -159,7 +161,7 @@ const NAV_ITEMS: NavItemConfig[] = [
   }
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectTab, lang }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectTab, lang, onEnableNotifications }) => {
   const handleSelect = (tab: AppTab) => {
     onSelectTab(tab);
     onClose();
@@ -258,10 +260,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectT
             </div>
 
             {/* Footer */}
-            <div className="p-3 border-t border-slate-100 flex items-center justify-center gap-1.5 text-center bg-white/40">
-              <span className="text-xs font-black tracking-wider text-slate-700">
-                AISO Tuzla
-              </span>
+            <div className="p-3 border-t border-slate-100 flex flex-col items-center gap-2 text-center bg-white/40">
+              <button
+                type="button"
+                onClick={onEnableNotifications}
+                className="w-full flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-800 hover:bg-blue-100 transition-colors"
+              >
+                <BellRing className="h-4 w-4" />
+                {lang === 'bs' ? 'Uključi obavijesti' : lang === 'de' ? 'Benachrichtigungen aktivieren' : lang === 'tr' ? 'Bildirimleri etkinleştir' : 'Enable notifications'}
+              </button>
+              <span className="text-xs font-black tracking-wider text-slate-700">AISO Tuzla</span>
             </div>
           </motion.aside>
         </>
