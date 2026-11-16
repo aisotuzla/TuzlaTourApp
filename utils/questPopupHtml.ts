@@ -89,6 +89,13 @@ export const generateQuestPopupHtml = (
           </button>
         ` : ''}
 
+        <!-- Optional: Tvrtko Scratch Card Button -->
+        ${(loc.id === 'tvrtko_park' || loc.id === 'tvrtko') && isUnlocked ? `
+          <button onclick="window.openTvrtkoScratch && window.openTvrtkoScratch()" style="width: 100%; min-height: 34px; padding: 8px; background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1.5px solid rgba(251, 191, 36, 0.6); border-radius: 10px; font-weight: 900; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; box-sizing: border-box;">
+            🪙 ${lang === 'bs' ? 'Otvori Scratch Karticu' : 'Scratch For Reward'}
+          </button>
+        ` : ''}
+
         <!-- Optional: 360 Panorama Button -->
         ${hasPanorama ? `
           <button onclick="window.openQuestPanorama && window.openQuestPanorama('${loc.panorama}', '${escapedTitle}', ${loc.panoramaHaov || 270})" style="width: 100%; min-height: 34px; padding: 8px; background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); border-radius: 10px; font-weight: 800; font-family: 'Quicksand', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; box-sizing: border-box;">

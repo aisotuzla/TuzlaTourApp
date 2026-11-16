@@ -2,12 +2,17 @@
 
 @import "tailwindcss";
 
+html,
+body,
+#root {
+    touch-action: pan-x pan-y pinch-zoom;
+}
+
 body {
     font-family: 'Quicksand', sans-serif;
     overflow-x: hidden;
     background: #ffffff;
     -webkit-tap-highlight-color: transparent;
-    touch-action: pan-x pan-y pinch-zoom;
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
 }

@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, AlertCircle, Sparkles } from 'lucide-react';
 import { Language } from '../types';
 import { QUEST_TARGETS, NFT_REWARD_IDS, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
 import { Preferences } from '@capacitor/preferences';
+import { useGlobalApp } from '../contexts/GlobalAppContext';
 
 export interface QrScannerModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   const [isStartingCamera, setIsStartingCamera] = useState<boolean>(false);
   const [activeVideoModal, setActiveVideoModal] = useState<{ url: string; title: string } | null>(null);
   const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
+  const { setIsTvrtkoScratchOpen } = useGlobalApp();
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const isOpenRef = useRef(isOpen);
   useEffect(() => {
@@ -141,6 +143,13 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         }
 
         if (unlockedRewards.includes(target.id)) {
+          if (target.id === 'tvrtko_park' || target.id === 'tvrtko') {
+            onClose();
+            setTimeout(() => {
+              setIsTvrtkoScratchOpen(true);
+            }, 300);
+            return;
+          }
           setScannerFeedback({
             text:
               lang === 'bs'
@@ -154,6 +163,16 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         }
 
         onRewardFound(target.id);
+
+        // Special celebration and scratch card for King Tvrtko
+        if (target.id === 'tvrtko_park' || target.id === 'tvrtko') {
+          onClose();
+          setTimeout(() => {
+            setIsTvrtkoScratchOpen(true);
+          }, 350);
+          return;
+        }
+
         setScannerFeedback({
           text:
             lang === 'bs'
@@ -388,7 +407,9 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                             layout
                             className="group relative h-32 rounded-3xl overflow-hidden border border-amber-400/40 bg-white/5 shadow-xl transition-all active:scale-95 cursor-pointer"
                             onClick={() => {
-                              if (item.rewardHtml) {
+                              if (item.id === 'tvrtko_park' || item.id === 'tvrtko') {
+                                setIsTvrtkoScratchOpen(true);
+                              } else if (item.rewardHtml) {
                                 setActiveRewardHtml({ url: item.rewardHtml, title: itemName });
                               } else if (item.video) {
                                 setActiveVideoModal({ url: item.video, title: itemName });

@@ -9,12 +9,24 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WebView webView = getBridge().getWebView();
-        if (webView != null) {
+        configureWebView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        configureWebView();
+    }
+
+    private void configureWebView() {
+        if (getBridge() != null && getBridge().getWebView() != null) {
+            WebView webView = getBridge().getWebView();
             WebSettings settings = webView.getSettings();
             settings.setSupportZoom(true);
             settings.setBuiltInZoomControls(true);
             settings.setDisplayZoomControls(false);
+            settings.setUseWideViewPort(true);
+            settings.setLoadWithOverviewMode(true);
         }
     }
 }

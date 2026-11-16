@@ -17,6 +17,7 @@ import {
     X,
     Camera,
     RefreshCw,
+    Sparkles,
 } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -86,7 +87,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const isOnline = useNetwork();
     const t = TRANSLATIONS[lang];
-    const { unlockedRewards, setUnlockedRewards } = useGlobalApp();
+    const { unlockedRewards, setUnlockedRewards, setIsTvrtkoScratchOpen } = useGlobalApp();
 
     const questPhases = useMemo(() => [
         { number: 1, ids: PHASE_1_POIS },
@@ -187,6 +188,15 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
 
         if (!unlockedRewards.includes(target.id)) {
             setUnlockedRewards(prev => [...prev, target.id]);
+        }
+
+        // Special celebration & scratch card for King Tvrtko
+        if (target.id === 'tvrtko_park' || target.id === 'tvrtko') {
+            stopScanner();
+            setTimeout(() => {
+                setIsTvrtkoScratchOpen(true);
+            }, 350);
+            return;
         }
 
         setScannerFeedback({ text: lang === 'bs' ? `Otključana lokacija: ${target.name.bs}!` : `Unlocked location: ${target.name.en}!`, type: 'success' });
@@ -645,6 +655,15 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                                     <span className="text-[9px] text-slate-400 font-bold block mt-0.5">{entry.timestamp}</span>
                                                 </div>
                                                 <div className="flex items-center gap-1.5 shrink-0">
+                                                    {(target.id === 'tvrtko_park' || target.id === 'tvrtko') && (
+                                                        <button
+                                                            onClick={() => setIsTvrtkoScratchOpen(true)}
+                                                            className="p-2 bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-xl transition-all active:scale-90"
+                                                            title={lang === 'bs' ? 'Scratch kartica' : 'Scratch card'}
+                                                        >
+                                                            <Sparkles size={14} className="text-amber-600" />
+                                                        </button>
+                                                    )}
                                                     {(target as any).rewardHtml && (
                                                         <button
                                                             onClick={() => {

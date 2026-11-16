@@ -21,6 +21,7 @@ import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
 import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
 import { setupPoiMarkerLayers } from '../utils/mapPoiLayers.ts';
 import { generateQuestPopupHtml } from '../utils/questPopupHtml.ts';
+import { useGlobalApp } from '../contexts/GlobalAppContext.tsx';
 
 export interface MapQuestViewProps {
   lang: Language; features: AppFeatures; unlockedRewards: string[];
@@ -97,6 +98,7 @@ const MAP_LAYER_OPTIONS = [
 ];
 
 const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRewards, onRewardFound, navigationTarget, onClearNavigation, initialOpenScanner = false }) => {
+  const { setIsTvrtkoScratchOpen } = useGlobalApp();
   const { playNarration, currentNarration, isPlaying, pauseNarration } = useAudioGuide();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -271,12 +273,20 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       }
       setIsScannerOpen(true);
     };
+    (window as any).openTvrtkoScratch = () => {
+      const popups = document.getElementsByClassName('maplibregl-popup');
+      for (let i = 0; i < popups.length; i++) {
+        (popups[i] as HTMLElement).remove();
+      }
+      setIsTvrtkoScratchOpen(true);
+    };
     return () => {
       delete (window as any).startNavigationFromPopup;
       delete (window as any).playQuestVideo;
       delete (window as any).openQuestPanorama;
       delete (window as any).playPoiAudio;
       delete (window as any).openQrScannerFromPopup;
+      delete (window as any).openTvrtkoScratch;
     };
   }, [activeStyle, lang, currentNarration, isPlaying, playNarration, pauseNarration, isNavigating]);
 

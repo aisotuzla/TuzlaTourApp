@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { App as CapApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
@@ -28,6 +28,25 @@ import { SpeedInsights } from "@vercel/speed-insights/react"
 import ARGuide from './components/ARGuide';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import { initializePushNotifications } from './utils/pushNotifications';
+import { TvrtkoScratchCardModal } from './components/TvrtkoScratchCardModal';
+import { KulinCharterModal } from './components/KulinCharterModal';
+import { PinchZoomContainer } from './components/PinchZoomContainer';
+
+const KULIN_BAN_STONE_COORDS = { lat: 44.538791, lon: 18.678778 };
+
+function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371e3;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 const MapView = React.lazy(() => import('./components/MapView'));
 const History = React.lazy(() => import('./components/History'));
@@ -72,7 +91,17 @@ const getPathFromTab = (tab: AppTab): string => {
 };
 
 const AppContent: React.FC = () => {
-  const { lang, setLang, features, unlockedRewards, setUnlockedRewards } = useGlobalApp();
+  const {
+    lang,
+    setLang,
+    features,
+    unlockedRewards,
+    setUnlockedRewards,
+    isTvrtkoScratchOpen,
+    setIsTvrtkoScratchOpen,
+    isKulinCharterCubeOpen,
+    setIsKulinCharterCubeOpen,
+  } = useGlobalApp();
   const {
     currentNarration,
     isPlaying,
@@ -89,6 +118,29 @@ const AppContent: React.FC = () => {
 
   const { position: userGps } = useGeolocationWatcher({ enabled: true });
   useGeofenceNotifications({ userPosition: userGps, lang, enabled: true });
+
+  const hasAutoOpenedCharterRef = useRef(false);
+
+  // Automatically open 3D Charter of Kulin Ban HTML when user reaches coordinates 44.538791, 18.678778
+  useEffect(() => {
+    if (!userGps) return;
+    const dist = getDistanceMeters(
+      userGps.lat,
+      userGps.lng,
+      KULIN_BAN_STONE_COORDS.lat,
+      KULIN_BAN_STONE_COORDS.lon
+    );
+
+    if (dist <= 20 && !hasAutoOpenedCharterRef.current) {
+      hasAutoOpenedCharterRef.current = true;
+      setIsKulinCharterCubeOpen(true);
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try {
+          navigator.vibrate([200, 100, 200]);
+        } catch (_) {}
+      }
+    }
+  }, [userGps, setIsKulinCharterCubeOpen]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -188,9 +240,19 @@ const AppContent: React.FC = () => {
       navigate('/qr-scan');
     };
 
+    (window as any).openTvrtkoScratch = () => {
+      setIsTvrtkoScratchOpen(true);
+    };
+
+    (window as any).openKulinCharter = () => {
+      setIsKulinCharterCubeOpen(true);
+    };
+
     return () => {
       delete (window as any).playPoiAudio;
       delete (window as any).openQRScan;
+      delete (window as any).openTvrtkoScratch;
+      delete (window as any).openKulinCharter;
     };
   }, [lang, currentNarration, isPlaying, playNarration, pauseNarration, navigate]);
 
@@ -251,81 +313,89 @@ const AppContent: React.FC = () => {
             paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           }}
         >
-          <main className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <ErrorBoundary>
-              <Suspense fallback={
-                <div className="h-full flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-50">
-                  <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
-                  <p className="text-blue-900 font-black uppercase text-xs tracking-widest animate-pulse">
-                    {lang === 'en' ? 'Loading Tuzla...' : 'Učitavanje...'}
-                  </p>
-                </div>
-              }>
-                <Routes>
-                  <Route path="/" element={<LandingPage lang={lang} onNavigate={navigateToTab} />} />
-                  <Route path="/city-guide" element={<CityGuide lang={lang} />} />
-                  <Route path="/history" element={<History lang={lang} />} />
-                  <Route path="/transportation" element={<Transportation lang={lang} />} />
-                  <Route path="/map" element={
-                    <MapView
-                      lang={lang}
-                      features={features}
-                      unlockedRewards={unlockedRewards}
-                      navigationTarget={navigationTarget}
-                      onClearNavigation={() => setNavigationTarget(null)}
-                    />
-                  } />
-                  <Route path="/quest" element={
-                    <MapQuestView
-                      lang={lang}
-                      features={features}
-                      unlockedRewards={unlockedRewards}
-                      onRewardFound={(id) => setUnlockedRewards((prev) => (prev.includes(id) ? prev : [...prev, id]))}
-                      navigationTarget={navigationTarget}
-                      onClearNavigation={() => setNavigationTarget(null)}
-                      initialOpenScanner={autoOpenScanner}
-                    />
-                  } />
-                  <Route path="/qr-scan" element={
-                    <QRScanShell
-                      lang={lang}
-                      onNavigateToTarget={(target) => {
-                        setNavigationTarget(target);
-                        navigateToTab(AppTab.QUEST);
-                      }}
-                    />
-                  } />
-                  <Route path="/task-manager" element={<TaskManager lang={lang} />} />
-                  <Route
-                    path="/food"
-                    element={
-                      <Food
+          <main
+            className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain flex flex-col"
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              touchAction: 'pan-x pan-y pinch-zoom',
+            }}
+          >
+            <PinchZoomContainer maxScale={2.0}>
+              <ErrorBoundary>
+                <Suspense fallback={
+                  <div className="h-full flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-50">
+                    <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
+                    <p className="text-blue-900 font-black uppercase text-xs tracking-widest animate-pulse">
+                      {lang === 'en' ? 'Loading Tuzla...' : 'Učitavanje...'}
+                    </p>
+                  </div>
+                }>
+                  <Routes>
+                    <Route path="/" element={<LandingPage lang={lang} onNavigate={navigateToTab} />} />
+                    <Route path="/city-guide" element={<CityGuide lang={lang} />} />
+                    <Route path="/history" element={<History lang={lang} />} />
+                    <Route path="/transportation" element={<Transportation lang={lang} />} />
+                    <Route path="/map" element={
+                      <MapView
+                        lang={lang}
+                        features={features}
+                        unlockedRewards={unlockedRewards}
+                        navigationTarget={navigationTarget}
+                        onClearNavigation={() => setNavigationTarget(null)}
+                      />
+                    } />
+                    <Route path="/quest" element={
+                      <MapQuestView
+                        lang={lang}
+                        features={features}
+                        unlockedRewards={unlockedRewards}
+                        onRewardFound={(id) => setUnlockedRewards((prev) => (prev.includes(id) ? prev : [...prev, id]))}
+                        navigationTarget={navigationTarget}
+                        onClearNavigation={() => setNavigationTarget(null)}
+                        initialOpenScanner={autoOpenScanner}
+                      />
+                    } />
+                    <Route path="/qr-scan" element={
+                      <QRScanShell
                         lang={lang}
                         onNavigateToTarget={(target) => {
                           setNavigationTarget(target);
+                          navigateToTab(AppTab.QUEST);
+                        }}
+                      />
+                    } />
+                    <Route path="/task-manager" element={<TaskManager lang={lang} />} />
+                    <Route
+                      path="/food"
+                      element={
+                        <Food
+                          lang={lang}
+                          onNavigateToTarget={(target) => {
+                            setNavigationTarget(target);
+                            navigateToTab(AppTab.MAP);
+                          }}
+                        />
+                      }
+                    />
+                    <Route path="/accommodation" element={<Accommodation lang={lang} />} />
+                    <Route path="/ar" element={
+                      <ARGuide
+                        lang={lang}
+                        features={features}
+                        unlockedRewards={unlockedRewards}
+                        onRewardFound={(id) => setUnlockedRewards((prev) => (prev.includes(id) ? prev : [...prev, id]))}
+                        initialTarget={navigationTarget}
+                        onNavigate={(poi) => {
+                          setNavigationTarget(poi);
                           navigateToTab(AppTab.MAP);
                         }}
                       />
-                    }
-                  />
-                  <Route path="/accommodation" element={<Accommodation lang={lang} />} />
-                  <Route path="/ar" element={
-                    <ARGuide
-                      lang={lang}
-                      features={features}
-                      unlockedRewards={unlockedRewards}
-                      onRewardFound={(id) => setUnlockedRewards((prev) => (prev.includes(id) ? prev : [...prev, id]))}
-                      initialTarget={navigationTarget}
-                      onNavigate={(poi) => {
-                        setNavigationTarget(poi);
-                        navigateToTab(AppTab.MAP);
-                      }}
-                    />
-                  } />
+                    } />
 
-                </Routes>
-              </Suspense>
-            </ErrorBoundary>
+                  </Routes>
+                </Suspense>
+              </ErrorBoundary>
+            </PinchZoomContainer>
           </main>
         </div>
       </div>
@@ -350,6 +420,28 @@ const AppContent: React.FC = () => {
 
       <FullScreenImageViewer />
       <CookieConsentBanner lang={lang} />
+
+      {/* King Tvrtko Celebration & Scratch Card Modal */}
+      <TvrtkoScratchCardModal
+        isOpen={isTvrtkoScratchOpen}
+        onClose={() => setIsTvrtkoScratchOpen(false)}
+        lang={lang}
+        onNavigateToStone={() => {
+          setNavigationTarget({
+            name: lang === 'bs' ? 'Spomen-ploča Povelja Kulina bana' : 'Charter of Kulin Ban Stone',
+            lat: KULIN_BAN_STONE_COORDS.lat,
+            lon: KULIN_BAN_STONE_COORDS.lon,
+          });
+          navigateToTab(AppTab.QUEST);
+        }}
+      />
+
+      {/* 3D Charter of Kulin Ban Cube Modal (Autoplays on coords 44.538791, 18.678778) */}
+      <KulinCharterModal
+        isOpen={isKulinCharterCubeOpen}
+        onClose={() => setIsKulinCharterCubeOpen(false)}
+        lang={lang}
+      />
     </ImageProvider>
   );
 };

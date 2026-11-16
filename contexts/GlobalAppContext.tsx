@@ -9,6 +9,10 @@ interface GlobalAppContextProps {
   features: AppFeatures;
   unlockedRewards: string[];
   setUnlockedRewards: React.Dispatch<React.SetStateAction<string[]>>;
+  isTvrtkoScratchOpen: boolean;
+  setIsTvrtkoScratchOpen: (open: boolean) => void;
+  isKulinCharterCubeOpen: boolean;
+  setIsKulinCharterCubeOpen: (open: boolean) => void;
 }
 
 const GlobalAppContext = createContext<GlobalAppContextProps | undefined>(undefined);
@@ -17,6 +21,8 @@ export const GlobalAppProvider: React.FC<React.PropsWithChildren> = ({ children 
   const [lang, setLang] = useState<Language>('bs');
   const [unlockedRewards, setUnlockedRewards] = useState<string[]>([]);
   const [hasLoadedUnlocked, setHasLoadedUnlocked] = useState(false);
+  const [isTvrtkoScratchOpen, setIsTvrtkoScratchOpen] = useState(false);
+  const [isKulinCharterCubeOpen, setIsKulinCharterCubeOpen] = useState(false);
   const features = getAppFeatures();
 
   useEffect(() => {
@@ -55,6 +61,10 @@ export const GlobalAppProvider: React.FC<React.PropsWithChildren> = ({ children 
         features,
         unlockedRewards,
         setUnlockedRewards,
+        isTvrtkoScratchOpen,
+        setIsTvrtkoScratchOpen,
+        isKulinCharterCubeOpen,
+        setIsKulinCharterCubeOpen,
       }}
     >
       {children}
