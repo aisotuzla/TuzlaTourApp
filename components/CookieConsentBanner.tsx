@@ -18,6 +18,8 @@ interface CookieConsentState {
 
 const COOKIE_CONSENT_KEY = 'tuzla_cookie_consent';
 const COOKIE_CONSENT_VERSION = 'v1_202611';
+const GTM_CONTAINER_ID = 'GTM-TSZC4L5L';
+const GA4_MEASUREMENT_ID = 'G-988LD92552';
 
 // Translations
 const translations: Record<string, any> = {
@@ -172,14 +174,14 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
           const saved = JSON.parse(value);
           // Check if consent version matches
           if (saved.version === COOKIE_CONSENT_VERSION) {
-            setState(prev => ({
-              ...prev,
-              necessary: true, // Always true
-              performance: saved.performance || false,
-              functional: saved.functional || false,
-              marketing: saved.marketing || false,
-              showBanner: false,
-            }));
+            const consent = {
+              necessary: true,
+              performance: Boolean(saved.performance),
+              functional: Boolean(saved.functional),
+              marketing: Boolean(saved.marketing),
+            };
+            setState(prev => ({ ...prev, ...consent, showBanner: false }));
+            applyConsent(consent);
           } else {
             // Version mismatch, show banner for re-consent
             setState(prev => ({ ...prev, showBanner: true }));
@@ -202,14 +204,14 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed.version === COOKIE_CONSENT_VERSION) {
-            setState(prev => ({
-              ...prev,
+            const consent = {
               necessary: true,
-              performance: parsed.performance || false,
-              functional: parsed.functional || false,
-              marketing: parsed.marketing || false,
-              showBanner: false,
-            }));
+              performance: Boolean(parsed.performance),
+              functional: Boolean(parsed.functional),
+              marketing: Boolean(parsed.marketing),
+            };
+            setState(prev => ({ ...prev, ...consent, showBanner: false }));
+            applyConsent(consent);
             return;
           }
         }
@@ -264,36 +266,61 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
     }
   };
 
-  // Apply consent to tracking scripts
-  const applyConsent = (consent: Omit<CookieConsentState, 'showBanner' | 'showSettings'>) => {
-    // Google Analytics
-    if (typeof window !== 'undefined') {
-      if (consent.performance) {
-        // Enable Google Analytics
-        if ((window as any).gtag) {
-          // Already loaded
-        } else {
-          // Load Google Analytics
-          const script = document.createElement('script');
-          script.async = true;
-          script.src = 'https://www.googletagmanager.com/gtag/js?id=G-988LD92552';
-          script.onload = () => {
-            (window as any).dataLayer = (window as any).dataLayer || [];
-            (window as any).gtag = function() {
-              (window as any).dataLayer.push(arguments);
-            };
-            (window as any).gtag('js', new Date());
-            (window as any).gtag('config', 'G-988LD92552', { anonymize_ip: true });
-          };
-          document.head.appendChild(script);
-        }
-      } else {
-        // Disable Google Analytics
-        if ((window as any).gtag) {
-          (window as any).gtag('config', 'G-988LD92552', { send_page_view: false });
-        }
-      }
+  // Load the single GTM container only after optional tracking consent.
+  // Configure consent checks for every GA4/advertising tag inside the GTM workspace too.
+  const applyConsent = (consent: Pick<CookieConsentState, 'necessary' | 'performance' | 'functional' | 'marketing'>) => {
+    if (typeof window === 'undefined') return;
+
+    const w = window as any;
+    const mayLoadGtm = consent.performance || consent.marketing;
+    const gtmAlreadyRequested = Boolean(w.__tuzlaGtmRequested);
+
+    // Basic Consent Mode: no GTM/Google requests at all before optional consent.
+    if (!mayLoadGtm && !gtmAlreadyRequested) return;
+
+    w.dataLayer = w.dataLayer || [];
+    w.gtag = w.gtag || function () {
+      w.dataLayer.push(arguments);
+    };
+
+    if (!w.__tuzlaConsentInitialized) {
+      w.gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        functionality_storage: consent.functional ? 'granted' : 'denied',
+        security_storage: 'granted',
+      });
+      w.__tuzlaConsentInitialized = true;
     }
+
+    w.gtag('consent', 'update', {
+      analytics_storage: consent.performance ? 'granted' : 'denied',
+      ad_storage: consent.marketing ? 'granted' : 'denied',
+      ad_user_data: consent.marketing ? 'granted' : 'denied',
+      ad_personalization: consent.marketing ? 'granted' : 'denied',
+      functionality_storage: consent.functional ? 'granted' : 'denied',
+      security_storage: 'granted',
+    });
+
+    // This flag is also respected by gtag.js if GA4 is configured through GTM.
+    w[`ga-disable-${GA4_MEASUREMENT_ID}`] = !consent.performance;
+
+    if (!mayLoadGtm || gtmAlreadyRequested) return;
+
+    w.__tuzlaGtmRequested = true;
+    w.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+
+    const script = document.createElement('script');
+    script.id = 'tuzla-gtm-script';
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtm.js?id=${GTM_CONTAINER_ID}`;
+    script.onerror = () => {
+      w.__tuzlaGtmRequested = false;
+      console.error('Unable to load Google Tag Manager.');
+    };
+    document.head.appendChild(script);
   };
 
   // Handle accept all
@@ -302,7 +329,7 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
       necessary: true,
       performance: true,
       functional: true,
-      marketing: false,
+      marketing: true,
     });
   };
 
@@ -337,7 +364,8 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
     setState(prev => ({ ...prev, [category]: !prev[category] }));
   };
 
-  // Close banner (without saving)
+  // Dismissing the banner is not consent. Optional tracking remains disabled;
+  // the banner will be shown again on the next app load until a choice is saved.
   const handleClose = () => {
     setState(prev => ({ ...prev, showBanner: false }));
   };
