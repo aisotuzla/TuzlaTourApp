@@ -78,7 +78,7 @@ The repository contains experimental Web3/Solana reward assets and dependencies.
 
 ## 4. Cookies, local storage and similar technologies
 
-The web app uses browser storage for settings and a cookie-consent record. The consent component stores a record under the key `tuzla_cookie_consent` in browser local storage and, in supported Capacitor builds, in Capacitor Preferences.
+The web app uses browser storage for settings and a record that the short privacy notice was dismissed. The consent component stores a record under the key `tuzla_cookie_consent` in browser local storage and, in supported Capacitor builds, in Capacitor Preferences.
 
 The website uses Vercel Web Analytics and Speed Insights. It does not intentionally load Google Tag Manager, Google Analytics 4 or advertising trackers. See the [Cookie Policy](COOKIE_POLICY.md) for the current storage and service summary.
 
