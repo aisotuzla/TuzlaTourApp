@@ -134,6 +134,10 @@ export const initializePushNotifications = async (
     return () => {};
   }
 
+  if (requestPermission && typeof Notification !== 'undefined' && Notification.permission === 'default') {
+    await Notification.requestPermission();
+  }
+
   const unsubscribe = await onForegroundMessage((payload) => {
     const data = asDataRecord(payload.data);
     const title =
