@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import 'pannellum';
+import 'pannellum/build/pannellum.css';
 import { Language, Location } from '../types';
 import { LOCATIONS, TRANSLATIONS } from '../constants';
 import {
@@ -21,6 +23,31 @@ import { ARBreadcrumbCanvas } from './ARBreadcrumbCanvas';
 import { RoutePoint } from '../hooks/useBreadcrumbsTrail';
 import { QrScannerModal } from './QrScannerModal';
 import { BatterySaverToggle } from './BatterySaverToggle';
+
+interface PannellumViewer {
+  setYaw(yaw: number, animated?: boolean | number): PannellumViewer;
+  destroy(): void;
+}
+
+interface PannellumApi {
+  viewer(
+    container: HTMLElement,
+    config: {
+      type: 'equirectangular';
+      panorama: string;
+      autoLoad: boolean;
+      haov: number;
+      vaov: number;
+      yaw: number;
+      showControls: boolean;
+      orientationOnByDefault: boolean;
+    }
+  ): PannellumViewer;
+}
+
+const PANORAMA_CENTER_HEADING = 180;
+const compassHeadingToPanoramaYaw = (heading: number) =>
+  ((heading - PANORAMA_CENTER_HEADING + 540) % 360) - 180;
 
 interface ARGuideProps {
   lang: Language;
@@ -241,6 +268,8 @@ export const ARGuide: React.FC<ARGuideProps> = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const arViewportRef = useRef<HTMLDivElement | null>(null);
+  const panoramaContainerRef = useRef<HTMLDivElement | null>(null);
+  const panoramaViewerRef = useRef<PannellumViewer | null>(null);
 
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -428,6 +457,40 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       setCameraActive(false);
     }
   }, [policy.arFx, t.cameraUnavailable, isStationary]);
+
+  useEffect(() => {
+    if (cameraActive) return;
+    const container = panoramaContainerRef.current;
+    if (!container) return;
+
+    const pannellum = (window as Window & { pannellum?: PannellumApi }).pannellum;
+    if (!pannellum) {
+      console.error('Pannellum viewer is unavailable; AR panorama could not be initialized.');
+      return;
+    }
+
+    const viewer = pannellum.viewer(container, {
+      type: 'equirectangular',
+      panorama: '/assets/AR/tz.webp',
+      autoLoad: true,
+      haov: 360,
+      vaov: 180,
+      yaw: compassHeadingToPanoramaYaw(orientationRef.current.alpha ?? PANORAMA_CENTER_HEADING),
+      showControls: false,
+      orientationOnByDefault: false,
+    });
+    panoramaViewerRef.current = viewer;
+
+    return () => {
+      viewer.destroy();
+      if (panoramaViewerRef.current === viewer) panoramaViewerRef.current = null;
+    };
+  }, [cameraActive]);
+
+  useEffect(() => {
+    if (orientationState.alpha === null) return;
+    panoramaViewerRef.current?.setYaw(compassHeadingToPanoramaYaw(orientationState.alpha), false);
+  }, [orientationState.alpha]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -802,7 +865,10 @@ export const ARGuide: React.FC<ARGuideProps> = ({
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
           />
         ) : (
-          <div className="absolute inset-0 w-full h-full bg-black" />
+          <div
+            ref={panoramaContainerRef}
+            className="absolute inset-0 w-full h-full bg-black"
+          />
         )}
 
         {permissionGranted && (
