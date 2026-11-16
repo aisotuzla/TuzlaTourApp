@@ -38,13 +38,25 @@ interface PannellumApi {
       autoLoad: boolean;
       haov: number;
       vaov: number;
+      vOffset: number;
       yaw: number;
+      pitch: number;
+      hfov: number;
+      minHfov: number;
+      maxHfov: number;
       showControls: boolean;
+      showZoomCtrl: boolean;
+      showFullscreenCtrl: boolean;
+      mouseZoom: boolean;
+      draggingFriction: number;
       orientationOnByDefault: boolean;
     }
   ): PannellumViewer;
 }
 
+const PANORAMA_HAOV = 360;
+const PANORAMA_VAOV = 139.75;
+const PANORAMA_V_OFFSET = -21;
 const PANORAMA_CENTER_HEADING = 180;
 const compassHeadingToPanoramaYaw = (heading: number) =>
   ((heading - PANORAMA_CENTER_HEADING + 540) % 360) - 180;
@@ -471,12 +483,21 @@ export const ARGuide: React.FC<ARGuideProps> = ({
 
     const viewer = pannellum.viewer(container, {
       type: 'equirectangular',
-      panorama: '/assets/AR/tz.webp',
+      panorama: '/assets/AR/tuzla-pano.jpg',
       autoLoad: true,
-      haov: 360,
-      vaov: 180,
+      haov: PANORAMA_HAOV,
+      vaov: PANORAMA_VAOV,
+      vOffset: PANORAMA_V_OFFSET,
       yaw: compassHeadingToPanoramaYaw(orientationRef.current.alpha ?? PANORAMA_CENTER_HEADING),
+      pitch: -15,
+      hfov: 100,
+      minHfov: 40,
+      maxHfov: 120,
       showControls: false,
+      showZoomCtrl: false,
+      showFullscreenCtrl: false,
+      mouseZoom: true,
+      draggingFriction: 0.12,
       orientationOnByDefault: false,
     });
     panoramaViewerRef.current = viewer;
