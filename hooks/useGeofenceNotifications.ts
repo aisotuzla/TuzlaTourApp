@@ -315,7 +315,12 @@ export function useGeofenceNotifications({
     if (!enabled || !userPosition) return;
 
     const triggerNotification = async (zone: GeofenceZone) => {
-      if (!notificationsAllowedRef.current) return;
+      if (Capacitor.isNativePlatform()) {
+        const permission = await LocalNotifications.checkPermissions();
+        if (permission.display !== 'granted') return;
+      } else if (typeof window === 'undefined' || !('Notification' in window) || Notification.permission !== 'granted') {
+        return;
+      }
 
       const title = zone.title[lang] || zone.title.en || zone.title.bs;
       const body = zone.body[lang] || zone.body.en || zone.body.bs;
