@@ -29,7 +29,8 @@ const storeToken = (token: string, handlers: PushNotificationHandlers) => {
 };
 
 const registerNativePushNotifications = async (
-  handlers: PushNotificationHandlers
+  handlers: PushNotificationHandlers,
+  requestPermission: boolean
 ): Promise<() => void> => {
   const listenerHandles: PluginListenerHandle[] = [];
   const removeListeners = async () => {
@@ -77,12 +78,12 @@ const registerNativePushNotifications = async (
     );
 
     let permission = await PushNotifications.checkPermissions();
-    if (permission.receive !== 'granted') {
+    if (permission.receive !== 'granted' && requestPermission) {
       permission = await PushNotifications.requestPermissions();
     }
 
     if (permission.receive !== 'granted') {
-      console.warn('Push notification permission was not granted.');
+      console.info('Push notifications remain disabled until the user enables them.');
       await removeListeners();
       return () => {};
     }
@@ -116,10 +117,17 @@ const registerNativePushNotifications = async (
 };
 
 export const initializePushNotifications = async (
-  handlers: PushNotificationHandlers
+  handlers: PushNotificationHandlers,
+  requestPermission = false
 ): Promise<() => void> => {
   if (Capacitor.isNativePlatform()) {
-    return registerNativePushNotifications(handlers);
+    if (requestPermission) {
+      const localPermission = await LocalNotifications.checkPermissions();
+      if (localPermission.display !== 'granted') {
+        await LocalNotifications.requestPermissions();
+      }
+    }
+    return registerNativePushNotifications(handlers, requestPermission);
   }
 
   if (Capacitor.getPlatform() !== 'web') {
@@ -150,7 +158,7 @@ export const initializePushNotifications = async (
     }
   });
 
-  void requestPushToken()
+  void requestPushToken(requestPermission)
     .then((token) => {
       if (token) handlers.onToken(token);
     })
