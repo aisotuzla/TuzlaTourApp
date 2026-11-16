@@ -34,16 +34,19 @@ export const getFirebaseMessaging = async (): Promise<Messaging | null> => {
 /**
  * Request notification permission and retrieve the FCM device token
  */
-export const requestPushToken = async (): Promise<string | null> => {
+export const requestPushToken = async (requestPermission = false): Promise<string | null> => {
   if (typeof window === 'undefined' || !('Notification' in window)) {
     console.warn('Notifications not supported in this environment');
     return null;
   }
 
   try {
-    const permission = await Notification.requestPermission();
+    let permission = Notification.permission;
+    if (permission === 'default' && requestPermission) {
+      permission = await Notification.requestPermission();
+    }
     if (permission !== 'granted') {
-      console.warn('Push notification permission denied by user');
+      console.info('Push notifications are disabled until the user enables them.');
       return null;
     }
 
