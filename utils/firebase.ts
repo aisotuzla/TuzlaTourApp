@@ -1,20 +1,27 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage, isSupported, Messaging, MessagePayload } from 'firebase/messaging';
 
+const requiredFirebaseEnv = (name: keyof ImportMetaEnv): string => {
+  const value = import.meta.env[name];
+  if (!value) {
+    throw new Error(`Missing Firebase configuration: ${name}. Set it in .env.local or your deployment environment.`);
+  }
+  return value;
+};
+
 export const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCJ5LGNfZRB0yDT8Fh4tQu1czDNQrL99rk",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "tuzlatourguide.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "tuzlatourguide",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "tuzlatourguide.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "243343684809",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:243343684809:web:8835b25710cc8988bb4918",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-FHZ2NMYPG3"
+  apiKey: requiredFirebaseEnv('VITE_FIREBASE_API_KEY'),
+  authDomain: requiredFirebaseEnv('VITE_FIREBASE_AUTH_DOMAIN'),
+  projectId: requiredFirebaseEnv('VITE_FIREBASE_PROJECT_ID'),
+  storageBucket: requiredFirebaseEnv('VITE_FIREBASE_STORAGE_BUCKET'),
+  messagingSenderId: requiredFirebaseEnv('VITE_FIREBASE_MESSAGING_SENDER_ID'),
+  appId: requiredFirebaseEnv('VITE_FIREBASE_APP_ID'),
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 export const VAPID_KEY =
   import.meta.env.VITE_FIREBASE_VAPID_KEY ||
-  import.meta.env.VITE_VAPID_KEY ||
-  "BM4mZvcTrzTA2VuoeVW1EjYVXRZzjHMuKAZZUxgThQza6Ri1oOoRqY6ZJmgAuwgxjBzWLJQme-oC8HqRIgYdP48";
+  import.meta.env.VITE_VAPID_KEY;
 
 // Singleton Firebase App instance
 export const app: FirebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
@@ -51,6 +58,9 @@ export const requestPushToken = async (): Promise<string | null> => {
     if (!messaging) {
       console.warn('Firebase Messaging not supported on this browser');
       return null;
+    }
+    if (!VAPID_KEY) {
+      throw new Error('Missing Firebase Messaging VAPID key. Set VITE_FIREBASE_VAPID_KEY in .env.local or your deployment environment.');
     }
 
     // Register service worker if not already registered
