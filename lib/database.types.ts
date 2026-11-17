@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          created_at: string
+          description: Json
+          icon: string
+          id: string
+          is_active: boolean
+          sort_order: number
+          title: Json
+          xp_reward: number
+        }
+        Insert: {
+          created_at?: string
+          description: Json
+          icon?: string
+          id: string
+          is_active?: boolean
+          sort_order?: number
+          title: Json
+          xp_reward?: number
+        }
+        Update: {
+          created_at?: string
+          description?: Json
+          icon?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title?: Json
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       Audio: {
         Row: {
           created_at: Json
@@ -29,21 +62,50 @@ export type Database = {
         }
         Relationships: []
       }
+      player_achievements: {
+        Row: {
+          achievement_id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
           display_name: string | null
           id: string
+          leaderboard_opt_in: boolean
         }
         Insert: {
           created_at?: string
           display_name?: string | null
           id: string
+          leaderboard_opt_in?: boolean
         }
         Update: {
           created_at?: string
           display_name?: string | null
           id?: string
+          leaderboard_opt_in?: boolean
         }
         Relationships: []
       }
@@ -83,6 +145,7 @@ export type Database = {
         Row: {
           created_at: string
           description: Json | null
+          gps_required: boolean
           id: string
           is_active: boolean
           location: unknown
@@ -95,6 +158,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: Json | null
+          gps_required?: boolean
           id: string
           is_active?: boolean
           location: unknown
@@ -107,6 +171,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: Json | null
+          gps_required?: boolean
           id?: string
           is_active?: boolean
           location?: unknown
@@ -118,12 +183,154 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      verification_attempts: {
+        Row: {
+          created_at: string
+          distance_meters: number | null
+          failure_reason: string | null
+          id: number
+          method: string
+          player_id: string | null
+          quest_id: string | null
+          succeeded: boolean
+        }
+        Insert: {
+          created_at?: string
+          distance_meters?: number | null
+          failure_reason?: string | null
+          id?: never
+          method: string
+          player_id?: string | null
+          quest_id?: string | null
+          succeeded: boolean
+        }
+        Update: {
+          created_at?: string
+          distance_meters?: number | null
+          failure_reason?: string | null
+          id?: never
+          method?: string
+          player_id?: string | null
+          quest_id?: string | null
+          succeeded?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_attempts_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      xp_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: number
+          idempotency_key: string
+          phase: number | null
+          quest_id: string | null
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: never
+          idempotency_key: string
+          phase?: number | null
+          quest_id?: string | null
+          reason: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: never
+          idempotency_key?: string
+          phase?: number | null
+          quest_id?: string | null
+          reason?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "xp_transactions_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_get_tuzla_quest_config: { Args: never; Returns: Json }
+      admin_set_tuzla_quest_qr: {
+        Args: { p_qr_payload: string; p_quest_id: string }
+        Returns: Json
+      }
+      complete_tuzla_quest: {
+        Args: {
+          p_lat?: number
+          p_lon?: number
+          p_qr_payload: string
+          p_quest_id: string
+        }
+        Returns: Json
+      }
+      complete_tuzla_quest_legacy: {
+        Args: {
+          p_lat?: number
+          p_lon?: number
+          p_qr_payload: string
+          p_quest_id: string
+        }
+        Returns: Json
+      }
+      get_my_tuzla_dashboard: { Args: never; Returns: Json }
+      get_tuzla_admin_dashboard: {
+        Args: { p_recent_limit?: number }
+        Returns: Json
+      }
+      get_tuzla_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          display_name: string
+          player_level: number
+          player_rank: number
+          quests_completed: number
+          xp_total: number
+        }[]
+      }
+      tuzla_level_for_xp: { Args: { p_xp: number }; Returns: number }
+      tuzla_level_title: { Args: { p_level: number }; Returns: string }
     }
     Enums: {
       [_ in never]: never
