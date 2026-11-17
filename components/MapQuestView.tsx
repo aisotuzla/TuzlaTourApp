@@ -5,7 +5,7 @@ import { globalPMTilesProtocol, ensureTuzlaOfflineMapDownloaded } from '../utils
 import { OFFLINE_STYLE_SPEC } from '../utils/offlineMapStyle.ts';
 import { motion, AnimatePresence } from 'framer-motion';
 import CelebrationOverlay from './CelebrationOverlay.tsx';
-import { QrCode, Navigation, Info, X, Compass, Trophy, Layers, Check, ChevronUp, ChevronDown, Play } from 'lucide-react';
+import { QrCode, Navigation, Info, X, Compass, Trophy, Layers, Check, ChevronUp, ChevronDown, Play, Map as MapIcon } from 'lucide-react';
 import { AppFeatures } from '../utils/platform.ts';
 import { Language } from '../types.ts';
 import { TUZLA_CENTER, LOCATIONS } from '../constants.tsx';
@@ -16,6 +16,7 @@ import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
 import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
 import { QrScannerModal } from './QrScannerModal.tsx';
+import QuestIllustratedMap from './QuestIllustratedMap.tsx';
 import ARGuide from './ARGuide.tsx';
 import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
 import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
@@ -120,6 +121,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const [routeTime, setRouteTime] = useState<number | null>(null);
   const [isRouteLoading, setIsRouteLoading] = useState(false);
   const [showRules, setShowRules] = useState(false);
+  const [showIllustratedMap, setShowIllustratedMap] = useState(false);
   const [isHudHidden, setIsHudHidden] = useState(false);
   const [activeVictoryModal, setActiveVictoryModal] = useState<'phase1' | 'phase2' | 'phase3' | 'finale' | null>(null);
   const [showCelebration, setShowCelebration] = useState<{ phase: number; rewardUrl?: string } | null>(null);
@@ -683,6 +685,20 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         className={`w-full relative overflow-hidden z-0 ${showARGuide ? 'flex-shrink-0 border-b border-amber-500/40 shadow-2xl' : 'flex-1'}`}
       />
 
+      {showIllustratedMap && (
+        <QuestIllustratedMap
+          lang={lang}
+          unlockedRewards={unlockedRewards}
+          onClose={() => setShowIllustratedMap(false)}
+          onNavigate={(target) => {
+            setShowIllustratedMap(false);
+            const coordinates = QUEST_TARGET_COORDS[target.id];
+            if (coordinates) handleStartNavigation(target.name[lang] || target.name.en || target.name.bs, coordinates.lat, coordinates.lon);
+          }}
+          onScan={() => { setShowIllustratedMap(false); setIsScannerOpen(true); }}
+        />
+      )}
+
       {showARGuide && (
         <>
           <div
@@ -778,6 +794,14 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         className="absolute z-30 flex flex-col items-center gap-1.5 transition-all duration-150 left-3"
         style={showARGuide ? { bottom: `calc(${100 - splitHeight}% + 14px)` } : { bottom: '0.85rem' }}
       >
+        <button
+          onClick={() => setShowIllustratedMap(true)}
+          className="w-9 h-9 flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-700 border border-amber-400/50 rounded-full shadow-lg text-amber-300 active:scale-95 transition-all hover:from-blue-500 hover:to-blue-600"
+          title={lang === 'bs' ? 'Ilustrovana mapa potrage' : lang === 'de' ? 'Illustrierte Quest-Karte' : lang === 'tr' ? 'Resimli görev haritası' : 'Illustrated quest map'}
+          aria-label="Open illustrated quest map"
+        >
+          <MapIcon size={16} />
+        </button>
         {/* AR guide button just above Location round button */}
         <button
           onClick={handleToggleARMode}
