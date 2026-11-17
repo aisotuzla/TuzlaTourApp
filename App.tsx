@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 import { Analytics } from "@vercel/analytics/react"
 import Sidebar from './components/Sidebar';
+import DashboardPage from './components/DashboardPage';
 import LandingPage from './components/LandingPage';
 import LanguageSelector from './components/LanguageSelector';
 import FullScreenImageViewer from './components/FullScreenImageViewer';
@@ -69,6 +70,7 @@ const getTabFromPath = (path: string): AppTab => {
     case '/food': return AppTab.FOOD;
     case '/accommodation': return AppTab.ACCOMMODATION;
     case '/ar': return AppTab.AR;
+    case '/dashboard': return AppTab.DASHBOARD;
     default: return AppTab.LANDING;
   }
 };
@@ -86,6 +88,7 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.FOOD: return '/food';
     case AppTab.ACCOMMODATION: return '/accommodation';
     case AppTab.AR: return '/ar';
+    case AppTab.DASHBOARD: return '/dashboard';
     default: return '/';
   }
 };
@@ -331,6 +334,7 @@ const AppContent: React.FC = () => {
                   </div>
                 }>
                   <Routes>
+                    <Route path="/dashboard" element={<DashboardPage lang={lang} />} />
                     <Route path="/" element={<LandingPage lang={lang} onNavigate={navigateToTab} />} />
                     <Route path="/city-guide" element={<CityGuide lang={lang} />} />
                     <Route path="/history" element={<History lang={lang} />} />
