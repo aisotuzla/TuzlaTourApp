@@ -35,7 +35,7 @@ type AdminDashboard = {
   recent_completions: Array<{ display_name: string; quest_id: string; title: Record<string, string> | string; xp_awarded: number; completed_at: string }>;
   recent_verification_attempts: Array<{ quest_id: string; method: string; succeeded: boolean; failure_reason?: string; distance_meters?: number; created_at: string }>;
 };
-type QuestConfig = { id: string; title: Record<string, string> | string; qr_configured: boolean; gps_required: boolean; radius_meters: number; xp_reward: number; is_active: boolean };
+type QuestConfig = { id: string; title: Record<string, string> | string; phase: number; qr_configured: boolean; gps_required: boolean; radius_meters: number; xp_reward: number; is_active: boolean };
 type LeaderboardRow = { player_rank: number; display_name: string; xp_total: number; player_level: number; quests_completed: number };
 
 const textFor = (value: Record<string, string> | string | undefined, lang: Language) => {
@@ -221,7 +221,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ lang }) => {
                   </div>
                   <div className="rounded-2xl border border-slate-200 bg-white p-5">
                     <h3 className="mb-4 flex items-center gap-2 font-black text-slate-900"><MapPinned className="h-5 w-5 text-blue-700" />{copy.questSetup}</h3>
-                    <div className="max-h-80 space-y-3 overflow-y-auto">{quests.length ? quests.map(q => <div key={q.id} className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3 last:border-0"><div className="min-w-0"><p className="text-sm font-bold text-slate-900">{textFor(q.title, lang) || q.id}</p><p className="mt-1 text-xs text-slate-500">{copy.phase} {q.id ? '' : ''} · {q.radius_meters}m {copy.radius.toLowerCase()} · {q.xp_reward} XP</p></div><div className="shrink-0 text-right"><span className={`rounded-full px-2 py-1 text-[10px] font-black ${q.qr_configured ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>{q.qr_configured ? copy.qrReady : copy.qrMissing}</span>{q.gps_required && <p className="mt-1 text-[10px] font-bold text-blue-700">{copy.gps}</p>}</div></div>) : <p className="text-sm text-slate-500">{copy.empty}</p>}</div>
+                    <div className="max-h-80 space-y-3 overflow-y-auto">{quests.length ? quests.map(q => <div key={q.id} className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3 last:border-0"><div className="min-w-0"><p className="text-sm font-bold text-slate-900">{textFor(q.title, lang) || q.id}</p><p className="mt-1 text-xs text-slate-500">{copy.phase} {q.phase} · {q.radius_meters}m {copy.radius.toLowerCase()} · {q.xp_reward} XP</p></div><div className="shrink-0 text-right"><span className={`rounded-full px-2 py-1 text-[10px] font-black ${q.qr_configured ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>{q.qr_configured ? copy.qrReady : copy.qrMissing}</span>{q.gps_required && <p className="mt-1 text-[10px] font-bold text-blue-700">{copy.gps}</p>}</div></div>) : <p className="text-sm text-slate-500">{copy.empty}</p>}</div>
                   </div>
                 </div>
                 <div className="grid gap-5 lg:grid-cols-2">
