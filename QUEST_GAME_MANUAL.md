@@ -3,8 +3,8 @@
 **Project:** Tuzla Tour Guide  
 **Location:** Tuzla, Bosnia and Herzegovina  
 **Current game content:** 12 points of interest across four phases  
-**Current verification mode:** Live camera QR scan for testing  
-**Planned production verification:** QR identifier plus a server-side GPS check within 20 metres
+**Current verification implementation:** Live camera QR scan connected to Supabase guest sessions and server-side completion checks  
+**Setup still required:** Enable anonymous sign-ins and configure the real QR payload hashes for each quest
 
 This manual describes the game as it is currently implemented and clearly labels planned features. It does not promise that every reward, partner offer or online service is available at all times.
 
@@ -24,8 +24,10 @@ The app provides a map and optional GPS/AR navigation to help you find each poin
 4. If you choose, enable location permission and use the map/GPS/AR guidance to navigate there.
 5. At the location, find the relevant quest QR code.
 6. Open the in-app scanner and scan the code using the live camera.
-7. If the code matches a configured quest POI, the current test build records a local unlock.
-8. Continue exploring the remaining POIs.
+7. The app sends the decoded QR payload and GPS coordinates to Supabase. The server checks the configured QR hash, GPS radius, and whether the quest was already completed before awarding XP.
+8. Continue exploring the remaining POIs after the server confirms completion.
+
+**Current setup limitation:** The 12 database quest rows still have empty QR identifiers. Until each real printed QR payload is decoded and configured, scans cannot award server-verified XP. Guest sign-in must also be enabled in Supabase Authentication.
 
 The scanner requires camera permission. If permission is denied, enable it in your browser or device settings and retry.
 
@@ -33,9 +35,9 @@ The scanner requires camera permission. If permission is denied, enable it in yo
 
 - Use the live in-app camera scanner.
 - QR images selected from the photo gallery are not an accepted quest-unlock method in the updated test branch.
-- A successful local scan may update progress stored on the device.
-- Test progress is not yet synchronised to a player account or treated as a server-verified completion.
-- Reinstalling the app, clearing app data or browser storage may remove local progress.
+- The quest screen and AR scanner submit completion attempts to Supabase; the server is authoritative for XP and completion records.
+- A scan is not a successful quest completion until Supabase confirms it.
+- QR payload hashes are not yet configured for the 12 quest rows, so production-style completion is not ready for player testing.
 
 ## 3. Quest phases and points of interest
 
@@ -89,7 +91,7 @@ The intended production completion flow is:
 
 The database has been prepared with 12 POIs and a 20-metre radius. The QR identifier field is intentionally not populated until the actual printed QR payloads have been verified.
 
-This production flow is planned and is **not yet active in the player app**. The project must complete and test the server-side function, authentication, RLS, rate limiting and duplicate-completion handling before describing a quest as backend-verified.
+The player app is now wired to this Supabase-backed flow, including the server-side completion function, authenticated guest sessions, and duplicate-completion protection. However, the flow is **not yet ready for live player testing**: anonymous sign-ins must be enabled in Supabase, and each real QR payload must be configured as a server-side SHA-256 hash. The 12 quest rows currently have no QR hashes.
 
 ### Anti-cheat limitations
 
@@ -133,9 +135,9 @@ If a QR code does not scan, check that the lens is clean, the code is well lit a
 
 ## 9. Progress, accounts and privacy
 
-During the current test stage, quest unlocks are stored locally on the device. Player sign-in and cross-device quest synchronisation are not yet integrated into the app.
+The app now includes a multilingual player dashboard backed by Supabase guest authentication and server-side XP records. Guest sign-in must be enabled in the Supabase Authentication settings before a new guest profile can be created. Anonymous users are not recoverable if they clear browser data or move to another device unless an identity is later linked.
 
-The production version is intended to use Supabase for player accounts and server-side quest records. When that is enabled, the privacy notice will be updated to explain the account information and one-time location verification data processed by the service.
+Quest completion and XP are intended to synchronize through Supabase. This cannot be tested end-to-end until the 12 real QR payloads are configured and guest sign-in is enabled. The privacy notice should explain the account information and location verification data processed by the service before public launch.
 
 Read the [Privacy Policy](PRIVACY_POLICY.md) and [Cookie Policy](COOKIE_POLICY.md) for more information.
 
