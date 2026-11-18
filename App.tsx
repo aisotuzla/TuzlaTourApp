@@ -16,6 +16,7 @@ import ReloadPrompt from './components/ReloadPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
 import MapQuestView from "./components/MapQuestView";
 import { AppTab } from './types';
+import { supabase } from './lib/supabaseClient';
 import { QUEST_TARGETS } from './constants/questData';
 import { ImageProvider } from './hooks/ImageContext';
 import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
@@ -186,6 +187,45 @@ const AppContent: React.FC = () => {
   const [autoOpenScanner, setAutoOpenScanner] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+
+  const completeQuest = async (
+    questId: string,
+    qrPayload: string,
+    position: { lat: number; lon: number } | null
+  ): Promise<{ ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number }> => {
+    try {
+      let { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      if (!sessionData.session) {
+        const { data: signInData, error: signInError } = await supabase.auth.signInAnonymously({
+          options: { data: { display_name: lang === 'bs' ? 'Gost istraživač' : 'Guest explorer' } }
+        });
+        if (signInError) throw signInError;
+        sessionData = { session: signInData.session, user: signInData.user } as typeof sessionData;
+      }
+
+      if (!sessionData.session?.user) return { ok: false, code: 'auth_required' };
+
+      const { data, error } = await (supabase as any).rpc('complete_tuzla_quest', {
+        p_quest_id: questId,
+        p_qr_payload: qrPayload,
+        p_lat: position?.lat ?? null,
+        p_lon: position?.lon ?? null
+      });
+      if (error) throw error;
+
+      if (data?.ok) {
+        setUnlockedRewards((previous) => previous.includes(questId) ? previous : [...previous, questId]);
+      }
+      return data || { ok: false, code: 'empty_response' };
+    } catch (error) {
+      console.error('[Quest] Secure completion failed:', error);
+      const message = error instanceof Error ? error.message : 'quest_completion_failed';
+      return { ok: false, code: message.toLowerCase().includes('anonymous') ? 'anonymous_sign_in_disabled' : 'quest_completion_failed' };
+    }
+  };
+
   const navigateToTab = (tab: AppTab, options?: { openScanner?: boolean }) => {
     const path = getPathFromTab(tab);
     if (location.pathname !== path) {
@@ -352,7 +392,7 @@ const AppContent: React.FC = () => {
                         lang={lang}
                         features={features}
                         unlockedRewards={unlockedRewards}
-                        onRewardFound={(id) => setUnlockedRewards((prev) => (prev.includes(id) ? prev : [...prev, id]))}
+                        onRewardFound={completeQuest}
                         navigationTarget={navigationTarget}
                         onClearNavigation={() => setNavigationTarget(null)}
                         initialOpenScanner={autoOpenScanner}
