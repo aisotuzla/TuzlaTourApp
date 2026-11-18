@@ -67,7 +67,7 @@ interface ARGuideProps {
   onNavigate?: (poi: Location) => void;
   initialTarget?: Location | null;
   unlockedRewards?: string[];
-  onRewardFound?: (id: string) => void;
+  onRewardFound?: (id: string, qrPayload: string, position: { lat: number; lon: number } | null) => Promise<{ ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number }>;
   initialTrailActive?: boolean;
 }
 
@@ -826,11 +826,17 @@ export const ARGuide: React.FC<ARGuideProps> = ({
     setTargetDistance(null);
   };
 
-  const handleRewardFoundInternal = (id: string) => {
-    if (!localUnlockedRewards.includes(id)) {
-      setLocalUnlockedRewards([...localUnlockedRewards, id]);
+  const handleRewardFoundInternal = async (
+    id: string,
+    qrPayload: string,
+    position: { lat: number; lon: number } | null
+  ) => {
+    if (!onRewardFound) return { ok: false, code: 'quest_completion_failed' };
+    const result = await onRewardFound(id, qrPayload, position);
+    if (result?.ok && !localUnlockedRewards.includes(id)) {
+      setLocalUnlockedRewards((previous) => previous.includes(id) ? previous : [...previous, id]);
     }
-    if (onRewardFound) onRewardFound(id);
+    return result;
   };
 
   // Turn guidance logic
