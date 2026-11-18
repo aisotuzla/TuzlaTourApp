@@ -1,8 +1,11 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Trophy, MapPin, Eye, Compass } from 'lucide-react';
+import { X, Sparkles, Trophy, MapPin, Eye, Compass, ExternalLink } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Language } from '../types';
+
+const TVRTKO_SCRATCH_FALLBACK_URL =
+  'https://www.scraaatch.com/en/s/57d1dbd743604036a8561c7a593d286c';
 
 interface TvrtkoScratchCardModalProps {
   isOpen: boolean;
@@ -356,9 +359,20 @@ export const TvrtkoScratchCardModal: React.FC<TvrtkoScratchCardModalProps> = ({
 
             {/* Footer with Hint / Coordinates navigation action */}
             <div className="px-5 pb-4 pt-2 bg-slate-900/80 border-t border-white/10 flex items-center justify-between gap-3 shrink-0">
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-300 font-bold">
-                <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>44.538791, 18.678778</span>
+              <div className="flex min-w-0 flex-col items-start gap-1">
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-300 font-bold">
+                  <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span>44.538791, 18.678778</span>
+                </div>
+                <a
+                  href={TVRTKO_SCRATCH_FALLBACK_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-[10px] font-bold text-amber-300 underline underline-offset-2 hover:text-amber-200"
+                >
+                  <ExternalLink className="w-3 h-3 shrink-0" />
+                  {lang === 'bs' ? 'Kartica ne radi? Probaj online' : 'Card not working? Try online'}
+                </a>
               </div>
 
               {onNavigateToStone && (
