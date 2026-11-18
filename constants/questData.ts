@@ -331,28 +331,6 @@ export function getCurrentQuestPhase(unlockedRewards: string[]): number {
   return 4;
 }
 
-export const NFT_REWARD_IDS: string[] = ["panonika"];
-
-export const SOLANA_DEVNET_NFT_REWARD = {
-  id: 'dzeko-bih-01',
-  name: 'Edin Džeko — Dijamant Kapiten #11',
-  title: 'Bosnia Football Squad Devnet NFT',
-  description: {
-    en: 'Digital collectible card of Bosnian football legend Edin Džeko. Awarded to quests and explorers completing Phase 1 on Solana Devnet.',
-    bs: 'Digitalna kolekcionarska NFT kartica bosanske fudbalske legende Edina Džeke. Nagrada za istraživače Faze 1 na Solana Devnet mreži.',
-    de: 'Digitale Sammelkarte der bosnischen Fußballlegende Edin Džeko. Belohnung für Entdecker der Phase 1 im Solana Devnet.',
-    tr: 'Bosna futbol efsanesi Edin Džeko için dijital koleksiyon kartı. Solana Devnet Faz 1 ödülü.',
-  } as Record<Language, string>,
-  ipfsCid: 'bafybeie3i7qu6d4kudm5kmujicx2agisayhvbqhvw2zhf4st3bwz34bdcm',
-  image: '/assets/Gallery/QuestQRLocations/edin-dzeko-reward.webp',
-  ipfsUrl: 'https://gateway.pinata.cloud/ipfs/bafybeie3i7qu6d4kudm5kmujicx2agisayhvbqhvw2zhf4st3bwz34bdcm',
-  fallbackIpfsUrl: '/assets/Gallery/QuestQRLocations/edin-dzeko-reward.webp',
-  player: 'Edin Džeko',
-  number: '11',
-  position: 'Kapiten / Napadač (Striker)',
-  rarity: 'Legendary Genesis',
-  network: 'devnet' as const,
-};
 
 export const QUEST_GAME_RULES: Record<Language, { title: string; text: string }> = {
   bs: {

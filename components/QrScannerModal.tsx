@@ -3,7 +3,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, AlertCircle, Sparkles } from 'lucide-react';
 import { Language } from '../types';
-import { QUEST_TARGETS, NFT_REWARD_IDS, SOLANA_DEVNET_NFT_REWARD } from '../constants/questData';
+import { QUEST_TARGETS } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
 import { Preferences } from '@capacitor/preferences';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
@@ -350,7 +350,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
   const unlockedItems = QUEST_TARGETS.filter((item) => unlockedRewards.includes(item.id));
   const lockedItems = QUEST_TARGETS.filter((item) => !unlockedRewards.includes(item.id));
-  const NFT_IPFS = SOLANA_DEVNET_NFT_REWARD.ipfsUrl;
+
 
   return (
     <>
@@ -491,7 +491,6 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
                   <div className="grid grid-cols-1 gap-4">
                     {unlockedItems.map((item) => {
-                      const isNFTItem = NFT_REWARD_IDS.includes(item.id);
                       const itemName = item.name[lang as keyof typeof item.name] || item.name.en || item.name.bs;
                       return (
                         <div key={item.id} className="flex flex-col gap-2">
@@ -537,25 +536,9 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                             )}
                             <div className="absolute bottom-0 left-0 h-1 bg-amber-500 transition-all duration-500 w-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
                           </motion.div>
-                          {isNFTItem && (
-                            <button
-                              onClick={() => {
-                                if ((window as any).mintNFTReward) {
-                                  (window as any).mintNFTReward(NFT_IPFS);
-                                  onClose();
-                                } else {
-                                  window.open(NFT_IPFS, '_blank', 'noopener,noreferrer');
-                                }
-                              }}
-                              className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm text-white flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer"
-                              style={{
-                                background: 'linear-gradient(135deg, #7c3aed, #a855f7, #ec4899)',
-                                boxShadow: '0 8px 25px rgba(168,85,247,0.5)',
-                              }}
-                            >
-                              🎖️ {lang === 'bs' ? 'Preuzmi NFT: Edin Džeko #11 → Solflare' : 'Mint NFT: Edin Džeko #11 → Solflare'}
-                            </button>
-                          )}
+                          {'}'}{'}'}
+
+                          ){'}'}
                         </div>
                       );
                     })}

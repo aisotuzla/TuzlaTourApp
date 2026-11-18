@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import 'pannellum';
-import 'pannellum/build/pannellum.css';
 import { Language, Location } from '../types';
 import { LOCATIONS, TRANSLATIONS } from '../constants';
 import {
@@ -23,43 +21,6 @@ import { ARBreadcrumbCanvas } from './ARBreadcrumbCanvas';
 import { RoutePoint } from '../hooks/useBreadcrumbsTrail';
 import { QrScannerModal } from './QrScannerModal';
 import { BatterySaverToggle } from './BatterySaverToggle';
-
-interface PannellumViewer {
-  setYaw(yaw: number, animated?: boolean | number): PannellumViewer;
-  destroy(): void;
-}
-
-interface PannellumApi {
-  viewer(
-    container: HTMLElement,
-    config: {
-      type: 'equirectangular';
-      panorama: string;
-      autoLoad: boolean;
-      haov: number;
-      vaov: number;
-      vOffset: number;
-      yaw: number;
-      pitch: number;
-      hfov: number;
-      minHfov: number;
-      maxHfov: number;
-      showControls: boolean;
-      showZoomCtrl: boolean;
-      showFullscreenCtrl: boolean;
-      mouseZoom: boolean;
-      draggingFriction: number;
-      orientationOnByDefault: boolean;
-    }
-  ): PannellumViewer;
-}
-
-const PANORAMA_HAOV = 360;
-const PANORAMA_VAOV = 139.75;
-const PANORAMA_V_OFFSET = -21;
-const PANORAMA_CENTER_HEADING = 180;
-const compassHeadingToPanoramaYaw = (heading: number) =>
-  ((heading - PANORAMA_CENTER_HEADING + 540) % 360) - 180;
 
 interface ARGuideProps {
   lang: Language;
@@ -181,9 +142,8 @@ const ARMarker: React.FC<{
   return (
     <div
       ref={domRef}
-      className={`absolute pointer-events-auto will-change-transform transition-opacity duration-300 ${
-        isDarkened ? 'opacity-50 grayscale contrast-75 hover:opacity-100 hover:grayscale-0' : 'opacity-100'
-      }`}
+      className={`absolute pointer-events-auto will-change-transform transition-opacity duration-300 ${isDarkened ? 'opacity-50 grayscale contrast-75 hover:opacity-100 hover:grayscale-0' : 'opacity-100'
+        }`}
       style={{ top: 0, left: 0, display: 'none' }}
     >
       <button
@@ -193,20 +153,18 @@ const ARMarker: React.FC<{
         <div className="relative">
           {!isDarkened && (
             <div
-              className={`absolute inset-0 rounded-full blur-md ${
-                isFocusedTarget ? 'animate-ping opacity-90' : 'animate-pulse opacity-60'
-              }`}
+              className={`absolute inset-0 rounded-full blur-md ${isFocusedTarget ? 'animate-ping opacity-90' : 'animate-pulse opacity-60'
+                }`}
               style={{ backgroundColor: isFocusedTarget ? '#fbbf24' : customColor }}
             />
           )}
           <div
-            className={`relative w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform group-hover:scale-110 border-4 ${
-              isDarkened
+            className={`relative w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform group-hover:scale-110 border-4 ${isDarkened
                 ? 'bg-slate-900/90 border-slate-600 text-slate-400'
                 : isFocusedTarget
-                ? 'bg-amber-400 border-amber-500 text-amber-950 shadow-[0_0_25px_rgba(251,191,36,0.8)]'
-                : 'bg-white/95 text-white'
-            }`}
+                  ? 'bg-amber-400 border-amber-500 text-amber-950 shadow-[0_0_25px_rgba(251,191,36,0.8)]'
+                  : 'bg-white/95 text-white'
+              }`}
             style={!isDarkened && !isFocusedTarget ? { borderColor: customColor } : undefined}
           >
             {isDarkened ? (
@@ -220,13 +178,12 @@ const ARMarker: React.FC<{
         </div>
 
         <div
-          className={`mt-2 px-3.5 py-1.5 backdrop-blur-md rounded-full border shadow-xl flex items-center gap-1.5 ${
-            isDarkened
+          className={`mt-2 px-3.5 py-1.5 backdrop-blur-md rounded-full border shadow-xl flex items-center gap-1.5 ${isDarkened
               ? 'bg-slate-950/85 border-slate-700/60'
               : isFocusedTarget
-              ? 'bg-amber-950/90 border-amber-400'
-              : 'bg-slate-950/85 border-white/30'
-          }`}
+                ? 'bg-amber-950/90 border-amber-400'
+                : 'bg-slate-950/85 border-white/30'
+            }`}
         >
           {isDarkened && (
             <span className="text-[9px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded border border-emerald-500/30">
@@ -280,8 +237,6 @@ export const ARGuide: React.FC<ARGuideProps> = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const arViewportRef = useRef<HTMLDivElement | null>(null);
-  const panoramaContainerRef = useRef<HTMLDivElement | null>(null);
-  const panoramaViewerRef = useRef<PannellumViewer | null>(null);
 
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -455,9 +410,9 @@ export const ARGuide: React.FC<ARGuideProps> = ({
           facingMode: { ideal: 'environment' },
           width: { ideal: policy.arFx.cameraWidth },
           height: { ideal: policy.arFx.cameraHeight },
-          frameRate: { 
-            ideal: isStationary ? 15 : policy.arFx.cameraIdealFps, 
-            max: isStationary ? 15 : policy.arFx.cameraMaxFps 
+          frameRate: {
+            ideal: isStationary ? 15 : policy.arFx.cameraIdealFps,
+            max: isStationary ? 15 : policy.arFx.cameraMaxFps
           },
         },
       });
@@ -469,49 +424,6 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       setCameraActive(false);
     }
   }, [policy.arFx, t.cameraUnavailable, isStationary]);
-
-  useEffect(() => {
-    if (cameraActive) return;
-    const container = panoramaContainerRef.current;
-    if (!container) return;
-
-    const pannellum = (window as Window & { pannellum?: PannellumApi }).pannellum;
-    if (!pannellum) {
-      console.error('Pannellum viewer is unavailable; AR panorama could not be initialized.');
-      return;
-    }
-
-    const viewer = pannellum.viewer(container, {
-      type: 'equirectangular',
-      panorama: '/assets/AR/tuzla-pano.jpg',
-      autoLoad: true,
-      haov: PANORAMA_HAOV,
-      vaov: PANORAMA_VAOV,
-      vOffset: PANORAMA_V_OFFSET,
-      yaw: compassHeadingToPanoramaYaw(orientationRef.current.alpha ?? PANORAMA_CENTER_HEADING),
-      pitch: -15,
-      hfov: 100,
-      minHfov: 40,
-      maxHfov: 120,
-      showControls: false,
-      showZoomCtrl: false,
-      showFullscreenCtrl: false,
-      mouseZoom: true,
-      draggingFriction: 0.12,
-      orientationOnByDefault: false,
-    });
-    panoramaViewerRef.current = viewer;
-
-    return () => {
-      viewer.destroy();
-      if (panoramaViewerRef.current === viewer) panoramaViewerRef.current = null;
-    };
-  }, [cameraActive]);
-
-  useEffect(() => {
-    if (orientationState.alpha === null) return;
-    panoramaViewerRef.current?.setYaw(compassHeadingToPanoramaYaw(orientationState.alpha), false);
-  }, [orientationState.alpha]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -601,10 +513,10 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       const prevLat = lastPositionRef.current.lat;
       const prevLng = lastPositionRef.current.lng;
       const movementDistance = Math.sqrt(
-        Math.pow((rawLat - prevLat) * 111000, 2) + 
+        Math.pow((rawLat - prevLat) * 111000, 2) +
         Math.pow((rawLng - prevLng) * 111000 * Math.cos((rawLat * Math.PI) / 180), 2)
       );
-      
+
       if (movementDistance > 1.5) {
         lastMovementTimeRef.current = Date.now();
         lastPositionRef.current = { lat: rawLat, lng: rawLng };
@@ -826,17 +738,12 @@ export const ARGuide: React.FC<ARGuideProps> = ({
     setTargetDistance(null);
   };
 
-  const handleRewardFoundInternal = async (
-    id: string,
-    qrPayload: string,
-    position: { lat: number; lon: number } | null
-  ) => {
-    if (!onRewardFound) return { ok: false, code: 'quest_completion_failed' };
-    const result = await onRewardFound(id, qrPayload, position);
-    if (result?.ok && !localUnlockedRewards.includes(id)) {
-      setLocalUnlockedRewards((previous) => previous.includes(id) ? previous : [...previous, id]);
+  const handleRewardFoundInternal = async (id: string, qrPayload: string, position: { lat: number; lon: number } | null): Promise<{ ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number }> => {
+    if (!localUnlockedRewards.includes(id)) {
+      setLocalUnlockedRewards([...localUnlockedRewards, id]);
     }
-    return result;
+    if (onRewardFound) return onRewardFound(id, qrPayload, position);
+    return { ok: true };
   };
 
   // Turn guidance logic
@@ -882,7 +789,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       )}
 
       {/* FULL BLEED AR VIEWPORT */}
-      <div ref={arViewportRef} className="relative w-full h-full flex-1 bg-black overflow-hidden">
+      <div ref={arViewportRef} className="relative w-full h-full flex-1 bg-slate-950 overflow-hidden">
         {cameraActive ? (
           <video
             ref={videoRef}
@@ -892,10 +799,16 @@ export const ARGuide: React.FC<ARGuideProps> = ({
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
           />
         ) : (
-          <div
-            ref={panoramaContainerRef}
-            className="absolute inset-0 w-full h-full bg-black"
-          />
+          <div className="absolute inset-0 w-full h-full bg-slate-950">
+            <iframe
+              src="/assets/Gallery/QuestQRLocations/Tvrko%20pannellum/pannellum/pannellum.htm?panorama=../tz.jpg&autoLoad=true"
+              className="w-full h-full border-none pointer-events-auto opacity-80"
+              title="Tuzla 360 Panorama"
+              allow="gyroscope; accelerometer"
+              allowFullScreen
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
+          </div>
         )}
 
         {permissionGranted && (
@@ -928,8 +841,8 @@ export const ARGuide: React.FC<ARGuideProps> = ({
               gpsTrack: gpsTrackRef.current.length > 0
                 ? gpsTrackRef.current
                 : userLocationState
-                ? [{ lat: userLocationState.lat, lng: userLocationState.lng }]
-                : [],
+                  ? [{ lat: userLocationState.lat, lng: userLocationState.lng }]
+                  : [],
             }}
             orientation={orientationState}
             orientationRef={orientationRef}
@@ -946,9 +859,8 @@ export const ARGuide: React.FC<ARGuideProps> = ({
         {/* 3D AR MARKERS WITH PHASE VISIBILITY */}
         {permissionGranted && (
           <div
-            className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${
-              viewMode === 'AR' ? 'opacity-100' : 'opacity-20'
-            }`}
+            className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${viewMode === 'AR' ? 'opacity-100' : 'opacity-20'
+              }`}
           >
             {questArPois.map((poi) => {
               if (!markerRefs.current[poi.id]) {
@@ -1038,9 +950,8 @@ export const ARGuide: React.FC<ARGuideProps> = ({
         {permissionGranted && (targetPoi || nearestActivePoiBearing) && (
           <>
             <div
-              className={`absolute left-3 top-1/2 -translate-y-1/2 z-40 pointer-events-none transition-all duration-300 ${
-                isTargetOffscreenLeft ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'
-              }`}
+              className={`absolute left-3 top-1/2 -translate-y-1/2 z-40 pointer-events-none transition-all duration-300 ${isTargetOffscreenLeft ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'
+                }`}
             >
               <div className="flex items-center gap-2 bg-amber-950/95 border border-amber-400/90 px-3.5 py-2.5 rounded-2xl backdrop-blur-md shadow-2xl">
                 <ChevronLeft className="w-6 h-6 text-amber-400" />
@@ -1058,9 +969,8 @@ export const ARGuide: React.FC<ARGuideProps> = ({
             </div>
 
             <div
-              className={`absolute right-3 top-1/2 -translate-y-1/2 z-40 pointer-events-none transition-all duration-300 ${
-                isTargetOffscreenRight ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6'
-              }`}
+              className={`absolute right-3 top-1/2 -translate-y-1/2 z-40 pointer-events-none transition-all duration-300 ${isTargetOffscreenRight ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6'
+                }`}
             >
               <div className="flex items-center gap-2 bg-amber-950/95 border border-amber-400/90 px-3.5 py-2.5 rounded-2xl backdrop-blur-md shadow-2xl">
                 <div className="flex flex-col items-end">
@@ -1244,15 +1154,14 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                     const matchedLoc = LOCATIONS.find((l) => l.id === poi.id);
                     if (matchedLoc && onNavigate) onNavigate(matchedLoc);
                   }}
-                  className={`h-8 min-w-[150px] max-w-[210px] shrink-0 snap-start px-2 rounded-xl border backdrop-blur-xl transition-all cursor-pointer flex items-center justify-between gap-2 shadow-lg active:scale-95 relative overflow-hidden ${
-                    isSelected
+                  className={`h-8 min-w-[150px] max-w-[210px] shrink-0 snap-start px-2 rounded-xl border backdrop-blur-xl transition-all cursor-pointer flex items-center justify-between gap-2 shadow-lg active:scale-95 relative overflow-hidden ${isSelected
                       ? 'bg-amber-500/30 border-amber-400 shadow-amber-500/20'
                       : isDarkened
-                      ? 'bg-slate-950/80 border-slate-700/60 opacity-60 hover:opacity-100'
-                      : isUnlocked
-                      ? 'bg-slate-950/85 border-white/15 hover:border-amber-400/60'
-                      : 'bg-slate-950/95 border-amber-400/40 shadow-md shadow-amber-500/10'
-                  }`}
+                        ? 'bg-slate-950/80 border-slate-700/60 opacity-60 hover:opacity-100'
+                        : isUnlocked
+                          ? 'bg-slate-950/85 border-white/15 hover:border-amber-400/60'
+                          : 'bg-slate-950/95 border-amber-400/40 shadow-md shadow-amber-500/10'
+                    }`}
                 >
                   <div className="flex items-center gap-1.5 overflow-hidden relative z-10">
                     <div
@@ -1263,29 +1172,26 @@ export const ARGuide: React.FC<ARGuideProps> = ({
                     </div>
                     <div className="truncate flex flex-col justify-center">
                       <h5
-                        className={`text-[11px] font-black truncate leading-tight ${
-                          isDarkened ? 'text-slate-400' : 'text-white'
-                        }`}
+                        className={`text-[11px] font-black truncate leading-tight ${isDarkened ? 'text-slate-400' : 'text-white'
+                          }`}
                       >
                         {poi.name[lang] || poi.name.en}
                       </h5>
                       <span
-                        className={`text-[8.5px] font-bold truncate leading-none ${
-                          isDarkened ? 'text-emerald-400' : isUnlocked ? 'text-amber-300' : 'text-slate-300'
-                        }`}
+                        className={`text-[8.5px] font-bold truncate leading-none ${isDarkened ? 'text-emerald-400' : isUnlocked ? 'text-amber-300' : 'text-slate-300'
+                          }`}
                       >
                         {isDarkened
                           ? (t.completedPhaseBadge || (lang === 'bs' ? 'Završeno' : 'Done'))
                           : isUnlocked
-                          ? (lang === 'bs' ? 'Otključano' : 'Unlocked')
-                          : (lang === 'bs' ? 'Cilj' : lang === 'de' ? 'Ziel' : lang === 'tr' ? 'Hedef' : 'Goal')}
+                            ? (lang === 'bs' ? 'Otključano' : 'Unlocked')
+                            : (lang === 'bs' ? 'Cilj' : lang === 'de' ? 'Ziel' : lang === 'tr' ? 'Hedef' : 'Goal')}
                       </span>
                     </div>
                   </div>
                   <ChevronRight
-                    className={`w-3.5 h-3.5 shrink-0 relative z-10 ${
-                      isDarkened ? 'text-slate-600' : 'text-amber-400'
-                    }`}
+                    className={`w-3.5 h-3.5 shrink-0 relative z-10 ${isDarkened ? 'text-slate-600' : 'text-amber-400'
+                      }`}
                   />
                 </div>
               );

@@ -162,7 +162,7 @@
   }
   </script>
 
-  <!-- Visually hide crawlable fallback from users; bots still read it. React replaces #root on mount. -->
+  <!-- Visually hide crawlable fallback from users; bots still read it. -->
   <style>
     .seo-fallback {
       position: absolute !important;
@@ -177,72 +177,90 @@
       border: 0 !important;
     }
   </style>
+
+  <!-- Global crash guard and dataLayer stub for Basic Consent Mode -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    if (!window.gtag) {
+      window.gtag = function () { window.dataLayer.push(arguments); };
+    }
+    window.addEventListener('error', function(e) {
+      var root = document.getElementById('root');
+      if (root && root.children.length === 0) {
+        root.innerHTML = '<div style="min-height:100vh;background:#0f172a;color:#fff;padding:24px;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">' +
+          '<h2 style="font-size:22px;font-weight:900;color:#38bdf8;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;">Tuzla Tour Guide</h2>' +
+          '<p style="color:#f87171;font-size:15px;max-width:500px;margin-bottom:8px;font-weight:bold;">' + (e.message || 'An unexpected loading error occurred.') + '</p>' +
+          '<button onclick="location.reload()" style="margin-top:16px;background:#3b82f6;color:white;border:none;padding:12px 24px;border-radius:12px;cursor:pointer;font-weight:bold;font-size:14px;box-shadow:0 4px 14px rgba(59,130,246,0.4);">Reload App</button>' +
+        '</div>';
+      }
+    });
+  </script>
 </head>
 
 <body>
+  <div id="root"></div>
+
   <!-- Semantic Crawlable Fallback for AI Search Engines & Non-JS Crawlers -->
-  <div id="root">
-    <div class="seo-fallback"
-      style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); clip-path: inset(50%); white-space: nowrap; border: 0;">
-      <header>
-        <h1>Tuzla Virtual Tour Guide</h1>
-        <p>Explore Tuzla with AR Quest Game, interactive 3D maps, and GPS-guided city tours</p>
-      </header>
-      <main>
-        <article>
-          <h2>Discover Tuzla &amp; Europe's Only Urban Salt Lakes</h2>
-          <p>
-            <strong>Tuzla</strong> is the third-largest city in Bosnia and Herzegovina, celebrated for over 6,000 years
-            of continuous salt extraction.
-            Its premier attraction, <strong>Panonika (Pannonian Lakes)</strong>, is Europe's only urban saltwater lake
-            resort, featuring three artificial lakes with salt water, continiously filtering during the day, with
-            mineral salinity of 30–35 g/L matching seawater, cascading waterfalls, and an authentic reconstructed
-            Neolithic stilt village.
-          </p>
+  <div class="seo-fallback"
+    style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); clip-path: inset(50%); white-space: nowrap; border: 0;">
+    <header>
+      <h1>Tuzla Virtual Tour Guide</h1>
+      <p>Explore Tuzla with AR Quest Game, interactive 3D maps, and GPS-guided city tours</p>
+    </header>
+    <main>
+      <article>
+        <h2>Discover Tuzla &amp; Europe's Only Urban Salt Lakes</h2>
+        <p>
+          <strong>Tuzla</strong> is the third-largest city in Bosnia and Herzegovina, celebrated for over 6,000 years
+          of continuous salt extraction.
+          Its premier attraction, <strong>Panonika (Pannonian Lakes)</strong>, is Europe's only urban saltwater lake
+          resort, featuring three artificial lakes with salt water, continiously filtering during the day, with
+          mineral salinity of 30–35 g/L matching seawater, cascading waterfalls, and an authentic reconstructed
+          Neolithic stilt village.
+        </p>
 
-          <h3>Airport Transit (TZL to City Center)</h3>
-          <p>
-            Tuzla International Airport (TZL) is connected to downtown Tuzla via <strong>Bus Line 34</strong> (fares
-            2.50–5.50 KM, cash only, ~35–50 min).
-            taxis operate outside arrivals with standard fares between 30 and 40 BAM (€15–20).
-          </p>
+        <h3>Airport Transit (TZL to City Center)</h3>
+        <p>
+          Tuzla International Airport (TZL) is connected to downtown Tuzla via <strong>Bus Line 34</strong> (fares
+          2.50–5.50 KM, cash only, ~35–50 min).
+          taxis operate outside arrivals with standard fares between 30 and 40 BAM (€15–20).
+        </p>
 
-          <h3>Top Attractions &amp; Highlights</h3>
-          <ul>
-            <li><strong>Pannonian Lakes (Panonika):</strong> Therapeutic saltwater complex in city center.</li>
-            <li><strong>Trg Slobode (Freedom Square):</strong> Largest town square in Bosnia with baroque fountain.</li>
-            <li><strong>Soni Trg (Salt Square):</strong> Historic 2,500-year salt well archaeological display.</li>
-            <li><strong>King Tvrtko I Monument:</strong> Central park statue and Charter of Kulin Ban (1189).</li>
-            <li><strong>Kapija Memorial:</strong> Sacred historic monument to peace and youth in the pedestrian core.
-            </li>
-          </ul>
+        <h3>Top Attractions &amp; Highlights</h3>
+        <ul>
+          <li><strong>Pannonian Lakes (Panonika):</strong> Therapeutic saltwater complex in city center.</li>
+          <li><strong>Trg Slobode (Freedom Square):</strong> Largest town square in Bosnia with baroque fountain.</li>
+          <li><strong>Soni Trg (Salt Square):</strong> Historic 2,500-year salt well archaeological display.</li>
+          <li><strong>King Tvrtko I Monument:</strong> Central park statue and Charter of Kulin Ban (1189).</li>
+          <li><strong>Kapija Memorial:</strong> Sacred historic monument to peace and youth in the pedestrian core.
+          </li>
+        </ul>
 
-          <h3>Verified Accommodations</h3>
-          <p>
-            Top rated hotels include <strong>Hotel Mellain</strong> (rating 9.1, 5-star spa and Olympic pool) and
-            <strong>Hotel Salis</strong> (rating 8.9, wellness center near Pannonica).
-          </p>
+        <h3>Verified Accommodations</h3>
+        <p>
+          Top rated hotels include <strong>Hotel Mellain</strong> (rating 9.1, 5-star spa and Olympic pool) and
+          <strong>Hotel Salis</strong> (rating 8.9, wellness center near Pannonica).
+        </p>
 
-          <p>
-            Curated by local Tuzla tourism experts.
-            Verified <time id="seo-verified-date"></time>.
-          </p>
-          <script>
-            (function () {
-              var d = new Date();
-              var months = ['January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'];
-              var el = document.getElementById('seo-verified-date');
-              if (el) {
-                var text = months[d.getMonth()] + ' ' + d.getFullYear();
-                el.textContent = text;
-                el.setAttribute('datetime', d.toISOString().slice(0, 7));
-              }
-            })();
-          </script>
-        </article>
-      </main>
-    </div>
+        <p>
+          Curated by local Tuzla tourism experts.
+          Verified <time id="seo-verified-date"></time>.
+        </p>
+        <script>
+          (function () {
+            var d = new Date();
+            var months = ['January', 'February', 'March', 'April', 'May', 'June',
+              'July', 'August', 'September', 'October', 'November', 'December'];
+            var el = document.getElementById('seo-verified-date');
+            if (el) {
+              var text = months[d.getMonth()] + ' ' + d.getFullYear();
+              el.textContent = text;
+              el.setAttribute('datetime', d.toISOString().slice(0, 7));
+            }
+          })();
+        </script>
+      </article>
+    </main>
   </div>
   <script type="module" src="/index.tsx"></script>
 </body>

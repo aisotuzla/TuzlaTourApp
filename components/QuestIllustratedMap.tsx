@@ -13,8 +13,8 @@ interface QuestIllustratedMapProps {
   onScan: () => void;
 }
 
-const MAP_IMAGE = '/assets/Gallery/QuestQRLocations/tuzlaMapTour12-optimized.webp';
-const FALLBACK_IMAGE = '/assets/Gallery/QuestQRLocations/mapa.webp';
+const MAP_IMAGE = '/assets/Gallery/QuestQRLocations/tuzlaMapTour-new.webp';
+const FALLBACK_IMAGE = '/assets/Gallery/QuestQRLocations/tuzlaMapTour12-optimized.webp';
 
 // Percent positions are aligned to the circular landmark callouts in the supplied map artwork.
 const HOTSPOTS: Record<string, { left: string; top: string }> = {
@@ -80,8 +80,8 @@ const QuestIllustratedMap: React.FC<QuestIllustratedMapProps> = ({ lang, unlocke
         </div>
       </header>
 
-      <main className="relative flex min-h-0 flex-1 items-center justify-center overflow-auto bg-[#10213b] p-2 sm:p-4">
-        <div className="relative mx-auto w-full max-w-[1500px] overflow-hidden rounded-xl border border-amber-300/40 bg-[#e8d4a7] shadow-[0_20px_70px_rgba(0,0,0,.45)]">
+      <main className="relative flex min-h-0 flex-1 items-center justify-center overflow-auto bg-[#10213b]">
+        <div className="relative mx-auto w-full max-w-[1500px] overflow-hidden rounded-xl border border-amber-300/40 shadow-[0_20px_70px_rgba(0,0,0,.45)]">
           <img
             src={imageSrc}
             alt="Illustrated map of Tuzla with quest landmarks"
@@ -109,12 +109,6 @@ const QuestIllustratedMap: React.FC<QuestIllustratedMapProps> = ({ lang, unlocke
               </button>
             );
           })}
-        </div>
-
-        <div className="fixed bottom-3 left-3 z-20 flex flex-wrap gap-2 rounded-xl border border-amber-200/25 bg-blue-950/90 p-2.5 shadow-xl backdrop-blur-md sm:bottom-5 sm:left-5 sm:gap-3 sm:px-4">
-          <span className="flex items-center gap-1.5 text-[10px] font-bold sm:text-xs"><i className="h-3 w-3 rounded-full border border-amber-100 bg-amber-400" />{copy.completed}</span>
-          <span className="flex items-center gap-1.5 text-[10px] font-bold sm:text-xs"><i className="h-3 w-3 rounded-full border border-sky-100 bg-sky-500" />{copy.discovered}</span>
-          <span className="flex items-center gap-1.5 text-[10px] font-bold sm:text-xs"><i className="h-3 w-3 rounded-full border border-stone-200 bg-stone-500" />{copy.locked}</span>
         </div>
       </main>
 

@@ -496,7 +496,9 @@ const App: React.FC = () => {
       <GlobalAppProvider>
         <AudioGuideProvider>
           <BrowserRouter>
-            <AppContent />
+            <ErrorBoundary>
+              <AppContent />
+            </ErrorBoundary>
             <Analytics />
             <SpeedInsights />
           </BrowserRouter>
