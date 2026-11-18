@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { App as CapApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { Menu } from 'lucide-react';
@@ -55,6 +55,7 @@ const CityGuide = React.lazy(() => import('./components/CityGuide'));
 const Transportation = React.lazy(() => import('./components/Transportation'));
 const QRScanShell = React.lazy(() => import('./components/QRScan'));
 const PlayerDashboard = React.lazy(() => import('./components/PlayerDashboard'));
+const AdminDashboard = React.lazy(() => import('./components/AdminDashboard'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
@@ -66,7 +67,8 @@ const getTabFromPath = (path: string): AppTab => {
     case '/transportation': return AppTab.TRANSPORTATION;
     case '/map': return AppTab.MAP;
     case '/quest': return AppTab.QUEST;
-    case '/dashboard': return AppTab.DASHBOARD;
+    case '/dashboard': return AppTab.QR_SCAN;
+    case '/admin': return AppTab.QR_SCAN;
     case '/qr-scan': return AppTab.QR_SCAN;
     case '/task-manager': return AppTab.TASK_MANAGER;
     case '/food': return AppTab.FOOD;
@@ -84,7 +86,7 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.TRANSPORTATION: return '/transportation';
     case AppTab.MAP: return '/map';
     case AppTab.QUEST: return '/quest';
-    case AppTab.DASHBOARD: return '/dashboard';
+    case AppTab.DASHBOARD: return '/qr-scan';
     case AppTab.QR_SCAN: return '/qr-scan';
     case AppTab.TASK_MANAGER: return '/task-manager';
     case AppTab.FOOD: return '/food';
@@ -398,16 +400,20 @@ const AppContent: React.FC = () => {
                         initialOpenScanner={autoOpenScanner}
                       />
                     } />
-                    <Route path="/dashboard" element={<PlayerDashboard lang={lang} />} />
+                    <Route path="/dashboard" element={<Navigate to="/qr-scan" replace />} />
                     <Route path="/qr-scan" element={
-                      <QRScanShell
-                        lang={lang}
-                        onNavigateToTarget={(target) => {
-                          setNavigationTarget(target);
-                          navigateToTab(AppTab.QUEST);
-                        }}
-                      />
+                      <>
+                        <PlayerDashboard lang={lang} />
+                        <QRScanShell
+                          lang={lang}
+                          onNavigateToTarget={(target) => {
+                            setNavigationTarget(target);
+                            navigateToTab(AppTab.QUEST);
+                          }}
+                        />
+                      </>
                     } />
+                    <Route path="/admin" element={<AdminDashboard lang={lang} onBack={() => navigate('/qr-scan')} />} />
                     <Route path="/task-manager" element={<TaskManager lang={lang} />} />
                     <Route
                       path="/food"
