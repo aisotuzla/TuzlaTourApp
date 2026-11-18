@@ -13,7 +13,7 @@ interface QuestIllustratedMapProps {
   onScan: () => void;
 }
 
-const MAP_IMAGE = '/assets/Gallery/QuestQRLocations/tuzlaMapTour12.webp';
+const MAP_IMAGE = '/assets/Gallery/QuestQRLocations/tuzlaMapTour12-optimized.webp';
 const FALLBACK_IMAGE = '/assets/Gallery/QuestQRLocations/mapa.webp';
 
 // Percent positions are aligned to the circular landmark callouts in the supplied map artwork.
