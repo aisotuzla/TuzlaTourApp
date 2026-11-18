@@ -3,7 +3,6 @@ import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
 import {
     QrCode,
-    ArrowLeftRight,
     BookOpen,
     Play,
     Trash2,
@@ -53,21 +52,7 @@ interface LedgerEntry {
     timestamp: string;
 }
 
-interface Todo {
-    id: string | number;
-    name: string;
-}
-
-const TODO_LABELS: Record<Language, { title: string; loading: string; empty: string; error: string }> = {
-    en: { title: 'Todos', loading: 'Loading todos...', empty: 'No todos found.', error: 'Could not load todos.' },
-    bs: { title: 'Zadaci', loading: 'Učitavanje zadataka...', empty: 'Nema zadataka.', error: 'Učitavanje zadataka nije uspjelo.' },
-    de: { title: 'Aufgaben', loading: 'Aufgaben werden geladen...', empty: 'Keine Aufgaben gefunden.', error: 'Aufgaben konnten nicht geladen werden.' },
-    tr: { title: 'Görevler', loading: 'Görevler yükleniyor...', empty: 'Görev bulunamadı.', error: 'Görevler yüklenemedi.' },
-};
-
 const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
-    const [bamValue, setBamValue] = useState<string>('');
-    const [conversionMode, setConversionMode] = useState<'BAM_TO_EUR' | 'EUR_TO_BAM'>('BAM_TO_EUR');
     const [isScanning, setIsScanning] = useState(false);
     const [scannerFeedback, setScannerFeedback] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
     const [scannerStatus, setScannerStatus] = useState<'idle' | 'loading' | 'active' | 'error'>('idle');
@@ -80,9 +65,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
     const [playingVideoError, setPlayingVideoError] = useState<string | null>(null);
     const [expandedPhaseId, setExpandedPhaseId] = useState<string | null>(null);
     const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
-    const [todos, setTodos] = useState<Todo[]>([]);
-    const [todosLoading, setTodosLoading] = useState(true);
-    const [todosError, setTodosError] = useState<string | null>(null);
 
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const isOnline = useNetwork();
@@ -100,12 +82,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
         return nextId ? QUEST_TARGETS.find(t => t.id === nextId) : undefined;
     }, [questPhases, unlockedRewards]);
 
-    const convertedValue = bamValue
-        ? conversionMode === 'BAM_TO_EUR'
-            ? (parseFloat(bamValue) / 1.95583).toFixed(2)
-            : (parseFloat(bamValue) * 1.95583).toFixed(2)
-        : '0.00';
-
     // Load ledger from storage
     useEffect(() => {
         const loadLedger = async () => {
@@ -115,37 +91,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
             }
         };
         loadLedger();
-    }, []);
-
-    useEffect(() => {
-        let isActive = true;
-
-        const loadTodos = async () => {
-            try {
-                const { supabase } = await import('../lib/supabaseClient');
-                const { data, error } = await (supabase as any).from('todos').select('id, name');
-
-                if (error) {
-                    console.error('Unable to load todos from Supabase:', error);
-                    if (isActive) setTodosError(error.message);
-                    return;
-                }
-
-                if (isActive) setTodos((data as any) ?? []);
-            } catch (error: unknown) {
-                console.error('Unable to load todos from Supabase:', error);
-                if (isActive) {
-                    setTodosError(error instanceof Error ? error.message : 'An unexpected error occurred.');
-                }
-            } finally {
-                if (isActive) setTodosLoading(false);
-            }
-        };
-
-        void loadTodos();
-        return () => {
-            isActive = false;
-        };
     }, []);
 
     // Cleanup scanner on unmount
@@ -336,7 +281,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
 
                 <div className="text-center mb-12">
                     <div className="flex items-center justify-center gap-3">
-                        <img src="/assets/icons/TuzlaTourGuideIcon96x96.webp" alt="Tuzla Tour Guide" className="w-10 h-10 object-contain rounded-2xl shadow-md" />
                         <h1 className="text-3xl sm:text-4xl font-black text-blue-950 uppercase tracking-tight">
                             QR Scan
                         </h1>
@@ -485,46 +429,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                 </div>
                             )}
                         </div>
-
-                        {/* Currency Converter */}
-                        <div className="p-5 sm:p-6 bg-white border border-emerald-100 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col gap-5">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-                            <div className="flex justify-between items-start gap-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0">
-                                        <ArrowLeftRight size={24} className="text-emerald-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Exchange</p>
-                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t.currencyConverterTitle}</h3>
-                                    </div>
-                                </div>
-                                <button onClick={() => { setConversionMode(m => m === 'BAM_TO_EUR' ? 'EUR_TO_BAM' : 'BAM_TO_EUR'); setBamValue(''); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all active:scale-95 shrink-0">
-                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">{conversionMode === 'BAM_TO_EUR' ? 'BAM → EUR' : 'EUR → BAM'}</span>
-                                    <ArrowLeftRight size={10} className="text-slate-400 ml-1" />
-                                </button>
-                            </div>
-                            <div className="flex-1 bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
-                                <div>
-                                    <label className="text-[10px] font-bold text-emerald-600 uppercase block mb-1">
-                                        {conversionMode === 'BAM_TO_EUR' ? t.enterBamLabel : t.enterEurLabel}
-                                    </label>
-                                    <input type="number" value={bamValue} onChange={(e) => setBamValue(e.target.value)} placeholder="0.00" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 font-black focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all" />
-                                </div>
-                                <div className="pt-3 border-t border-slate-200 flex justify-between items-end">
-                                    <div>
-                                        <p className="text-[10px] font-bold text-emerald-600 uppercase mb-0.5">
-                                            {conversionMode === 'BAM_TO_EUR' ? t.estimatedEurLabel : t.estimatedBamLabel}
-                                        </p>
-                                        <p className="text-[9px] text-slate-400">{t.conversionRateText}</p>
-                                    </div>
-                                    <p className="text-xl font-black text-emerald-700 leading-none">
-                                        {conversionMode === 'BAM_TO_EUR' ? `€ ${convertedValue}` : `KM ${convertedValue}`}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     {/* ── Right Column: Quest Progress + Ledger + Partners ── */}
                     <div className="lg:col-span-5 space-y-6">
@@ -729,7 +633,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                     </div>
                 </div>
 
-                {/* ── FAQ & Contact Us Section ── */}
+                {/* ── FAQ and notification diagnostics ── */}
                 <div className="mt-12">
                     <AppFaqAndContact lang={lang} />
                 </div>
