@@ -427,7 +427,7 @@ const AppContent: React.FC = () => {
                         lang={lang}
                         features={features}
                         unlockedRewards={unlockedRewards}
-                        onRewardFound={(id) => setUnlockedRewards((prev) => (prev.includes(id) ? prev : [...prev, id]))}
+                        onRewardFound={completeQuest}
                         initialTarget={navigationTarget}
                         onNavigate={(poi) => {
                           setNavigationTarget(poi);
