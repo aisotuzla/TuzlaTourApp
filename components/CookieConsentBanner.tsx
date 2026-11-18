@@ -18,6 +18,31 @@ interface CookieConsentState {
 
 const COOKIE_CONSENT_KEY = 'tuzla_cookie_consent';
 const COOKIE_CONSENT_VERSION = 'v1_202611';
+const GTM_CONTAINER_ID = 'GTM-WNB4KPDD';
+const GA4_MEASUREMENT_ID = 'G-988LD92552';
+
+// Helper to clear Google Analytics cookies on withdrawal or when performance consent is absent
+const clearAnalyticsCookies = () => {
+  if (typeof document === 'undefined') return;
+  const cookies = document.cookie.split(';');
+  const host = window.location.hostname;
+  const domainsToClear = ['', host, '.' + host];
+  const parts = host.split('.');
+  if (parts.length > 1) {
+    domainsToClear.push('.' + parts.slice(-2).join('.'));
+  }
+
+  for (const rawCookie of cookies) {
+    const eqPos = rawCookie.indexOf('=');
+    const name = (eqPos > -1 ? rawCookie.substring(0, eqPos) : rawCookie).trim();
+    if (name.startsWith('_ga') || name.startsWith('_gid')) {
+      for (const domain of domainsToClear) {
+        const domainAttr = domain ? `; domain=${domain}` : '';
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${domainAttr}`;
+      }
+    }
+  }
+};
 
 // Translations
 const translations: Record<string, any> = {
@@ -185,15 +210,18 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
             }));
             applyConsent(consentObj);
           } else {
-            // Version mismatch, show banner for re-consent
+            // Version mismatch, ensure GA4 is disabled until re-consent
+            (window as any)[`ga-disable-${GA4_MEASUREMENT_ID}`] = true;
             setState(prev => ({ ...prev, showBanner: true }));
           }
         } else {
-          // No consent stored, show banner
+          // No consent stored, ensure GA4 is disabled until choice
+          (window as any)[`ga-disable-${GA4_MEASUREMENT_ID}`] = true;
           setState(prev => ({ ...prev, showBanner: true }));
         }
       } catch (error) {
         console.error('Error loading cookie consent:', error);
+        (window as any)[`ga-disable-${GA4_MEASUREMENT_ID}`] = true;
         setState(prev => ({ ...prev, showBanner: true }));
       }
     };
@@ -204,22 +232,24 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
       if (typeof window !== 'undefined') {
         const saved = localStorage.getItem(COOKIE_CONSENT_KEY);
         if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.version === COOKIE_CONSENT_VERSION) {
-            const consentObj = {
-              necessary: true,
-              performance: parsed.performance || false,
-              functional: parsed.functional || false,
-              marketing: parsed.marketing || false,
-            };
-            setState(prev => ({
-              ...prev,
-              ...consentObj,
-              showBanner: false,
-            }));
-            applyConsent(consentObj);
-            return;
-          }
+          try {
+            const parsed = JSON.parse(saved);
+            if (parsed.version === COOKIE_CONSENT_VERSION) {
+              const consentObj = {
+                necessary: true,
+                performance: parsed.performance || false,
+                functional: parsed.functional || false,
+                marketing: parsed.marketing || false,
+              };
+              setState(prev => ({
+                ...prev,
+                ...consentObj,
+                showBanner: false,
+              }));
+              applyConsent(consentObj);
+              return;
+            }
+          } catch (_) {}
         }
       }
       
@@ -227,8 +257,9 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
       if (typeof window !== 'undefined' && (window as any).Capacitor) {
         await loadConsent();
       } else {
-        // Web environment
-        loadConsent();
+        // Web environment without valid saved consent
+        (window as any)[`ga-disable-${GA4_MEASUREMENT_ID}`] = true;
+        setState(prev => ({ ...prev, showBanner: true }));
       }
     };
 
@@ -272,34 +303,123 @@ const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ lang = 'en' }
     }
   };
 
-  // Apply consent to tracking scripts via Google Consent Mode v2
+  // Apply consent to tracking scripts via Basic Consent Mode & Google Consent Mode v2
   const applyConsent = (consent: { performance?: boolean; marketing?: boolean; functional?: boolean }) => {
     if (typeof window === 'undefined') return;
 
-    if ((window as any).gtag) {
-      (window as any).gtag('consent', 'update', {
-        'analytics_storage': consent.performance ? 'granted' : 'denied',
-        'ad_storage': consent.marketing ? 'granted' : 'denied',
-        'ad_user_data': consent.marketing ? 'granted' : 'denied',
-        'ad_personalization': consent.marketing ? 'granted' : 'denied',
-      });
+    const hasPerformance = Boolean(consent.performance);
+    const hasMarketing = Boolean(consent.marketing);
+    const hasAnyTrackingConsent = hasPerformance || hasMarketing;
 
-      if (consent.performance) {
-        (window as any).gtag('config', 'G-988LD92552', {
-          anonymize_ip: true,
-          send_page_view: true,
+    // 1. Prevent GA4 collection when analytics consent is absent, including after withdrawal
+    const gaDisableKey = `ga-disable-${GA4_MEASUREMENT_ID}`;
+    if (!hasPerformance) {
+      (window as any)[gaDisableKey] = true;
+      clearAnalyticsCookies();
+    } else {
+      delete (window as any)[gaDisableKey];
+      (window as any)[gaDisableKey] = false;
+    }
+
+    // 2. Load GTM only after saved or newly granted Performance or Marketing consent (Basic Consent Mode)
+    if (hasAnyTrackingConsent) {
+      // Initialize dataLayer and gtag if not already present
+      const win = window as any;
+      win.dataLayer = win.dataLayer || [];
+      if (!win.gtag) {
+        win.gtag = function () {
+          win.dataLayer.push(arguments);
+        };
+      }
+      const gtag = win.gtag;
+
+      const gtmScriptId = 'gtm-loader-script';
+      const existingScript = document.getElementById(gtmScriptId) as HTMLScriptElement | null;
+
+      if (!existingScript) {
+        // Set default consent states before loading GTM container
+        gtag('consent', 'default', {
+          'analytics_storage': hasPerformance ? 'granted' : 'denied',
+          'ad_storage': hasMarketing ? 'granted' : 'denied',
+          'ad_user_data': hasMarketing ? 'granted' : 'denied',
+          'ad_personalization': hasMarketing ? 'granted' : 'denied',
         });
+        gtag('js', new Date());
+
+        // Single GTM loader: dynamically inject GTM script
+        const gtmScript = document.createElement('script');
+        gtmScript.id = gtmScriptId;
+        gtmScript.async = true;
+        gtmScript.src = `https://www.googletagmanager.com/gtm.js?id=${GTM_CONTAINER_ID}`;
+        document.head.appendChild(gtmScript);
+
+        win.dataLayer.push({
+          'gtm.start': new Date().getTime(),
+          event: 'gtm.js',
+        });
+
+        if (hasPerformance) {
+          gtag('config', GA4_MEASUREMENT_ID, {
+            anonymize_ip: true,
+            send_page_view: true,
+          });
+        }
+      } else {
+        // GTM script already loaded; update Google Consent Mode v2 state
+        gtag('consent', 'update', {
+          'analytics_storage': hasPerformance ? 'granted' : 'denied',
+          'ad_storage': hasMarketing ? 'granted' : 'denied',
+          'ad_user_data': hasMarketing ? 'granted' : 'denied',
+          'ad_personalization': hasMarketing ? 'granted' : 'denied',
+        });
+
+        win.dataLayer.push({
+          event: 'consent_update',
+          consent_status: {
+            analytics_storage: hasPerformance ? 'granted' : 'denied',
+            ad_storage: hasMarketing ? 'granted' : 'denied',
+          },
+        });
+
+        if (hasPerformance) {
+          gtag('config', GA4_MEASUREMENT_ID, {
+            anonymize_ip: true,
+            send_page_view: true,
+          });
+        }
+      }
+    } else {
+      // Basic Consent Mode: When no optional consent is granted, do not load GTM.
+      // If GTM was previously loaded in the session and user now withdrew consent:
+      const win = window as any;
+      if (win.gtag) {
+        win.gtag('consent', 'update', {
+          'analytics_storage': 'denied',
+          'ad_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied',
+        });
+
+        if (win.dataLayer) {
+          win.dataLayer.push({
+            event: 'consent_withdrawn',
+            consent_status: {
+              analytics_storage: 'denied',
+              ad_storage: 'denied',
+            },
+          });
+        }
       }
     }
   };
 
-  // Handle accept all
+  // Handle accept all - consistent with all available consent categories
   const handleAcceptAll = () => {
     saveConsent({
       necessary: true,
       performance: true,
       functional: true,
-      marketing: false,
+      marketing: true,
     });
   };
 

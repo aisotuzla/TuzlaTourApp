@@ -113,7 +113,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
           try {
             navigator.vibrate([100, 50, 100]);
-          } catch (_) {}
+          } catch (_) { }
         }
 
         // Record in local scan ledger for history tracking
@@ -123,7 +123,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           if (value) {
             try {
               ledger = JSON.parse(value);
-            } catch (_) {}
+            } catch (_) { }
           }
 
           if (!ledger.some((entry) => entry.id === target.id)) {
@@ -196,13 +196,13 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
               en: "The GPS position for this quest is not configured yet.",
               bs: "GPS lokacija ove potrage još nije podešena.",
               de: "Die GPS-Position dieser Quest ist noch nicht eingerichtet.",
-              tr: "Bu görevin GPS konumu henüz ayarlanmamış."
+              tr: "Bu görevin GPS konumu henüz ayarlanmamiş."
             },
             quest_not_found_or_inactive: {
               en: "This quest is currently unavailable.",
               bs: "Ova potraga trenutno nije dostupna.",
               de: "Diese Quest ist derzeit nicht verfügbar.",
-              tr: "Bu görev şu anda kullanılamıyor."
+              tr: "Bu görev şu anda kullanilamiyor."
             },
             invalid_qr: {
               en: 'This QR code is not activated for quest rewards yet.',
@@ -214,25 +214,25 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
               en: 'You are outside the allowed GPS area. Move closer to the location and try again.',
               bs: 'Nalazite se izvan dozvoljene GPS zone. Priđite lokaciji i pokušajte ponovo.',
               de: 'Du bist außerhalb des erlaubten GPS-Bereichs. Gehe näher an den Ort und versuche es erneut.',
-              tr: 'İzin verilen GPS alanının dışındasınız. Konuma yaklaşın ve tekrar deneyin.'
+              tr: 'İzin verilen GPS alaninin dişindasiniz. Konuma yaklaşin ve tekrar deneyin.'
             },
             gps_required: {
               en: 'Location permission is required. Enable GPS and scan again.',
               bs: 'Potrebna je dozvola za lokaciju. Uključite GPS i skenirajte ponovo.',
               de: 'Der Standortzugriff ist erforderlich. Aktiviere GPS und scanne erneut.',
-              tr: 'Konum izni gerekiyor. GPS'i açıp tekrar tarayın.'
+              tr: 'Konum izni gerekiyor. GPS açip tekrar tarayin',
             },
             already_completed: {
               en: 'You have already completed this quest.',
               bs: 'Ovu potragu ste već završili.',
               de: 'Du hast diese Quest bereits abgeschlossen.',
-              tr: 'Bu görevi zaten tamamladınız.'
+              tr: 'Bu görevi zaten tamamladiniz.'
             },
             auth_required: {
               en: 'Guest player session is unavailable. Please try again.',
               bs: 'Sesija gosta nije dostupna. Pokušajte ponovo.',
               de: 'Die Gast-Sitzung ist nicht verfügbar. Bitte versuche es erneut.',
-              tr: 'Misafir oyuncu oturumu kullanılamıyor. Lütfen tekrar deneyin.'
+              tr: 'Misafir oyuncu oturumu kullanilamiyor. Lütfen tekrar deneyin.'
             },
             anonymous_sign_in_disabled: {
               en: 'Guest play is not enabled yet. Please try again later.',
@@ -244,7 +244,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
               en: 'Could not verify this quest. Please try again.',
               bs: 'Potragu nije moguće potvrditi. Pokušajte ponovo.',
               de: 'Die Quest konnte nicht bestätigt werden. Bitte versuche es erneut.',
-              tr: 'Görev doğrulanamadı. Lütfen tekrar deneyin.'
+              tr: 'Görev doğrulanamadi. Lütfen tekrar deneyin.'
             }
           };
           setScannerFeedback({ text: messages[code]?.[lang] || messages.quest_completion_failed[lang], type: 'error' });
@@ -292,7 +292,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
       };
 
       try {
-        await html5QrCode.start({ facingMode: 'environment' }, qrConfig, onScanSuccess, () => {});
+        await html5QrCode.start({ facingMode: 'environment' }, qrConfig, onScanSuccess, () => { });
         setIsStartingCamera(false);
         if (!isOpenRef.current) {
           stopScanner();
@@ -304,7 +304,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           const devices = await Html5Qrcode.getCameras();
           if (devices && devices.length > 0) {
             const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
-            await html5QrCode.start(backCam.id, qrConfig, onScanSuccess, () => {});
+            await html5QrCode.start(backCam.id, qrConfig, onScanSuccess, () => { });
             setIsStartingCamera(false);
             if (!isOpenRef.current) {
               stopScanner();
@@ -409,9 +409,8 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                 {/* Cyber Frame Decor */}
                 <div className="absolute -inset-4 border-2 border-white/5 rounded-[2.5rem] pointer-events-none" />
                 <div
-                  className={`absolute -inset-1 border rounded-[1.5rem] pointer-events-none ${
-                    enableInfiniteAnimations ? 'animate-pulse' : ''
-                  }`}
+                  className={`absolute -inset-1 border rounded-[1.5rem] pointer-events-none ${enableInfiniteAnimations ? 'animate-pulse' : ''
+                    }`}
                   style={{
                     borderColor: 'rgba(56, 189, 248, 0.4)',
                     boxShadow: '0 0 25px rgba(56, 189, 248, 0.2), inset 0 0 20px rgba(245, 158, 11, 0.15)'
@@ -444,7 +443,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                   >
                     {/* Glowing light curtain sweep trail (upwards) */}
                     <div className="w-full h-8 bg-gradient-to-t from-amber-400/35 via-sky-400/20 to-transparent blur-xs -mb-1" />
-                    
+
                     {/* Core Laser Bar */}
                     <div className="relative w-full h-[3px] bg-gradient-to-r from-transparent via-sky-400 via-amber-300 via-amber-200 via-sky-400 to-transparent shadow-[0_0_16px_#fbbf24,0_0_32px_#38bdf8,0_0_50px_#0284c7]">
                       <div className="absolute inset-0 h-[1.5px] bg-white blur-[0.5px]" />
@@ -515,9 +514,8 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                             <img
                               src={item.Image}
                               alt={itemName}
-                              className={`w-full h-full object-cover brightness-[0.7] ${
-                                isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'
-                              }`}
+                              className={`w-full h-full object-cover brightness-[0.7] ${isUtilityMode ? '' : 'group-hover:brightness-100 transition-all duration-500'
+                                }`}
                             />
                             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 to-transparent p-5 flex flex-col justify-center">
                               <span className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-1 leading-none">
@@ -585,9 +583,8 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                         <img
                           src={item.Image}
                           alt="Locked"
-                          className={`w-full h-full object-cover grayscale brightness-[0.3] ${
-                            isUtilityMode ? 'blur-sm' : 'blur-xl'
-                          }`}
+                          className={`w-full h-full object-cover grayscale brightness-[0.3] ${isUtilityMode ? 'blur-sm' : 'blur-xl'
+                            }`}
                         />
                         <div className="absolute inset-0 flex items-center justify-between px-8">
                           <div className="flex flex-col">
@@ -628,14 +625,12 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 50, opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 370, damping: 24 }}
-            className={`fixed bottom-24 left-6 right-6 z-[3000] p-5 rounded-3xl shadow-[0_20px_50px_rgba(15,23,42,0.35)] flex items-center gap-4 ${
-              scannerFeedback.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'
-            }`}
+            className={`fixed bottom-24 left-6 right-6 z-[3000] p-5 rounded-3xl shadow-[0_20px_50px_rgba(15,23,42,0.35)] flex items-center gap-4 ${scannerFeedback.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'
+              }`}
           >
             <div
-              className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
-                scannerFeedback.type === 'success' ? 'bg-white/20' : 'bg-white/20'
-              }`}
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${scannerFeedback.type === 'success' ? 'bg-white/20' : 'bg-white/20'
+                }`}
             >
               {scannerFeedback.type === 'success' ? (
                 <Trophy className="w-6 h-6 text-white" />
@@ -650,8 +645,8 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                     ? 'Čestitamo'
                     : 'Congratulations'
                   : lang === 'bs'
-                  ? 'Greška skeniranja'
-                  : 'Scan error'}
+                    ? 'Greška skeniranja'
+                    : 'Scan error'}
               </span>
               <span className="text-base font-black uppercase leading-none tracking-tight">
                 {scannerFeedback.text}
