@@ -170,6 +170,9 @@ export interface TranslationSet {
   questNextTarget: string;
   questComplete: string;
   questAllPhasesUnlocked: string;
+  questCardTag?: string;
+  questCardLine?: string;
+  questCardCta?: string;
 }
 
 export enum AppTab {
@@ -177,6 +180,7 @@ export enum AppTab {
   DASHBOARD = 'dashboard',
   CITY_GUIDE = 'cityGuide',
   HISTORY = 'history',
+  TRANSPORTATION = 'transportation',
   FOOD = 'food',
   ACCOMMODATION = 'accommodation',
   MAP = 'map',
@@ -185,4 +189,5 @@ export enum AppTab {
   TASK_MANAGER = 'taskManager',
   AR = 'ar',
   TRAVEL_AGENCIES = 'travelAgencies',
+  QR_SCAN = 'qrScan',
 }
