@@ -365,7 +365,7 @@ const AppContent: React.FC = () => {
               touchAction: 'pan-x pan-y pinch-zoom',
             }}
           >
-            <PinchZoomContainer maxScale={2.0}>
+            <PinchZoomContainer maxScale={3.0}>
               <ErrorBoundary>
                 <Suspense fallback={
                   <div className="h-full flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-50">
