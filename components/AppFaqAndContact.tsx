@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   HelpCircle,
   ChevronDown,
@@ -39,6 +40,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
   const [copiedToken, setCopiedToken] = useState(false);
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [testNotificationSent, setTestNotificationSent] = useState(false);
+  const navigate = useNavigate();
 
   const contactEmail = 'aiso_tuzla@gmail.com';
 
@@ -350,6 +352,9 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
               </button>
             </div>
           </div>
+        </div>
+        <div className="mt-2 flex justify-end">
+          <button type="button" onClick={() => navigate('/admin')} className="text-[10px] font-medium text-slate-400/70 hover:text-slate-600 underline underline-offset-2 decoration-slate-300/60">Admin</button>
         </div>
       </section>
 

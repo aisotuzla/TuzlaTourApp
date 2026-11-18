@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Award, CheckCircle2, CircleAlert, Crown, LoaderCircle, RefreshCw, Sparkles, Target, Trophy, Zap } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { Language } from '../types';
-import AdminDashboard from './AdminDashboard';
 
 type DashboardData = {
   profile?: { display_name?: string | null; leaderboard_opt_in?: boolean };
@@ -40,7 +39,6 @@ const PlayerDashboard: React.FC<{ lang: Language }> = ({ lang }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [guestId, setGuestId] = useState('');
-  const [adminOpen, setAdminOpen] = useState(false);
 
   const loadDashboard = useCallback(async () => {
     setLoading(true);
@@ -76,7 +74,7 @@ const PlayerDashboard: React.FC<{ lang: Language }> = ({ lang }) => {
 
   return (
     <section className="min-h-full w-full bg-slate-50 px-3 py-5 sm:px-6 sm:py-8">
-      <div className="mx-auto max-w-6xl space-y-5">\n        {adminOpen ? <AdminDashboard lang={lang} onBack={() => setAdminOpen(false)} /> : <>
+      <div className="mx-auto max-w-6xl space-y-5">
         <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-5 text-white shadow-xl sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -85,7 +83,7 @@ const PlayerDashboard: React.FC<{ lang: Language }> = ({ lang }) => {
               <p className="mt-1 max-w-xl text-sm text-blue-100">{t.subtitle}</p>
               <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-bold"><Crown size={14} className="text-amber-300" /> {data?.profile?.display_name || t.guest}</p>
             </div>
-            <div className="flex flex-wrap gap-2"><button onClick={() => setAdminOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-amber-300/50 bg-amber-300/10 px-3 py-2 text-xs font-bold text-amber-200 hover:bg-amber-300/20"><Crown size={14}/> Admin</button><button onClick={() => void loadDashboard()} disabled={loading} className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-xs font-bold hover:bg-white/20 disabled:opacity-50"><RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> {t.refresh}</button></div>
+<button onClick={() => void loadDashboard()} disabled={loading} className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-xs font-bold hover:bg-white/20 disabled:opacity-50"><RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> {t.refresh}</button>
           </div>
           {guestId && <p className="mt-4 text-[10px] text-blue-200/70">Player ID: {guestId.slice(0, 8)}…</p>}
         </div>
@@ -129,7 +127,6 @@ const PlayerDashboard: React.FC<{ lang: Language }> = ({ lang }) => {
             </div>
           </>
         )}
-        </>}
       </div>
     </section>
   );
