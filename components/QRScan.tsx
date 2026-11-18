@@ -552,7 +552,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                         return (
                                             <div key={entry.id} className="p-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-100 rounded-2xl flex items-center gap-3 transition-colors group">
                                                 <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 border border-slate-200">
-                                                    <img src={(target as any).Image} alt={targetName} className="w-full h-full object-cover" />
+                                                    <img src={target.id === "panonika" ? "/assets/Gallery/QuestQRLocations/panonsko_jezero.webp" : target.Image} alt={targetName} className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight truncate">{targetName}</h4>
