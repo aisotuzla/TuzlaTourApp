@@ -9,7 +9,7 @@ interface PinchZoomContainerProps {
 
 export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
   children,
-  maxScale = 2.0,
+  maxScale = 3.0,
   minScale = 1.0,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -124,7 +124,7 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
           const ratio = currentDistance / stateRef.current.initialDistance;
           let newScale = stateRef.current.initialScale * ratio;
           // Clamp scale to maxScale (2.0x) and minScale (1.0x)
-          newScale = Math.min(Math.max(newScale, minScale * 0.9), maxScale * 1.05);
+          newScale = Math.min(Math.max(newScale, minScale), maxScale);
 
           stateRef.current.scale = newScale;
 
