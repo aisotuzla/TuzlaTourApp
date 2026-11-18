@@ -14,9 +14,8 @@ interface QuestIllustratedMapProps {
 }
 
 const MAP_IMAGE = '/assets/Gallery/QuestQRLocations/tuzlaMapTour12-optimized.webp';
-const FALLBACK_IMAGE = '/assets/Gallery/QuestQRLocations/QuestMap2.jpg';
 
-// Percent positions are aligned to the circular landmark callouts in the supplied map artwork.
+// Percent positions aligned to the circular landmark callouts in the map artwork
 const HOTSPOTS: Record<string, { left: string; top: string }> = {
   tvrtko_park: { left: '47.5%', top: '15.5%' },
   salt_square: { left: '26.5%', top: '27%' },
@@ -33,15 +32,20 @@ const HOTSPOTS: Record<string, { left: string; top: string }> = {
 };
 
 const labels = {
-  en: { title: 'Tuzla Quest Map', subtitle: 'Choose a landmark to explore', completed: 'Completed', discovered: 'Discovered', locked: 'Locked', phase: 'Current phase', navigate: 'Navigate', scan: 'Scan QR', close: 'Close' },
-  bs: { title: 'Mapa potrage Tuzla', subtitle: 'Odaberite lokaciju za istraživanje', completed: 'Završeno', discovered: 'Otkriveno', locked: 'Zaključano', phase: 'Trenutna faza', navigate: 'Navigacija', scan: 'Skeniraj QR', close: 'Zatvori' },
-  de: { title: 'Tuzla Quest-Karte', subtitle: 'Wähle einen Ort zum Entdecken', completed: 'Abgeschlossen', discovered: 'Entdeckt', locked: 'Gesperrt', phase: 'Aktuelle Phase', navigate: 'Navigieren', scan: 'QR scannen', close: 'Schließen' },
-  tr: { title: 'Tuzla Keşif Haritası', subtitle: 'Keşfetmek için bir konum seçin', completed: 'Tamamlandı', discovered: 'Keşfedildi', locked: 'Kilitli', phase: 'Mevcut aşama', navigate: 'Yol tarifi', scan: 'QR Tara', close: 'Kapat' },
+  en: { title: 'Tuzla Quest Map', phase: 'Phase', navigate: 'Navigate', scan: 'Scan QR', close: 'Close' },
+  bs: { title: 'Mapa potrage Tuzla', phase: 'Faza', navigate: 'Navigacija', scan: 'Skeniraj QR', close: 'Zatvori' },
+  de: { title: 'Tuzla Quest-Karte', phase: 'Phase', navigate: 'Navigieren', scan: 'QR scannen', close: 'Schließen' },
+  tr: { title: 'Tuzla Keşif Haritası', phase: 'Aşama', navigate: 'Yol tarifi', scan: 'QR Tara', close: 'Kapat' },
 } as const;
 
-const QuestIllustratedMap: React.FC<QuestIllustratedMapProps> = ({ lang, unlockedRewards, onClose, onNavigate, onScan }) => {
+const QuestIllustratedMap: React.FC<QuestIllustratedMapProps> = ({
+  lang,
+  unlockedRewards,
+  onClose,
+  onNavigate,
+  onScan,
+}) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [imageSrc, setImageSrc] = useState(MAP_IMAGE);
   const copy = labels[lang] || labels.en;
   const currentPhase = getCurrentQuestPhase(unlockedRewards);
 
@@ -62,76 +66,121 @@ const QuestIllustratedMap: React.FC<QuestIllustratedMapProps> = ({ lang, unlocke
   };
 
   const targetName = (target: QuestTarget) => target.name[lang] || target.name.en || target.name.bs;
-  const targetDescription = (target: QuestTarget) => target.description[lang] || target.description.en || target.description.bs;
 
   return (
-    <div className="fixed inset-0 z-[5000] flex flex-col bg-[#10213b] text-white" role="dialog" aria-modal="true" aria-label={copy.title}>
-      <header className="relative z-20 flex items-center justify-between gap-3 border-b border-amber-300/20 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950 px-3 py-3 sm:px-5">
-        <button onClick={onClose} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white hover:bg-white/20" aria-label={copy.close}>
-          <ArrowLeft size={19} />
-        </button>
-        <div className="min-w-0 flex-1 text-center">
-          <h2 className="truncate text-base font-black uppercase tracking-wide text-amber-300 sm:text-lg">{copy.title}</h2>
-          <p className="text-[10px] font-semibold text-blue-100/80 sm:text-xs">{copy.subtitle}</p>
-        </div>
-        <div className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-amber-300/30 bg-amber-300/10 px-2.5 text-amber-200">
-          <MapPin size={15} />
-          <span className="text-xs font-black tabular-nums">{unlockedRewards.length}/{QUEST_TARGETS.length}</span>
-        </div>
+    <div
+      className="fixed inset-0 z-[5000] flex flex-col bg-slate-950 text-white select-none overflow-hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label={copy.title}
+    >
+      {/* MINIMAL TOP BANNER - STRICTLY ABOVE THE IMAGE, ZERO OVERLAY ON MAP */}
+      <header className="shrink-0 z-20 flex items-center justify-between gap-2 bg-slate-950 px-2 py-1 border-b border-amber-400/20 text-white h-8">
+        {selected ? (
+          // When a landmark is clicked, actions show here in the top bar above the map
+          <div className="flex items-center justify-between w-full gap-2 text-xs">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <button
+                type="button"
+                onClick={() => setSelectedId(null)}
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-white/10 hover:bg-white/20 text-white transition-colors"
+                aria-label={copy.close}
+                title={copy.close}
+              >
+                <X size={12} />
+              </button>
+              <div className="truncate">
+                <span className="text-[11px] font-black text-amber-300">{targetName(selected)}</span>
+                <span className="text-[9px] text-slate-400 ml-1 font-bold">
+                  ({copy.phase} {getPoiPhase(selected.id)})
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                onClick={() => onNavigate(selected)}
+                className="flex items-center gap-1 px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-500 font-bold text-white text-[10px] shadow active:scale-95 transition-all"
+              >
+                <Navigation size={10} />
+                <span>{copy.navigate}</span>
+              </button>
+              <button
+                type="button"
+                onClick={onScan}
+                className="flex items-center gap-1 px-2 py-0.5 rounded bg-amber-400 hover:bg-amber-300 font-black text-slate-950 text-[10px] shadow active:scale-95 transition-all"
+              >
+                <QrCode size={10} />
+                <span>{copy.scan}</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          // Default minimal top bar
+          <>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-5 w-5 shrink-0 items-center justify-center rounded border border-white/15 bg-white/10 text-white hover:bg-white/20 active:scale-95 transition-colors"
+              aria-label={copy.close}
+            >
+              <ArrowLeft size={12} />
+            </button>
+            <h2 className="text-[11px] font-black uppercase tracking-wider text-amber-300 truncate">
+              {copy.title}
+            </h2>
+            <div className="flex items-center gap-1 rounded border border-amber-300/30 bg-amber-400/10 px-1.5 py-0.5 text-amber-200 text-[10px] font-black tabular-nums">
+              <MapPin size={10} />
+              <span>
+                {unlockedRewards.length}/{QUEST_TARGETS.length}
+              </span>
+            </div>
+          </>
+        )}
       </header>
 
-      <main className="relative flex min-h-0 flex-1 items-center justify-center overflow-auto bg-[#10213b]">
-        <div className="relative mx-auto w-full max-w-[1500px] overflow-hidden rounded-xl border border-amber-300/40 shadow-[0_20px_70px_rgba(0,0,0,.45)]">
-          <img
-            src={imageSrc}
-            alt="Illustrated map of Tuzla with quest landmarks"
-            className="block h-auto w-full select-none"
-            draggable={false}
-            onError={() => { if (imageSrc !== FALLBACK_IMAGE) setImageSrc(FALLBACK_IMAGE); }}
-          />
+      {/* MAP VIEWPORT - CLEAN IN ALL CORNERS ALL THE TIME */}
+      <main className="relative flex-1 w-full min-h-0 flex items-center justify-center overflow-hidden bg-slate-950 p-0 sm:p-1">
+        <div className="relative w-full h-full flex items-center justify-center">
+          <div className="relative max-w-full max-h-full aspect-[3236/2158] flex items-center justify-center">
+            <img
+              src={MAP_IMAGE}
+              alt="Illustrated map of Tuzla with quest landmarks"
+              className="w-full h-full object-contain select-none block"
+              draggable={false}
+            />
 
-          {QUEST_TARGETS.map((target) => {
-            const position = HOTSPOTS[target.id];
-            if (!position) return null;
-            const status = getStatus(target.id);
-            const isSelected = selectedId === target.id;
-            return (
-              <button
-                key={target.id}
-                type="button"
-                onClick={() => setSelectedId(target.id)}
-                aria-label={targetName(target)}
-                title={targetName(target)}
-                style={{ left: position.left, top: position.top }}
-                className={`absolute z-10 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 shadow-lg transition-transform hover:scale-125 active:scale-95 sm:h-9 sm:w-9 ${statusClass(status)} ${isSelected ? 'ring-4 ring-white ring-offset-2 ring-offset-blue-900 scale-125' : ''}`}
-              >
-                {status === 'completed' ? <Check size={16} strokeWidth={3} /> : status === 'locked' ? <Lock size={13} /> : <MapPin size={15} fill="currentColor" />}
-              </button>
-            );
-          })}
+            {/* Landmarks Hotspots */}
+            {QUEST_TARGETS.map((target) => {
+              const position = HOTSPOTS[target.id];
+              if (!position) return null;
+              const status = getStatus(target.id);
+              const isSelected = selectedId === target.id;
+              return (
+                <button
+                  key={target.id}
+                  type="button"
+                  onClick={() => setSelectedId(target.id)}
+                  aria-label={targetName(target)}
+                  title={targetName(target)}
+                  style={{ left: position.left, top: position.top }}
+                  className={`absolute z-10 flex h-6 w-6 sm:h-7 sm:w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 shadow-md transition-transform hover:scale-125 active:scale-95 ${statusClass(
+                    status
+                  )} ${isSelected ? 'ring-2 ring-white scale-125' : ''}`}
+                >
+                  {status === 'completed' ? (
+                    <Check size={13} strokeWidth={3} />
+                  ) : status === 'locked' ? (
+                    <Lock size={11} />
+                  ) : (
+                    <MapPin size={12} fill="currentColor" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </main>
-
-      {selected && (
-        <div className="absolute inset-x-3 bottom-3 z-30 mx-auto max-w-md overflow-hidden rounded-2xl border border-amber-300/50 bg-gradient-to-br from-blue-950 via-blue-900 to-blue-950 p-4 shadow-2xl sm:bottom-5 sm:right-5 sm:left-auto">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="mb-1 text-[9px] font-black uppercase tracking-[.2em] text-amber-300">{copy.phase} {getPoiPhase(selected.id)}</p>
-              <h3 className="text-lg font-black leading-tight text-white">{targetName(selected)}</h3>
-            </div>
-            <button onClick={() => setSelectedId(null)} className="rounded-lg p-1.5 text-blue-100/70 hover:bg-white/10 hover:text-white" aria-label={copy.close}><X size={17} /></button>
-          </div>
-          <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-blue-100/85">{targetDescription(selected)}</p>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <button onClick={() => onNavigate(selected)} className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-3 py-3 text-xs font-black text-white shadow-lg shadow-blue-950/40 active:scale-95">
-              <Navigation size={15} />{copy.navigate}
-            </button>
-            <button onClick={onScan} className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-300 to-yellow-400 px-3 py-3 text-xs font-black text-slate-950 shadow-lg shadow-amber-950/30 active:scale-95">
-              <QrCode size={15} />{copy.scan}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

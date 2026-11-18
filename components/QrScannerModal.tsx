@@ -467,10 +467,10 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400 shadow-[0_0_8px_#fbbf24]"></span>
                   </span>
                   <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-sky-400 bg-clip-text text-transparent font-black text-xs uppercase tracking-[0.3em]">
-                    Quantum Laser Scanner
+                    Tuzla Tour Guide
                   </span>
                 </div>
-                <span className="text-sky-100/60 text-[10px] font-bold uppercase tracking-widest text-center px-12 leading-relaxed">
+                <span className="text-sky-100/60 text-[8px] font-bold uppercase tracking-widest text-center px-12 leading-relaxed">
                   Position QR code within the frame to unlock rewards
                 </span>
               </div>

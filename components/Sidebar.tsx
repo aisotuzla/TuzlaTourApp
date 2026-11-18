@@ -13,10 +13,25 @@ import {
   Bed,
   X,
   History as HistoryIcon,
-  Heart,
-  Bus,
-  Trophy
+  Bus
 } from 'lucide-react';
+
+const PodiumIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M2 21h20" />
+    <path d="M4 21v-8h5v8" />
+    <path d="M9 21V5h6v16" />
+    <path d="M15 21v-5h5v5" />
+  </svg>
+);
 
 interface SidebarProps {
   isOpen: boolean;
@@ -129,34 +144,37 @@ const NAV_ITEMS: NavItemConfig[] = [
     id: AppTab.QUEST,
     icon: Gamepad2,
     label: { en: 'Quest', bs: 'Potraga', de: 'Quest', tr: 'Görev' },
-    inactiveClass: 'bg-gradient-to-r from-indigo-100 via-blue-200 to-indigo-200 text-indigo-950 hover:from-indigo-200 hover:to-blue-300 font-extrabold',
-    inactiveIconClass: 'text-indigo-800',
-    inactiveBorderClass: 'border-indigo-300/80',
+    isSubItem: true,
+    inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-900 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
+    inactiveIconClass: 'text-blue-700',
+    inactiveBorderClass: 'border-blue-100/60',
     activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black ring-2 ring-yellow-300/80',
-    activeGlow: 'shadow-[0_0_30px_rgba(251,191,36,0.65)]',
+    activeGlow: 'shadow-[0_0_24px_rgba(251,191,36,0.6)]',
     activeBorder: 'border-yellow-200'
   },
   {
-    id: AppTab.DASHBOARD,
-    icon: Trophy,
-    label: { en: 'My Progress', bs: 'Moj napredak', de: 'Mein Fortschritt', tr: 'İlerlemem' },
-    inactiveClass: 'bg-gradient-to-r from-blue-100 via-blue-50 to-amber-50 text-blue-900 hover:from-blue-200 hover:to-amber-100 font-bold',
-    inactiveIconClass: 'text-amber-600',
-    inactiveBorderClass: 'border-amber-200/70',
-    activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black',
-    activeGlow: 'shadow-[0_8px_24px_rgba(245,158,11,0.45)]',
+    id: AppTab.QR_SCAN,
+    icon: QrCode,
+    label: { en: 'QR Scan', bs: 'QR skeniranje', de: 'QR Scan', tr: 'QR Tarama' },
+    isSubItem: true,
+    inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-900 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
+    inactiveIconClass: 'text-blue-700',
+    inactiveBorderClass: 'border-blue-100/60',
+    activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_6px_20px_rgba(245,158,11,0.45)]',
     activeBorder: 'border-amber-300'
   },
   {
-    id: AppTab.QR_SCAN,
-    label: { en: 'QR Scan', bs: 'QR skeniranje', de: 'QR Scan', tr: 'QR Tarama' },
-    icon: QrCode,
-    inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
-    inactiveIconClass: 'text-blue-900',
-    inactiveBorderClass: 'border-blue-400/80',
-    activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
-    activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
-    activeBorder: 'border-amber-400'
+    id: AppTab.DASHBOARD,
+    icon: PodiumIcon,
+    label: { en: 'My Progress', bs: 'Moj napredak', de: 'Mein Fortschritt', tr: 'İlerlemem' },
+    isSubItem: true,
+    inactiveClass: 'bg-gradient-to-r from-blue-100/70 via-sky-50/70 to-blue-100/80 text-blue-900 hover:from-blue-200/80 hover:to-sky-100 font-bold',
+    inactiveIconClass: 'text-blue-700',
+    inactiveBorderClass: 'border-blue-200/60',
+    activeClass: 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-black',
+    activeGlow: 'shadow-[0_6px_20px_rgba(37,99,235,0.45)]',
+    activeBorder: 'border-blue-400'
   },
   {
     id: AppTab.TASK_MANAGER,
