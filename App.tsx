@@ -402,8 +402,7 @@ const AppContent: React.FC = () => {
                     } />
                     <Route path="/dashboard" element={<Navigate to="/qr-scan" replace />} />
                     <Route path="/qr-scan" element={
-                      <>
-                        <PlayerDashboard lang={lang} />
+                      <div className="flex w-full min-w-0 flex-col gap-6">
                         <QRScanShell
                           lang={lang}
                           onNavigateToTarget={(target) => {
@@ -411,7 +410,8 @@ const AppContent: React.FC = () => {
                             navigateToTab(AppTab.QUEST);
                           }}
                         />
-                      </>
+                        <PlayerDashboard lang={lang} />
+                      </div>
                     } />
                     <Route path="/admin" element={<AdminDashboard lang={lang} onBack={() => navigate('/qr-scan')} />} />
                     <Route path="/task-manager" element={<TaskManager lang={lang} />} />
