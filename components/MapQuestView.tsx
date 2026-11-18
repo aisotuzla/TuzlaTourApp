@@ -26,7 +26,7 @@ import { useGlobalApp } from '../contexts/GlobalAppContext.tsx';
 
 export interface MapQuestViewProps {
   lang: Language; features: AppFeatures; unlockedRewards: string[];
-  onRewardFound: (id: string) => void;
+  onRewardFound: (id: string, qrPayload: string, position: { lat: number; lon: number } | null) => Promise<{ ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number }>;
   navigationTarget?: any | null; onClearNavigation?: () => void; initialOpenScanner?: boolean;
 }
 
