@@ -35,7 +35,7 @@ const AdminDashboard:React.FC<{lang:Language;onBack:()=>void}> = ({lang,onBack})
  useEffect(()=>{void load();const {data:{subscription}}=supabase.auth.onAuthStateChange(()=>{void load();});return()=>subscription.unsubscribe();},[load]);
  const sendLink=async(e:React.FormEvent)=>{e.preventDefault();setBusy(true);setError('');setSent(false);
   try{const {data:s}=await supabase.auth.getSession();if(s.session?.user.is_anonymous) await supabase.auth.signOut();
-   const {error:e}=await supabase.auth.signInWithOtp({email:email.trim(),options:{emailRedirectTo:window.location.origin+'/dashboard',shouldCreateUser:true}});
+   const {error:e}=await supabase.auth.signInWithOtp({email:email.trim(),options:{emailRedirectTo:window.location.origin+'/admin',shouldCreateUser:true}});
    if(e)throw e;setSent(true);
   }catch(e){setError(e instanceof Error?e.message:'Unable to send sign-in link.');}finally{setBusy(false);}
  };
