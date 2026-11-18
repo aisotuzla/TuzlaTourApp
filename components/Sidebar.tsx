@@ -55,6 +55,17 @@ const NAV_ITEMS: NavItemConfig[] = [
     activeBorder: 'border-amber-300/80'
   },
   {
+    id: AppTab.QR_SCAN,
+    label: { en: 'QR Scan & Progress', bs: 'QR skeniranje i napredak', de: 'QR-Scan & Fortschritt', tr: 'QR Tarama ve İlerleme' },
+    icon: QrCode,
+    inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
+    inactiveIconClass: 'text-blue-900',
+    inactiveBorderClass: 'border-blue-400/80',
+    activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
+    activeBorder: 'border-amber-400'
+  },
+  {
     id: AppTab.CITY_GUIDE,
     icon: BookOpen,
     label: { en: 'City Guide', bs: 'Gradski Vodič', de: 'Stadtführer', tr: 'Şehir Rehberi' },
@@ -135,17 +146,6 @@ const NAV_ITEMS: NavItemConfig[] = [
     activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black ring-2 ring-yellow-300/80',
     activeGlow: 'shadow-[0_0_30px_rgba(251,191,36,0.65)]',
     activeBorder: 'border-yellow-200'
-  },
-  {
-    id: AppTab.QR_SCAN,
-    label: { en: 'QR Scan & Progress', bs: 'QR skeniranje i napredak', de: 'QR-Scan & Fortschritt', tr: 'QR Tarama ve İlerleme' },
-    icon: QrCode,
-    inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
-    inactiveIconClass: 'text-blue-900',
-    inactiveBorderClass: 'border-blue-400/80',
-    activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
-    activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
-    activeBorder: 'border-amber-400'
   },
   {
     id: AppTab.TASK_MANAGER,
