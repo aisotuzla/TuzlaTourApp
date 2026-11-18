@@ -13,7 +13,7 @@ export interface QrScannerModalProps {
   onClose: () => void;
   lang: Language;
   unlockedRewards: string[];
-  onRewardFound: (id: string) => void;
+  onRewardFound: (id: string, qrPayload: string, position: { lat: number; lon: number } | null) => Promise<{ ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number }>;
   onSelectVideo?: (videoUrl: string) => void;
   isUtilityMode?: boolean;
   enableInfiniteAnimations?: boolean;
@@ -38,6 +38,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
   const { setIsTvrtkoScratchOpen } = useGlobalApp();
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+  const scanInProgressRef = useRef(false);
   const isOpenRef = useRef(isOpen);
   useEffect(() => {
     isOpenRef.current = isOpen;
@@ -162,7 +163,79 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           return;
         }
 
-        onRewardFound(target.id);
+        if (scanInProgressRef.current) return;
+        scanInProgressRef.current = true;
+
+        const getGpsFix = () => new Promise<{ lat: number; lon: number } | null>((resolve) => {
+          if (!navigator.geolocation) return resolve(null);
+          navigator.geolocation.getCurrentPosition(
+            (position) => resolve({ lat: position.coords.latitude, lon: position.coords.longitude }),
+            () => resolve(null),
+            { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
+          );
+        });
+
+        const gpsFix = await getGpsFix();
+        let completion: { ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number };
+        try {
+          completion = await onRewardFound(target.id, trimmedText, gpsFix);
+        } catch (_) {
+          completion = { ok: false, code: 'quest_completion_failed' };
+        }
+
+        if (!completion?.ok) {
+          const code = completion?.code || 'quest_completion_failed';
+          const messages: Record<string, Record<string, string>> = {
+            invalid_qr: {
+              en: 'This QR code is not activated for quest rewards yet.',
+              bs: 'Ovaj QR kod još nije aktiviran za nagrade potrage.',
+              de: 'Dieser QR-Code ist noch nicht für Quest-Belohnungen aktiviert.',
+              tr: 'Bu QR kodu görev ödülleri için henüz etkinleştirilmedi.'
+            },
+            outside_radius: {
+              en: 'You are outside the allowed GPS area. Move closer to the location and try again.',
+              bs: 'Nalazite se izvan dozvoljene GPS zone. Priđite lokaciji i pokušajte ponovo.',
+              de: 'Du bist außerhalb des erlaubten GPS-Bereichs. Gehe näher an den Ort und versuche es erneut.',
+              tr: 'İzin verilen GPS alanının dışındasınız. Konuma yaklaşın ve tekrar deneyin.'
+            },
+            gps_required: {
+              en: 'Location permission is required. Enable GPS and scan again.',
+              bs: 'Potrebna je dozvola za lokaciju. Uključite GPS i skenirajte ponovo.',
+              de: 'Der Standortzugriff ist erforderlich. Aktiviere GPS und scanne erneut.',
+              tr: 'Konum izni gerekiyor. GPS'i açıp tekrar tarayın.'
+            },
+            already_completed: {
+              en: 'You have already completed this quest.',
+              bs: 'Ovu potragu ste već završili.',
+              de: 'Du hast diese Quest bereits abgeschlossen.',
+              tr: 'Bu görevi zaten tamamladınız.'
+            },
+            auth_required: {
+              en: 'Guest player session is unavailable. Please try again.',
+              bs: 'Sesija gosta nije dostupna. Pokušajte ponovo.',
+              de: 'Die Gast-Sitzung ist nicht verfügbar. Bitte versuche es erneut.',
+              tr: 'Misafir oyuncu oturumu kullanılamıyor. Lütfen tekrar deneyin.'
+            },
+            anonymous_sign_in_disabled: {
+              en: 'Guest play is not enabled yet. Please try again later.',
+              bs: 'Igranje kao gost još nije omogućeno. Pokušajte kasnije.',
+              de: 'Gastmodus ist noch nicht aktiviert. Bitte später erneut versuchen.',
+              tr: 'Misafir modu henüz etkin değil. Daha sonra tekrar deneyin.'
+            },
+            quest_completion_failed: {
+              en: 'Could not verify this quest. Please try again.',
+              bs: 'Potragu nije moguće potvrditi. Pokušajte ponovo.',
+              de: 'Die Quest konnte nicht bestätigt werden. Bitte versuche es erneut.',
+              tr: 'Görev doğrulanamadı. Lütfen tekrar deneyin.'
+            }
+          };
+          setScannerFeedback({ text: messages[code]?.[lang] || messages.quest_completion_failed[lang], type: 'error' });
+          setTimeout(() => {
+            setScannerFeedback(null);
+            scanInProgressRef.current = false;
+          }, 4500);
+          return;
+        }
 
         // Special celebration and scratch card for King Tvrtko
         if (target.id === 'tvrtko_park' || target.id === 'tvrtko') {
@@ -176,8 +249,8 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         setScannerFeedback({
           text:
             lang === 'bs'
-              ? `Nagrada za ${target.name.bs} otključana!`
-              : `Reward unlocked for ${target.name.en}!`,
+              ? `Nagrada za ${target.name.bs} otključana! +${completion.xp_awarded || 0} XP`
+              : `Reward unlocked for ${target.name.en}! +${completion.xp_awarded || 0} XP`,
           type: 'success',
         });
         setTimeout(() => setScannerFeedback(null), 3000);
