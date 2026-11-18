@@ -14,7 +14,8 @@ import {
   X,
   History as HistoryIcon,
   Heart,
-  Bus
+  Bus,
+  Trophy
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -134,6 +135,17 @@ const NAV_ITEMS: NavItemConfig[] = [
     activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black ring-2 ring-yellow-300/80',
     activeGlow: 'shadow-[0_0_30px_rgba(251,191,36,0.65)]',
     activeBorder: 'border-yellow-200'
+  },
+  {
+    id: AppTab.DASHBOARD,
+    icon: Trophy,
+    label: { en: 'My Progress', bs: 'Moj napredak', de: 'Mein Fortschritt', tr: 'İlerlemem' },
+    inactiveClass: 'bg-gradient-to-r from-blue-100 via-blue-50 to-amber-50 text-blue-900 hover:from-blue-200 hover:to-amber-100 font-bold',
+    inactiveIconClass: 'text-amber-600',
+    inactiveBorderClass: 'border-amber-200/70',
+    activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_24px_rgba(245,158,11,0.45)]',
+    activeBorder: 'border-amber-300'
   },
   {
     id: AppTab.QR_SCAN,
