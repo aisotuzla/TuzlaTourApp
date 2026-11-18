@@ -13,25 +13,9 @@ import {
   Bed,
   X,
   History as HistoryIcon,
-  Bus
+  Bus,
+  TrendingUp
 } from 'lucide-react';
-
-const PodiumIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M2 21h20" />
-    <path d="M4 21v-8h5v8" />
-    <path d="M9 21V5h6v16" />
-    <path d="M15 21v-5h5v5" />
-  </svg>
-);
 
 interface SidebarProps {
   isOpen: boolean;
@@ -154,148 +138,148 @@ const NAV_ITEMS: NavItemConfig[] = [
   },
   {
     id: AppTab.DASHBOARD,
-    icon: Trophy,
-    label: { en: 'My Progress', bs: 'Moj napredak', de: 'Mein Fortschritt', tr: 'İlerlemem' },
-    inactiveClass: 'bg-gradient-to-r from-blue-100 via-blue-50 to-amber-50 text-blue-900 hover:from-blue-200 hover:to-amber-100 font-bold',
-    inactiveIconClass: 'text-amber-600',
-    inactiveBorderClass: 'border-amber-200/70',
-    activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black',
-    activeGlow: 'shadow-[0_8px_24px_rgba(245,158,11,0.45)]',
-    activeBorder: 'border-amber-300'
+    icon: TrendingUp,
+      label: {en: 'My Progress', bs: 'Moj napredak', de: 'Mein Fortschritt', tr: 'İlerlemem' },
+      inactiveClass: 'bg-gradient-to-r from-blue-100 via-blue-50 to-amber-50 text-blue-900 hover:from-blue-200 hover:to-amber-100 font-bold',
+      inactiveIconClass: 'text-amber-600',
+      inactiveBorderClass: 'border-amber-200/70',
+      activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black',
+      activeGlow: 'shadow-[0_8px_24px_rgba(245,158,11,0.45)]',
+      activeBorder: 'border-amber-300'
   },
-  {
-    id: AppTab.QR_SCAN,
-    label: { en: 'QR Scan', bs: 'QR skeniranje', de: 'QR Scan', tr: 'QR Tarama' },
-    icon: QrCode,
-    inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
-    inactiveIconClass: 'text-blue-900',
-    inactiveBorderClass: 'border-blue-400/80',
-    activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
-    activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
-    activeBorder: 'border-amber-400'
+      {
+        id: AppTab.QR_SCAN,
+      label: {en: 'QR Scan', bs: 'QR skeniranje', de: 'QR Scan', tr: 'QR Tarama' },
+      icon: QrCode,
+      inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
+      inactiveIconClass: 'text-blue-900',
+      inactiveBorderClass: 'border-blue-400/80',
+      activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
+      activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
+      activeBorder: 'border-amber-400'
   },
-  {
-    id: AppTab.TASK_MANAGER,
-    icon: CheckSquare,
-    label: { en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
-    inactiveClass: 'bg-gradient-to-r from-blue-300 via-indigo-300 to-sky-300 text-slate-950 hover:from-blue-400 hover:to-indigo-400 font-bold',
-    inactiveIconClass: 'text-blue-950',
-    inactiveBorderClass: 'border-blue-500/80',
-    activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black',
-    activeGlow: 'shadow-[0_8px_25px_rgba(245,158,11,0.6)]',
-    activeBorder: 'border-yellow-300'
+      {
+        id: AppTab.TASK_MANAGER,
+      icon: CheckSquare,
+      label: {en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
+      inactiveClass: 'bg-gradient-to-r from-blue-300 via-indigo-300 to-sky-300 text-slate-950 hover:from-blue-400 hover:to-indigo-400 font-bold',
+      inactiveIconClass: 'text-blue-950',
+      inactiveBorderClass: 'border-blue-500/80',
+      activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black',
+      activeGlow: 'shadow-[0_8px_25px_rgba(245,158,11,0.6)]',
+      activeBorder: 'border-yellow-300'
   }
-];
+      ];
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onSelectTab, lang }) => {
+      const Sidebar: React.FC<SidebarProps> = ({isOpen, onClose, activeTab, onSelectTab, lang}) => {
   const handleSelect = (tab: AppTab) => {
-    onSelectTab(tab);
-    onClose();
+          onSelectTab(tab);
+        onClose();
   };
 
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-slate-950/60 z-[100]"
-          />
+        return (
+        <AnimatePresence>
+          {isOpen && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={onClose}
+                className="fixed inset-0 bg-slate-950/60 z-[100]"
+              />
 
-          {/* Drawer */}
-          <motion.aside
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'tween', ease: [0.16, 1, 0.3, 1], duration: 0.25 }}
-            style={{ willChange: 'transform' }}
-            className="fixed top-0 left-0 h-full w-72 bg-white z-[101] shadow-2xl flex flex-col border-r border-slate-200/80"
-          >
-            {/* Header */}
-            <div className="p-4 flex items-center justify-between border-b border-slate-100 bg-white/50">
-              <div className="flex items-center gap-2.5">
-                <span className="font-quicksand font-black text-xl tracking-tight bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
-                  Tuzla Tour Guide
-                </span>
-              </div>
-
-              <button
-                onClick={() => onClose()}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors active:scale-95"
-                aria-label="Close menu"
+              {/* Drawer */}
+              <motion.aside
+                initial={{ x: '-100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '-100%' }}
+                transition={{ type: 'tween', ease: [0.16, 1, 0.3, 1], duration: 0.25 }}
+                style={{ willChange: 'transform' }}
+                className="fixed top-0 left-0 h-full w-72 bg-white z-[101] shadow-2xl flex flex-col border-r border-slate-200/80"
               >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Navigation Links */}
-            <div className="flex-1 overflow-y-auto p-3.5 space-y-1.5 custom-scrollbar">
-              {NAV_ITEMS.map((item) => {
-                const Icon = item.icon;
-                const isActive = activeTab === item.id;
-                const label = item.label[lang as keyof typeof item.label] || item.label.en;
-                const isSubItem = item.isSubItem;
-                const isHeader = item.isHeader;
-
-                return (
-                  <motion.button
-                    key={item.id}
-                    whileHover={{ x: 3, scale: 1.01 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => { handleSelect(item.id); }}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all duration-200 group text-left border relative overflow-hidden ${isSubItem ? 'ml-4 w-[calc(100%-1rem)] py-1.5 px-2.5' : ''
-                      } ${isActive
-                        ? `${item.activeClass} ${item.activeGlow} ${item.activeBorder} scale-[1.01]`
-                        : `${item.inactiveClass} ${item.inactiveBorderClass} shadow-sm hover:shadow-md`
-                      }`}
-                  >
-                    {/* Active side indicator accent */}
-                    {isActive && (
-                      <div
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4.5 bg-slate-950 rounded-r-full shadow-sm"
-                      />
-                    )}
-
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${isActive
-                      ? 'bg-slate-950/10 text-slate-950'
-                      : `${item.inactiveIconClass} group-hover:scale-105`
-                      }`}>
-                      <Icon className={`w-4.5 h-4.5 transition-transform duration-200 ${isActive ? 'scale-105' : ''}`} />
-                    </div>
-
-                    <span className={`tracking-wide transition-colors flex-1 ${isHeader
-                      ? 'text-sm font-black uppercase tracking-wider'
-                      : isSubItem
-                        ? 'text-xs font-bold'
-                        : 'text-xs font-extrabold'
-                      }`}>
-                      {label}
+                {/* Header */}
+                <div className="p-4 flex items-center justify-between border-b border-slate-100 bg-white/50">
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-quicksand font-black text-xl tracking-tight bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                      Tuzla Tour Guide
                     </span>
+                  </div>
 
-                    {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-950/80 mr-0.5 animate-pulse" />
-                    )}
-                  </motion.button>
-                );
-              })}
-            </div>
+                  <button
+                    onClick={() => onClose()}
+                    className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors active:scale-95"
+                    aria-label="Close menu"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
-            {/* Footer */}
-            <div className="p-3 border-t border-slate-100 flex items-center justify-center gap-1.5 text-center bg-white/40">
-              <span className="text-xs font-black tracking-wider text-slate-700">
-                AISO Tuzla
-              </span>
-            </div>
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>
-  );
+                {/* Navigation Links */}
+                <div className="flex-1 overflow-y-auto p-3.5 space-y-1.5 custom-scrollbar">
+                  {NAV_ITEMS.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = activeTab === item.id;
+                    const label = item.label[lang as keyof typeof item.label] || item.label.en;
+                    const isSubItem = item.isSubItem;
+                    const isHeader = item.isHeader;
+
+                    return (
+                      <motion.button
+                        key={item.id}
+                        whileHover={{ x: 3, scale: 1.01 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => { handleSelect(item.id); }}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all duration-200 group text-left border relative overflow-hidden ${isSubItem ? 'ml-4 w-[calc(100%-1rem)] py-1.5 px-2.5' : ''
+                          } ${isActive
+                            ? `${item.activeClass} ${item.activeGlow} ${item.activeBorder} scale-[1.01]`
+                            : `${item.inactiveClass} ${item.inactiveBorderClass} shadow-sm hover:shadow-md`
+                          }`}
+                      >
+                        {/* Active side indicator accent */}
+                        {isActive && (
+                          <div
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4.5 bg-slate-950 rounded-r-full shadow-sm"
+                          />
+                        )}
+
+                        <div className={`p-1 rounded-lg transition-all duration-200 ${isActive
+                          ? 'bg-slate-950/10 text-slate-950'
+                          : `${item.inactiveIconClass} group-hover:scale-105`
+                          }`}>
+                          <Icon className={`w-4.5 h-4.5 transition-transform duration-200 ${isActive ? 'scale-105' : ''}`} />
+                        </div>
+
+                        <span className={`tracking-wide transition-colors flex-1 ${isHeader
+                          ? 'text-sm font-black uppercase tracking-wider'
+                          : isSubItem
+                            ? 'text-xs font-bold'
+                            : 'text-xs font-extrabold'
+                          }`}>
+                          {label}
+                        </span>
+
+                        {isActive && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-950/80 mr-0.5 animate-pulse" />
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+
+                {/* Footer */}
+                <div className="p-3 border-t border-slate-100 flex items-center justify-center gap-1.5 text-center bg-white/40">
+                  <span className="text-xs font-black tracking-wider text-slate-700">
+                    AISO Tuzla
+                  </span>
+                </div>
+              </motion.aside>
+            </>
+          )}
+        </AnimatePresence>
+        );
 };
 
-export default React.memo(Sidebar);
+        export default React.memo(Sidebar);
