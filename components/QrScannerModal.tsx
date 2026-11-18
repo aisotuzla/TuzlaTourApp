@@ -186,6 +186,24 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         if (!completion?.ok) {
           const code = completion?.code || 'quest_completion_failed';
           const messages: Record<string, Record<string, string>> = {
+            qr_not_configured: {
+              en: "This location's QR code has not been activated for online rewards yet.",
+              bs: "QR kod ove lokacije još nije aktiviran za online nagrade.",
+              de: "Der QR-Code dieses Ortes ist noch nicht für Online-Belohnungen aktiviert.",
+              tr: "Bu konumun QR kodu çevrimiçi ödüller için henüz etkinleştirilmedi."
+            },
+            quest_location_missing: {
+              en: "The GPS position for this quest is not configured yet.",
+              bs: "GPS lokacija ove potrage još nije podešena.",
+              de: "Die GPS-Position dieser Quest ist noch nicht eingerichtet.",
+              tr: "Bu görevin GPS konumu henüz ayarlanmamış."
+            },
+            quest_not_found_or_inactive: {
+              en: "This quest is currently unavailable.",
+              bs: "Ova potraga trenutno nije dostupna.",
+              de: "Diese Quest ist derzeit nicht verfügbar.",
+              tr: "Bu görev şu anda kullanılamıyor."
+            },
             invalid_qr: {
               en: 'This QR code is not activated for quest rewards yet.',
               bs: 'Ovaj QR kod još nije aktiviran za nagrade potrage.',
