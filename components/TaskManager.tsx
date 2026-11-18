@@ -22,7 +22,7 @@ import { PracticalTravelInfo } from './PracticalTravelInfo';
 import { StickyNotesBoard } from './StickyNotesBoard';
 
 type Mode = 'notebook' | 'calendar' | 'threeDayPlan' | 'practicalInfo' | 'media';
-type NotebookSubTab = 'all' | 'itinerary' | 'expenses' | 'notes';
+type NotebookSubTab = 'all' | 'itinerary' | 'expenses' | 'converter' | 'notes';
 
 type ExpenseItem = {
   id: number;
@@ -64,6 +64,7 @@ const copy = {
     emptyItinerary: 'No itinerary items yet. Add hotels or restaurants from Tourist Info!',
     quickOverview: 'Quick Overview',
     notes: 'Sticker Notes',
+    converter: 'Currency Converter',
   },
   bs: {
     title: 'Lični planer',
@@ -83,6 +84,7 @@ const copy = {
     emptyItinerary: 'Još nema stavki u planu. Dodaj hotele ili restorane iz Turističkih info!',
     quickOverview: 'Brzi pregled',
     notes: 'Sticker Bilješke',
+    converter: 'Konverter valuta',
   },
   de: {
     title: 'Persönliches Notizbuch',
@@ -102,6 +104,7 @@ const copy = {
     emptyItinerary: 'Noch keine Reiseplan-Einträge. Füge Hotels oder Restaurants aus Tourist Info hinzu!',
     quickOverview: 'Schnellübersicht',
     notes: 'Haftnotizen',
+    converter: 'Währungsrechner',
   },
   tr: {
     title: 'Kişisel Not Defteri',
@@ -121,6 +124,7 @@ const copy = {
     emptyItinerary: 'Henüz güzergah öğesi yok. Turistik bilgilerden ekleyin!',
     quickOverview: 'Hızlı Bakış',
     notes: 'Yapışkan Notlar',
+    converter: 'Döviz çevirici',
   },
 } as const;
 
@@ -153,6 +157,8 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
 
   const [expName, setExpName] = useState('');
   const [expAmount, setExpAmount] = useState('');
+  const [conversionInput, setConversionInput] = useState('');
+  const [conversionMode, setConversionMode] = useState<'BAM_TO_EUR' | 'EUR_TO_BAM'>('BAM_TO_EUR');
 
   useEffect(() => {
     const loadInitialState = async () => {
@@ -185,6 +191,12 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
     () => expenses.reduce((acc, curr) => acc + curr.amount, 0).toFixed(2),
     [expenses]
   );
+
+  const convertedCurrencyValue = useMemo(() => {
+    const amount = Number.parseFloat(conversionInput.replace(',', '.'));
+    if (!Number.isFinite(amount)) return '';
+    return (conversionMode === 'BAM_TO_EUR' ? amount / 1.95583 : amount * 1.95583).toFixed(2);
+  }, [conversionInput, conversionMode]);
 
   const totalEur = useMemo(() => {
     const kmAmount = expenses.reduce((acc, curr) => acc + curr.amount, 0);
@@ -560,6 +572,17 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                 <span className="truncate">{t.expenses}</span>
               </button>
               <button
+                onClick={() => setNotebookSubTab('converter')}
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 sm:py-2 px-2 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${
+                  notebookSubTab === 'converter'
+                    ? 'bg-white text-blue-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <CreditCard className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                <span className="truncate">{t.converter}</span>
+              </button>
+              <button
                 onClick={() => setNotebookSubTab('notes')}
                 className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 sm:py-2 px-2 sm:px-4 text-xs sm:text-sm font-black transition-all min-h-[44px] ${
                   notebookSubTab === 'notes'
@@ -647,6 +670,26 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
                   {renderExpensesContent()}
                 </div>
                 {renderQuickOverviewAside()}
+              </div>
+            ) : notebookSubTab === 'converter' ? (
+              <div className="mx-auto w-full max-w-xl rounded-2xl border border-blue-100 bg-white p-4 shadow-sm sm:p-6">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-black text-blue-950">{t.converter}</h3>
+                    <p className="mt-1 text-xs text-slate-500">1 EUR = 1.95583 BAM</p>
+                  </div>
+                  <button type="button" onClick={() => { setConversionMode(mode => mode === 'BAM_TO_EUR' ? 'EUR_TO_BAM' : 'BAM_TO_EUR'); setConversionInput(''); }} className="min-h-11 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-black text-blue-800 active:scale-95">
+                    {conversionMode === 'BAM_TO_EUR' ? 'BAM → EUR' : 'EUR → BAM'} ↔
+                  </button>
+                </div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                  {conversionMode === 'BAM_TO_EUR' ? 'Amount in BAM' : 'Amount in EUR'}
+                </label>
+                <input type="number" inputMode="decimal" min="0" step="0.01" value={conversionInput} onChange={event => setConversionInput(event.target.value)} placeholder="0.00" className="min-h-14 w-full rounded-xl border border-blue-200 bg-slate-50 px-4 text-xl font-black text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                <div className="mt-4 rounded-xl bg-gradient-to-r from-blue-700 to-blue-800 p-4 text-white">
+                  <p className="text-xs font-bold uppercase tracking-wide text-blue-100">{conversionMode === 'BAM_TO_EUR' ? 'Result in EUR' : 'Result in BAM'}</p>
+                  <p className="mt-1 text-3xl font-black tabular-nums">{convertedCurrencyValue || '0.00'} <span className="text-base">{conversionMode === 'BAM_TO_EUR' ? 'EUR' : 'BAM'}</span></p>
+                </div>
               </div>
             ) : notebookSubTab === 'notes' ? (
               /* Dedicated Full-Width Sticky Notes & Canvas Tab View */
