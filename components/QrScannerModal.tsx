@@ -239,6 +239,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
         // Special celebration and scratch card for King Tvrtko
         if (target.id === 'tvrtko_park' || target.id === 'tvrtko') {
+          scanInProgressRef.current = false;
           onClose();
           setTimeout(() => {
             setIsTvrtkoScratchOpen(true);
@@ -246,6 +247,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           return;
         }
 
+        scanInProgressRef.current = false;
         setScannerFeedback({
           text:
             lang === 'bs'
