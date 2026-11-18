@@ -129,6 +129,7 @@ const PlayerDashboard: React.FC<{ lang: Language }> = ({ lang }) => {
             </div>
           </>
         )}
+        </>}
       </div>
     </section>
   );
