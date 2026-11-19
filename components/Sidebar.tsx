@@ -16,6 +16,23 @@ import {
   Bus
 } from 'lucide-react';
 
+const PodiumIcon: React.FC<{ className?: string }> = ({ className = "w-4.5 h-4.5" }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M2 20h20" />
+    <path d="M5 20v-7h5v7" />
+    <path d="M9.5 20V8h5v12" />
+    <path d="M14 20v-4h5v4" />
+  </svg>
+);
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -131,25 +148,26 @@ const NAV_ITEMS: NavItemConfig[] = [
     inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-900 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
     inactiveIconClass: 'text-blue-700',
     inactiveBorderClass: 'border-blue-100/60',
-    activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black ring-2 ring-yellow-300/80',
-    activeGlow: 'shadow-[0_0_24px_rgba(251,191,36,0.6)]',
-    activeBorder: 'border-yellow-200'
+    activeClass: 'bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-600 text-white font-black ring-2 ring-blue-300/80',
+    activeGlow: 'shadow-[0_4px_16px_rgba(37,99,235,0.45)]',
+    activeBorder: 'border-blue-300'
   },
   {
     id: AppTab.QR_SCAN,
     label: {
       en: 'Progress & QR Scan',
-      bs: 'Napredak i QR skeniranje',
-      de: 'Fortschritt & QR-Scan',
-      tr: 'İlerleme ve QR Tarama',
+      bs: 'Moj napredak i QR skeniranje',
+      de: 'Mein Fortschritt & QR-Scan',
+      tr: 'İlerlemem ve QR Tarama',
     },
-    icon: QrCode,
-    inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
-    inactiveIconClass: 'text-blue-900',
-    inactiveBorderClass: 'border-blue-400/80',
-    activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
-    activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
-    activeBorder: 'border-amber-400'
+    icon: PodiumIcon,
+    isSubItem: true,
+    inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-900 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
+    inactiveIconClass: 'text-blue-700',
+    inactiveBorderClass: 'border-blue-100/60',
+    activeClass: 'bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-600 text-white font-black ring-2 ring-blue-400/80',
+    activeGlow: 'shadow-[0_4px_16px_rgba(37,99,235,0.45)]',
+    activeBorder: 'border-blue-400'
   },
       {
         id: AppTab.TASK_MANAGER,

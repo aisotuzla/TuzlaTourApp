@@ -42,9 +42,9 @@ function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: numbe
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -53,9 +53,7 @@ const MapView = React.lazy(() => import('./components/MapView'));
 const History = React.lazy(() => import('./components/History'));
 const CityGuide = React.lazy(() => import('./components/CityGuide'));
 const Transportation = React.lazy(() => import('./components/Transportation'));
-const QRScanShell = React.lazy(() => import('./components/QRScan'));
 const PlayerDashboard = React.lazy(() => import('./components/PlayerDashboard'));
-const AdminDashboard = React.lazy(() => import('./components/AdminDashboard'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
@@ -149,7 +147,7 @@ const AppContent: React.FC = () => {
       if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
         try {
           navigator.vibrate([200, 100, 200]);
-        } catch (_) {}
+        } catch (_) { }
       }
     }
   }, [userGps, setIsKulinCharterCubeOpen]);
@@ -413,18 +411,15 @@ const AppContent: React.FC = () => {
                     } />
                     <Route path="/dashboard" element={<Navigate to="/qr-scan" replace />} />
                     <Route path="/qr-scan" element={
-                      <>
-                        <PlayerDashboard lang={lang} />
-                        <QRScanShell
-                          lang={lang}
-                          onNavigateToTarget={(target) => {
-                            setNavigationTarget(target);
-                            navigateToTab(AppTab.QUEST);
-                          }}
-                        />
-                      </>
+                      <PlayerDashboard
+                        lang={lang}
+                        onNavigateToTarget={(target) => {
+                          setNavigationTarget(target);
+                          navigateToTab(AppTab.QUEST);
+                        }}
+                      />
                     } />
-                    <Route path="/admin" element={<AdminDashboard lang={lang} onBack={() => navigate('/qr-scan')} />} />
+                    <Route path="/admin" element={<Navigate to="/qr-scan" replace />} />
                     <Route path="/task-manager" element={<TaskManager lang={lang} />} />
                     <Route
                       path="/food"
