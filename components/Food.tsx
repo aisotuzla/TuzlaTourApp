@@ -48,13 +48,13 @@ const AllVenuesSection: React.FC<AllVenuesSectionProps> = ({ lang, onNavigateToT
   };
 
   return (
-    <div className="w-full flex flex-col gap-8">
-      <div className="space-y-2 border-b border-blue-100 pb-6">
-        <h2 className="text-3xl font-black text-blue-950 uppercase flex items-center gap-3">
-          <Utensils className="w-8 h-8 text-blue-600" />
+    <div className="w-full flex flex-col gap-5 sm:gap-7">
+      <div className="space-y-1 border-b border-blue-100 pb-3 sm:pb-4">
+        <h2 className="text-xl sm:text-2xl font-black text-blue-950 uppercase flex items-center gap-2.5">
+          <Utensils className="w-6 h-6 text-blue-600" />
           {lang === 'en' ? 'Food Places' : lang === 'bs' ? 'Hrana i piće' : lang === 'de' ? 'Essensplätze' : 'Yemek Mekanları'}
         </h2>
-        <p className="text-blue-500/80 font-semibold uppercase text-xs tracking-[0.2em]">
+        <p className="text-blue-600/80 font-bold uppercase text-[10px] sm:text-xs tracking-wider">
           {lang === 'en' ? 'Best dining in one place' : lang === 'de' ? 'Restaurants an einem Ort' : lang === 'tr' ? 'En iyi restoranlar tek yerde' : 'Restorani na jednom mjestu'}
         </p>
       </div>
@@ -64,9 +64,9 @@ const AllVenuesSection: React.FC<AllVenuesSectionProps> = ({ lang, onNavigateToT
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`rounded-full px-4 py-2 text-xs font-black uppercase tracking-widest border transition-all ${filter === f
-                ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20'
-                : 'bg-white text-blue-700 border-blue-200 hover:-translate-y-0.5'
+            className={`rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider border transition-all ${filter === f
+              ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+              : 'bg-white text-blue-700 border-blue-200 hover:bg-blue-50'
               }`}
           >
             {f === 'All' ? (lang === 'en' ? 'All' : lang === 'de' ? 'Alle' : 'Sve')
@@ -75,36 +75,36 @@ const AllVenuesSection: React.FC<AllVenuesSectionProps> = ({ lang, onNavigateToT
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
         {filtered.map((venue, idx) => (
           <div
             key={idx}
-            className="group bg-white p-6 rounded-[2rem] border border-blue-400/40 shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] hover:border-blue-400 transition-all hover:-translate-y-1 flex flex-col justify-between"
+            className="group bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between"
           >
             <div>
               {venue.image && (
-                <div className="w-full h-40 sm:h-48 rounded-2xl overflow-hidden mb-5 shadow-inner bg-blue-50/50">
+                <div className="w-full h-36 sm:h-44 rounded-xl overflow-hidden mb-3.5 bg-slate-50 flex items-center justify-center p-3 border border-slate-100">
                   <img
                     src={venue.image}
                     alt={venue.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                   />
                 </div>
               )}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-black text-blue-950 leading-tight group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-base font-black text-blue-950 leading-snug group-hover:text-blue-600 transition-colors">
                     {venue.name}
                   </h3>
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-blue-600">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-blue-600">
                     <MapPin className="w-3.5 h-3.5 shrink-0 text-blue-500" />
-                    <span className="text-xs font-bold leading-tight text-slate-700">{venue.address}</span>
+                    <span className="text-xs font-bold leading-tight text-slate-700 truncate">{venue.address}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-blue-900/50">
+                  <div className="flex items-center gap-1.5 text-slate-500">
                     <UtensilsCrossed className="w-3.5 h-3.5 shrink-0" />
                     <span className="text-xs font-semibold">{venue.category}</span>
                   </div>
@@ -113,11 +113,10 @@ const AllVenuesSection: React.FC<AllVenuesSectionProps> = ({ lang, onNavigateToT
             </div>
 
             {/* Bottom Actions */}
-            <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col gap-2.5">
-              {/* Navigation button linking to map and flyin to address */}
+            <div className="mt-4 pt-3.5 border-t border-slate-100 flex flex-col gap-2">
               <button
                 onClick={() => handleNavigateToVenue(venue)}
-                className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-md shadow-blue-500/25 active:scale-95"
+                className="flex items-center justify-center gap-1.5 w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-xs active:scale-95"
               >
                 <Navigation className="w-3.5 h-3.5" />
                 {lang === 'en' ? 'Navigate on Map' : lang === 'bs' ? 'Navigacija na mapi' : lang === 'de' ? 'Auf Karte zeigen' : 'Haritada Gör'}
@@ -129,7 +128,7 @@ const AllVenuesSection: React.FC<AllVenuesSectionProps> = ({ lang, onNavigateToT
                     href={venue.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 w-full py-2.5 bg-blue-50 text-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                    className="flex items-center justify-center gap-1 w-full py-2 bg-blue-50 text-blue-700 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-blue-100 transition-all border border-blue-100"
                   >
                     {lang === 'en' ? 'Visit' : lang === 'de' ? 'Web' : 'Web'}
                     <ExternalLink className="w-3 h-3" />
@@ -141,18 +140,16 @@ const AllVenuesSection: React.FC<AllVenuesSectionProps> = ({ lang, onNavigateToT
                 <button
                   onClick={() => handleAddToItinerary(venue)}
                   disabled={addedIds.has(venue.name)}
-                  className={`flex items-center justify-center gap-1.5 w-full py-2.5 rounded-2xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm ${
-                    venue.website ? '' : 'col-span-2'
-                  } ${
-                    addedIds.has(venue.name)
-                      ? 'bg-green-50 text-green-600 border border-green-200 cursor-default'
-                      : 'bg-amber-500 text-white hover:bg-amber-600 active:scale-95'
-                  }`}
+                  className={`flex items-center justify-center gap-1 w-full py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all ${venue.website ? '' : 'col-span-2'
+                    } ${addedIds.has(venue.name)
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
+                      : 'bg-amber-500 text-white hover:bg-amber-600 active:scale-95 shadow-xs'
+                    }`}
                 >
                   {addedIds.has(venue.name) ? (
-                    <><Check className="w-3 h-3" /> {lang === 'en' ? 'In Plan' : 'U planu'}</>
+                    <><Check className="w-3.5 h-3.5" /> {lang === 'en' ? 'In Plan' : 'U planu'}</>
                   ) : (
-                    <><Plus className="w-3 h-3" /> {lang === 'en' ? 'Plan' : 'U plan'}</>
+                    <><Plus className="w-3.5 h-3.5" /> {lang === 'en' ? 'Plan' : 'U plan'}</>
                   )}
                 </button>
               </div>
@@ -160,39 +157,39 @@ const AllVenuesSection: React.FC<AllVenuesSectionProps> = ({ lang, onNavigateToT
           </div>
         ))}
 
-        {/* Food Delivery Special Card Relocated to the End */}
+        {/* Food Delivery Special Card */}
         <a
           href="https://korpa.ba/kategorije?kat=&min="
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex flex-col bg-white p-6 rounded-[2rem] border border-blue-400/40 shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] hover:border-blue-400 transition-all hover:-translate-y-1"
+          className="group flex flex-col bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all"
         >
-          <div className="space-y-4 flex-grow flex flex-col">
+          <div className="space-y-3 flex-grow flex flex-col">
             <div className="flex justify-between items-start">
-              <h3 className="text-lg font-black text-blue-950 leading-tight group-hover:text-blue-600 transition-colors uppercase">
+              <h3 className="text-base font-black text-blue-950 leading-snug group-hover:text-blue-600 transition-colors uppercase">
                 {lang === 'bs' ? 'Dostava Hrane' : lang === 'de' ? 'Essenslieferung' : lang === 'tr' ? 'Yemek Teslimatı' : 'Food Delivery'}
               </h3>
               <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-lg shrink-0 ml-2 border border-blue-100">
-                <Bike className="w-3 h-3 text-blue-500" />
+                <Bike className="w-3.5 h-3.5 text-blue-600" />
               </div>
             </div>
 
-            <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden shadow-inner bg-blue-50/50 flex items-center justify-center p-2">
+            <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center p-2">
               <img
                 src="/assets/Gallery/Food/korpa.webp"
                 alt="korpa.ba"
-                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </div>
 
-            <div className="flex flex-col gap-2 mt-2">
-              <div className="flex items-center gap-2 text-blue-600">
-                <UtensilsCrossed className="w-4 h-4 shrink-0" />
+            <div className="flex flex-col gap-1 mt-1">
+              <div className="flex items-center gap-1.5 text-blue-600">
+                <UtensilsCrossed className="w-3.5 h-3.5 shrink-0" />
                 <span className="text-xs font-bold leading-tight">korpa.ba</span>
               </div>
             </div>
 
-            <div className="flex items-center justify-center gap-2 w-full py-3 mt-auto rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-sm bg-yellow-500 text-white hover:bg-yellow-600 active:scale-95">
+            <div className="flex items-center justify-center gap-1.5 w-full py-2.5 mt-auto rounded-xl font-black text-xs uppercase tracking-wider transition-all bg-yellow-400 text-blue-950 hover:bg-yellow-300 active:scale-95 shadow-xs border border-yellow-500/30">
               {lang === 'en' ? 'Order' : lang === 'bs' ? 'Naruči' : lang === 'de' ? 'Bestellen' : 'Sipariş'}
               <ExternalLink className="w-3.5 h-3.5" />
             </div>
@@ -219,49 +216,57 @@ const Food: React.FC<FoodProps> = ({ lang, onNavigateToTarget }) => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 pb-32 space-y-16 overflow-x-hidden">
-      <header className="text-center space-y-8">
-        <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-blue-700 shadow-sm">
-            <UtensilsCrossed className="h-4 w-4" />
-            {lang === 'en' ? 'Food & Drink' : lang === 'de' ? 'Essen & Trinken' : lang === 'tr' ? 'Yemek & İçecek' : 'Hrana i piće'}
-          </div>
-          <h1 className="text-4xl md:text-6xl font-black text-blue-950 uppercase tracking-tighter">
-            {lang === 'en' ? 'Gastronomy' : lang === 'de' ? 'Gastronomie' : lang === 'tr' ? 'Gastronomi' : 'Gastronomija'}
-          </h1>
-          <p className="text-blue-600 font-medium text-lg max-w-2xl mx-auto leading-relaxed">
-            {lang === 'en'
-              ? 'Discover best restaurants and local flavors in Tuzla.'
-              : lang === 'de'
-                ? 'Entdecken Sie die besten Restaurants und lokalen Spezialitäten in Tuzla.'
-                : lang === 'tr'
-                  ? 'Tuzla\'nın en iyi restoranlarını ve yerel lezzetlerini keşfedin.'
-                  : 'Otkrijte najbolje restorane i lokalne okuse u Tuzli.'}
-          </p>
+    <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-28 space-y-8 sm:space-y-12">
+      <header className="text-center space-y-3 sm:space-y-4">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-white px-3.5 py-1 text-xs font-black uppercase tracking-wider text-blue-700 shadow-xs">
+          <UtensilsCrossed className="h-3.5 w-3.5" />
+          {lang === 'en' ? 'Food & Drink' : lang === 'de' ? 'Essen & Trinken' : lang === 'tr' ? 'Yemek & İçecek' : 'Hrana i piće'}
         </div>
-
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-blue-950 uppercase tracking-tight">
+          {lang === 'en' ? 'Gastronomy' : lang === 'de' ? 'Gastronomie' : lang === 'tr' ? 'Gastronomi' : 'Gastronomija'}
+        </h1>
+        <p className="text-blue-600 font-medium text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+          {lang === 'en'
+            ? 'Discover best restaurants and local flavors in Tuzla.'
+            : lang === 'de'
+              ? 'Entdecken Sie die besten Restaurants und lokalen Spezialitäten in Tuzla.'
+              : lang === 'tr'
+                ? 'Tuzla\'nın en iyi restoranlarını ve yerel lezzetlerini keşfedin.'
+                : 'Otkrijte najbolje restorane i lokalne okuse u Tuzli.'}
+        </p>
       </header>
 
       <section className="w-full">
         <AllVenuesSection lang={lang} onNavigateToTarget={onNavigateToTarget} />
       </section>
 
-      {/* 4 Image Scrollable Row */}
-      <div className="w-full flex overflow-x-auto gap-4 sm:gap-6 snap-x snap-mandatory hide-scrollbar pb-6 px-4 -mx-4 mt-16 pt-12 border-t border-blue-50">
-        {restaurantImages.map((img, index) => (
-          <div
-            key={index}
-            onClick={() => openGallery(restaurantImages.map(r => r.src), index)}
-            className="relative w-[300px] sm:w-[350px] shrink-0 h-[500px] sm:h-[600px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white cursor-pointer snap-center group"
-          >
-            <img
-              src={img.src}
-              alt={img.alt}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />
-          </div>
-        ))}
+      {/* 4 Image Scrollable Row with natural aspect ratio & full sharpness */}
+      <div className="w-full mt-8 pt-6 border-t border-blue-100">
+        <div className="mb-3.5">
+          <h3 className="text-sm sm:text-base font-black text-blue-950 uppercase tracking-tight">
+            {lang === 'bs' ? 'Pregled restorana i menija' : 'Restaurant & Menu Directory'}
+          </h3>
+          <p className="text-[11px] text-slate-500 font-medium">
+            {lang === 'bs' ? 'Dodirnite sliku za prikaz u punoj rezoluciji' : 'Tap image to view in full resolution'}
+          </p>
+        </div>
+        <div className="w-full flex overflow-x-auto gap-3 sm:gap-4 snap-x snap-mandatory pb-3">
+          {restaurantImages.map((img, index) => (
+            <div
+              key={index}
+              onClick={() => openGallery(restaurantImages.map(r => r.src), index)}
+              className="relative w-[260px] sm:w-[320px] shrink-0 aspect-[4/5] rounded-2xl overflow-hidden shadow-md border-2 border-slate-200 bg-slate-900 cursor-pointer snap-center group hover:border-blue-400 transition-all"
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-102"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

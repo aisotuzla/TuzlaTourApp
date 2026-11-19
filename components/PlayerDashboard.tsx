@@ -1,18 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Award,
-  Bell,
   BookOpen,
   Camera,
   Car,
-  Check,
   CheckCircle2,
   CheckSquare,
   ChevronDown,
   ChevronUp,
   CircleAlert,
   Compass,
-  Copy,
   ExternalLink,
   Globe,
   HelpCircle,
@@ -31,9 +28,6 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Preferences } from '@capacitor/preferences';
-import { LocalNotifications } from '@capacitor/local-notifications';
-import { PushNotifications } from '@capacitor/push-notifications';
-import { Capacitor } from '@capacitor/core';
 
 import { supabase } from '../lib/supabaseClient';
 import { Language } from '../types';
@@ -48,11 +42,6 @@ import {
   QuestTarget,
 } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
-import { requestPushToken } from '../utils/firebase';
-import {
-  DEFAULT_NOTIFICATION_CHANNEL_ID,
-  getStoredPushToken,
-} from '../utils/pushNotifications';
 
 interface PlayerDashboardProps {
   lang: Language;
@@ -393,13 +382,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
   const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
 
-  // 5. Push Notifications State
-  const [fcmToken, setFcmToken] = useState<string | null>(null);
-  const [copiedToken, setCopiedToken] = useState(false);
-  const [pushStatusMessage, setPushStatusMessage] = useState<string | null>(null);
-  const [pushPending, setPushPending] = useState(false);
-
-  // 6. FAQ State
+  // 5. FAQ State
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   // Compute Next Quest Target
@@ -476,8 +459,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           setLedger([]);
         }
       }
-      const token = getStoredPushToken();
-      if (token) setFcmToken(token);
     };
     void loadSavedData();
     void loadDashboard();
@@ -653,88 +634,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
     await Preferences.remove({ key: 'tuzla_scan_ledger' });
     setLedger([]);
     setShowClearConfirm(false);
-  };
-
-  // Push Notifications Handlers
-  const handleRegisterPush = async () => {
-    setPushPending(true);
-    setPushStatusMessage(null);
-    try {
-      if (Capacitor.isNativePlatform()) {
-        let perm = await PushNotifications.checkPermissions();
-        if (perm.receive !== 'granted') {
-          perm = await PushNotifications.requestPermissions();
-        }
-        if (perm.receive !== 'granted') throw new Error('Permission denied.');
-        await PushNotifications.register();
-        setPushStatusMessage(lang === 'bs' ? 'Registracija zatražena; čeka se token.' : 'Registration requested; awaiting token.');
-      } else {
-        const token = await requestPushToken();
-        if (token) {
-          setFcmToken(token);
-          setPushStatusMessage(lang === 'bs' ? 'Obavijesti su uspješno uključene!' : 'Notifications successfully enabled!');
-        } else {
-          setPushStatusMessage(lang === 'bs' ? 'Obavijesti nisu podržane u ovom pregledniku.' : 'Push notifications unavailable in this browser.');
-        }
-      }
-    } catch (err) {
-      setPushStatusMessage(err instanceof Error ? err.message : 'Registration failed.');
-    } finally {
-      setPushPending(false);
-    }
-  };
-
-  const handleSendTestNotification = async () => {
-    try {
-      const title = 'Tuzla Tour Guide';
-      const body =
-        lang === 'bs'
-          ? 'Čestitamo! Lokalne i push obavijesti rade savršeno na vašem uređaju.'
-          : 'Congratulations! Notifications are fully active on your device.';
-
-      if (!Capacitor.isNativePlatform()) {
-        if ('Notification' in window) {
-          let perm = Notification.permission;
-          if (perm === 'default') perm = await Notification.requestPermission();
-          if (perm === 'granted') new Notification(title, { body });
-        }
-      } else {
-        let perm = await LocalNotifications.checkPermissions();
-        if (perm.display !== 'granted') perm = await LocalNotifications.requestPermissions();
-        if (perm.display === 'granted') {
-          if (Capacitor.getPlatform() === 'android') {
-            await LocalNotifications.createChannel({
-              id: DEFAULT_NOTIFICATION_CHANNEL_ID,
-              name: 'Tuzla Notifications',
-              importance: 5,
-              vibration: true,
-            });
-          }
-          await LocalNotifications.schedule({
-            notifications: [
-              {
-                id: Math.floor(Date.now() % 2_000_000),
-                title,
-                body,
-                channelId: DEFAULT_NOTIFICATION_CHANNEL_ID,
-                schedule: { at: new Date(Date.now() + 500) },
-              },
-            ],
-          });
-        }
-      }
-      setPushStatusMessage(t.testSuccess);
-      setTimeout(() => setPushStatusMessage(null), 3500);
-    } catch (err) {
-      setPushStatusMessage(err instanceof Error ? err.message : 'Notification failed.');
-    }
-  };
-
-  const handleCopyToken = () => {
-    if (!fcmToken) return;
-    navigator.clipboard.writeText(fcmToken);
-    setCopiedToken(true);
-    setTimeout(() => setCopiedToken(false), 2500);
   };
 
   // Level progress percentage
@@ -1428,85 +1327,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           )}
         </section>
 
-        {/* ── 8. PUSH NOTIFICATION ── */}
-        <section className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3.5">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-                <Bell className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight">
-                  {t.pushTitle}
-                </h2>
-                <p className="text-[11px] text-slate-500">
-                  {t.pushSubtitle}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
-              <div className="space-y-0.5">
-                <span className="text-xs font-bold text-slate-800 block">
-                  {fcmToken ? t.pushEnabled : (lang === 'bs' ? 'Status obavijesti' : 'Notification status')}
-                </span>
-                <span className="text-[11px] text-slate-500">
-                  {fcmToken
-                    ? (lang === 'bs' ? 'Uređaj je povezan za geofence i quest obavijesti.' : 'Device registered for push and geofence alerts.')
-                    : (lang === 'bs' ? 'Uključite obavijesti za automatska upozorenja u blizini atrakcija.' : 'Enable alerts to get notified when near landmarks.')}
-                </span>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {!fcmToken && (
-                  <button
-                    type="button"
-                    onClick={() => void handleRegisterPush()}
-                    disabled={pushPending}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-black text-white hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50"
-                  >
-                    <Bell size={13} />
-                    <span>{t.enablePush}</span>
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => void handleSendTestNotification()}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 active:scale-95 transition-all"
-                >
-                  <Bell size={13} />
-                  <span>{t.testPush}</span>
-                </button>
-              </div>
-            </div>
-
-            {pushStatusMessage && (
-              <div className="rounded-xl border border-blue-200 bg-blue-50 p-2.5 text-xs font-bold text-blue-900">
-                {pushStatusMessage}
-              </div>
-            )}
-
-            {fcmToken && (
-              <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-100/70 p-2.5 text-xs">
-                <span className="truncate font-mono text-[10px] text-slate-600">
-                  Token: {fcmToken.slice(0, 24)}…
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyToken}
-                  className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 text-[10px] font-bold text-slate-700 shadow-2xs border border-slate-200 active:scale-95"
-                >
-                  {copiedToken ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                  <span>{copiedToken ? t.tokenCopied : t.copyToken}</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* ── 9. FAQ ACCORDION ── */}
+        {/* ── 8. FAQ ACCORDION ── */}
         <section className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs">
           <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100 mb-3.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
@@ -1568,7 +1389,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           </div>
         </section>
 
-        {/* ── 10. PARTNER AGENCIES AT BOTTOM ── */}
+        {/* ── 9. PARTNER AGENCIES AT BOTTOM ── */}
         <section className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs mb-8">
           <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100 mb-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">

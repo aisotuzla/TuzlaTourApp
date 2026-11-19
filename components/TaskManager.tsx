@@ -281,37 +281,37 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
 
   // Render Expanded Expenses section
   const renderExpensesContent = () => (
-    <div className="space-y-4">
+    <div className="space-y-3.5">
       {/* Expanded Expense Summary Banner */}
-      <div className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-[linear-gradient(135deg,_#1e3a8a_0%,_#2563eb_60%,_#38bdf8_100%)] p-5 sm:p-6 text-white shadow-md">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="rounded-2xl border border-blue-100 bg-[linear-gradient(135deg,_#1e3a8a_0%,_#2563eb_60%,_#38bdf8_100%)] p-4 sm:p-5 text-white shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-cyan-200">
+            <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-cyan-200">
               <Banknote className="h-4 w-4" />
               {t.expenseTotal}
             </div>
-            <div className="mt-1 text-3xl sm:text-4xl font-black tracking-tight">{total} KM</div>
+            <div className="mt-1 text-2xl sm:text-3xl font-black tracking-tight">{total} KM</div>
           </div>
 
-          <div className="flex items-center gap-3 self-start sm:self-auto">
-            <div className="rounded-xl bg-white/15 px-3.5 py-2 backdrop-blur-xs border border-white/20">
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <div className="rounded-xl bg-white/15 px-3 py-1.5 border border-white/20">
               <div className="text-[10px] font-black uppercase tracking-wider text-cyan-100">{t.entriesCount}</div>
-              <div className="text-lg font-black text-white">{expenses.length}</div>
+              <div className="text-base font-black text-white">{expenses.length}</div>
             </div>
-            <div className="rounded-xl bg-white/15 px-3.5 py-2 backdrop-blur-xs border border-white/20">
+            <div className="rounded-xl bg-white/15 px-3 py-1.5 border border-white/20">
               <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-cyan-100">
                 <Banknote className="h-3 w-3" />
                 {t.euroTotal}
               </div>
-              <div className="text-lg font-black text-white">€ {totalEur}</div>
+              <div className="text-base font-black text-white">€ {totalEur}</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Touch-optimized Add Expense Form */}
-      <div className="rounded-2xl sm:rounded-[1.75rem] border border-blue-100 bg-blue-50/70 p-4 sm:p-5 shadow-xs">
-        <div className="flex flex-col gap-3">
+      <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-3.5 sm:p-4 shadow-xs">
+        <div className="flex flex-col gap-2.5">
           <input
             value={expName}
             onChange={(e) => setExpName(e.target.value)}
@@ -319,34 +319,32 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               if (e.key === 'Enter') addExpense();
             }}
             placeholder={t.expensePlaceholder}
-            className="w-full rounded-2xl border border-blue-100 bg-white px-4 py-3.5 text-base font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            className="w-full rounded-xl border border-blue-100 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           />
-          <div className="flex gap-2.5">
-            <div className="relative flex-1 sm:max-w-[180px]">
-              <input
-                value={expAmount}
-                onChange={(e) => setExpAmount(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') addExpense();
-                }}
-                placeholder={t.amountPlaceholder}
-                type="number"
-                inputMode="decimal"
-                step="0.1"
-                min="0"
-                className="w-full rounded-2xl border border-blue-100 bg-white px-4 py-3.5 text-base font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-              />
-            </div>
+          <div className="flex gap-2">
+            <input
+              value={expAmount}
+              onChange={(e) => setExpAmount(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') addExpense();
+              }}
+              placeholder={t.amountPlaceholder}
+              type="number"
+              inputMode="decimal"
+              step="0.1"
+              min="0"
+              className="flex-1 sm:max-w-[160px] rounded-xl border border-blue-100 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            />
             <button
               onClick={addExpense}
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3.5 text-sm sm:text-base font-black text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-700 active:scale-95"
+              className="inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-5 py-2.5 text-xs sm:text-sm font-black text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
             >
-              <Plus className="h-5 w-5" />
+              <Plus className="h-4 w-4" />
               <span>{t.addExpense}</span>
             </button>
           </div>
         </div>
-        <p className="mt-2 text-xs font-medium text-slate-500">{t.addHint}</p>
+        <p className="mt-1.5 text-[11px] font-medium text-slate-500">{t.addHint}</p>
       </div>
 
       {/* Expenses History List */}
@@ -413,12 +411,12 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
   );
 
   return (
-    <div className="mx-auto max-w-6xl px-3 sm:px-6 py-4 sm:py-8 pb-32">
-      <section className="overflow-hidden rounded-2xl sm:rounded-[2rem] border border-blue-100 bg-white shadow-[0_24px_60px_rgba(37,99,235,0.12)]">
+    <div className="mx-auto max-w-5xl px-3 sm:px-6 py-4 sm:py-6 pb-28">
+      <section className="overflow-hidden rounded-2xl sm:rounded-3xl border border-blue-100 bg-white shadow-md">
         {/* Header Hero */}
-        <div className="bg-[linear-gradient(135deg,_#0f172a_0%,_#1d4ed8_55%,_#38bdf8_100%)] px-4 py-6 sm:px-8 sm:py-8 text-white">
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-black uppercase tracking-[0.25em] text-cyan-100">
-            <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
+        <div className="bg-[linear-gradient(135deg,_#0f172a_0%,_#1d4ed8_55%,_#38bdf8_100%)] px-4 py-5 sm:px-7 sm:py-7 text-white">
+          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-cyan-200">
+            <BookOpen className="h-4 w-4" />
             {lang === 'bs'
               ? 'Lični organizer'
               : lang === 'tr'
@@ -427,72 +425,72 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               ? 'Persönlicher Organizer'
               : 'Personal Organizer'}
           </div>
-          <h1 className="mt-2 sm:mt-3 text-3xl font-black tracking-tight sm:text-5xl">{t.title}</h1>
-          <p className="mt-2 sm:mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-white/80">
+          <h1 className="mt-1.5 text-2xl sm:text-4xl font-black tracking-tight">{t.title}</h1>
+          <p className="mt-1 text-xs sm:text-sm leading-relaxed text-blue-100">
             {t.subtitle}
           </p>
 
-          {/* Mode Switcher Buttons - Horizontally Scrollable on Mobile */}
-          <div className="mt-5 sm:mt-6 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:flex-wrap sm:pb-0">
+          {/* Mode Switcher Buttons */}
+          <div className="mt-4 flex items-center gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:pb-0">
             <button
               onClick={() => setView('notebook')}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-black transition-all ${
                 view === 'notebook'
-                  ? 'bg-white text-blue-900 shadow-lg'
-                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+                  ? 'bg-white text-blue-900 shadow-sm'
+                  : 'bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/20'
               }`}
             >
-              <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
+              <BookOpen className="h-3.5 w-3.5" />
               {t.notebook}
             </button>
             <button
               onClick={() => setView('calendar')}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-black transition-all ${
                 view === 'calendar'
-                  ? 'bg-white text-blue-900 shadow-lg'
-                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+                  ? 'bg-white text-blue-900 shadow-sm'
+                  : 'bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/20'
               }`}
             >
-              <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              <CalendarIcon className="h-3.5 w-3.5" />
               {lang === 'bs'
-                ? 'Kalendar događaja'
+                ? 'Kalendar'
                 : lang === 'de'
-                ? 'Veranstaltungskalender'
+                ? 'Kalender'
                 : lang === 'tr'
-                ? 'Etkinlik Takvimi'
-                : 'Calendar of Events'}
+                ? 'Takvim'
+                : 'Calendar'}
             </button>
             <button
               onClick={() => setView('threeDayPlan')}
-              className={`shrink-0 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+              className={`shrink-0 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-black transition-all ${
                 view === 'threeDayPlan'
-                  ? 'bg-white text-blue-900 shadow-lg'
-                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+                  ? 'bg-white text-blue-900 shadow-sm'
+                  : 'bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/20'
               }`}
             >
               {lang === 'bs' ? '3 Dnevni plan' : lang === 'de' ? '3-Tage-Plan' : lang === 'tr' ? '3 Günlük Plan' : '3 Day Plan'}
             </button>
             <button
               onClick={() => setView('practicalInfo')}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-black transition-all ${
                 view === 'practicalInfo'
-                  ? 'bg-white text-blue-900 shadow-lg'
-                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+                  ? 'bg-white text-blue-900 shadow-sm'
+                  : 'bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/20'
               }`}
             >
-              <Compass className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Compass className="h-3.5 w-3.5" />
               {lang === 'bs' ? 'Praktične info' : lang === 'de' ? 'Praktische Infos' : lang === 'tr' ? 'Pratik Bilgiler' : 'Practical Info'}
             </button>
             <button
               onClick={() => setView('media')}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-black transition-all ${
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-black transition-all ${
                 view === 'media'
-                  ? 'bg-white text-blue-900 shadow-lg'
-                  : 'bg-white/10 text-white/80 backdrop-blur-md hover:bg-white/20'
+                  ? 'bg-white text-blue-900 shadow-sm'
+                  : 'bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/20'
               }`}
             >
-              <Headphones className="h-4 w-4 sm:h-5 sm:w-5" />
-              {lang === 'bs' ? 'Media' : 'Media'}
+              <Headphones className="h-3.5 w-3.5" />
+              Media
             </button>
           </div>
         </div>

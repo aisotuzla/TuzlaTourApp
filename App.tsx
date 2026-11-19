@@ -28,10 +28,8 @@ import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
 import { useGeofenceNotifications } from './hooks/useGeofenceNotifications';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import ARGuide from './components/ARGuide';
-import { initializePushNotifications } from './utils/pushNotifications';
 import { TvrtkoScratchCardModal } from './components/TvrtkoScratchCardModal';
 import { KulinCharterModal } from './components/KulinCharterModal';
-import { PinchZoomContainer } from './components/PinchZoomContainer';
 
 const KULIN_BAN_STONE_COORDS = { lat: 44.538791, lon: 18.678778 };
 
@@ -153,40 +151,6 @@ const AppContent: React.FC = () => {
   }, [userGps, setIsKulinCharterCubeOpen]);
 
   const activeTab = getTabFromPath(location.pathname);
-
-  useEffect(() => {
-    let active = true;
-    let unsubscribe = () => { };
-
-    void initializePushNotifications({
-      onToken: () => {
-        console.info('FCM registration token saved on this device.');
-      },
-      onMessage: (title, body) => {
-        console.info('Push notification received:', { title, body });
-      },
-      onAction: (data) => {
-        const route = data.route ?? data.url;
-        if (active && typeof route === 'string' && route.startsWith('/') && !route.startsWith('//')) {
-          navigate(route);
-        }
-      }
-    }).then((cleanup) => {
-      if (active) {
-        unsubscribe = cleanup;
-      } else {
-        cleanup();
-      }
-    }).catch((error: unknown) => {
-      console.error('Unable to initialize push notifications:', error);
-    });
-
-    return () => {
-      active = false;
-      unsubscribe();
-    };
-  }, [navigate]);
-
   const [navigationTarget, setNavigationTarget] = useState<any | null>(null);
   const [autoOpenScanner, setAutoOpenScanner] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -374,17 +338,16 @@ const AppContent: React.FC = () => {
               touchAction: 'pan-y',
             }}
           >
-            <PinchZoomContainer maxScale={3.0}>
-              <ErrorBoundary>
-                <Suspense fallback={
-                  <div className="h-full flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-50">
-                    <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
-                    <p className="text-blue-900 font-black uppercase text-xs tracking-widest animate-pulse">
-                      {lang === 'en' ? 'Loading Tuzla...' : 'Učitavanje...'}
-                    </p>
-                  </div>
-                }>
-                  <Routes>
+            <ErrorBoundary>
+              <Suspense fallback={
+                <div className="h-full flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-50">
+                  <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
+                  <p className="text-blue-900 font-black uppercase text-xs tracking-widest animate-pulse">
+                    {lang === 'en' ? 'Loading Tuzla...' : 'Učitavanje...'}
+                  </p>
+                </div>
+              }>
+                <Routes>
                     <Route path="/" element={<LandingPage lang={lang} onNavigate={navigateToTab} />} />
                     <Route path="/city-guide" element={<CityGuide lang={lang} />} />
                     <Route path="/history" element={<History lang={lang} />} />
@@ -451,7 +414,6 @@ const AppContent: React.FC = () => {
                   </Routes>
                 </Suspense>
               </ErrorBoundary>
-            </PinchZoomContainer>
           </main>
         </div>
       </div>

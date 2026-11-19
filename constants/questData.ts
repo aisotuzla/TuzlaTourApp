@@ -47,8 +47,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
       bs: '/audio/pois/bs/01_freedom_square.mp3',
       en: '/audio/pois/en/01_freedom_square.mp3',
       de: '/audio/pois/de/01_freedom_square.mp3',
-    },
-    rewardHtml: '/assets/PoveljaKulinaBana.html'
+    }
   },
   {
     id: 'stara_cesma',
