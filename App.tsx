@@ -18,6 +18,7 @@ import OfflineIndicator from './components/OfflineIndicator';
 import MapQuestView from "./components/MapQuestView";
 import { AppTab } from './types';
 import { supabase } from './lib/supabaseClient';
+import { ensurePlayerSession } from './lib/playerSession';
 import { QUEST_TARGETS } from './constants/questData';
 import { ImageProvider } from './hooks/ImageContext';
 import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
@@ -162,18 +163,8 @@ const AppContent: React.FC = () => {
     position: { lat: number; lon: number } | null
   ): Promise<{ ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number }> => {
     try {
-      let { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-
-      if (!sessionData.session) {
-        const { data: signInData, error: signInError } = await supabase.auth.signInAnonymously({
-          options: { data: { display_name: lang === 'bs' ? 'Gost istraživač' : 'Guest explorer' } }
-        });
-        if (signInError) throw signInError;
-        sessionData = { session: signInData.session, user: signInData.user } as typeof sessionData;
-      }
-
-      if (!sessionData.session?.user) return { ok: false, code: 'auth_required' };
+      const playerSession = await ensurePlayerSession(lang === 'bs' ? 'Gost istraživač' : 'Guest explorer');
+      if (!playerSession.user) return { ok: false, code: 'auth_required' };
 
       const { data, error } = await (supabase as any).rpc('complete_tuzla_quest', {
         p_quest_id: questId,

@@ -103,7 +103,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
       tr: 'Tuzla\'nın en sevilen tatlı mekanı; lezzetli tatlı ve tuzlu krepleri, krep suşisi ve enfes tatlılarıyla ünlüdür.'
     },
     category: 'food',
-    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpalacinkara.webp',
+    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpalacinkara.png',
     Image: '/assets/Gallery/Food/bagi.webp'
   },
   {
@@ -168,7 +168,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
       tr: 'Bosna Hersek\'in en önemli ressamlarından Ismet Mujezinović\'in anısına adanmış atölye ve sanat galerisi.'
     },
     category: 'art',
-    Html5Qrcode: '',
+    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRAtelje.png',
     Image: '/assets/Gallery/QuestQRLocations/atelje.webp',
     audio: '/audio/pois/en/05_mesa_i_ismet.mp3',
     audioByLang: {

@@ -5,7 +5,6 @@ import {
   Camera,
   Car,
   CheckCircle2,
-  CheckSquare,
   ChevronDown,
   ChevronUp,
   CircleAlert,
@@ -13,13 +12,11 @@ import {
   ExternalLink,
   Globe,
   HelpCircle,
-  LoaderCircle,
   MapPin,
   Play,
   QrCode,
   RefreshCw,
   ShieldCheck,
-  Square,
   Target,
   Trash2,
   X,
@@ -30,6 +27,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { Preferences } from '@capacitor/preferences';
 
 import { supabase } from '../lib/supabaseClient';
+import { ensurePlayerSession } from '../lib/playerSession';
 import { Language } from '../types';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
 import { useNetwork } from '../hooks/useNetwork';
@@ -76,11 +74,6 @@ interface DashboardData {
     description?: string;
     created_at: string;
   }>;
-}
-
-interface TodoItem {
-  id: string | number;
-  name: string;
 }
 
 interface LedgerEntry {
@@ -370,11 +363,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
   const [availableCameras, setAvailableCameras] = useState<Array<{ id: string; label: string }>>([]);
   const [activeCameraId, setActiveCameraId] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
-
-  // 3. Tasks (Todos) State
-  const [todos, setTodos] = useState<TodoItem[]>([]);
-  const [completedTodoIds, setCompletedTodoIds] = useState<Record<string | number, boolean>>({});
-  const [todosLoading, setTodosLoading] = useState(true);
+  const processingQrRef = useRef(false);
 
   // 4. Ledger & Completed Quests State
   const [ledger, setLedger] = useState<LedgerEntry[]>([]);
@@ -405,18 +394,8 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
     setLoading(true);
     setDashboardError('');
     try {
-      let { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-
-      if (!sessionData.session) {
-        const { data: signInData, error: signInError } = await supabase.auth.signInAnonymously();
-        if (signInError) throw signInError;
-        sessionData = { session: signInData.session, user: signInData.user } as typeof sessionData;
-      }
-
-      if (sessionData.session?.user) {
-        setGuestId(sessionData.session.user.id);
-      }
+      const playerSession = await ensurePlayerSession(lang === 'bs' ? 'Gost istraživač' : 'Guest explorer');
+      setGuestId(playerSession.user.id);
 
       const { data: dashboardData, error: dashboardErr } = await (supabase as any).rpc('get_my_tuzla_dashboard');
       if (dashboardErr) {
@@ -430,21 +409,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
       setDashboardError(err instanceof Error ? err.message : 'Unable to load profile.');
     } finally {
       setLoading(false);
-    }
-  }, []);
-
-  // Load Todos from Supabase
-  const loadTodos = useCallback(async () => {
-    setTodosLoading(true);
-    try {
-      const { data: todoData, error: todoErr } = await (supabase as any).from('todos').select('id, name');
-      if (!todoErr && todoData) {
-        setTodos(todoData as TodoItem[]);
-      }
-    } catch (err) {
-      console.warn('Todos could not be loaded from Supabase:', err);
-    } finally {
-      setTodosLoading(false);
     }
   }, []);
 
@@ -462,8 +426,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
     };
     void loadSavedData();
     void loadDashboard();
-    void loadTodos();
-  }, [loadDashboard, loadTodos]);
+  }, [loadDashboard]);
 
   // Cleanup Scanner on Unmount
   useEffect(() => {
@@ -474,64 +437,154 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
     };
   }, []);
 
-  // Handle QR Decoding
+  // Handle QR Decoding. Supabase is authoritative: never unlock locally before server approval.
   const processDecodedQr = async (decodedText: string) => {
-    const trimmed = decodedText?.trim() ?? '';
-    const target = findQuestTargetFromQr(trimmed);
-    if (!target) {
-      setScannerFeedback({ text: t.scanError, type: 'error' });
-      return;
-    }
+    if (processingQrRef.current) return;
+    processingQrRef.current = true;
 
-    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    const showFailure = (message: string) => {
+      setScannerFeedback({ text: message, type: 'error' });
+      void stopScanner();
+    };
+
+    try {
+      const trimmed = decodedText?.trim() ?? '';
+      const target = findQuestTargetFromQr(trimmed);
+      if (!target) {
+        showFailure(t.scanError);
+        return;
+      }
+
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate([100, 50, 100]); } catch (_) {}
+      }
+
+      if (!navigator.geolocation) {
+        showFailure(lang === 'bs'
+          ? 'GPS nije dostupan na ovom uređaju.'
+          : 'GPS is unavailable on this device.');
+        return;
+      }
+
+      let position: GeolocationPosition;
       try {
-        navigator.vibrate([100, 50, 100]);
-      } catch (_) {}
-    }
+        position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0,
+          });
+        });
+      } catch (gpsError) {
+        const gpsMessage = gpsError instanceof GeolocationPositionError && gpsError.code === gpsError.PERMISSION_DENIED
+          ? (lang === 'bs' ? 'Dozvolite pristup lokaciji da biste potvrdili posjetu.' : 'Allow location access to verify this visit.')
+          : (lang === 'bs' ? 'GPS lokacija nije dostupna. Pokušajte ponovo na otvorenom.' : 'Could not obtain GPS location. Please retry outdoors.');
+        showFailure(gpsMessage);
+        return;
+      }
 
-    const timestamp = new Date().toISOString();
-    const alreadyExists = ledger.some((item) => item.id === target.id);
+      const { data: completion, error: completionError } = await (supabase as any).rpc(
+        'complete_tuzla_quest',
+        {
+          p_quest_id: target.id,
+          p_qr_payload: trimmed,
+          p_lat: position.coords.latitude,
+          p_lon: position.coords.longitude,
+        }
+      );
 
-    if (alreadyExists) {
-      setScannerFeedback({ text: `${target.name[lang] || target.name.bs}: ${t.alreadyScanned}`, type: 'success' });
-      setTimeout(() => setScannerFeedback(null), 3000);
+      if (completionError) throw completionError;
+
+      const result = completion as { ok?: boolean; code?: string; xp_awarded?: number; xp_total?: number; distance_meters?: number; radius_meters?: number } | null;
+      const alreadyCompleted = result?.code === 'already_completed';
+
+      if (!result?.ok && !alreadyCompleted) {
+        const messages: Record<string, Record<Language, string>> = {
+          qr_not_configured: {
+            bs: 'QR kod ove lokacije još nije povezan sa serverom.',
+            en: 'This location QR code is not configured on the server yet.',
+            de: 'Dieser Standort-QR-Code ist noch nicht auf dem Server eingerichtet.',
+            tr: 'Bu konumun QR kodu henüz sunucuda yapılandırılmadı.',
+          },
+          invalid_qr: {
+            bs: 'QR kod ne odgovara ovoj lokaciji.',
+            en: 'This QR code does not match this location.',
+            de: 'Der QR-Code gehört nicht zu diesem Standort.',
+            tr: 'Bu QR kodu bu konumla eşleşmiyor.',
+          },
+          outside_radius: {
+            bs: 'Nalazite se izvan dozvoljenog GPS radijusa. Priđite lokaciji i pokušajte ponovo.',
+            en: 'You are outside the allowed GPS radius. Move closer and try again.',
+            de: 'Sie befinden sich außerhalb des GPS-Radius. Gehen Sie näher heran und versuchen Sie es erneut.',
+            tr: 'İzin verilen GPS yarıçapının dışındasınız. Yaklaşın ve tekrar deneyin.',
+          },
+          gps_required: {
+            bs: 'GPS lokacija je obavezna za potvrdu ove posjete.',
+            en: 'GPS location is required to verify this visit.',
+            de: 'Für die Bestätigung dieses Besuchs ist GPS erforderlich.',
+            tr: 'Bu ziyareti doğrulamak için GPS konumu gereklidir.',
+          },
+          auth_required: {
+            bs: 'Igračka sesija nije aktivna. Osvježite aplikaciju.',
+            en: 'Your player session is not active. Please refresh the app.',
+            de: 'Ihre Spielersitzung ist nicht aktiv. Bitte aktualisieren Sie die App.',
+            tr: 'Oyuncu oturumunuz etkin değil. Lütfen uygulamayı yenileyin.',
+          },
+        };
+        showFailure(messages[result?.code || '']?.[lang] || t.scanError);
+        return;
+      }
+
+      // The server has confirmed either a new completion or an existing one.
+      const timestamp = new Date().toISOString();
+      const newLedger = [
+        { id: target.id, timestamp },
+        ...ledger.filter((item) => item.id !== target.id),
+      ];
+      setLedger(newLedger);
+      await Preferences.set({ key: 'tuzla_scan_ledger', value: JSON.stringify(newLedger) });
+
+      if (!unlockedRewards.includes(target.id)) {
+        setUnlockedRewards((prev) => [...prev, target.id]);
+      }
+
+      await loadDashboard();
+
+      if (alreadyCompleted) {
+        setScannerFeedback({
+          text: `${target.name[lang] || target.name.bs}: ${t.alreadyScanned}`,
+          type: 'success',
+        });
+        void stopScanner();
+        return;
+      }
+
+      if (target.id === 'tvrtko_park' || target.id === 'tvrtko') {
+        void stopScanner();
+        setTimeout(() => setIsTvrtkoScratchOpen(true), 350);
+        return;
+      }
+
+      setScannerFeedback({
+        text: `${t.scanSuccess} ${target.name[lang] || target.name.bs} (+${result?.xp_awarded ?? 0} XP)`,
+        type: 'success',
+      });
+      setTimeout(() => setScannerFeedback(null), 3500);
       void stopScanner();
-      return;
-    }
 
-    const newLedger = [{ id: target.id, timestamp }, ...ledger];
-    setLedger(newLedger);
-    await Preferences.set({ key: 'tuzla_scan_ledger', value: JSON.stringify(newLedger) });
-
-    if (!unlockedRewards.includes(target.id)) {
-      setUnlockedRewards((prev) => [...prev, target.id]);
-    }
-
-    // Refresh dashboard stats
-    void loadDashboard();
-
-    // Check special King Tvrtko scratch card trigger
-    if (target.id === 'tvrtko_park' || target.id === 'tvrtko') {
-      void stopScanner();
-      setTimeout(() => {
-        setIsTvrtkoScratchOpen(true);
-      }, 350);
-      return;
-    }
-
-    setScannerFeedback({
-      text: `${t.scanSuccess} ${target.name[lang] || target.name.bs}`,
-      type: 'success',
-    });
-    setTimeout(() => setScannerFeedback(null), 3500);
-    void stopScanner();
-
-    // Auto-open reward HTML if present
-    if ((target as any).rewardHtml) {
-      const rewardTitle = target.name[lang] || target.name.bs;
-      setTimeout(() => {
-        setActiveRewardHtml({ url: (target as any).rewardHtml!, title: rewardTitle });
-      }, 600);
+      if ((target as any).rewardHtml) {
+        const rewardTitle = target.name[lang] || target.name.bs;
+        setTimeout(() => {
+          setActiveRewardHtml({ url: (target as any).rewardHtml!, title: rewardTitle });
+        }, 600);
+      }
+    } catch (err) {
+      console.error('Server-side quest verification failed:', err);
+      showFailure(lang === 'bs'
+        ? 'Verifikacija nije uspjela. Provjerite internet i pokušajte ponovo.'
+        : 'Quest verification failed. Check your connection and try again.');
+    } finally {
+      processingQrRef.current = false;
     }
   };
 
@@ -798,7 +851,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                 type="button"
                 onClick={() => {
                   void loadDashboard();
-                  void loadTodos();
                 }}
                 disabled={loading}
                 className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-bold text-white hover:bg-white/20 active:scale-95 transition-all disabled:opacity-50 shadow-xs"
@@ -930,7 +982,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
             <div className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-                <CheckSquare className="h-5 w-5" />
+                <Target className="h-5 w-5" />
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight">
@@ -941,11 +993,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                 </p>
               </div>
             </div>
-            {todos.length > 0 && (
-              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-black text-blue-700 border border-blue-100">
-                {todos.length} {lang === 'bs' ? 'stavki' : 'items'}
-              </span>
-            )}
           </div>
 
           {/* Next Quest Objective Card */}
@@ -983,60 +1030,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
             </div>
           )}
 
-          {/* Todo List from Supabase */}
-          {todosLoading ? (
-            <div className="flex items-center justify-center py-4 text-xs font-bold text-slate-400 gap-2">
-              <LoaderCircle size={15} className="animate-spin" />
-              <span>{t.loading}</span>
-            </div>
-          ) : todos.length > 0 ? (
-            <div className="space-y-2">
-              {todos.map((todo) => {
-                const isChecked = !!completedTodoIds[todo.id];
-                return (
-                  <button
-                    key={todo.id}
-                    type="button"
-                    onClick={() =>
-                      setCompletedTodoIds((prev) => ({
-                        ...prev,
-                        [todo.id]: !prev[todo.id],
-                      }))
-                    }
-                    className={`w-full flex items-center justify-between rounded-xl p-2.5 text-left border transition-all ${
-                      isChecked
-                        ? 'border-emerald-200 bg-emerald-50/60 text-emerald-900'
-                        : 'border-slate-100 bg-slate-50/80 hover:bg-slate-100/70 text-slate-800'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      {isChecked ? (
-                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-                      ) : (
-                        <Square size={16} className="text-slate-400 shrink-0" />
-                      )}
-                      <span
-                        className={`text-xs font-bold truncate ${
-                          isChecked ? 'line-through text-slate-400 font-medium' : ''
-                        }`}
-                      >
-                        {todo.name}
-                      </span>
-                    </div>
-                    {isChecked && (
-                      <span className="text-[10px] font-black uppercase text-emerald-600 shrink-0 ml-2">
-                        {lang === 'bs' ? 'Završeno' : 'Done'}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="py-3 text-center text-xs text-slate-400 font-medium">
-              {t.noTasks}
-            </div>
-          )}
+
         </section>
 
         {/* ── 4. PLAYER DASHBOARD WITH GAME PROGRESS, POINTS ETC... ── */}
