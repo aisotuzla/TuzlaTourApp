@@ -982,7 +982,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
             <div className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-                <CheckSquare className="h-5 w-5" />
+                <Target className="h-5 w-5" />
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight">
@@ -993,11 +993,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                 </p>
               </div>
             </div>
-            {todos.length > 0 && (
-              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-black text-blue-700 border border-blue-100">
-                {todos.length} {lang === 'bs' ? 'stavki' : 'items'}
-              </span>
-            )}
           </div>
 
           {/* Next Quest Objective Card */}
