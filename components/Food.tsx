@@ -241,17 +241,11 @@ const Food: React.FC<FoodProps> = ({ lang, onNavigateToTarget }) => {
         <div className="flex flex-col gap-1.5 w-full">
           {[
             { name: 'Pivnica Taverna', info: 'Maršala Tita 163, Tuzla', website: 'https://www.pivaratuzla.ba/PivnicaTaverna/' },
-            { name: 'Restoran Kvin' },
             { name: 'City Steak House', info: 'Ismeta Mujezinovića 44, Tuzla' },
-            { name: 'Restoran Favoris' },
             { name: 'Ječmište kod Tome', info: 'Ulica Husinskih rudara 385, Tuzla', website: 'https://facebook.com/Jecmiste-kod-Tome-106323481386516', websiteLabel: 'Facebook' },
-            { name: 'Pizzeria Mozaik', info: 'Trgovačka 4, Tuzla', website: 'https://www.facebook.com/pizzeriamozaik/about?locale=hr_HR', websiteLabel: 'Facebook' },
             { name: 'Sapori Bistro & Bar', info: 'Maršala Tita, do br. 34, Tuzla', website: 'https://www.facebook.com/p/Bistro-Bar-Sapori-100086337671528/', websiteLabel: 'Facebook' },
             { name: 'Sarajka', website: 'https://sarajkakorzo.ba/' },
-            { name: 'Limenka', info: 'Patriotske Lige 24, Tuzla', website: 'https://www.limenka.ba' },
-            { name: 'Restoran Sedra', info: 'Slatina 5, Tuzla', website: 'https://sedra.ba' },
             { name: 'Pizzeria Barok', info: 'Trg slobode, Tuzla', website: 'https://www.pizza-barok.com/' },
-            { name: 'En Vie', info: 'Mitra Trifunovića Uče bb' },
             { name: 'Wint Lounge Bar', info: 'ZAVNOBiH-a 13', website: 'https://barista.ba' },
             { name: 'Dolce Vita', info: 'Đorđa Mihajlovića bb, Tuzla', website: 'https://www.facebook.com/dolcevitamela/?locale=hr_HR', websiteLabel: 'Facebook' },
             { name: 'Coffee Zone', info: 'Fra Grge Martića 30, Tuzla', website: 'http://coffee-zone.weebly.com/' },
@@ -263,11 +257,11 @@ const Food: React.FC<FoodProps> = ({ lang, onNavigateToTarget }) => {
           ].map((r, i) => (
             <div
               key={i}
-              className="group relative flex min-h-[64px] w-full items-center gap-2.5 overflow-hidden rounded-xl border border-blue-500/35 bg-gradient-to-r from-blue-700 via-blue-650 to-blue-800 px-3 py-2 shadow-[0_4px_12px_rgba(15,48,105,0.16)] transition-all active:scale-[0.985] sm:min-h-[70px] sm:rounded-xl sm:px-3.5"
+              className="group relative flex min-h-[58px] w-full items-center gap-2.5 overflow-hidden rounded-xl border border-blue-500/35 bg-gradient-to-r from-blue-700 via-blue-650 to-blue-800 px-3 py-1.5 shadow-[0_3px_10px_rgba(15,48,105,0.16)] transition-all active:scale-[0.985] sm:min-h-[63px] sm:rounded-xl sm:px-3.5"
             >
               <span className="absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-yellow-200 via-amber-400 to-yellow-600" />
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-amber-300 shadow-inner sm:h-9 sm:w-9">
-                <UtensilsCrossed className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+              <span className="flex h-[29px] w-[29px] shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-amber-300 shadow-inner sm:h-8 sm:w-8">
+                <UtensilsCrossed className="h-[15px] w-[15px] sm:h-4 sm:w-4" />
               </span>
               <div className="min-w-0 flex-1 py-0.5 text-left">
                 <span className="block text-[13px] font-extrabold leading-snug tracking-[0.01em] text-white sm:text-sm">
