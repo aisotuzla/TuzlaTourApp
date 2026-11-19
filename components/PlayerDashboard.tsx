@@ -5,7 +5,6 @@ import {
   Camera,
   Car,
   CheckCircle2,
-  CheckSquare,
   ChevronDown,
   ChevronUp,
   CircleAlert,
@@ -13,13 +12,11 @@ import {
   ExternalLink,
   Globe,
   HelpCircle,
-  LoaderCircle,
   MapPin,
   Play,
   QrCode,
   RefreshCw,
   ShieldCheck,
-  Square,
   Target,
   Trash2,
   X,
@@ -30,6 +27,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { Preferences } from '@capacitor/preferences';
 
 import { supabase } from '../lib/supabaseClient';
+import { ensurePlayerSession } from '../lib/playerSession';
 import { Language } from '../types';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
 import { useNetwork } from '../hooks/useNetwork';
@@ -76,11 +74,6 @@ interface DashboardData {
     description?: string;
     created_at: string;
   }>;
-}
-
-interface TodoItem {
-  id: string | number;
-  name: string;
 }
 
 interface LedgerEntry {
@@ -372,11 +365,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const processingQrRef = useRef(false);
 
-  // 3. Tasks (Todos) State
-  const [todos, setTodos] = useState<TodoItem[]>([]);
-  const [completedTodoIds, setCompletedTodoIds] = useState<Record<string | number, boolean>>({});
-  const [todosLoading, setTodosLoading] = useState(true);
-
   // 4. Ledger & Completed Quests State
   const [ledger, setLedger] = useState<LedgerEntry[]>([]);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -406,18 +394,8 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
     setLoading(true);
     setDashboardError('');
     try {
-      let { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-
-      if (!sessionData.session) {
-        const { data: signInData, error: signInError } = await supabase.auth.signInAnonymously();
-        if (signInError) throw signInError;
-        sessionData = { session: signInData.session, user: signInData.user } as typeof sessionData;
-      }
-
-      if (sessionData.session?.user) {
-        setGuestId(sessionData.session.user.id);
-      }
+      const playerSession = await ensurePlayerSession(lang === 'bs' ? 'Gost istraživač' : 'Guest explorer');
+      setGuestId(playerSession.user.id);
 
       const { data: dashboardData, error: dashboardErr } = await (supabase as any).rpc('get_my_tuzla_dashboard');
       if (dashboardErr) {
@@ -431,21 +409,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
       setDashboardError(err instanceof Error ? err.message : 'Unable to load profile.');
     } finally {
       setLoading(false);
-    }
-  }, []);
-
-  // Load Todos from Supabase
-  const loadTodos = useCallback(async () => {
-    setTodosLoading(true);
-    try {
-      const { data: todoData, error: todoErr } = await (supabase as any).from('todos').select('id, name');
-      if (!todoErr && todoData) {
-        setTodos(todoData as TodoItem[]);
-      }
-    } catch (err) {
-      console.warn('Todos could not be loaded from Supabase:', err);
-    } finally {
-      setTodosLoading(false);
     }
   }, []);
 
@@ -463,8 +426,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
     };
     void loadSavedData();
     void loadDashboard();
-    void loadTodos();
-  }, [loadDashboard, loadTodos]);
+  }, [loadDashboard]);
 
   // Cleanup Scanner on Unmount
   useEffect(() => {
@@ -889,7 +851,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                 type="button"
                 onClick={() => {
                   void loadDashboard();
-                  void loadTodos();
                 }}
                 disabled={loading}
                 className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-bold text-white hover:bg-white/20 active:scale-95 transition-all disabled:opacity-50 shadow-xs"
@@ -1021,7 +982,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
             <div className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-                <CheckSquare className="h-5 w-5" />
+                <Target className="h-5 w-5" />
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight">
@@ -1032,11 +993,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                 </p>
               </div>
             </div>
-            {todos.length > 0 && (
-              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-black text-blue-700 border border-blue-100">
-                {todos.length} {lang === 'bs' ? 'stavki' : 'items'}
-              </span>
-            )}
           </div>
 
           {/* Next Quest Objective Card */}
@@ -1074,60 +1030,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
             </div>
           )}
 
-          {/* Todo List from Supabase */}
-          {todosLoading ? (
-            <div className="flex items-center justify-center py-4 text-xs font-bold text-slate-400 gap-2">
-              <LoaderCircle size={15} className="animate-spin" />
-              <span>{t.loading}</span>
-            </div>
-          ) : todos.length > 0 ? (
-            <div className="space-y-2">
-              {todos.map((todo) => {
-                const isChecked = !!completedTodoIds[todo.id];
-                return (
-                  <button
-                    key={todo.id}
-                    type="button"
-                    onClick={() =>
-                      setCompletedTodoIds((prev) => ({
-                        ...prev,
-                        [todo.id]: !prev[todo.id],
-                      }))
-                    }
-                    className={`w-full flex items-center justify-between rounded-xl p-2.5 text-left border transition-all ${
-                      isChecked
-                        ? 'border-emerald-200 bg-emerald-50/60 text-emerald-900'
-                        : 'border-slate-100 bg-slate-50/80 hover:bg-slate-100/70 text-slate-800'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      {isChecked ? (
-                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-                      ) : (
-                        <Square size={16} className="text-slate-400 shrink-0" />
-                      )}
-                      <span
-                        className={`text-xs font-bold truncate ${
-                          isChecked ? 'line-through text-slate-400 font-medium' : ''
-                        }`}
-                      >
-                        {todo.name}
-                      </span>
-                    </div>
-                    {isChecked && (
-                      <span className="text-[10px] font-black uppercase text-emerald-600 shrink-0 ml-2">
-                        {lang === 'bs' ? 'Završeno' : 'Done'}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="py-3 text-center text-xs text-slate-400 font-medium">
-              {t.noTasks}
-            </div>
-          )}
+
         </section>
 
         {/* ── 4. PLAYER DASHBOARD WITH GAME PROGRESS, POINTS ETC... ── */}
