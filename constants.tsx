@@ -336,7 +336,6 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     learnMore: 'Learn More',
     busStation: 'Bus Station',
     batteryWarning: 'Extreme Battery Saver Active. Lower brightness and use AR only when moving to preserve power.',
-    dentalTourism: 'Dental Tourism',
     locationNotAvailable: 'Location not available.',
     zonesLabel: 'Zones',
     galleryCharmText: 'No photo can show you charm and beauty of this city, so come and visit us.',
@@ -525,12 +524,9 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     learnMore: 'Mehr erfahren',
     busStation: 'Busbahnhof',
     batteryWarning: 'Extremer Energiesparmodus aktiv. Helligkeit senken und AR nur bei Bewegung nutzen.',
-
-    dentalTourism: 'Zahntourismus',
     locationNotAvailable: 'Standort nicht verfügbar.',
     zonesLabel: 'Zonen',
     galleryCharmText: 'Kein Foto kann Ihnen den Charme und die Schönheit dieser Stadt zeigen, also kommen Sie und besuchen Sie uns.',
-
     explorationTitle: 'Erkundung',
     qrLocationScannerTitle: 'QR-Standort-Scanner',
     startScanner: 'QR Scannen',
@@ -622,8 +618,6 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     learnMore: 'Daha Fazla Bilgi',
     busStation: 'Otobüs Durağı',
     batteryWarning: 'Ekstra Pil Tasarrufu Aktif. Güç tasarrufu için parlaklığı düşürün ve ARyı sadece hareket halindeyken kullanın.',
-
-    dentalTourism: 'Diş Turizmi',
     locationNotAvailable: 'Konum mevcut değil.',
     zonesLabel: 'Bölgeler',
     galleryCharmText: 'Hiçbir fotoğraf size bu şehrin cazibesini ve güzelliğini gösteremez, bu yüzden gelin ve bizi ziyaret edin.',

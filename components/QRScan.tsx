@@ -627,7 +627,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                                             className="p-2 bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-xl transition-all active:scale-90"
                                                             title={lang === 'bs' ? 'Scratch kartica' : 'Scratch card'}
                                                         >
-                                                            <CircleCheck size={14} className="text-amber-600" />
+                                                            <Globe size={14} className="text-amber-600" />
                                                         </button>
                                                     )}
                                                     {(target as any).rewardHtml && (
@@ -682,6 +682,9 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                 <button onClick={() => window.open('https://gradskiparkingtuzla.vercel.app', '_blank')} className="w-full h-16 bg-yellow-400 border-2 border-blue-600 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-yellow-300" style={{ color: '#1a3a8f', boxShadow: '0 0 18px 4px rgba(37,99,235,0.45), 0 4px 14px rgba(0,0,0,0.12)' }}>
                                     <Car size={20} />
                                     {t.gradskiParkingTuzla}
+                                </button>
+                                <button onClick={() => window.open('https://zmajevi.vercel.app', '_blank')} className="w-full h-16 bg-white text-purple-600 border-2 border-purple-500 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-purple-50">
+                                    NFT Zmajevi
                                 </button>
                                 <button onClick={() => window.open('https://aiso-tuzla.lovable.app/', '_blank')} className="w-full h-16 bg-blue-600 text-yellow-300 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-blue-700">
                                     <img src="/assets/icons/aisologo.webp" alt="AISO Logo" className="w-6 h-6 object-contain" />

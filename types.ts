@@ -89,7 +89,6 @@ export interface TranslationSet {
   learnMore: string;
   busStation: string;
   batteryWarning: string;
-  dentalTourism: string;
   locationNotAvailable: string;
   zonesLabel: string;
   galleryCharmText: string;

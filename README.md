@@ -172,6 +172,6 @@ For Vercel deployments, configure environment variables in the Vercel project se
 
 The repository includes a [LICENSE](LICENSE) file. Check that file for the exact license terms.
 
-Project contact currently listed in the repository: **aisotuzla@proton.me**.
+Project contact currently listed in the repository: **aiso_tuzla@proton.me**.
 
 Tuzla Tour Guide is an independent software project. References to local places, businesses, public services or cultural institutions do not imply endorsement or a formal partnership unless that relationship is separately confirmed.
