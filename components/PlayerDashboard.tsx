@@ -381,6 +381,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
   const [availableCameras, setAvailableCameras] = useState<Array<{ id: string; label: string }>>([]);
   const [activeCameraId, setActiveCameraId] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const processingQrRef = useRef(false);
 
   // 3. Tasks (Todos) State
   const [todos, setTodos] = useState<TodoItem[]>([]);
@@ -493,64 +494,154 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
     };
   }, []);
 
-  // Handle QR Decoding
+  // Handle QR Decoding. Supabase is authoritative: never unlock locally before server approval.
   const processDecodedQr = async (decodedText: string) => {
-    const trimmed = decodedText?.trim() ?? '';
-    const target = findQuestTargetFromQr(trimmed);
-    if (!target) {
-      setScannerFeedback({ text: t.scanError, type: 'error' });
-      return;
-    }
+    if (processingQrRef.current) return;
+    processingQrRef.current = true;
 
-    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    const showFailure = (message: string) => {
+      setScannerFeedback({ text: message, type: 'error' });
+      void stopScanner();
+    };
+
+    try {
+      const trimmed = decodedText?.trim() ?? '';
+      const target = findQuestTargetFromQr(trimmed);
+      if (!target) {
+        showFailure(t.scanError);
+        return;
+      }
+
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate([100, 50, 100]); } catch (_) {}
+      }
+
+      if (!navigator.geolocation) {
+        showFailure(lang === 'bs'
+          ? 'GPS nije dostupan na ovom uređaju.'
+          : 'GPS is unavailable on this device.');
+        return;
+      }
+
+      let position: GeolocationPosition;
       try {
-        navigator.vibrate([100, 50, 100]);
-      } catch (_) {}
-    }
+        position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0,
+          });
+        });
+      } catch (gpsError) {
+        const gpsMessage = gpsError instanceof GeolocationPositionError && gpsError.code === gpsError.PERMISSION_DENIED
+          ? (lang === 'bs' ? 'Dozvolite pristup lokaciji da biste potvrdili posjetu.' : 'Allow location access to verify this visit.')
+          : (lang === 'bs' ? 'GPS lokacija nije dostupna. Pokušajte ponovo na otvorenom.' : 'Could not obtain GPS location. Please retry outdoors.');
+        showFailure(gpsMessage);
+        return;
+      }
 
-    const timestamp = new Date().toISOString();
-    const alreadyExists = ledger.some((item) => item.id === target.id);
+      const { data: completion, error: completionError } = await (supabase as any).rpc(
+        'complete_tuzla_quest',
+        {
+          p_quest_id: target.id,
+          p_qr_payload: trimmed,
+          p_lat: position.coords.latitude,
+          p_lon: position.coords.longitude,
+        }
+      );
 
-    if (alreadyExists) {
-      setScannerFeedback({ text: `${target.name[lang] || target.name.bs}: ${t.alreadyScanned}`, type: 'success' });
-      setTimeout(() => setScannerFeedback(null), 3000);
+      if (completionError) throw completionError;
+
+      const result = completion as { ok?: boolean; code?: string; xp_awarded?: number; xp_total?: number; distance_meters?: number; radius_meters?: number } | null;
+      const alreadyCompleted = result?.code === 'already_completed';
+
+      if (!result?.ok && !alreadyCompleted) {
+        const messages: Record<string, Record<Language, string>> = {
+          qr_not_configured: {
+            bs: 'QR kod ove lokacije još nije povezan sa serverom.',
+            en: 'This location QR code is not configured on the server yet.',
+            de: 'Dieser Standort-QR-Code ist noch nicht auf dem Server eingerichtet.',
+            tr: 'Bu konumun QR kodu henüz sunucuda yapılandırılmadı.',
+          },
+          invalid_qr: {
+            bs: 'QR kod ne odgovara ovoj lokaciji.',
+            en: 'This QR code does not match this location.',
+            de: 'Der QR-Code gehört nicht zu diesem Standort.',
+            tr: 'Bu QR kodu bu konumla eşleşmiyor.',
+          },
+          outside_radius: {
+            bs: 'Nalazite se izvan dozvoljenog GPS radijusa. Priđite lokaciji i pokušajte ponovo.',
+            en: 'You are outside the allowed GPS radius. Move closer and try again.',
+            de: 'Sie befinden sich außerhalb des GPS-Radius. Gehen Sie näher heran und versuchen Sie es erneut.',
+            tr: 'İzin verilen GPS yarıçapının dışındasınız. Yaklaşın ve tekrar deneyin.',
+          },
+          gps_required: {
+            bs: 'GPS lokacija je obavezna za potvrdu ove posjete.',
+            en: 'GPS location is required to verify this visit.',
+            de: 'Für die Bestätigung dieses Besuchs ist GPS erforderlich.',
+            tr: 'Bu ziyareti doğrulamak için GPS konumu gereklidir.',
+          },
+          auth_required: {
+            bs: 'Igračka sesija nije aktivna. Osvježite aplikaciju.',
+            en: 'Your player session is not active. Please refresh the app.',
+            de: 'Ihre Spielersitzung ist nicht aktiv. Bitte aktualisieren Sie die App.',
+            tr: 'Oyuncu oturumunuz etkin değil. Lütfen uygulamayı yenileyin.',
+          },
+        };
+        showFailure(messages[result?.code || '']?.[lang] || t.scanError);
+        return;
+      }
+
+      // The server has confirmed either a new completion or an existing one.
+      const timestamp = new Date().toISOString();
+      const newLedger = [
+        { id: target.id, timestamp },
+        ...ledger.filter((item) => item.id !== target.id),
+      ];
+      setLedger(newLedger);
+      await Preferences.set({ key: 'tuzla_scan_ledger', value: JSON.stringify(newLedger) });
+
+      if (!unlockedRewards.includes(target.id)) {
+        setUnlockedRewards((prev) => [...prev, target.id]);
+      }
+
+      await loadDashboard();
+
+      if (alreadyCompleted) {
+        setScannerFeedback({
+          text: `${target.name[lang] || target.name.bs}: ${t.alreadyScanned}`,
+          type: 'success',
+        });
+        void stopScanner();
+        return;
+      }
+
+      if (target.id === 'tvrtko_park' || target.id === 'tvrtko') {
+        void stopScanner();
+        setTimeout(() => setIsTvrtkoScratchOpen(true), 350);
+        return;
+      }
+
+      setScannerFeedback({
+        text: `${t.scanSuccess} ${target.name[lang] || target.name.bs} (+${result?.xp_awarded ?? 0} XP)`,
+        type: 'success',
+      });
+      setTimeout(() => setScannerFeedback(null), 3500);
       void stopScanner();
-      return;
-    }
 
-    const newLedger = [{ id: target.id, timestamp }, ...ledger];
-    setLedger(newLedger);
-    await Preferences.set({ key: 'tuzla_scan_ledger', value: JSON.stringify(newLedger) });
-
-    if (!unlockedRewards.includes(target.id)) {
-      setUnlockedRewards((prev) => [...prev, target.id]);
-    }
-
-    // Refresh dashboard stats
-    void loadDashboard();
-
-    // Check special King Tvrtko scratch card trigger
-    if (target.id === 'tvrtko_park' || target.id === 'tvrtko') {
-      void stopScanner();
-      setTimeout(() => {
-        setIsTvrtkoScratchOpen(true);
-      }, 350);
-      return;
-    }
-
-    setScannerFeedback({
-      text: `${t.scanSuccess} ${target.name[lang] || target.name.bs}`,
-      type: 'success',
-    });
-    setTimeout(() => setScannerFeedback(null), 3500);
-    void stopScanner();
-
-    // Auto-open reward HTML if present
-    if ((target as any).rewardHtml) {
-      const rewardTitle = target.name[lang] || target.name.bs;
-      setTimeout(() => {
-        setActiveRewardHtml({ url: (target as any).rewardHtml!, title: rewardTitle });
-      }, 600);
+      if ((target as any).rewardHtml) {
+        const rewardTitle = target.name[lang] || target.name.bs;
+        setTimeout(() => {
+          setActiveRewardHtml({ url: (target as any).rewardHtml!, title: rewardTitle });
+        }, 600);
+      }
+    } catch (err) {
+      console.error('Server-side quest verification failed:', err);
+      showFailure(lang === 'bs'
+        ? 'Verifikacija nije uspjela. Provjerite internet i pokušajte ponovo.'
+        : 'Quest verification failed. Check your connection and try again.');
+    } finally {
+      processingQrRef.current = false;
     }
   };
 
