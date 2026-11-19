@@ -8,7 +8,10 @@ let pendingAnonymousSignIn: Promise<Session> | null = null;
 export async function ensurePlayerSession(displayName?: string): Promise<Session> {
   const { data: current, error: sessionError } = await supabase.auth.getSession();
   if (sessionError) throw sessionError;
-  if (current.session) return current.session;
+  if (current.session) {
+    await ensurePlayerProfile(current.session, displayName);
+    return current.session;
+  }
 
   if (!pendingAnonymousSignIn) {
     pendingAnonymousSignIn = (async () => {
@@ -17,6 +20,7 @@ export async function ensurePlayerSession(displayName?: string): Promise<Session
       });
       if (error) throw error;
       if (!data.session) throw new Error('anonymous_session_not_created');
+      await ensurePlayerProfile(data.session, displayName);
       return data.session;
     })();
   }
@@ -26,4 +30,15 @@ export async function ensurePlayerSession(displayName?: string): Promise<Session
   } finally {
     pendingAnonymousSignIn = null;
   }
+}
+
+async function ensurePlayerProfile(session: Session, displayName?: string): Promise<void> {
+  const { error } = await supabase.from('profiles').upsert(
+    {
+      id: session.user.id,
+      display_name: displayName ?? 'Tuzla Explorer',
+    },
+    { onConflict: 'id', ignoreDuplicates: true }
+  );
+  if (error) throw error;
 }
