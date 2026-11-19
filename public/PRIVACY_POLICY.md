@@ -78,9 +78,7 @@ The repository contains experimental Web3/Solana reward assets and dependencies.
 
 ## 4. Cookies, local storage and similar technologies
 
-The web app uses browser storage for settings and a cookie-consent record. The consent component stores a record under the key `tuzla_cookie_consent` in browser local storage and, in supported Capacitor builds, in Capacitor Preferences.
-
-The website also contains Google Tag Manager and Google Analytics configuration. The current code has a consent implementation that needs further technical verification: the GTM script is included in the page before the user makes a cookie choice, while the consent component separately loads/configures GA4 when performance consent is saved. Therefore, the current code should not be interpreted as proof that every analytics tag is blocked until consent. See the [Cookie Policy](COOKIE_POLICY.md).
+The web app stores settings and the consent choice in browser local storage and, in supported Capacitor builds, in Capacitor Preferences. Google Tag Manager and Google Analytics are not used. Vercel Analytics and Speed Insights load only when optional analytics is accepted through the Bosnian-language consent banner. See the [Cookie Policy](COOKIE_POLICY.md).
 
 ## 5. Purposes and legal grounds
 
@@ -98,7 +96,7 @@ The project must confirm the final legal basis for each production data flow bef
 Depending on deployment and the features you use, information may be processed by:
 
 - **Hosting and deployment providers:** Vercel and/or Netlify.
-- **Google services:** Google Tag Manager, Google Analytics and Google Fonts where loaded.
+- **Google services:** Google Fonts and other external content where loaded.
 - **Map and content providers:** providers supplying map styles, map tiles, fonts, media or other external resources used by the app.
 - **Vercel storage/database services:** for the public events feed and related server-side event records.
 - **Supabase:** the project database has been prepared, but the player app's account and quest-progress integration is not yet active. When enabled, Supabase will process the data described in the updated policy.

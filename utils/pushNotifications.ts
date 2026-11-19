@@ -5,6 +5,7 @@ import { onForegroundMessage, requestPushToken } from './firebase';
 
 const TOKEN_STORAGE_KEY = 'tuzla_fcm_token';
 const DEFAULT_NOTIFICATION_TITLE = 'Tuzla Tour Guide';
+export const DEFAULT_NOTIFICATION_CHANNEL_ID = 'tuzla_default_v2';
 
 export interface PushNotificationHandlers {
   onToken: (token: string) => void;
@@ -25,6 +26,9 @@ const storeToken = (token: string, handlers: PushNotificationHandlers) => {
   } catch (error) {
     console.warn('Unable to store the FCM registration token locally:', error);
   }
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('tuzla-fcm-token', { detail: token }));
+  }
   handlers.onToken(token);
 };
 
@@ -42,6 +46,11 @@ const registerNativePushNotifications = async (
     }));
     listenerHandles.push(await PushNotifications.addListener('registrationError', (error) => {
       console.error('FCM registration failed:', error);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('tuzla-push-registration-error', {
+          detail: error.error || 'FCM registration failed.',
+        }));
+      }
     }));
     listenerHandles.push(await PushNotifications.addListener('pushNotificationReceived', (notification) => {
       const data = asDataRecord(notification.data);
@@ -57,6 +66,7 @@ const registerNativePushNotifications = async (
             id: Math.floor(Date.now() % 2_147_483_647),
             title,
             body,
+            channelId: DEFAULT_NOTIFICATION_CHANNEL_ID,
             schedule: { at: new Date(Date.now() + 250) },
             extra: data
           }
@@ -83,15 +93,18 @@ const registerNativePushNotifications = async (
 
     if (permission.receive !== 'granted') {
       console.warn('Push notification permission was not granted.');
-      await removeListeners();
-      return () => {};
+      return () => {
+        void removeListeners().catch((error: unknown) => {
+          console.error('Unable to remove push notification listeners:', error);
+        });
+      };
     }
 
     // On Android 8.0+ create high-priority notification channel
     if (Capacitor.getPlatform() === 'android') {
       try {
         await PushNotifications.createChannel({
-          id: 'tuzla_default_channel',
+          id: DEFAULT_NOTIFICATION_CHANNEL_ID,
           name: 'Tuzla Tour Notifications',
           description: 'General notifications and quest updates for Tuzla Tour Guide',
           importance: 5,
@@ -149,14 +162,6 @@ export const initializePushNotifications = async (
       });
     }
   });
-
-  void requestPushToken()
-    .then((token) => {
-      if (token) handlers.onToken(token);
-    })
-    .catch((error: unknown) => {
-      console.error('Unable to register for web push notifications:', error);
-    });
 
   return unsubscribe;
 };

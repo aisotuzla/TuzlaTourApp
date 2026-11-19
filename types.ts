@@ -119,12 +119,6 @@ export interface TranslationSet {
   qrLocationScannerTitle: string;
   startScanner: string;
   qrScannerDesc: string;
-  currencyConverterTitle: string;
-  enterBamLabel: string;
-  enterEurLabel: string;
-  estimatedEurLabel: string;
-  estimatedBamLabel: string;
-  conversionRateText: string;
   scanHistoryLedgerTitle: string;
   ledgerEmptyTitle: string;
   ledgerEmptyDesc: string;

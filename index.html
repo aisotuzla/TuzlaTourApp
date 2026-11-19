@@ -178,12 +178,8 @@
     }
   </style>
 
-  <!-- Global crash guard and dataLayer stub for Basic Consent Mode -->
+  <!-- Global crash guard -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    if (!window.gtag) {
-      window.gtag = function () { window.dataLayer.push(arguments); };
-    }
     window.addEventListener('error', function(e) {
       var root = document.getElementById('root');
       if (root && root.children.length === 0) {

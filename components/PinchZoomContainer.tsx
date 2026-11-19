@@ -9,7 +9,7 @@ interface PinchZoomContainerProps {
 
 export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
   children,
-  maxScale = 2.0,
+  maxScale = 3.0,
   minScale = 1.0,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -30,7 +30,42 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
     lastTouchX: 0,
     lastTouchY: 0,
     lastTapTime: 0,
+    pinchStartTranslateX: 0,
+    pinchStartTranslateY: 0,
+    pinchStartMidpointX: 0,
+    pinchStartMidpointY: 0,
   });
+
+  const applyTransform = useCallback((nextScale: number, nextTranslateX: number, nextTranslateY: number) => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    el.style.transformOrigin = '50% 50%';
+    el.style.transform =
+      nextScale <= 1.05
+        ? 'none'
+        : `translate3d(${nextTranslateX}px, ${nextTranslateY}px, 0) scale(${nextScale})`;
+  }, []);
+
+  const clampScale = useCallback((nextScale: number) => (
+    Math.min(Math.max(nextScale, minScale), maxScale)
+  ), [minScale, maxScale]);
+
+  const clampPan = useCallback((nextScale: number, translateX: number, translateY: number) => {
+    const el = containerRef.current;
+    if (!el || nextScale <= 1.05) return { x: 0, y: 0 };
+
+    const viewport = el.parentElement?.getBoundingClientRect();
+    const viewportWidth = viewport?.width ?? window.innerWidth;
+    const viewportHeight = viewport?.height ?? window.innerHeight;
+    const maxPanX = (viewportWidth * (nextScale - 1)) / 2;
+    const maxPanY = (viewportHeight * (nextScale - 1)) / 2;
+
+    return {
+      x: Math.max(Math.min(translateX, maxPanX), -maxPanX),
+      y: Math.max(Math.min(translateY, maxPanY), -maxPanY),
+    };
+  }, []);
 
   const resetZoom = useCallback(() => {
     stateRef.current.scale = 1.0;
@@ -42,9 +77,30 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
     setTranslate({ x: 0, y: 0 });
 
     if (containerRef.current) {
+      containerRef.current.style.transition = 'transform 0.15s ease-out';
       containerRef.current.style.transform = 'none';
+      window.setTimeout(() => {
+        if (containerRef.current) containerRef.current.style.transition = '';
+      }, 160);
     }
   }, []);
+
+  const zoomTo = useCallback((nextScale: number) => {
+    const finalScale = clampScale(nextScale);
+
+    if (finalScale <= 1.05) {
+      resetZoom();
+      return;
+    }
+
+    const bounded = clampPan(finalScale, 0, 0);
+    stateRef.current.scale = finalScale;
+    stateRef.current.translateX = bounded.x;
+    stateRef.current.translateY = bounded.y;
+    setScale(finalScale);
+    setTranslate(bounded);
+    applyTransform(finalScale, bounded.x, bounded.y);
+  }, [applyTransform, clampPan, clampScale, resetZoom]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -75,6 +131,9 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
         target.closest('.maplibregl-canvas') ||
         target.closest('.mapboxgl-map') ||
         target.closest('canvas.ar-canvas') ||
+        target.closest('[role="dialog"]') ||
+        target.closest('input') ||
+        target.closest('textarea') ||
         target.closest('video')
       );
     };
@@ -83,11 +142,14 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
       if (isExcludedTarget(e.target)) return;
 
       const now = Date.now();
-      // Double-tap to reset if currently zoomed
       if (e.touches.length === 1) {
-        if (now - stateRef.current.lastTapTime < 300 && stateRef.current.scale > 1.05) {
+        if (now - stateRef.current.lastTapTime < 300) {
           e.preventDefault();
-          resetZoom();
+          if (stateRef.current.scale > 1.05) {
+            resetZoom();
+          } else {
+            zoomTo(maxScale);
+          }
           stateRef.current.lastTapTime = 0;
           return;
         }
@@ -110,6 +172,10 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
         const mid = getTouchMidpoint(e);
         stateRef.current.startX = mid.x;
         stateRef.current.startY = mid.y;
+        stateRef.current.pinchStartTranslateX = stateRef.current.translateX;
+        stateRef.current.pinchStartTranslateY = stateRef.current.translateY;
+        stateRef.current.pinchStartMidpointX = mid.x;
+        stateRef.current.pinchStartMidpointY = mid.y;
       }
     };
 
@@ -122,17 +188,20 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
         const currentDistance = getTouchDistance(e);
         if (stateRef.current.initialDistance > 0) {
           const ratio = currentDistance / stateRef.current.initialDistance;
-          let newScale = stateRef.current.initialScale * ratio;
-          // Clamp scale to maxScale (2.0x) and minScale (1.0x)
-          newScale = Math.min(Math.max(newScale, minScale * 0.9), maxScale * 1.05);
+          const newScale = clampScale(stateRef.current.initialScale * ratio);
+          const mid = getTouchMidpoint(e);
+          const dx = mid.x - stateRef.current.pinchStartMidpointX;
+          const dy = mid.y - stateRef.current.pinchStartMidpointY;
+          const bounded = clampPan(
+            newScale,
+            stateRef.current.pinchStartTranslateX + dx,
+            stateRef.current.pinchStartTranslateY + dy
+          );
 
           stateRef.current.scale = newScale;
-
-          // Apply transform directly for 60fps performance
-          if (el) {
-            el.style.transformOrigin = '50% 50%';
-            el.style.transform = `scale(${newScale}) translate(${stateRef.current.translateX}px, ${stateRef.current.translateY}px)`;
-          }
+          stateRef.current.translateX = bounded.x;
+          stateRef.current.translateY = bounded.y;
+          applyTransform(newScale, bounded.x, bounded.y);
         }
         return;
       }
@@ -145,38 +214,37 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
         stateRef.current.lastTouchX = e.touches[0].clientX;
         stateRef.current.lastTouchY = e.touches[0].clientY;
 
-        // Limit panning bounds based on current scale
-        const maxPanX = (window.innerWidth * (stateRef.current.scale - 1)) / (2 * stateRef.current.scale);
-        const maxPanY = (window.innerHeight * (stateRef.current.scale - 1)) / (2 * stateRef.current.scale);
-
-        stateRef.current.translateX = Math.max(Math.min(stateRef.current.translateX + dx / stateRef.current.scale, maxPanX), -maxPanX);
-        stateRef.current.translateY = Math.max(Math.min(stateRef.current.translateY + dy / stateRef.current.scale, maxPanY), -maxPanY);
-
-        if (el) {
-          el.style.transform = `scale(${stateRef.current.scale}) translate(${stateRef.current.translateX}px, ${stateRef.current.translateY}px)`;
-        }
+        const bounded = clampPan(
+          stateRef.current.scale,
+          stateRef.current.translateX + dx,
+          stateRef.current.translateY + dy
+        );
+        stateRef.current.translateX = bounded.x;
+        stateRef.current.translateY = bounded.y;
+        applyTransform(stateRef.current.scale, bounded.x, bounded.y);
       }
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
       if (e.touches.length < 2 && stateRef.current.isPinching) {
         stateRef.current.isPinching = false;
-        // Snap to valid range
         let finalScale = stateRef.current.scale;
-        if (finalScale < 1.08) {
+        if (finalScale < 1.05) {
           resetZoom();
           return;
-        } else if (finalScale > maxScale) {
-          finalScale = maxScale;
-          stateRef.current.scale = maxScale;
         }
 
+        finalScale = clampScale(finalScale);
+        const bounded = clampPan(finalScale, stateRef.current.translateX, stateRef.current.translateY);
+        stateRef.current.scale = finalScale;
+        stateRef.current.translateX = bounded.x;
+        stateRef.current.translateY = bounded.y;
         setScale(finalScale);
-        setTranslate({ x: stateRef.current.translateX, y: stateRef.current.translateY });
+        setTranslate(bounded);
 
         if (el) {
           el.style.transition = 'transform 0.15s ease-out';
-          el.style.transform = `scale(${finalScale}) translate(${stateRef.current.translateX}px, ${stateRef.current.translateY}px)`;
+          applyTransform(finalScale, bounded.x, bounded.y);
           setTimeout(() => {
             if (el) el.style.transition = '';
           }, 160);
@@ -185,7 +253,7 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
 
       if (e.touches.length === 0) {
         stateRef.current.isPanning = false;
-        if (stateRef.current.scale <= 1.08) {
+        if (stateRef.current.scale <= 1.05) {
           resetZoom();
         }
       }
@@ -203,7 +271,7 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
       el.removeEventListener('touchend', handleTouchEnd);
       el.removeEventListener('touchcancel', handleTouchEnd);
     };
-  }, [maxScale, minScale, resetZoom]);
+  }, [applyTransform, clampPan, clampScale, maxScale, resetZoom, zoomTo]);
 
   return (
     <div className="relative w-full min-h-full flex-1 flex flex-col">
@@ -212,6 +280,16 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
         <div className="fixed top-16 right-4 z-[9999] flex items-center gap-2 bg-slate-900/90 text-amber-300 border border-amber-400/50 shadow-2xl rounded-full px-3 py-1.5 backdrop-blur-md animate-in fade-in zoom-in duration-200">
           <ZoomIn className="w-3.5 h-3.5 text-amber-400" />
           <span className="text-xs font-black tracking-wide">{scale.toFixed(1)}x</span>
+          {scale < maxScale && (
+            <button
+              type="button"
+              onClick={() => zoomTo(Math.min(scale + 1, maxScale))}
+              className="px-1.5 py-0.5 rounded-full bg-sky-500 text-white hover:bg-sky-400 active:scale-95 transition-all flex items-center justify-center cursor-pointer shadow-sm text-[10px] font-black"
+              title={`Zoom to ${Math.min(scale + 1, maxScale)}x`}
+            >
+              +1
+            </button>
+          )}
           <button
             type="button"
             onClick={resetZoom}
@@ -228,7 +306,8 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
         ref={containerRef}
         className="w-full min-h-full flex-1 flex flex-col will-change-transform"
         style={{
-          touchAction: 'pan-x pan-y pinch-zoom',
+          touchAction: 'pan-y',
+          overflowAnchor: 'none',
         }}
       >
         {children}

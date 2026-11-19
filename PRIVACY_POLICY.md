@@ -74,7 +74,7 @@ Audio files, map styles/tiles, fonts, images, video and other content may be ser
 
 ## 4. Cookies, local storage and similar technologies
 
-The web app uses browser storage for settings. The cookie-consent banner is currently disabled, and the app does not load Google Tag Manager or Google Analytics 4. Vercel Analytics and Speed Insights remain enabled as separate integrations; see the provider privacy information in the [Cookie Policy](COOKIE_POLICY.md).
+The app stores settings and the consent choice in browser storage or Capacitor Preferences. Google Tag Manager and Google Analytics are not used. Vercel Analytics and Speed Insights load only when optional analytics is accepted through the Bosnian-language consent banner. See the [Cookie Policy](COOKIE_POLICY.md).
 
 ## 5. Purposes and legal grounds
 

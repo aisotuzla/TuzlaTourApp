@@ -164,12 +164,12 @@ const QuestIllustratedMap: React.FC<QuestIllustratedMapProps> = ({
                   aria-label={targetName(target)}
                   title={targetName(target)}
                   style={{ left: position.left, top: position.top }}
-                  className={`absolute z-10 flex h-6 w-6 sm:h-7 sm:w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 shadow-md transition-transform hover:scale-125 active:scale-95 ${statusClass(
+                  className={`absolute z-10 flex ${status === 'completed' ? 'h-5 w-5 sm:h-5 sm:w-5' : 'h-6 w-6 sm:h-7 sm:w-7'} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 shadow-md transition-transform hover:scale-125 active:scale-95 ${statusClass(
                     status
                   )} ${isSelected ? 'ring-2 ring-white scale-125' : ''}`}
                 >
                   {status === 'completed' ? (
-                    <Check size={13} strokeWidth={3} />
+                    <Check size={10} strokeWidth={2.5} />
                   ) : status === 'locked' ? (
                     <Lock size={11} />
                   ) : (

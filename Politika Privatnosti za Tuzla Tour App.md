@@ -79,7 +79,7 @@ Naša osnovna filozofija je **lokalna obrada na uređaju korisnika (Client-Side 
 
 ## 4. Da li dijelimo vaše podatke?
 
-**Ne.** Vaši podaci se ne prodaju, ne iznajmljuju niti dijele za oglašavanje. Analitički podaci (Google Analytics, Vercel Analytics) su potpuno anonimni, agregirani i mogu se u svakom trenutku odbiti putem bannera za kolačiće.
+**Ne.** Vaši podaci se ne prodaju niti iznajmljuju. Google Analytics se ne koristi. Vercel Analytics i Speed Insights učitavaju se samo ako dozvolite opcionalnu analitiku putem bannera na bosanskom jeziku. Nemojte pretpostaviti da su podaci koje obrađuju pružaoci usluga potpuno anonimni.
 
 ---
 

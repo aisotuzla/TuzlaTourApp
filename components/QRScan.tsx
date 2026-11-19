@@ -3,7 +3,6 @@ import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
 import {
     QrCode,
-    ArrowLeftRight,
     BookOpen,
     Play,
     Trash2,
@@ -66,8 +65,6 @@ const TODO_LABELS: Record<Language, { title: string; loading: string; empty: str
 };
 
 const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
-    const [bamValue, setBamValue] = useState<string>('');
-    const [conversionMode, setConversionMode] = useState<'BAM_TO_EUR' | 'EUR_TO_BAM'>('BAM_TO_EUR');
     const [isScanning, setIsScanning] = useState(false);
     const [scannerFeedback, setScannerFeedback] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
     const [scannerStatus, setScannerStatus] = useState<'idle' | 'loading' | 'active' | 'error'>('idle');
@@ -99,12 +96,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
         const nextId = questPhases.flatMap(p => p.ids).find(id => !isPoiRewardUnlocked(id, unlockedRewards));
         return nextId ? QUEST_TARGETS.find(t => t.id === nextId) : undefined;
     }, [questPhases, unlockedRewards]);
-
-    const convertedValue = bamValue
-        ? conversionMode === 'BAM_TO_EUR'
-            ? (parseFloat(bamValue) / 1.95583).toFixed(2)
-            : (parseFloat(bamValue) * 1.95583).toFixed(2)
-        : '0.00';
 
     // Load ledger from storage
     useEffect(() => {
@@ -259,7 +250,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
             scannerRef.current = scanner;
 
             const qrConfig = {
-                fps: 15,
+                fps: 10,
                 qrbox: { width: Math.min(window.innerWidth * 0.7, 240), height: Math.min(window.innerWidth * 0.7, 240) },
                 disableFlip: false
             };
@@ -345,7 +336,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* ── Left Column: Scanner + Converter ── */}
+                    {/* ── Left Column: Scanner ── */}
                     <div className="lg:col-span-7 space-y-6">
 
                         {/* QR Scanner Card */}
@@ -484,45 +475,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                     </button>
                                 </div>
                             )}
-                        </div>
-
-                        {/* Currency Converter */}
-                        <div className="p-5 sm:p-6 bg-white border border-emerald-100 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col gap-5">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-                            <div className="flex justify-between items-start gap-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 shadow-inner shrink-0">
-                                        <ArrowLeftRight size={24} className="text-emerald-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Exchange</p>
-                                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t.currencyConverterTitle}</h3>
-                                    </div>
-                                </div>
-                                <button onClick={() => { setConversionMode(m => m === 'BAM_TO_EUR' ? 'EUR_TO_BAM' : 'BAM_TO_EUR'); setBamValue(''); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all active:scale-95 shrink-0">
-                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">{conversionMode === 'BAM_TO_EUR' ? 'BAM → EUR' : 'EUR → BAM'}</span>
-                                    <ArrowLeftRight size={10} className="text-slate-400 ml-1" />
-                                </button>
-                            </div>
-                            <div className="flex-1 bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
-                                <div>
-                                    <label className="text-[10px] font-bold text-emerald-600 uppercase block mb-1">
-                                        {conversionMode === 'BAM_TO_EUR' ? t.enterBamLabel : t.enterEurLabel}
-                                    </label>
-                                    <input type="number" value={bamValue} onChange={(e) => setBamValue(e.target.value)} placeholder="0.00" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 font-black focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all" />
-                                </div>
-                                <div className="pt-3 border-t border-slate-200 flex justify-between items-end">
-                                    <div>
-                                        <p className="text-[10px] font-bold text-emerald-600 uppercase mb-0.5">
-                                            {conversionMode === 'BAM_TO_EUR' ? t.estimatedEurLabel : t.estimatedBamLabel}
-                                        </p>
-                                        <p className="text-[9px] text-slate-400">{t.conversionRateText}</p>
-                                    </div>
-                                    <p className="text-xl font-black text-emerald-700 leading-none">
-                                        {conversionMode === 'BAM_TO_EUR' ? `€ ${convertedValue}` : `KM ${convertedValue}`}
-                                    </p>
-                                </div>
-                            </div>
                         </div>
                     </div>
 

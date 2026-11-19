@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
 import { Analytics } from "@vercel/analytics/react"
+import CookieConsentBanner from './components/CookieConsentBanner';
 import Sidebar from './components/Sidebar';
 import LandingPage from './components/LandingPage';
 import LanguageSelector from './components/LanguageSelector';
@@ -121,6 +122,7 @@ const AppContent: React.FC = () => {
   } = useAudioGuide();
   const navigate = useNavigate();
   const location = useLocation();
+  const [analyticsConsent, setAnalyticsConsent] = useState(false);
   const isLocationTab = location.pathname === '/map' || location.pathname === '/quest';
   useDraggablePopups();
 
@@ -308,6 +310,13 @@ const AppContent: React.FC = () => {
     <ImageProvider>
       <ReloadPrompt />
       <OfflineIndicator lang={lang} />
+      <CookieConsentBanner lang={lang} onConsentChange={setAnalyticsConsent} />
+      {analyticsConsent && (
+        <>
+          <Analytics />
+          <SpeedInsights />
+        </>
+      )}
 
       <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-[80] border-b border-slate-100 flex items-center justify-between px-3 sm:px-6 shadow-sm" style={{ height: 'calc(58px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex items-center z-10 w-16 sm:w-20">
@@ -365,7 +374,7 @@ const AppContent: React.FC = () => {
             className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain flex flex-col"
             style={{
               WebkitOverflowScrolling: 'touch',
-              touchAction: 'pan-x pan-y pinch-zoom',
+              touchAction: 'pan-y',
             }}
           >
             <PinchZoomContainer maxScale={3.0}>
@@ -506,8 +515,6 @@ const App: React.FC = () => {
             <ErrorBoundary>
               <AppContent />
             </ErrorBoundary>
-            <Analytics />
-            <SpeedInsights />
           </BrowserRouter>
         </AudioGuideProvider>
       </GlobalAppProvider>

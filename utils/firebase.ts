@@ -7,8 +7,7 @@ export const firebaseConfig = {
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "tuzlatourguide",
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "tuzlatourguide.firebasestorage.app",
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "243343684809",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:243343684809:web:8835b25710cc8988bb4918",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-FHZ2NMYPG3"
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:243343684809:web:8835b25710cc8988bb4918"
 };
 
 export const VAPID_KEY =
@@ -79,7 +78,7 @@ export const requestPushToken = async (): Promise<string | null> => {
     }
   } catch (err) {
     console.error('An error occurred while retrieving token:', err);
-    return null;
+    throw err;
   }
 };
 

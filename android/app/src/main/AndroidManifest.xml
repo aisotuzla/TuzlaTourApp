@@ -37,7 +37,7 @@
         <!-- Firebase Cloud Messaging Default Channel & Icon -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="tuzla_default_channel" />
+            android:value="tuzla_default_v2" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />

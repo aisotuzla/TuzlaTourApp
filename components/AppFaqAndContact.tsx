@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   HelpCircle,
   ChevronDown,
-  Mail,
-  Send,
   Copy,
   Check,
   Bell,
@@ -17,8 +15,14 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { Language } from '../types';
-import { getStoredPushToken } from '../utils/pushNotifications';
+import {
+  DEFAULT_NOTIFICATION_CHANNEL_ID,
+  getStoredPushToken,
+} from '../utils/pushNotifications';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
+import { requestPushToken } from '../utils/firebase';
 
 interface AppFaqAndContactProps {
   lang: Language;
@@ -34,26 +38,40 @@ interface FaqItem {
 
 export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
   const [openFaq, setOpenFaq] = useState<number | null>(0); // First one open by default
-  const [senderName, setSenderName] = useState('');
-  const [questionText, setQuestionText] = useState('');
-  const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);
   const [fcmToken, setFcmToken] = useState<string | null>(null);
-  const [testNotificationSent, setTestNotificationSent] = useState(false);
+  const [testNotificationScheduled, setTestNotificationScheduled] = useState(false);
+  const [testNotificationError, setTestNotificationError] = useState<string | null>(null);
+  const [pushRegistrationError, setPushRegistrationError] = useState<string | null>(null);
+  const [pushRegistrationPending, setPushRegistrationPending] = useState(false);
+  const [pushRegistrationMessage, setPushRegistrationMessage] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  const contactEmail = 'aiso_tuzla@gmail.com';
 
   useEffect(() => {
     const token = getStoredPushToken();
     if (token) setFcmToken(token);
-  }, []);
 
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText(contactEmail);
-    setCopiedEmail(true);
-    setTimeout(() => setCopiedEmail(false), 2500);
-  };
+    const handleToken = (event: Event) => {
+      const tokenEvent = event as CustomEvent<string>;
+      if (tokenEvent.detail) {
+        setFcmToken(tokenEvent.detail);
+        setPushRegistrationError(null);
+        setPushRegistrationMessage(null);
+      }
+    };
+    const handleRegistrationError = (event: Event) => {
+      const errorEvent = event as CustomEvent<string>;
+      setPushRegistrationError(errorEvent.detail || 'FCM registration failed.');
+      setPushRegistrationPending(false);
+    };
+    window.addEventListener('tuzla-fcm-token', handleToken);
+    window.addEventListener('tuzla-push-registration-error', handleRegistrationError);
+
+    return () => {
+      window.removeEventListener('tuzla-fcm-token', handleToken);
+      window.removeEventListener('tuzla-push-registration-error', handleRegistrationError);
+    };
+  }, []);
 
   const handleCopyToken = () => {
     if (!fcmToken) return;
@@ -63,43 +81,112 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
   };
 
   const handleSendTestLocalNotification = async () => {
+    setTestNotificationError(null);
     try {
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            id: Math.floor(Date.now() % 2_147_483_647),
-            title: lang === 'bs' ? 'Tuzla Tour Guide - Test Notifikacija' : 'Tuzla Tour Guide - Test Notification',
-            body:
-              lang === 'bs'
-                ? 'Obavijesti rade uspješno! Vaš uređaj je spreman za geofencing i Tuzla Quest popuste.'
-                : 'Notifications are working! Your device is ready for geofencing and Tuzla Quest discounts.',
-            schedule: { at: new Date(Date.now() + 500) },
-            sound: 'beep.wav',
-          },
-        ],
-      });
-      setTestNotificationSent(true);
-      setTimeout(() => setTestNotificationSent(false), 4000);
-    } catch (err) {
-      console.error('Failed to trigger test notification:', err);
+      const title = lang === 'bs'
+        ? 'Tuzla Tour Guide - Test obavijest'
+        : 'Tuzla Tour Guide - Test Notification';
+      const body = lang === 'bs'
+        ? 'Ako vidite ovu obavijest, lokalne notifikacije rade.'
+        : 'If you can see this notification, local notifications are working.';
+
+      if (!Capacitor.isNativePlatform()) {
+        if (!('Notification' in window)) {
+          throw new Error('Notifications are not supported in this browser.');
+        }
+        let permission = Notification.permission;
+        if (permission === 'default') {
+          permission = await Notification.requestPermission();
+        }
+        if (permission !== 'granted') {
+          throw new Error('Notification permission was not granted.');
+        }
+
+        const registration = 'serviceWorker' in navigator
+          ? await navigator.serviceWorker.getRegistration('/')
+          : undefined;
+        if (registration) {
+          await registration.showNotification(title, { body });
+        } else {
+          new Notification(title, { body });
+        }
+      } else {
+        let permission = await LocalNotifications.checkPermissions();
+        if (permission.display !== 'granted') {
+          permission = await LocalNotifications.requestPermissions();
+        }
+        if (permission.display !== 'granted') {
+          throw new Error('Notification permission was not granted.');
+        }
+
+        if (Capacitor.getPlatform() === 'android') {
+          await LocalNotifications.createChannel({
+            id: DEFAULT_NOTIFICATION_CHANNEL_ID,
+            name: 'Tuzla Tour Notifications',
+            description: 'General notifications and quest updates for Tuzla Tour Guide',
+            importance: 5,
+            visibility: 1,
+            vibration: true,
+          });
+        }
+
+        await LocalNotifications.schedule({
+          notifications: [
+            {
+              id: Math.floor(Date.now() % 2_147_483_647),
+              title,
+              body,
+              channelId: DEFAULT_NOTIFICATION_CHANNEL_ID,
+              schedule: { at: new Date(Date.now() + 1000) },
+            },
+          ],
+        });
+      }
+
+      setTestNotificationScheduled(true);
+      setTimeout(() => setTestNotificationScheduled(false), 4000);
+    } catch (error) {
+      console.error('Failed to schedule test notification:', error);
+      setTestNotificationError(error instanceof Error ? error.message : String(error));
     }
   };
 
-  const handleSubmitQuestion = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!questionText.trim()) return;
-
-    const subject = encodeURIComponent(
-      `[Tuzla Tour Guide App] Question from ${senderName.trim() || 'Tourist'}`
-    );
-    const body = encodeURIComponent(
-      `Name: ${senderName.trim() || 'Tourist'}\n` +
-      `Language: ${lang}\n\n` +
-      `Question / Inquirer Message:\n${questionText.trim()}\n\n` +
-      `Sent via Tuzla Tour Guide App`
-    );
-
-    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+  const handleRegisterPush = async () => {
+    setPushRegistrationPending(true);
+    setPushRegistrationError(null);
+    setPushRegistrationMessage(null);
+    try {
+      if (Capacitor.isNativePlatform()) {
+        let permission = await PushNotifications.checkPermissions();
+        if (permission.receive !== 'granted') {
+          permission = await PushNotifications.requestPermissions();
+        }
+        if (permission.receive !== 'granted') {
+          throw new Error('Push notification permission was not granted.');
+        }
+        await PushNotifications.register();
+        setPushRegistrationMessage(
+          lang === 'bs'
+            ? 'Registracija zatražena; čeka se FCM token.'
+            : 'Registration requested; waiting for the FCM token.'
+        );
+      } else {
+        const token = await requestPushToken();
+        if (!token) {
+          throw new Error(
+            'Notification' in window && Notification.permission === 'denied'
+              ? 'Notification permission is blocked in browser settings.'
+              : 'No FCM token was returned. Check browser support and Firebase web configuration.'
+          );
+        }
+        setFcmToken(token);
+      }
+    } catch (error) {
+      console.error('Failed to register for push notifications:', error);
+      setPushRegistrationError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setPushRegistrationPending(false);
+    }
   };
 
   const faqData: FaqItem[] = [
@@ -321,12 +408,26 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
                 <div className="text-xs text-slate-500">
                   {fcmToken
                     ? (lang === 'bs' ? 'Uređaj je registrovan za FCM obavijesti.' : 'Device registered for FCM push.')
-                    : (lang === 'bs' ? 'Čeka se dozvola ili registracija uređaja.' : 'Waiting for permission or registration.')}
+                    : (lang === 'bs' ? 'FCM token nije registrovan.' : 'FCM token is not registered.')}
                 </div>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={handleRegisterPush}
+                disabled={pushRegistrationPending}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-100 disabled:cursor-wait disabled:opacity-60"
+              >
+                <Bell className="h-3.5 w-3.5" />
+                <span>
+                  {pushRegistrationPending
+                    ? (lang === 'bs' ? 'Registracija...' : 'Registering...')
+                    : (lang === 'bs' ? 'Registruj push' : 'Register Push')}
+                </span>
+              </button>
+
               {fcmToken && (
                 <button
                   type="button"
@@ -343,132 +444,34 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
                 onClick={handleSendTestLocalNotification}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-black text-white shadow-xs hover:bg-blue-700"
               >
-                {testNotificationSent ? <CheckCircle2 className="h-3.5 w-3.5 text-white" /> : <Bell className="h-3.5 w-3.5" />}
+                {testNotificationScheduled ? <CheckCircle2 className="h-3.5 w-3.5 text-white" /> : <Bell className="h-3.5 w-3.5" />}
                 <span>
-                  {testNotificationSent
-                    ? (lang === 'bs' ? 'Poslano!' : 'Sent!')
-                    : (lang === 'bs' ? 'Pošalji Test Zvuk' : 'Send Test Notification')}
+                  {testNotificationScheduled
+                    ? (lang === 'bs' ? 'Zakazano!' : 'Scheduled!')
+                    : (lang === 'bs' ? 'Testiraj obavijest' : 'Test Notification')}
                 </span>
               </button>
             </div>
           </div>
+          {(pushRegistrationMessage || pushRegistrationError || testNotificationError) && (
+            <div className="mt-3 space-y-1 text-xs">
+              {pushRegistrationMessage && (
+                <p className="text-slate-600">{pushRegistrationMessage}</p>
+              )}
+              {pushRegistrationError && (
+                <p role="alert" className="text-red-700">{pushRegistrationError}</p>
+              )}
+              {testNotificationError && (
+                <p role="alert" className="text-red-700">{testNotificationError}</p>
+              )}
+            </div>
+          )}
         </div>
         <div className="mt-2 flex justify-end">
           <button type="button" onClick={() => navigate('/admin')} className="text-[10px] font-medium text-slate-400/70 hover:text-slate-600 underline underline-offset-2 decoration-slate-300/60">Admin</button>
         </div>
       </section>
 
-      {/* Contact Form Card at very bottom */}
-      <section className="rounded-2xl sm:rounded-4xl border-2 border-amber-400/90 bg-gradient-to-br from-amber-100 via-amber-50 to-yellow-100/90 p-5 sm:p-8 text-slate-800 shadow-[0_16px_40px_rgba(217,119,6,0.2)] relative overflow-hidden">
-        {/* Subtle golden ambient glow */}
-        <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-amber-300/30 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-amber-300/80">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em]">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-r from-[#080ccf] to-[#050775] text-amber-300 shadow-sm">
-                <Mail className="h-4 w-4" />
-              </span>
-              <span className="text-[#080ccf] font-black">
-                {lang === 'bs' ? 'Kontakt & Pitanja' : 'Contact & Support'}
-              </span>
-            </div>
-            <h3 className="mt-1 text-2xl sm:text-3xl font-black text-[#080ccf] tracking-tight">
-              {lang === 'bs' ? 'Pošaljite nam poruku' : 'Ask Us Anything'}
-            </h3>
-            <p className="mt-1 text-xs sm:text-sm text-slate-600 font-medium">
-              {lang === 'bs'
-                ? 'Imate prijedlog za turistički vodič, partnersku lokaciju ili pitanje?'
-                : 'Have feedback, a partnership inquiry, or a question about Tuzla?'}
-            </p>
-          </div>
-
-          {/* Contact email pill with copy button */}
-          <div className="flex items-center gap-2 rounded-2xl bg-white/90 px-3.5 py-2 sm:px-4 sm:py-2.5 shadow-md border border-amber-300/80 shrink-0">
-            <Mail className="h-4 w-4 text-[#080ccf] shrink-0" />
-            <a
-              href={`mailto:${contactEmail}`}
-              className="text-xs sm:text-sm font-black text-[#080ccf] hover:text-blue-700 hover:underline truncate"
-            >
-              {contactEmail}
-            </a>
-            <button
-              type="button"
-              onClick={handleCopyEmail}
-              title="Copy Email"
-              className="ml-1 rounded-lg bg-amber-100 hover:bg-amber-200 p-1.5 text-[#080ccf] transition-colors"
-            >
-              {copiedEmail ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Contact Form */}
-        <form onSubmit={handleSubmitQuestion} className="relative z-10 mt-6 space-y-4">
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-            <div>
-              <label className="block text-xs font-black uppercase tracking-wider text-[#080ccf] mb-1.5">
-                {lang === 'bs' ? 'Vaše Ime' : 'Your Name'}
-              </label>
-              <input
-                type="text"
-                required
-                value={senderName}
-                onChange={(e) => setSenderName(e.target.value)}
-                placeholder={lang === 'bs' ? 'npr. Mirza ili Sarah' : 'e.g. Sarah Jenkins'}
-                className="w-full rounded-xl border-2 border-amber-300/80 bg-white/95 px-4 py-3 text-sm font-semibold text-slate-800 placeholder:text-slate-400 outline-none focus:border-[#080ccf] focus:ring-2 focus:ring-[#080ccf]/20 transition-all shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-black uppercase tracking-wider text-[#080ccf] mb-1.5">
-                {lang === 'bs' ? 'Email za kontakt' : 'Contact Destination'}
-              </label>
-              <input
-                type="text"
-                readOnly
-                value={contactEmail}
-                className="w-full rounded-xl border-2 border-amber-200 bg-amber-50/80 px-4 py-3 text-sm font-bold text-[#080ccf] outline-none cursor-default shadow-sm"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-[#080ccf] mb-1.5">
-              {lang === 'bs' ? 'Vaše Pitanje / Poruka' : 'Your Question / Message'}
-            </label>
-            <textarea
-              required
-              rows={4}
-              value={questionText}
-              onChange={(e) => setQuestionText(e.target.value)}
-              placeholder={
-                lang === 'bs'
-                  ? 'Napišite pitanje u vezi Tuzla Quest nagradne igre, preporuke lokala ili rada aplikacije...'
-                  : 'Write your question regarding Tuzla Quest rewards, POI recommendations, or app features...'
-              }
-              className="w-full resize-none rounded-xl border-2 border-amber-300/80 bg-white/95 p-4 text-sm font-semibold text-slate-800 placeholder:text-slate-400 outline-none focus:border-[#080ccf] focus:ring-2 focus:ring-[#080ccf]/20 transition-all shadow-sm"
-            />
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
-            <span className="text-xs font-semibold text-slate-600">
-              {lang === 'bs'
-                ? 'Klikom na dugme otvara se vaša email aplikacija sa pripremljenim upitom.'
-                : 'Clicking Send opens your default email client with your message pre-filled.'}
-            </span>
-
-            <button
-              type="submit"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#080ccf] to-[#050775] px-7 py-3 text-sm font-black uppercase tracking-wider text-amber-300 border-2 border-amber-400/50 shadow-lg shadow-blue-900/25 transition-all hover:scale-[1.02] hover:border-amber-300 hover:shadow-blue-900/40 active:scale-95 cursor-pointer"
-            >
-              <Send className="h-4 w-4 text-amber-400" />
-              <span>{lang === 'bs' ? 'Pošalji Upit' : 'Send Question'}</span>
-            </button>
-          </div>
-        </form>
-      </section>
     </div>
   );
 };

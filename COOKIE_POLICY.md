@@ -5,7 +5,7 @@
 
 This policy explains the cookies and similar browser technologies used by Tuzla Tour Guide. A native Capacitor app may use platform storage rather than browser cookies for some preferences.
 
-> **Current implementation:** The cookie consent banner is not displayed. The app does not load Google Tag Manager or Google Analytics 4. Vercel Analytics and Speed Insights remain enabled as separate integrations; see the provider privacy information below.
+> **Current implementation:** A compact Bosnian-language consent banner is shown when no valid choice is saved and Bosnian is selected in the app. Google Tag Manager and Google Analytics are not used. Vercel Analytics and Speed Insights load only when optional analytics is accepted.
 
 ## 1. What are cookies and similar technologies?
 
@@ -13,32 +13,33 @@ Cookies are small pieces of data stored by a browser. Similar technologies inclu
 
 Tuzla Tour Guide uses browser storage for its consent record and application settings. External services loaded by the website may also use cookies or similar technologies under their own policies.
 
-## 2. Consent categories
-
-The app does not currently present a consent interface. These categories describe the optional data uses that were previously configurable:
+## 2. Consent choices
 
 | Category | Intended purpose | Choice |
 | --- | --- | --- |
 | Necessary | Store the consent choice and support essential operation | Always enabled |
-| Performance | Google Analytics / usage measurement | Optional |
-| Functional | Remember selected preferences (language, game progress) | Optional |
-| Marketing | Advertising and marketing measurement (via GTM) | Optional |
+| Optional analytics | Vercel Analytics and Speed Insights | Optional |
 
-The app does not load non-essential analytics or marketing tags before the visitor has made a valid choice granting consent.
+Necessary app storage is always enabled. Optional analytics are disabled unless accepted.
 
-## 3. Previously stored consent preferences
+## 3. Consent preference storage
 
-An older version of the app may have stored a JSON record under:
+The app stores a JSON consent record under:
 
 - **Browser key:** `tuzla_cookie_consent`
-- **Consent version:** `v1_202611`
+- **Consent version:** `v2_202611`
 - **Web storage:** browser `localStorage`
 - **Capacitor storage:** Capacitor Preferences in supported mobile builds
 
-The record contains a consent version, category flags and a timestamp. It is a preference record; it is not itself a tracking cookie. The current app does not read or update this record.
+The record contains a consent version, the analytics choice and a timestamp. It is a preference record; it is not itself a tracking cookie.
 
-## 4. Third-party tags and services
+The banner is shown only when the app language is Bosnian. Users can allow optional analytics or choose necessary storage only. Clearing browser/app storage resets this choice.
 
+## 4. Third-party services
+
+### Vercel Analytics and Speed Insights
+
+These services are loaded only after optional analytics is accepted. See the [Vercel Privacy Policy](https://vercel.com/legal/privacy).
 
 ### Hosting, maps, fonts and external content
 
@@ -46,10 +47,9 @@ The app may request content from its hosting/CDN provider, map-style and map-til
 
 - [Vercel Privacy Policy](https://vercel.com/legal/privacy)
 
-
 ## 5. Managing preferences
 
-The current app does not offer a cookie settings interface. You can clear site data in your browser settings; this also clears local app preferences.
+To change your choice, clear site data in your browser settings. This also clears local app preferences. On mobile, reset app data or uninstall the app.
 
 ## 6. Do Not Track and browser controls
 

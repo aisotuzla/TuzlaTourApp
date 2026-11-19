@@ -15,7 +15,7 @@ export interface GeofenceZone {
   body: { en: string; bs: string; de?: string; tr?: string };
 }
 
-const CHANNEL_ID = 'tuzla_geofence_channel';
+const CHANNEL_ID = 'tuzla_geofence_v2';
 const COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes cooldown between re-triggering for the same POI
 
 export const DEFAULT_GEOFENCES: GeofenceZone[] = [
@@ -291,7 +291,6 @@ export function useGeofenceNotifications({
             importance: 4, // HIGH
             visibility: 1, // PUBLIC
             vibration: true,
-            sound: 'default',
           }).catch((err) => {
             console.warn('LocalNotifications createChannel warn:', err);
           });
