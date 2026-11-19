@@ -27,6 +27,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { Preferences } from '@capacitor/preferences';
 
 import { supabase } from '../lib/supabaseClient';
+import { ensurePlayerSession } from '../lib/playerSession';
 import { Language } from '../types';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
 import { useNetwork } from '../hooks/useNetwork';
@@ -393,18 +394,8 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
     setLoading(true);
     setDashboardError('');
     try {
-      let { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-
-      if (!sessionData.session) {
-        const { data: signInData, error: signInError } = await supabase.auth.signInAnonymously();
-        if (signInError) throw signInError;
-        sessionData = { session: signInData.session, user: signInData.user } as typeof sessionData;
-      }
-
-      if (sessionData.session?.user) {
-        setGuestId(sessionData.session.user.id);
-      }
+      const playerSession = await ensurePlayerSession(lang === 'bs' ? 'Gost istraživač' : 'Guest explorer');
+      setGuestId(playerSession.user.id);
 
       const { data: dashboardData, error: dashboardErr } = await (supabase as any).rpc('get_my_tuzla_dashboard');
       if (dashboardErr) {
