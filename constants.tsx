@@ -431,7 +431,6 @@ const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
     learnMore: 'Saznajte više',
     busStation: 'Autobuska Stanica Tuzla',
     batteryWarning: 'Štednja baterije aktivna. Smanjite svjetlinu i koristite AR vodic samo u pokretu za duže trajanje.',
-    dentalTourism: 'Dentalni turizam',
     locationNotAvailable: 'Lokacija nije dostupna.',
     zonesLabel: 'Zone',
     galleryCharmText: 'Nijedna fotografija vam ne može dočarati čar i ljepotu ovog grada, zato dođite i posjetite nas.',
