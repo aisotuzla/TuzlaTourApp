@@ -124,7 +124,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const [showIllustratedMap, setShowIllustratedMap] = useState(false);
   const [isHudHidden, setIsHudHidden] = useState(false);
   const [activeVictoryModal, setActiveVictoryModal] = useState<'phase1' | 'phase2' | 'phase3' | 'finale' | null>(null);
-  const [showCelebration, setShowCelebration] = useState<{ phase: number; rewardUrl?: string } | null>(null);
+  const [showCelebration, setShowCelebration] = useState<{ phase: number } | null>(null);
   const [dismissedModals, setDismissedModals] = useState<string[]>([]);
 
   const isPhase1Done = PHASE_1_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
@@ -785,7 +785,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       {showCelebration && (
         <CelebrationOverlay
           phase={showCelebration.phase}
-          rewardUrl={showCelebration.rewardUrl}
           onClose={() => setShowCelebration(null)}
         />
       )}

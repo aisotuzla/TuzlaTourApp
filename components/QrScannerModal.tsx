@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, AlertCircle, Sparkles } from 'lucide-react';
+import { CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, AlertCircle } from 'lucide-react';
 import { Language } from '../types';
 import { QUEST_TARGETS } from '../constants/questData';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';

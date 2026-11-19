@@ -164,7 +164,7 @@ const HotelCardsSection: React.FC<{ lang: Language }> = ({ lang }) => {
           </div>
         ))}
 
-        {/* Standalone Direct Booking Card */}
+        {/* Standalone Rentals Card */}
         <div className="group relative bg-white rounded-[2.5rem] overflow-hidden border-2 border-dashed border-blue-400/40 shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] hover:border-blue-400 transition-all bg-blue-50/30 flex flex-col items-center justify-center p-6 text-center space-y-4">
           <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-blue-100 group-hover:scale-110 transition-transform duration-500">
             <Building2 className="w-8 h-8 text-blue-600" />
@@ -188,7 +188,7 @@ const HotelCardsSection: React.FC<{ lang: Language }> = ({ lang }) => {
             <div className="p-3 bg-white rounded-3xl shadow-xl border border-blue-100 group-hover/qr:rotate-2 transition-transform">
               <img
                 src="/assets/Gallery/Accommodation/accommodationsQR.webp"
-                alt="Direct Booking QR"
+                alt="Rentals Tuzla"
                 className="w-40 h-40 sm:w-48 sm:h-48"
               />
             </div>

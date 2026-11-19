@@ -99,7 +99,7 @@ A QR code printed at a location can still be photographed and shared. GPS readin
 
 ## 6. Rewards and partner offers
 
-The app may display in-game progress, media, badges or other milestone content as the quest develops. Some reward assets and Web3/Solana-related code are experimental; availability should be judged by what the app actually presents at the time of play.
+The app may display in-game progress, media, badges or other milestone content as the quest develops. Quest rewards are presented in the app.
 
 A discount, voucher or business benefit is valid only if:
 
@@ -107,9 +107,7 @@ A discount, voucher or business benefit is valid only if:
 - the participating business has confirmed the offer and its terms; and
 - the player presents it in the way specified by the business.
 
-Do not assume a fixed discount percentage, a guaranteed redemption, a cash value or an NFT transfer simply because an older screenshot, code comment or draft document mentions it. Offers may have exclusions, expiry dates, limited quantities or partner-specific conditions.
-
-The app does not ask players to share a wallet seed phrase or private key. Never disclose those secrets to anyone.
+Do not assume a fixed discount percentage or guaranteed redemption. Offers may have exclusions, expiry dates, limited quantities or partner-specific conditions.
 
 ## 7. Safety and respectful use
 
@@ -148,7 +146,7 @@ For a missing QR code, incorrect POI information, accessibility issue or technic
 **AISO Tuzla / Tuzla Tour Guide**  
 [aisotuzla@proton.me](mailto:aisotuzla@proton.me)
 
-When reporting a problem, include the POI name, device/browser and a short description. Do not send passwords, authentication tokens, wallet seed phrases or private keys.
+When reporting a problem, include the POI name, device/browser and a short description. Do not send passwords or authentication tokens.
 
 ---
 

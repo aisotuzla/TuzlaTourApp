@@ -204,12 +204,12 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
               : 'What is Tuzla Tour App & how does the Tuzla Quest reward system work?',
       answer:
         lang === 'bs'
-          ? 'Tuzla Tour App je interaktivni turistički vodič sa 3D GPS navigacijom, kamerom sa AR vodičem i nagradnom igrom Tuzla Quest. Šetnjom kroz grad, sa preciznom navigacijom, otkrivate kulturne znamenitosti i uslužne objekte (restorane, kafiće, hotele) kroz Tuzla Quest igru. Dolazkom na zadatu lokaciju, skeniranjem QR koda na licu mjesta otključavate naredne faze, sadržaje i osvajate adekvatne nagrade, popuste i napredujete do Velikog Finala!'
+          ? 'Tuzla Tour App je interaktivni turistički vodič sa 3D GPS navigacijom, kamerom sa AR vodičem i nagradnom igrom Tuzla Quest. Šetnjom kroz grad, uz preciznu navigaciju, otkrivate kulturne znamenitosti i lokalne objekte (restorane, kafiće i hotele) kroz Tuzla Quest. Dolaskom na zadatu lokaciju i skeniranjem QR koda na licu mjesta otključavate naredne faze, sadržaje i popuste te napredujete do finala Tuzla Questa!'
           : lang === 'de'
-            ? 'Die Tuzla Tour App ist ein interaktiver Reiseführer mit 3D-GPS-Navigation, AR-Kamera-Führung und dem Abenteuerspiel Tuzla Quest. Beim Erkunden historischer Orte und Partnerlokale (Restaurants, Hotels, Geschäfte) scannen Sie vor Ort QR-Codes und erhalten sofort 20 % Rabatt auf Ihre Rechnung sowie digitale Belohnungen.'
+            ? 'Die Tuzla Tour App ist ein interaktiver Reiseführer mit 3D-GPS-Navigation, einem AR-Kameraguide und dem Gewinnspiel Tuzla Quest. Bei einem Spaziergang durch die Stadt entdecken Sie dank präziser Navigation kulturelle Sehenswürdigkeiten und lokale Betriebe (Restaurants, Cafés und Hotels) im Rahmen von Tuzla Quest. Wenn Sie einen festgelegten Ort erreichen und den dortigen QR-Code scannen, schalten Sie die nächsten Etappen, Inhalte und Rabatte frei und kommen dem Finale von Tuzla Quest näher!'
             : lang === 'tr'
-              ? 'Tuzla Tour App, 3D GPS navigasyonu, artırılmış gerçeklik (AR) rehberi ve Tuzla Quest oyununu birleştiren kapsamlı bir turizm uygulamasıdır. Tarihi noktaları ve ortak işletmeleri ziyaret edip QR kodu okutarak hesabınızda anında %20 indirim kazanabilir ve dijital ödüllerin kilidini açabilirsiniz.'
-              : 'Tuzla Tour App is an interactive tourism companion featuring 3D GPS navigation, camera AR guides, and the citywide Tuzla Quest game. By exploring historical landmarks and local partner businesses (restaurants, boutiques, hotels) and scanning physical QR codes on site, you unlock immediate 20% order discounts and digital rewards on your journey to the Grand Finale.',
+              ? 'Tuzla Tour App, 3D GPS navigasyonu, AR kamera rehberi ve ödüllü Tuzla Quest oyununu içeren interaktif bir turist rehberidir. Şehirde hassas navigasyonla dolaşırken Tuzla Quest kapsamında kültürel yerleri ve yerel işletmeleri (restoranlar, kafeler ve oteller) keşfedersiniz. Belirlenen bir konuma ulaştığınızda, oradaki QR kodunu tarayarak sonraki aşamaların, içeriklerin ve indirimlerin kilidini açar; Tuzla Quest Finali’ne doğru ilerlersiniz.'
+              : 'Tuzla Tour App is an interactive tourist guide with 3D GPS navigation, an AR camera guide, and the Tuzla Quest rewards game. As you explore the city with precise navigation, you discover cultural landmarks and local businesses (restaurants, cafés, and hotels) through Tuzla Quest. When you reach a designated location, scan its on-site QR code to unlock the next stages, content, and discounts—and progress toward the Tuzla Quest Finale!'
     },
     {
       id: 2,
@@ -217,12 +217,12 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
       icon: <Compass className="h-5 w-5 text-blue-500" />,
       question:
         lang === 'bs'
-          ? 'Kako funkcioniše 3D GPS navigacija i geofencing obavijesti na 25 metara?'
+          ? 'Kako funkcioniše 3D GPS navigacija i geofencing obavijesti?'
           : lang === 'de'
-            ? 'Wie funktionieren die 3D-GPS-Navigation und Geofencing-Benachrichtigungen bei 25 m?'
+            ? 'Wie funktionieren die 3D-GPS-Navigation und Geofencing-Benachrichtigungen?'
             : lang === 'tr'
-              ? '3D GPS navigasyonu ve 25 metre geofencing bildirimleri nasıl çalışır?'
-              : 'How does 3D GPS Navigation & 25-meter Geofencing work?',
+              ? '3D GPS navigasyonu ve geofencing bildirimleri nasıl çalışır?'
+              : 'How does 3D GPS Navigation & Geofencing work?',
       answer:
         lang === 'bs'
           ? 'Aplikacija u realnom vremenu prati vašu GPS lokaciju u odnosu na atrakcije. Čim se približite na 25 metara od zadate tačke (POI) ili partnerskog lokala, sistem šalje pametnu push obavijest koja vas poziva da uključite AR kameru i direktno pratite stazu do ulaza.'
@@ -234,24 +234,24 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
     },
     {
       id: 3,
-      category: 'AR Camera Guide',
-      icon: <MapPin className="h-5 w-5 text-emerald-500" />,
+      category: 'App Permissions',
+      icon: <ShieldCheck className="h-5 w-5 text-emerald-500" />,
       question:
         lang === 'bs'
-          ? 'Šta je AR vodič sa kamerom i zaključavanje cilja na 5 metara?'
+          ? 'Zašto aplikacija traži dozvole za lokaciju, kameru i obavijesti?'
           : lang === 'de'
-            ? 'Was ist die AR-Kamera-Führung und die 5-Meter-Zielfixierung?'
+            ? 'Warum benötigt die App Zugriff auf Standort, Kamera und Benachrichtigungen?'
             : lang === 'tr'
-              ? 'AR Kamera Rehberi ve 5 metre hedef kilitleme nedir?'
-              : 'What is the Camera AR Guide & 5-meter High-Accuracy Target Lock?',
+              ? 'Uygulama neden konum, kamera ve bildirim izinleri istiyor?'
+              : 'Why does the app ask for location, camera, and notification permissions?',
       answer:
         lang === 'bs'
-          ? 'Kada se nađete na 5 metara od lokacije uključuje se Augmented Reality (AR) pogled kamere. Kroz prikaz kamere vidite 3D holografske strelice i markere sa tačnom udaljenošću koji vas navode ravno do lokacije, garantujući da nikad ne zalutate.'
+          ? 'Pristup lokaciji omogućava prikaz vašeg položaja na mapi i korištenje funkcija zasnovanih na lokaciji. Kamera se koristi za skeniranje QR kodova lokacija i AR vodič. Dozvola za obavijesti omogućava aplikaciji da vam prikazuje obavijesti. Ove dozvole možete promijeniti u postavkama telefona.'
           : lang === 'de'
-            ? 'Innerhalb von 5 Metern vor dem Ziel schaltet die App die Augmented-Reality-Kamera ein. Holografische Richtungspfeile und Distanz-Marker blenden sich in das Live-Kamerabild ein und führen Sie präzise zum Eingang oder Tresen des Partners.'
+            ? 'Der Standortzugriff ermöglicht es der App, Ihre Position auf der Karte anzuzeigen und standortbasierte Funktionen zu nutzen. Die Kamera wird zum Scannen von QR-Codes an Orten und für den AR-Guide verwendet. Mit der Benachrichtigungsberechtigung kann die App Ihnen Mitteilungen anzeigen. Sie können diese Berechtigungen in den Einstellungen Ihres Telefons ändern.'
             : lang === 'tr'
-              ? 'Hedefe 5 metre kala Artırılmış Gerçeklik (AR) kamera modu devreye girer. Gerçek dünya kamera görüntüsü üzerinde 3D holografik yön okları ve mesafe göstergeleri belirerek sizi doğrudan işletmenin kapısına ve kasasına ulaştırır.'
-              : 'When within 5 meters of your destination, the Augmented Reality (AR) camera view overlays 3D holographic directional arrows and distance beacons over your live camera feed, pinpointing the partner’s entrance and counter with maximum accuracy.',
+              ? 'Konum izni, uygulamanın haritada konumunuzu göstermesini ve konum tabanlı özellikleri kullanmasını sağlar. Kamera, konum QR kodlarını taramak ve AR rehberini kullanmak için gereklidir. Bildirim izni, uygulamanın size bildirim göstermesini sağlar. Bu izinleri telefonunuzun ayarlarından değiştirebilirsiniz.'
+              : 'Location access lets the app show your position on the map and use location-based features. The camera is used to scan location QR codes and use the AR guide. Notification permission lets the app show you notifications. You can change these permissions in your phone settings.',
     },
     {
       id: 4,

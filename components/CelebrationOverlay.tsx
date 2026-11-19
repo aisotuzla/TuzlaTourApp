@@ -1,16 +1,14 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, X, ExternalLink, Award } from 'lucide-react';
+import { Trophy, X } from 'lucide-react';
 
 interface CelebrationOverlayProps {
   phase: number;
-  rewardUrl?: string;
   onClose: () => void;
 }
 
 export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
   phase,
-  rewardUrl,
   onClose,
 }) => {
   return (
@@ -54,30 +52,6 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
               Uspješno ste otključali sve znamenitosti ove faze.
             </p>
           </div>
-
-          {rewardUrl && (
-            <div className="mb-5 p-3 rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold text-amber-300 flex items-center gap-1">
-                  <Award className="w-3.5 h-3.5" />
-                  Solana Devnet NFT Nagrada
-                </span>
-                <a
-                  href={rewardUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-white"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-              <img
-                src={rewardUrl}
-                alt="NFT Reward"
-                className="w-full h-56 object-contain rounded-xl border border-amber-400/30 shadow-md bg-slate-950/60"
-              />
-            </div>
-          )}
 
           <button
             onClick={onClose}

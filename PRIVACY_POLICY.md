@@ -142,7 +142,7 @@ The app is a general travel and city-guide service and is not specifically desig
 
 The project uses HTTPS for deployed web access and applies access controls to backend resources. Security also depends on the hosting, database, device and account configuration. No internet service or storage method can be guaranteed completely secure.
 
-Never place server secrets in frontend environment variables, and never share account credentials, wallet seed phrases or private keys with the project.
+Never place server secrets in frontend environment variables or share account credentials with the project.
 
 ## 12. Changes to this policy
 

@@ -86,7 +86,6 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.TRANSPORTATION: return '/transportation';
     case AppTab.MAP: return '/map';
     case AppTab.QUEST: return '/quest';
-    case AppTab.DASHBOARD: return '/qr-scan';
     case AppTab.QR_SCAN: return '/qr-scan';
     case AppTab.TASK_MANAGER: return '/task-manager';
     case AppTab.FOOD: return '/food';

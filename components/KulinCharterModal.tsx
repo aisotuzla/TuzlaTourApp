@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, BookOpen, Sparkles, MapPin } from 'lucide-react';
+import { X, BookOpen, MapPin } from 'lucide-react';
 import { Language } from '../types';
 
 interface KulinCharterModalProps {
@@ -39,7 +39,7 @@ export const KulinCharterModal: React.FC<KulinCharterModalProps> = ({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
+                      <MapPin className="w-3 h-3" />
                       {lang === 'bs' ? 'Pronađena tajna lokacija!' : 'Secret location found!'}
                     </span>
                     <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-bold border border-amber-400/40 flex items-center gap-1">

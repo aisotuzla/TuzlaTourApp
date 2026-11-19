@@ -66,14 +66,9 @@ Naša osnovna filozofija je **lokalna obrada na uređaju korisnika (Client-Side 
   - **Bez dijeljenja profila:** Lokalni biznis NE dobija vaš broj telefona, ime, prezime ili podatke o plaćanju. Verifikacija se vrši anonimno.
 - **Pravni osnov:** Izvršenje zatražene usluge i legitimni interes zaštite partnera od zloupotrebe kupona (član 6(1)(b) i 6(1)(f) GDPR).
 
-### D. Web3 Novčanik (Solana)
-
-- **Svrha:** Preuzimanje digitalnih kolekcionarskih NFT sličica ("Zmajevi BiH" / Tuzla Quest trofeji) na Solana Devnet mreži.
-- **Obrada:** Aplikacija pristupa samo vašoj javnoj adresi novčanika. Nikada ne tražimo i nemamo pristup vašim privatnim ključevima ili seed frazama.
-
 ### E. Lokalna pohrana i postavke (Capacitor Preferences)
 
-- Čuva odabrani jezik (bosanski, engleski, njemački, turski), otključane etape potrage, PIN novčanika (lokalno enkriptovan) i postavke štednje baterije. Podaci se brišu deinstalacijom aplikacije.
+- Čuva odabrani jezik (bosanski, engleski, njemački, turski), otključane etape potrage i postavke aplikacije. Podaci se brišu deinstalacijom aplikacije.
 
 ---
 

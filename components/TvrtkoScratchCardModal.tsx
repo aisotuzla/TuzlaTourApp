@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Trophy, MapPin, Eye, Compass, ExternalLink } from 'lucide-react';
+import { X, Trophy, MapPin, Eye, Compass, ExternalLink } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Language } from '../types';
 
@@ -284,7 +284,7 @@ export const TvrtkoScratchCardModal: React.FC<TvrtkoScratchCardModalProps> = ({
             {/* Subtitle / Instructions */}
             <div className="px-5 py-2 bg-slate-900/60 flex items-center justify-between text-[11px] text-amber-200/80 font-bold border-b border-white/5 shrink-0">
               <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <Eye className="w-3.5 h-3.5 text-amber-400" />
                 {isScratched
                   ? lang === 'bs'
                     ? 'Tajna je otkrivena!'

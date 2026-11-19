@@ -16,7 +16,6 @@ import {
     X,
     Camera,
     RefreshCw,
-    Sparkles,
 } from 'lucide-react';
 import { useNetwork } from '../hooks/useNetwork';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -51,6 +50,22 @@ interface LedgerEntry {
     id: string;
     timestamp: string;
 }
+
+const formatScanTimestamp = (timestamp: string, lang: Language): string => {
+    if (!/^\d{4}-\d{2}-\d{2}T/.test(timestamp)) return timestamp;
+
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return timestamp;
+
+    const locale = lang === 'bs' ? 'bs-BA' : lang === 'de' ? 'de-DE' : lang === 'tr' ? 'tr-TR' : 'en-US';
+    return new Intl.DateTimeFormat(locale, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(date);
+};
 
 interface Todo {
     id: string | number;
@@ -160,10 +175,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
             try { navigator.vibrate([100, 50, 100]); } catch (_) {}
         }
 
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString(lang === 'bs' ? 'bs-BA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
-        const dateStr = now.toLocaleDateString(lang === 'bs' ? 'bs-BA' : 'en-US', { month: 'short', day: 'numeric' });
-        const timestamp = `${dateStr}, ${timeStr}`;
+        const timestamp = new Date().toISOString();
 
         const exists = ledger.some(item => item.id === target.id);
         if (exists) {
@@ -320,7 +332,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                     <div className="mb-8 flex items-center gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-2xl animate-pulse">
                         <span className="text-amber-500">📡</span>
                         <p className="text-xs font-bold text-amber-700 uppercase tracking-wide">
-                            {t.blockchainOffline}
+                            {t.offlineMessage}
                         </p>
                     </div>
                 )}
@@ -604,7 +616,9 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight truncate">{targetName}</h4>
-                                                    <span className="text-[9px] text-slate-400 font-bold block mt-0.5">{entry.timestamp}</span>
+                                                    <span className="text-[9px] text-slate-400 font-bold block mt-0.5">
+                                                        {lang === 'bs' ? 'Skenirano' : lang === 'de' ? 'Gescannt' : lang === 'tr' ? 'Tarandı' : 'Scanned'}: {formatScanTimestamp(entry.timestamp, lang)}
+                                                    </span>
                                                 </div>
                                                 <div className="flex items-center gap-1.5 shrink-0">
                                                     {(target.id === 'tvrtko_park' || target.id === 'tvrtko') && (
@@ -613,7 +627,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                                             className="p-2 bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-xl transition-all active:scale-90"
                                                             title={lang === 'bs' ? 'Scratch kartica' : 'Scratch card'}
                                                         >
-                                                            <Sparkles size={14} className="text-amber-600" />
+                                                            <CircleCheck size={14} className="text-amber-600" />
                                                         </button>
                                                     )}
                                                     {(target as any).rewardHtml && (
@@ -668,9 +682,6 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                                 <button onClick={() => window.open('https://gradskiparkingtuzla.vercel.app', '_blank')} className="w-full h-16 bg-yellow-400 border-2 border-blue-600 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-yellow-300" style={{ color: '#1a3a8f', boxShadow: '0 0 18px 4px rgba(37,99,235,0.45), 0 4px 14px rgba(0,0,0,0.12)' }}>
                                     <Car size={20} />
                                     {t.gradskiParkingTuzla}
-                                </button>
-                                <button onClick={() => window.open('https://zmajevi.vercel.app', '_blank')} className="w-full h-16 bg-white text-purple-600 border-2 border-purple-500 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-purple-50">
-                                    NFT Zmajevi
                                 </button>
                                 <button onClick={() => window.open('https://aiso-tuzla.lovable.app/', '_blank')} className="w-full h-16 bg-blue-600 text-yellow-300 font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm tracking-widest uppercase hover:bg-blue-700">
                                     <img src="/assets/icons/aisologo.webp" alt="AISO Logo" className="w-6 h-6 object-contain" />

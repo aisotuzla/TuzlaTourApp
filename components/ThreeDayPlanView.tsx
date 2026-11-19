@@ -156,9 +156,9 @@ export const ThreeDayPlanView: React.FC<ThreeDayPlanViewProps> = ({
           points: [
             'Open the Quest tab and follow the interactive map to key historical sites',
             'Visit Trg Slobode (Freedom Square), the fountain, and the monument to Ismet Mujezinović & Meša Selimović',
-            'Scan digital QR codes on location to unlock partner discounts in your Digital Wallet',
+            'Scan QR codes at locations to unlock quest rewards and partner offers',
           ],
-          tip: 'Tip: Keep scanned discount coupons in your Wallet for bakeries, coffee shops, and desserts.',
+          tip: 'Tip: Check the quest details for the terms of each partner offer.',
         },
         {
           id: 'd1_dinner',
@@ -557,7 +557,7 @@ export const ThreeDayPlanView: React.FC<ThreeDayPlanViewProps> = ({
           points: [
             'Quest-Tab öffnen und zur interaktiven Karte navigieren',
             'Besuchen Sie den Trg Slobode (Freiheitsplatz) und das Denkmal von Ismet & Meša',
-            'Scannen Sie QR-Codes vor Ort und speichern Sie Gutscheine in Ihrer Wallet',
+            'Scannen Sie QR-Codes vor Ort, um Quest-Belohnungen und Partnerangebote freizuschalten',
           ],
         },
         {

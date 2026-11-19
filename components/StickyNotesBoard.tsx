@@ -43,6 +43,78 @@ interface StickyNotesBoardProps {
 
 const STORAGE_KEY = 'tuzla_sticker_notes_v1';
 
+const createStarterNote = (): StickyNoteItem => ({
+  id: 'note-starter-1',
+  title: '',
+  content: '',
+  mode: 'text',
+  checklist: [],
+  color: 'yellow',
+  isPinned: false,
+  updatedAt: new Date().toLocaleDateString(),
+});
+
+const isUntouchedSampleNote = (note: StickyNoteItem): boolean => {
+  const samples = [
+    {
+      id: 'note-starter-1',
+      title: 'Suveniri & Pokloni',
+      content: '1. Tuzlanska so sa Kapije\n2. Domaća baklava kod Sebilja\n3. Razglednica Panonskih jezera',
+      mode: 'todo',
+      checklist: [
+        { id: '1', text: 'Kupiti so sa Kapije', done: true },
+        { id: '2', text: 'Slikati se kod česme', done: false },
+        { id: '3', text: 'Probati tuzlanske ćevape', done: false },
+      ],
+      color: 'yellow',
+      isPinned: true,
+    },
+    {
+      id: 'note-starter-1',
+      title: 'Souvenirs & Gifts',
+      content: '1. Tuzla salt grinder souvenir\n2. Homemade baklava by Sebilj\n3. Pannonian Lakes postcard',
+      mode: 'todo',
+      checklist: [
+        { id: '1', text: 'Buy Tuzla artisan salt', done: true },
+        { id: '2', text: 'Photo at historic fountain', done: false },
+        { id: '3', text: 'Taste authentic Tuzla ćevapi', done: false },
+      ],
+      color: 'yellow',
+      isPinned: true,
+    },
+    {
+      id: 'note-starter-2',
+      title: 'Taxi & Brze info',
+      content: 'Tuzla Taxi centrala: 1517\nAutobuska stanica: Bosne Srebrene 60\nHotel Salis recepcija: 035 300 000',
+      mode: 'text',
+      checklist: [],
+      color: 'cyan',
+      isPinned: false,
+    },
+    {
+      id: 'note-starter-2',
+      title: 'Taxi & Quick Notes',
+      content: 'Tuzla Taxi Dispatch: 1517\nCentral Bus Station: Bosne Srebrene 60\nHotel Salis reception: 035 300 000',
+      mode: 'text',
+      checklist: [],
+      color: 'cyan',
+      isPinned: false,
+    },
+  ];
+
+  return samples.some(
+    (sample) =>
+      note.id === sample.id &&
+      note.title === sample.title &&
+      note.content === sample.content &&
+      note.mode === sample.mode &&
+      note.color === sample.color &&
+      note.isPinned === sample.isPinned &&
+      !note.drawingDataUrl &&
+      JSON.stringify(note.checklist ?? []) === JSON.stringify(sample.checklist)
+  );
+};
+
 const colorStyles: Record<
   NoteColor,
   {
@@ -472,7 +544,8 @@ export const StickyNotesBoard: React.FC<StickyNotesBoardProps> = ({ lang, compac
         if (value) {
           const parsed = JSON.parse(value);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setNotes(parsed);
+            const savedNotes = (parsed as StickyNoteItem[]).filter((note) => !isUntouchedSampleNote(note));
+            setNotes(savedNotes.length > 0 ? savedNotes : [createStarterNote()]);
             setIsLoaded(true);
             return;
           }
@@ -481,45 +554,12 @@ export const StickyNotesBoard: React.FC<StickyNotesBoardProps> = ({ lang, compac
         console.warn('Error reading sticky notes from preferences:', err);
       }
 
-      // Default sample starter notes
-      const initialNotes: StickyNoteItem[] = [
-        {
-          id: 'note-starter-1',
-          title: lang === 'bs' ? 'Suveniri & Pokloni' : 'Souvenirs & Gifts',
-          content:
-            lang === 'bs'
-              ? '1. Tuzlanska so sa Kapije\n2. Domaća baklava kod Sebilja\n3. Razglednica Panonskih jezera'
-              : '1. Tuzla salt grinder souvenir\n2. Homemade baklava by Sebilj\n3. Pannonian Lakes postcard',
-          mode: 'todo',
-          checklist: [
-            { id: '1', text: lang === 'bs' ? 'Kupiti so sa Kapije' : 'Buy Tuzla artisan salt', done: true },
-            { id: '2', text: lang === 'bs' ? 'Slikati se kod česme' : 'Photo at historic fountain', done: false },
-            { id: '3', text: lang === 'bs' ? 'Probati tuzlanske ćevape' : 'Taste authentic Tuzla ćevapi', done: false },
-          ],
-          color: 'yellow',
-          isPinned: true,
-          updatedAt: new Date().toLocaleDateString(),
-        },
-        {
-          id: 'note-starter-2',
-          title: lang === 'bs' ? 'Taxi & Brze info' : 'Taxi & Quick Notes',
-          content:
-            lang === 'bs'
-              ? 'Tuzla Taxi centrala: 1517\nAutobuska stanica: Bosne Srebrene 60\nHotel Salis recepcija: 035 300 000'
-              : 'Tuzla Taxi Dispatch: 1517\nCentral Bus Station: Bosne Srebrene 60\nHotel Salis reception: 035 300 000',
-          mode: 'text',
-          checklist: [],
-          color: 'cyan',
-          isPinned: false,
-          updatedAt: new Date().toLocaleDateString(),
-        },
-      ];
-      setNotes(initialNotes);
+      setNotes([createStarterNote()]);
       setIsLoaded(true);
     };
 
     loadNotes();
-  }, [lang]);
+  }, []);
 
   // Persist notes on state change
   useEffect(() => {

@@ -13,8 +13,7 @@ import {
   Bed,
   X,
   History as HistoryIcon,
-  Bus,
-  TrendingUp
+  Bus
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -137,26 +136,20 @@ const NAV_ITEMS: NavItemConfig[] = [
     activeBorder: 'border-yellow-200'
   },
   {
-    id: AppTab.DASHBOARD,
-    icon: TrendingUp,
-      label: {en: 'My Progress', bs: 'Moj napredak', de: 'Mein Fortschritt', tr: 'İlerlemem' },
-      inactiveClass: 'bg-gradient-to-r from-blue-100 via-blue-50 to-amber-50 text-blue-900 hover:from-blue-200 hover:to-amber-100 font-bold',
-      inactiveIconClass: 'text-amber-600',
-      inactiveBorderClass: 'border-amber-200/70',
-      activeClass: 'bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_8px_24px_rgba(245,158,11,0.45)]',
-      activeBorder: 'border-amber-300'
-  },
-      {
-        id: AppTab.QR_SCAN,
-      label: {en: 'QR Scan', bs: 'QR skeniranje', de: 'QR Scan', tr: 'QR Tarama' },
-      icon: QrCode,
-      inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
-      inactiveIconClass: 'text-blue-900',
-      inactiveBorderClass: 'border-blue-400/80',
-      activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
-      activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
-      activeBorder: 'border-amber-400'
+    id: AppTab.QR_SCAN,
+    label: {
+      en: 'Progress & QR Scan',
+      bs: 'Napredak i QR skeniranje',
+      de: 'Fortschritt & QR-Scan',
+      tr: 'İlerleme ve QR Tarama',
+    },
+    icon: QrCode,
+    inactiveClass: 'bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-300 text-blue-950 hover:from-blue-300 hover:to-indigo-300',
+    inactiveIconClass: 'text-blue-900',
+    inactiveBorderClass: 'border-blue-400/80',
+    activeClass: 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_24px_rgba(249,115,22,0.55)]',
+    activeBorder: 'border-amber-400'
   },
       {
         id: AppTab.TASK_MANAGER,

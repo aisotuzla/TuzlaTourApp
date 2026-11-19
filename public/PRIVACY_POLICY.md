@@ -72,10 +72,6 @@ When the app or its content is requested over the internet, hosting, CDN, map, f
 
 Audio files, map styles/tiles, fonts, images, video and other content may be served from the app host or third-party content providers. A request to an external provider can disclose technical connection information to that provider. The app does not need your microphone to play an audio guide.
 
-### 3.7 Wallets and blockchain
-
-The repository contains experimental Web3/Solana reward assets and dependencies. Do not assume that wallet connection, NFT issuance or on-chain rewards are active in the current public app. If a wallet feature is enabled, a public wallet address and public blockchain transactions may be visible to the relevant wallet provider and blockchain network. Never share a seed phrase or private key with the app or project team.
-
 ## 4. Cookies, local storage and similar technologies
 
 The web app stores settings and the consent choice in browser local storage and, in supported Capacitor builds, in Capacitor Preferences. Google Tag Manager and Google Analytics are not used. Vercel Analytics and Speed Insights load only when optional analytics is accepted through the Bosnian-language consent banner. See the [Cookie Policy](COOKIE_POLICY.md).
@@ -146,7 +142,7 @@ The app is a general travel and city-guide service and is not specifically desig
 
 The project uses HTTPS for deployed web access and applies access controls to backend resources. Security also depends on the hosting, database, device and account configuration. No internet service or storage method can be guaranteed completely secure.
 
-Never place server secrets in frontend environment variables, and never share account credentials, wallet seed phrases or private keys with the project.
+Never place server secrets in frontend environment variables or share account credentials with the project.
 
 ## 12. Changes to this policy
 

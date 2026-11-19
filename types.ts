@@ -62,7 +62,6 @@ export interface TranslationSet {
   viewOnMap: string;
   foundAt: string;
   liveEvents: string;
-  wallet: string;
   loginOAuth: string;
   touristInfo: string;
   emergencyInfo: string;
@@ -77,13 +76,6 @@ export interface TranslationSet {
   noDelivery: string;
   typicalPrice: string;
   arGuide: string;
-  walletManual: string;
-  howToConnect: string;
-  connectSteps: string;
-  safeUsage: string;
-  safeTips: string;
-  txHistory: string;
-  historyLocation: string;
   bamToEur: string;
   enterBam: string;
   calculatedEur: string;
@@ -97,24 +89,10 @@ export interface TranslationSet {
   learnMore: string;
   busStation: string;
   batteryWarning: string;
-  selectNetwork: string;
-  solWallet: string;
-  switchNetwork: string;
-  connectedToSol: string;
-  walletLocked: string;
-  setWalletPin: string;
-  confirmPin: string;
-  enterPin: string;
   dentalTourism: string;
   locationNotAvailable: string;
   zonesLabel: string;
   galleryCharmText: string;
-  // Wallet translations
-  digitalWalletTitle: string;
-  solanaConnection: string;
-  walletAddress: string;
-  statusNotConnected: string;
-  viewOnSolanaExplorer: string;
   explorationTitle: string;
   qrLocationScannerTitle: string;
   startScanner: string;
@@ -136,20 +114,16 @@ export interface TranslationSet {
   unlockedLocation: string;
   unknownQrCode: string;
   couldNotStartCamera: string;
-  privacyDisclaimerText: string;
   privacyKeyPointsTitle: string;
-  zeroCustodyTitle: string;
-  zeroCustodyText: string;
   privacyByDesignTitle: string;
   privacyByDesignText: string;
   noDataStorageTitle: string;
   noDataStorageText: string;
   onDeviceProcessingTitle: string;
   onDeviceProcessingText: string;
-  blockchainOffline: string;
+  offlineMessage: string;
   watchCinematic: string;
   closeVideo: string;
-  solBalance: string;
   trailStepTitle: string;
   trailStepPhase: string;
   trailStepComplete: string;
@@ -171,7 +145,6 @@ export interface TranslationSet {
 
 export enum AppTab {
   LANDING = 'landing',
-  DASHBOARD = 'dashboard',
   CITY_GUIDE = 'cityGuide',
   HISTORY = 'history',
   FOOD = 'food',
