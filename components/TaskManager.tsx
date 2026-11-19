@@ -411,7 +411,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
   );
 
   return (
-    <div className="mx-auto max-w-5xl px-3 sm:px-6 py-4 sm:py-6 pb-28">
+    <div className="w-full mx-auto max-w-5xl px-3 sm:px-6 py-4 sm:py-6 pb-28">
       <section className="overflow-hidden rounded-2xl sm:rounded-3xl border border-blue-100 bg-white shadow-md">
         {/* Header Hero */}
         <div className="bg-[linear-gradient(135deg,_#0f172a_0%,_#1d4ed8_55%,_#38bdf8_100%)] px-4 py-5 sm:px-7 sm:py-7 text-white">

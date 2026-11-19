@@ -13,7 +13,6 @@ import {
   Check
 } from 'lucide-react';
 import { addToItinerary } from '../utils/itineraryUtils';
-import { useImage } from '../hooks/ImageContext';
 
 /* ─── All Venues Sub-component ─── */
 interface AllVenuesSectionProps {
@@ -206,17 +205,9 @@ export interface FoodProps {
 }
 
 const Food: React.FC<FoodProps> = ({ lang, onNavigateToTarget }) => {
-  const { openGallery } = useImage();
-
-  const restaurantImages = [
-    { src: '/assets/Gallery/Food/RESTAURANTS1.webp', alt: 'Restaurants List 1' },
-    { src: '/assets/Gallery/Food/RESTAURANTS2.webp', alt: 'Restaurants List 2' },
-    { src: '/assets/Gallery/Food/RESTAURANTS3.webp', alt: 'Restaurants List 3' },
-    { src: '/assets/Gallery/Food/RESTAURANTS4.webp', alt: 'Restaurants List 4' },
-  ];
 
   return (
-    <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-28 space-y-8 sm:space-y-12">
+    <div className="w-full max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-28 space-y-8 sm:space-y-12">
       <header className="text-center space-y-3 sm:space-y-4">
         <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-white px-3.5 py-1 text-xs font-black uppercase tracking-wider text-blue-700 shadow-xs">
           <UtensilsCrossed className="h-3.5 w-3.5" />
@@ -240,30 +231,55 @@ const Food: React.FC<FoodProps> = ({ lang, onNavigateToTarget }) => {
         <AllVenuesSection lang={lang} onNavigateToTarget={onNavigateToTarget} />
       </section>
 
-      {/* 4 Image Scrollable Row with natural aspect ratio & full sharpness */}
+      {/* Restaurant Directory */}
       <div className="w-full mt-8 pt-6 border-t border-blue-100">
         <div className="mb-3.5">
-          <h3 className="text-sm sm:text-base font-black text-blue-950 uppercase tracking-tight">
-            {lang === 'bs' ? 'Pregled restorana i menija' : 'Restaurant & Menu Directory'}
+          <h3 className="text-sm font-black text-blue-950 uppercase tracking-tight">
+            {lang === 'bs' ? 'Pregled restorana' : 'Restaurant Directory'}
           </h3>
-          <p className="text-[11px] text-slate-500 font-medium">
-            {lang === 'bs' ? 'Dodirnite sliku za prikaz u punoj rezoluciji' : 'Tap image to view in full resolution'}
-          </p>
         </div>
-        <div className="w-full flex overflow-x-auto gap-3 sm:gap-4 snap-x snap-mandatory pb-3">
-          {restaurantImages.map((img, index) => (
+        <div className="flex flex-col gap-1.5 w-full">
+          {[
+            { name: 'Pivnica Taverna', info: 'Maršala Tita 163, Tuzla', website: 'https://www.pivaratuzla.ba/PivnicaTaverna/' },
+            { name: 'Restoran Kvin' },
+            { name: 'City Steak House', info: 'Ismeta Mujezinovića 44, Tuzla' },
+            { name: 'Restoran Favoris' },
+            { name: 'Ječmište kod Tome', info: 'Ulica Husinskih rudara 385, Tuzla', website: 'https://facebook.com/Jecmiste-kod-Tome-106323481386516', websiteLabel: 'Facebook' },
+            { name: 'Pizzeria Mozaik', info: 'Trgovačka 4, Tuzla', website: 'https://www.facebook.com/pizzeriamozaik/about?locale=hr_HR', websiteLabel: 'Facebook' },
+            { name: 'Sapori Bistro & Bar', info: 'Maršala Tita, do br. 34, Tuzla', website: 'https://www.facebook.com/p/Bistro-Bar-Sapori-100086337671528/', websiteLabel: 'Facebook' },
+            { name: 'Sarajka', website: 'https://sarajkakorzo.ba/' },
+            { name: 'Limenka', info: 'Patriotske Lige 24, Tuzla', website: 'https://www.limenka.ba' },
+            { name: 'Restoran Sedra', info: 'Slatina 5, Tuzla', website: 'https://sedra.ba' },
+            { name: 'Pizzeria Barok', info: 'Trg slobode, Tuzla', website: 'https://www.pizza-barok.com/' },
+            { name: 'En Vie', info: 'Mitra Trifunovića Uče bb' },
+            { name: 'Wint Lounge Bar', info: 'ZAVNOBiH-a 13', website: 'https://barista.ba' },
+            { name: 'Dolce Vita', info: 'Đorđa Mihajlovića bb, Tuzla', website: 'https://www.facebook.com/dolcevitamela/?locale=hr_HR', websiteLabel: 'Facebook' },
+            { name: 'Coffee Zone', info: 'Fra Grge Martića 30, Tuzla', website: 'http://coffee-zone.weebly.com/' },
+            { name: 'Fabrika Coffee', info: 'Turalibegova 2, Tuzla' },
+            { name: 'Caffetteria Intermezzo', info: 'Đorđa Mihajlovica 4', website: 'https://www.facebook.com/intermezzo.tuzla/?locale=hr_HR', websiteLabel: 'Facebook' },
+            { name: 'Sloboda', info: 'Solni Trg 10, Tuzla', website: 'https://www.caffesloboda.ba' },
+            { name: 'Mama Mia Origins Steak', info: 'Trg Slobode bb, Tuzla' },
+            { name: 'Restoran Čaršijska Česma', info: 'Trg žrtava genocida u Srebrenici 2' },
+          ].map((r, i) => (
             <div
-              key={index}
-              onClick={() => openGallery(restaurantImages.map(r => r.src), index)}
-              className="relative w-[260px] sm:w-[320px] shrink-0 aspect-[4/5] rounded-2xl overflow-hidden shadow-md border-2 border-slate-200 bg-slate-900 cursor-pointer snap-center group hover:border-blue-400 transition-all"
+              key={i}
+              className="w-full flex flex-col items-center justify-center text-center gap-0.5 bg-yellow-400 text-blue-950 rounded-full px-4 py-2 shadow-xs border border-yellow-500/30 active:scale-95 transition-all"
             >
-              <img
-                src={img.src}
-                alt={img.alt}
-                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-102"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />
+              <span className="font-black text-xs sm:text-sm leading-tight">{r.name}</span>
+              {r.info && (
+                <span className="text-[10px] sm:text-xs font-medium text-blue-900/70 leading-tight">{r.info}</span>
+              )}
+              {r.website && (
+                <a
+                  href={r.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] sm:text-xs font-bold text-blue-800 underline underline-offset-2 leading-tight"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {r.websiteLabel || 'Website'}
+                </a>
+              )}
             </div>
           ))}
         </div>

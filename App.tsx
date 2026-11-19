@@ -314,7 +314,7 @@ const AppContent: React.FC = () => {
         </filter>
       </svg>
 
-      <div className="relative h-[100dvh] min-h-[100dvh] max-h-[100dvh] bg-white flex overflow-hidden" style={{ paddingTop: 'calc(58px + env(safe-area-inset-top, 0px))' }}>
+      <div className="relative h-[100dvh] min-h-[100dvh] max-h-[100dvh] w-full max-w-full bg-white flex overflow-hidden" style={{ paddingTop: 'calc(58px + env(safe-area-inset-top, 0px))' }}>
         <Sidebar
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
@@ -324,7 +324,7 @@ const AppContent: React.FC = () => {
         />
 
         <div
-          className="flex-1 flex flex-col overflow-hidden"
+          className="flex-1 flex flex-col overflow-hidden w-full min-w-0"
           style={{
             height: 'calc(100dvh - 58px - env(safe-area-inset-top, 0px))',
             minHeight: 'calc(100dvh - 58px - env(safe-area-inset-top, 0px))',
@@ -332,7 +332,7 @@ const AppContent: React.FC = () => {
           }}
         >
           <main
-            className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain flex flex-col"
+            className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain flex flex-col w-full min-w-0"
             style={{
               WebkitOverflowScrolling: 'touch',
               touchAction: 'pan-y',
