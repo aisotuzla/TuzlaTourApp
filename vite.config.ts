@@ -45,7 +45,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
 
       VitePWA({
         strategies: 'generateSW',
-        registerType: 'autoUpdate',
+        registerType: 'prompt',
         devOptions: {
           enabled: false,
         },
@@ -115,9 +115,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           // SPA navigation fallback — serves index.html for all navigation requests when offline
           navigateFallback: 'index.html',
           navigateFallbackDenylist: [/^\/api\//, /^\/manifest\.json$/],
-          // Skip waiting so new SW activates immediately
-          skipWaiting: true,
-          clientsClaim: true,
           runtimeCaching: [
             // 1. Google Fonts stylesheets (lightweight, changes rarely)
             {

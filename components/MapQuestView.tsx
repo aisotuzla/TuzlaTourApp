@@ -581,6 +581,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   }, [isNavigating, selectedNavTarget, isLoaded]);
 
   const { position: rawGeoPosition } = useGeolocationWatcher({
+    requestPermission: true,
     onError: (err) => console.error("MapQuest Geolocation Error:", err),
   });
 

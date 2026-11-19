@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapSheetDrawer, SheetSnapState, SheetTarget } from './MapSheetDrawer';
 import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
 import { setupPoiMarkerLayers } from '../utils/mapPoiLayers';
+import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher';
 
 
 interface MapViewProps {
@@ -143,6 +144,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [],
   const [activeStyle, setActiveStyle] = useState<string>(navigator.onLine ? ONLINE_STYLE : OFFLINE_STYLE);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const userLocationRef = useRef<[number, number] | null>(null);
+  const { position: rawGeoPosition } = useGeolocationWatcher({ requestPermission: true });
   const isOnline = useNetwork();
 
   // Bottom Sheet Drawer State
@@ -700,56 +702,21 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [],
   }, []);
 
   useEffect(() => {
-    if (!map.current || !isLoaded) return;
+    if (!map.current || !isLoaded || !rawGeoPosition) return;
 
-    let watchId: number | null = null;
-    const startTracking = () => {
-      if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-      }
-      watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          // Always keep the ref up to date (used by calculateRoute)
-          userLocationRef.current = [longitude, latitude];
-          if (!userMarker.current) {
-            const el = document.createElement('div');
-            el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.6);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
-            userMarker.current = new maplibregl.Marker(el)
-              .setLngLat([longitude, latitude])
-              .addTo(map.current!);
-          } else {
-            userMarker.current.setLngLat([longitude, latitude]);
-          }
-          // Only update state (triggering re-render) — does NOT re-trigger route calculation
-          setUserLocation([longitude, latitude]);
-        },
-        (err) => console.error(err),
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 3000 }
-      );
-    };
-
-    if (document.visibilityState === 'visible') startTracking();
-
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        startTracking();
-      } else if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibility);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibility);
-      if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-      }
-    };
-  }, [isLoaded]);
+    const { lat, lng } = rawGeoPosition;
+    userLocationRef.current = [lng, lat];
+    if (!userMarker.current) {
+      const el = document.createElement('div');
+      el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.6);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
+      userMarker.current = new maplibregl.Marker(el)
+        .setLngLat([lng, lat])
+        .addTo(map.current);
+    } else {
+      userMarker.current.setLngLat([lng, lat]);
+    }
+    setUserLocation([lng, lat]);
+  }, [isLoaded, rawGeoPosition]);
 
   return (
     <div className="h-full w-full relative group">

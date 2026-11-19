@@ -27,7 +27,6 @@ import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
 import { useGeofenceNotifications } from './hooks/useGeofenceNotifications';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import ARGuide from './components/ARGuide';
-import CookieConsentBanner from './components/CookieConsentBanner';
 import { initializePushNotifications } from './utils/pushNotifications';
 import { TvrtkoScratchCardModal } from './components/TvrtkoScratchCardModal';
 import { KulinCharterModal } from './components/KulinCharterModal';
@@ -120,9 +119,15 @@ const AppContent: React.FC = () => {
     toggleMute,
     disableAudioGuide
   } = useAudioGuide();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isLocationTab = location.pathname === '/map' || location.pathname === '/quest';
   useDraggablePopups();
 
-  const { position: userGps } = useGeolocationWatcher({ enabled: true });
+  const { position: userGps } = useGeolocationWatcher({
+    enabled: isLocationTab,
+    requestPermission: isLocationTab,
+  });
   useGeofenceNotifications({ userPosition: userGps, lang, enabled: true });
 
   const hasAutoOpenedCharterRef = useRef(false);
@@ -148,8 +153,6 @@ const AppContent: React.FC = () => {
     }
   }, [userGps, setIsKulinCharterCubeOpen]);
 
-  const navigate = useNavigate();
-  const location = useLocation();
   const activeTab = getTabFromPath(location.pathname);
 
   useEffect(() => {
@@ -365,7 +368,7 @@ const AppContent: React.FC = () => {
               touchAction: 'pan-x pan-y pinch-zoom',
             }}
           >
-            <PinchZoomContainer maxScale={2.0}>
+            <PinchZoomContainer maxScale={3.0}>
               <ErrorBoundary>
                 <Suspense fallback={
                   <div className="h-full flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-50">
@@ -469,8 +472,6 @@ const AppContent: React.FC = () => {
       )}
 
       <FullScreenImageViewer />
-      <CookieConsentBanner lang={lang} />
-
       {/* King Tvrtko Celebration & Scratch Card Modal */}
       <TvrtkoScratchCardModal
         isOpen={isTvrtkoScratchOpen}

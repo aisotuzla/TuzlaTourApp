@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Award, CheckCircle2, CircleAlert, Crown, LoaderCircle, RefreshCw, Target, Zap } from 'lucide-react';
+import { Award, CompassIcon, CheckCircle2, CircleAlert, Crown, LoaderCircle, RefreshCw, Target, Zap, Compass } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { Language } from '../types';
-
+import AdminDashboard from './AdminDashboard';
 type DashboardData = {
   profile?: { display_name?: string | null; leaderboard_opt_in?: boolean };
   xp_total?: number;
@@ -39,6 +39,7 @@ const PlayerDashboard: React.FC<{ lang: Language }> = ({ lang }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [guestId, setGuestId] = useState('');
+  const [adminOpen, setAdminOpen] = useState(false);
 
   const loadDashboard = useCallback(async () => {
     setLoading(true);
@@ -78,7 +79,7 @@ const PlayerDashboard: React.FC<{ lang: Language }> = ({ lang }) => {
         <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-5 text-white shadow-xl sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-[.2em] text-amber-300"><Sparkles size={15} /> Tuzla Tour Guide</p>
+              <p className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-[.2em] text-amber-300"><CompassIcon size={15} /> Tuzla Tour Guide</p>
               <h2 className="text-2xl font-black sm:text-3xl">{t.title}</h2>
               <p className="mt-1 max-w-xl text-sm text-blue-100">{t.subtitle}</p>
               <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-bold"><Crown size={14} className="text-amber-300" /> {data?.profile?.display_name || t.guest}</p>
@@ -218,8 +219,7 @@ const PlayerDashboard: React.FC<{ lang: Language }> = ({ lang }) => {
             </div>
           </>
         )}
-      </>
-        )}
+      </>}
       </div>
     </section>
   );

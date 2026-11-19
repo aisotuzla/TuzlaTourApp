@@ -166,14 +166,25 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         if (scanInProgressRef.current) return;
         scanInProgressRef.current = true;
 
-        const getGpsFix = () => new Promise<{ lat: number; lon: number } | null>((resolve) => {
-          if (!navigator.geolocation) return resolve(null);
-          navigator.geolocation.getCurrentPosition(
-            (position) => resolve({ lat: position.coords.latitude, lon: position.coords.longitude }),
-            () => resolve(null),
-            { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
-          );
-        });
+        const getGpsFix = async (): Promise<{ lat: number; lon: number } | null> => {
+          if (!navigator.geolocation || !navigator.permissions?.query) return null;
+
+          try {
+            const permission = await navigator.permissions.query({ name: 'geolocation' });
+            if (permission.state !== 'granted') return null;
+          } catch (error) {
+            console.warn('[QR Scanner] Unable to check location permission:', error);
+            return null;
+          }
+
+          return new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(
+              (position) => resolve({ lat: position.coords.latitude, lon: position.coords.longitude }),
+              () => resolve(null),
+              { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
+            );
+          });
+        };
 
         const gpsFix = await getGpsFix();
         let completion: { ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number };

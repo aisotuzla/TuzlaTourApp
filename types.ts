@@ -169,6 +169,9 @@ export interface TranslationSet {
   questSuccess: string;
   questNextTarget: string;
   questComplete: string;
+  questCardTag: string;
+  questCardLine: string;
+  questCardCta: string;
   questAllPhasesUnlocked: string;
 }
 

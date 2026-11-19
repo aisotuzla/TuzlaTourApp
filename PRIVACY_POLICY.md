@@ -72,15 +72,9 @@ When the app or its content is requested over the internet, hosting, CDN, map, f
 
 Audio files, map styles/tiles, fonts, images, video and other content may be served from the app host or third-party content providers. A request to an external provider can disclose technical connection information to that provider. The app does not need your microphone to play an audio guide.
 
-### 3.7 Wallets and blockchain
-
-The repository contains experimental Web3/Solana reward assets and dependencies. Do not assume that wallet connection, NFT issuance or on-chain rewards are active in the current public app. If a wallet feature is enabled, a public wallet address and public blockchain transactions may be visible to the relevant wallet provider and blockchain network. Never share a seed phrase or private key with the app or project team.
-
 ## 4. Cookies, local storage and similar technologies
 
-The web app uses browser storage for settings and a cookie-consent record. The consent component stores a record under the key `tuzla_cookie_consent` in browser local storage and, in supported Capacitor builds, in Capacitor Preferences.
-
-The website also contains Google Tag Manager and Google Analytics configuration. The current code has a consent implementation that needs further technical verification: the GTM script is included in the page before the user makes a cookie choice, while the consent component separately loads/configures GA4 when performance consent is saved. Therefore, the current code should not be interpreted as proof that every analytics tag is blocked until consent. See the [Cookie Policy](COOKIE_POLICY.md).
+The web app uses browser storage for settings. The cookie-consent banner is currently disabled, and the app does not load Google Tag Manager or Google Analytics 4. Vercel Analytics and Speed Insights remain enabled as separate integrations; see the provider privacy information in the [Cookie Policy](COOKIE_POLICY.md).
 
 ## 5. Purposes and legal grounds
 
@@ -98,7 +92,7 @@ The project must confirm the final legal basis for each production data flow bef
 Depending on deployment and the features you use, information may be processed by:
 
 - **Hosting and deployment providers:** Vercel and/or Netlify.
-- **Google services:** Google Tag Manager, Google Analytics and Google Fonts where loaded.
+
 - **Map and content providers:** providers supplying map styles, map tiles, fonts, media or other external resources used by the app.
 - **Vercel storage/database services:** for the public events feed and related server-side event records.
 - **Supabase:** the project database has been prepared, but the player app's account and quest-progress integration is not yet active. When enabled, Supabase will process the data described in the updated policy.
