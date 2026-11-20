@@ -17,6 +17,7 @@ const copy = {
 } as const;
 const coords:Record<string,{lat:number;lon:number}> = QUEST_TARGET_COORDS;
 const phases=[PHASE_1_POIS,PHASE_2_POIS,PHASE_3_POIS,GRAND_FINALE_POIS];
+const canonicalQuestId=(id:string)=>id==='palacinkara'?'palancinkara':id;
 const localized=(v:Record<string,string>|null|undefined,lang:Language,fallback:string)=>v?.[lang]||v?.en||v?.bs||fallback;
 const distance=(a:number,b:number,c:number,d:number)=>{const r=6371000,p=Math.PI/180,dl=(c-a)*p,dn=(d-b)*p;const x=Math.sin(dl/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin(dn/2)**2;return 2*r*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));};
 
@@ -41,7 +42,7 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
    setPlayerId(session.user.id);
    const [q,d]=await Promise.all([
     supabase.from('quests').select('id,title,description,phase,xp_reward,radius_meters,is_active').eq('is_active',true).order('phase'),
-    supabase.rpc('get_my_tuzla_dashboard')
+    (supabase as any).rpc('get_my_tuzla_dashboard')
    ]);
    if(q.error) throw q.error;
    if(d.error) throw d.error;
@@ -76,7 +77,7 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
    const quest=quests.find(q=>q.id===target.id);
    const radius=quest?.radius_meters||20;
    if(meters>radius){setStatus({kind:'error',message:t.far});return;}
-   const {data,error}=await supabase.rpc('complete_tuzla_quest',{p_quest_id:target.id,p_qr_payload:normalized,p_lat:position.coords.latitude,p_lon:position.coords.longitude});
+   const {data,error}=await (supabase as any).rpc('complete_tuzla_quest',{p_quest_id:canonicalQuestId(target.id),p_qr_payload:normalized,p_lat:position.coords.latitude,p_lon:position.coords.longitude});
    if(error)throw error;
    const result=data as {ok?:boolean;code?:string;xp_awarded?:number;xp_total?:number}|null;
    if(result?.ok||result?.code==='already_completed'){
@@ -104,7 +105,7 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
   finally{setBusy(false);}
  };
  const total=ordered.length;
- const count=ordered.filter(q=>completed.has(q.id)).length;
+ const count=ordered.filter(q=>completed.has(canonicalQuestId(q.id))).length;
  const xp=dashboard?.xp_total||0;
  return <div className="min-h-full w-full min-w-0 overflow-x-hidden bg-slate-50 pb-28">
   <div className="mx-auto w-full max-w-5xl space-y-4 px-3 py-4 sm:space-y-6 sm:px-6 sm:py-7">
@@ -135,7 +136,7 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
     {loading?<div className="rounded-2xl bg-white p-8 text-center text-sm font-semibold text-slate-500"><LoaderCircle className="mx-auto mb-2 animate-spin" size={22}/>{t.loading}</div>:phases.map((ids,index)=>{
      const items=ordered.filter(q=>q.phase===index+1);
      if(!items.length)return null;
-     return <div key={index} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="flex items-center justify-between bg-gradient-to-r from-blue-50 to-white px-4 py-3"><p className="text-xs font-black uppercase tracking-wide text-blue-900">{t.phases[index]}</p><span className="rounded-full bg-blue-100 px-2.5 py-1 text-[10px] font-black text-blue-800">{items.filter(q=>completed.has(q.id)).length}/{items.length}</span></div><div className="divide-y divide-slate-100">{items.map(({id,quest,target})=>{const isDone=completed.has(id);const point=coords[id];return <div key={id} className={`flex min-w-0 items-center gap-3 p-3 sm:p-4 ${isDone?'bg-slate-50/80':''}`}><div className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl ${isDone?'bg-emerald-100 text-emerald-700':'bg-blue-50 text-blue-700'}`}>{isDone?<CheckCircle2 size={21}/>:<MapPin size={21}/>}</div><div className="min-w-0 flex-1"><p className={`truncate text-sm font-extrabold ${isDone?'text-slate-500':'text-slate-900'}`}>{localized(quest?.title,lang,target?.name[lang]||target?.name.en||id)}</p><p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-slate-500">{localized(quest?.description,lang,target?.description[lang]||target?.description.en||'')}</p><p className="mt-1 text-[10px] font-bold text-amber-700">{quest?.xp_reward||100} XP</p></div><button disabled={!point||isDone} onClick={()=>point&&onNavigateToTarget({name:localized(quest?.title,lang,target?.name.en||id),lat:point.lat,lon:point.lon})} className="flex min-h-10 shrink-0 items-center gap-1 rounded-xl border border-blue-100 bg-white px-2.5 text-[10px] font-black text-blue-700 disabled:opacity-40"><Compass size={14}/>{t.navigate}</button></div>})}</div></div>
+     return <div key={index} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="flex items-center justify-between bg-gradient-to-r from-blue-50 to-white px-4 py-3"><p className="text-xs font-black uppercase tracking-wide text-blue-900">{t.phases[index]}</p><span className="rounded-full bg-blue-100 px-2.5 py-1 text-[10px] font-black text-blue-800">{items.filter(q=>completed.has(q.id)).length}/{items.length}</span></div><div className="divide-y divide-slate-100">{items.map(({id,quest,target})=>{const isDone=completed.has(canonicalQuestId(id));const point=coords[id];return <div key={id} className={`flex min-w-0 items-center gap-3 p-3 sm:p-4 ${isDone?'bg-slate-50/80':''}`}><div className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl ${isDone?'bg-emerald-100 text-emerald-700':'bg-blue-50 text-blue-700'}`}>{isDone?<CheckCircle2 size={21}/>:<MapPin size={21}/>}</div><div className="min-w-0 flex-1"><p className={`truncate text-sm font-extrabold ${isDone?'text-slate-500':'text-slate-900'}`}>{localized(quest?.title,lang,target?.name[lang]||target?.name.en||id)}</p><p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-slate-500">{localized(quest?.description,lang,target?.description[lang]||target?.description.en||'')}</p><p className="mt-1 text-[10px] font-bold text-amber-700">{quest?.xp_reward||100} XP</p></div><button disabled={!point||isDone} onClick={()=>point&&onNavigateToTarget({name:localized(quest?.title,lang,target?.name.en||id),lat:point.lat,lon:point.lon})} className="flex min-h-10 shrink-0 items-center gap-1 rounded-xl border border-blue-100 bg-white px-2.5 text-[10px] font-black text-blue-700 disabled:opacity-40"><Compass size={14}/>{t.navigate}</button></div>})}</div></div>
     })}
    </section>
    <div className="flex items-center justify-center gap-2 pb-4 text-[10px] font-semibold text-slate-400"><ShieldCheck size={14}/>{t.secure}</div>
