@@ -17,9 +17,9 @@ export const findQuestTargetFromQr = (decodedText: string) => {
   // Installed field QR markers encode geographic coordinates. Resolve those
   // payloads to a known quest POI before trying legacy text/URL aliases.
   const coordinateMatch =
-    raw.match(/geo:([-+]?\\d+(?:\\.\\d+)?),\\s*([-+]?\\d+(?:\\.\\d+)?)/i) ||
-    raw.match(/@([-+]?\\d+(?:\\.\\d+)?),\\s*([-+]?\\d+(?:\\.\\d+)?)/) ||
-    raw.match(/[?&](?:q|query|ll|center)=([-+]?\\d+(?:\\.\\d+)?)(?:%2C|,|%2c)([-+]?\\d+(?:\\.\\d+)?)/i);
+    raw.match(/geo:([-+]?\d+(?:\.\d+)?),\\s*([-+]?\d+(?:\.\d+)?)/i) ||
+    raw.match(/@([-+]?\d+(?:\.\d+)?),\\s*([-+]?\d+(?:\.\d+)?)/) ||
+    raw.match(/[?&](?:q|query|ll|center)=([-+]?\d+(?:\.\d+)?)(?:%2C|,|%2c)([-+]?\d+(?:\.\d+)?)/i);
   if (coordinateMatch) {
     const lat = Number(coordinateMatch[1]);
     const lon = Number(coordinateMatch[2]);
