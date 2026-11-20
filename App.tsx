@@ -169,7 +169,9 @@ const AppContent: React.FC = () => {
       if (!playerSession.user) return { ok: false, code: 'auth_required' };
 
       const { data, error } = await (supabase as any).rpc('complete_tuzla_quest', {
-        p_quest_id: questId,
+        // The database quest key uses the legacy spelling "palancinkara";
+        // the app's public POI identifier remains "palacinkara".
+        p_quest_id: questId === 'palacinkara' ? 'palancinkara' : questId,
         p_qr_payload: qrPayload,
         p_lat: position?.lat ?? null,
         p_lon: position?.lon ?? null
