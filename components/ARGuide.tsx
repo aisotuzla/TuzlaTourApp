@@ -16,7 +16,6 @@ import { AppFeatures } from '../utils/platform';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy';
 import { useGeoapifyRoute } from '../hooks/useGeoapifyRoute';
 import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher';
-import { ARPolylineCanvas } from './ARPolylineCanvas';
 import { ARBreadcrumbCanvas } from './ARBreadcrumbCanvas';
 import { RoutePoint } from '../hooks/useBreadcrumbsTrail';
 import { QrScannerModal } from './QrScannerModal';
@@ -385,7 +384,6 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       destination: targetPoi ? { lat: targetPoi.coordinates[0], lng: targetPoi.coordinates[1] } : null,
       enabled: !!targetPoi && !!userLocationState,
       onReachDestination: () => {
-        if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
         setIsQrModalOpen(true);
       },
     });
@@ -467,18 +465,14 @@ export const ARGuide: React.FC<ARGuideProps> = ({
       if (cameraActive) stopCamera();
       return;
     }
-    // In AR mode, live camera feed activates when within 5-10 meters (<= 10m) of POI location
-    const isWithinCameraRange = targetDistance !== null && targetDistance <= 10;
     if (viewMode === 'AR') {
-      if (isWithinCameraRange && !cameraActive) {
+      if (!cameraActive) {
         startCamera();
-      } else if (!isWithinCameraRange && cameraActive) {
-        stopCamera();
       }
     } else if (viewMode === 'HORIZON' && cameraActive) {
       stopCamera();
     }
-  }, [viewMode, permissionGranted, isForeground, cameraActive, targetDistance, startCamera, stopCamera]);
+  }, [viewMode, permissionGranted, isForeground, cameraActive, startCamera, stopCamera]);
 
   const { position: rawGeoPosition, hasPermission: geoPermission } = useGeolocationWatcher({
     enabled: permissionGranted && isForeground,
@@ -830,20 +824,6 @@ export const ARGuide: React.FC<ARGuideProps> = ({
           </div>
         )}
 
-        {permissionGranted && (
-          <ARPolylineCanvas
-            polyline={fullPolyline}
-            userLocation={userLocationState}
-            userLocationRef={userLocationRef}
-            orientation={orientationState}
-            orientationRef={orientationRef}
-            maxHorizonMeters={40}
-            color={currentTargetColor}
-            isActive={viewMode === 'AR' && isForeground}
-            targetFps={isStationary ? 15 : (policy.arFx.targetFps || 30)}
-          />
-        )}
-
         {/* 2D AR GAMIFIED BREADCRUMB TRAIL OVERLAY (FLOWING CHEVRONS TOWARD TARGET POI) */}
         {permissionGranted && isTrailActive && targetPoi && (
           <ARBreadcrumbCanvas
@@ -869,9 +849,7 @@ export const ARGuide: React.FC<ARGuideProps> = ({
             gpsTrackRef={gpsTrackRef}
             isActive={viewMode === 'AR' && isForeground && isTrailActive}
             targetFps={isStationary ? 15 : (policy.arFx.targetFps || 30)}
-            onTargetLocked={() => {
-              if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
-            }}
+            onTargetLocked={() => {}}
           />
         )}
 
