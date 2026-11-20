@@ -16,6 +16,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ReloadPrompt from './components/ReloadPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
 import MapQuestView from "./components/MapQuestView";
+import QuestCompassView from './components/QuestCompassView';
 import { AppTab } from './types';
 import { supabase } from './lib/supabaseClient';
 import { ensurePlayerSession } from './lib/playerSession';
@@ -25,28 +26,9 @@ import { GlobalAppProvider, useGlobalApp } from './contexts/GlobalAppContext';
 import { AudioGuideProvider, useAudioGuide } from './contexts/AudioGuideContext';
 import AudioControlBar from './components/AudioControlBar';
 import { useDraggablePopups } from './hooks/useDraggablePopups';
-import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
-import { useGeofenceNotifications } from './hooks/useGeofenceNotifications';
 import { SpeedInsights } from "@vercel/speed-insights/react"
-import ARGuide from './components/ARGuide';
 import { TvrtkoScratchCardModal } from './components/TvrtkoScratchCardModal';
 import { KulinCharterModal } from './components/KulinCharterModal';
-
-const KULIN_BAN_STONE_COORDS = { lat: 44.538791, lon: 18.678778 };
-
-function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371e3;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-    Math.cos((lat2 * Math.PI) / 180) *
-    Math.sin(dLon / 2) *
-    Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
 
 const MapView = React.lazy(() => import('./components/MapView'));
 const History = React.lazy(() => import('./components/History'));
@@ -71,7 +53,7 @@ const getTabFromPath = (path: string): AppTab => {
     case '/task-manager': return AppTab.TASK_MANAGER;
     case '/food': return AppTab.FOOD;
     case '/accommodation': return AppTab.ACCOMMODATION;
-    case '/ar': return AppTab.AR;
+    case '/ar': return AppTab.QUEST;
     default: return AppTab.LANDING;
   }
 };
@@ -89,7 +71,7 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.TASK_MANAGER: return '/task-manager';
     case AppTab.FOOD: return '/food';
     case AppTab.ACCOMMODATION: return '/accommodation';
-    case AppTab.AR: return '/ar';
+    case AppTab.AR: return '/quest';
     default: return '/';
   }
 };
@@ -121,37 +103,8 @@ const AppContent: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [analyticsConsent, setAnalyticsConsent] = useState(false);
-  const isLocationTab = location.pathname === '/map' || location.pathname === '/quest';
   useDraggablePopups();
 
-  const { position: userGps } = useGeolocationWatcher({
-    enabled: isLocationTab,
-    requestPermission: isLocationTab,
-  });
-  useGeofenceNotifications({ userPosition: userGps, lang, enabled: true });
-
-  const hasAutoOpenedCharterRef = useRef(false);
-
-  // Automatically open 3D Charter of Kulin Ban HTML when user reaches coordinates 44.538791, 18.678778
-  useEffect(() => {
-    if (!userGps) return;
-    const dist = getDistanceMeters(
-      userGps.lat,
-      userGps.lng,
-      KULIN_BAN_STONE_COORDS.lat,
-      KULIN_BAN_STONE_COORDS.lon
-    );
-
-    if (dist <= 20 && !hasAutoOpenedCharterRef.current) {
-      hasAutoOpenedCharterRef.current = true;
-      setIsKulinCharterCubeOpen(true);
-      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-        try {
-          navigator.vibrate([200, 100, 200]);
-        } catch (_) { }
-      }
-    }
-  }, [userGps, setIsKulinCharterCubeOpen]);
 
   const activeTab = getTabFromPath(location.pathname);
   const [navigationTarget, setNavigationTarget] = useState<any | null>(null);
@@ -357,14 +310,15 @@ const AppContent: React.FC = () => {
                     />
                   } />
                   <Route path="/quest" element={
-                    <MapQuestView
+                    <QuestCompassView
                       lang={lang}
-                      features={features}
                       unlockedRewards={unlockedRewards}
-                      onRewardFound={completeQuest}
                       navigationTarget={navigationTarget}
                       onClearNavigation={() => setNavigationTarget(null)}
-                      initialOpenScanner={autoOpenScanner}
+                      onNavigateToMap={(target) => {
+                        setNavigationTarget(target);
+                        navigateToTab(AppTab.MAP);
+                      }}
                     />
                   } />
                   <Route path="/qr-scan" element={
@@ -392,19 +346,7 @@ const AppContent: React.FC = () => {
                     }
                   />
                   <Route path="/accommodation" element={<Accommodation lang={lang} />} />
-                  <Route path="/ar" element={
-                    <ARGuide
-                      lang={lang}
-                      features={features}
-                      unlockedRewards={unlockedRewards}
-                      onRewardFound={completeQuest}
-                      initialTarget={navigationTarget}
-                      onNavigate={(poi) => {
-                        setNavigationTarget(poi);
-                        navigateToTab(AppTab.MAP);
-                      }}
-                    />
-                  } />
+                  <Route path="/ar" element={<Navigate to="/quest" replace />} />
 
                 </Routes>
               </Suspense>
@@ -447,7 +389,7 @@ const AppContent: React.FC = () => {
         }}
       />
 
-      {/* 3D Charter of Kulin Ban Cube Modal (Autoplays on coords 44.538791, 18.678778) */}
+      {/* Kulin Ban charter opens only when explicitly selected by the visitor. */}
       <KulinCharterModal
         isOpen={isKulinCharterCubeOpen}
         onClose={() => setIsKulinCharterCubeOpen(false)}
