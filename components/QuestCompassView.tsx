@@ -35,7 +35,7 @@ function distanceAndBearing(lat1: number, lon1: number, lat2: number, lon2: numb
 
 const QuestCompassView: React.FC<Props> = ({ lang, unlockedRewards, navigationTarget, onClearNavigation }) => {
   const t = copy[lang] || copy.en;
-  const { position, hasPermission } = useGeolocationWatcher({ enabled: true, requestPermission: false });
+  const { position, hasPermission } = useGeolocationWatcher({ enabled: true, requestPermission: true });
   const [selectedId, setSelectedId] = useState<string>(PHASE_1_POIS[0]);
   const [heading, setHeading] = useState<number | null>(null);
   const [headingPermission, setHeadingPermission] = useState<'unknown' | 'granted' | 'denied'>('unknown');
@@ -59,7 +59,7 @@ const QuestCompassView: React.FC<Props> = ({ lang, unlockedRewards, navigationTa
     return () => window.removeEventListener('deviceorientation', onOrientation, true);
   }, []);
 
-  const requestCompass = async () => {
+  const requestLocation = () => {\n    if (!navigator.geolocation) return;\n    navigator.geolocation.getCurrentPosition(\n      () => undefined,\n      (error) => console.warn('[QuestCompass] location permission/position:', error.message),\n      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }\n    );\n  };\n\n  const requestCompass = async () => {
     const orientation = DeviceOrientationEvent as typeof DeviceOrientationEvent & { requestPermission?: () => Promise<'granted' | 'denied'> };
     if (typeof orientation.requestPermission === 'function') {
       try {
@@ -117,10 +117,10 @@ const QuestCompassView: React.FC<Props> = ({ lang, unlockedRewards, navigationTa
             <div className="rounded-2xl bg-slate-50 p-3"><p className="text-[10px] font-bold uppercase text-slate-500">{t.accuracy}</p><p className="mt-1 text-2xl font-black tabular-nums text-slate-900">{position ? `±${Math.round(position.accuracy)} m` : '—'}</p></div>
           </div>
           {near && <p className="mt-3 rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-800"><MapPin className="mr-2 inline" size={16}/>{t.nearby}</p>}
-          {!position && <div className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{t.gpsOff}<button onClick={() => window.location.reload()} className="ml-2 underline">{t.locate}</button></div>}
+          {!position && <div className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{t.gpsOff}<button onClick={requestLocation} className="ml-2 font-bold underline">{t.locate}</button></div>}
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-            <span className="inline-flex items-center gap-1"><Signal size={14}/>{position ? (hasPermission ? t.locating.replace('…', '') : t.gpsOff) : t.gpsOff}</span>
-            <button onClick={() => void requestCompass()} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 font-bold text-blue-700"><Crosshair size={14}/>{t.compass}</button>
+            <span className="inline-flex items-center gap-1"><Signal size={14}/>{position ? t.accuracy : (hasPermission ? t.locating : t.gpsOff)}</span>
+            <div className="flex gap-2"><button onClick={requestLocation} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 font-bold text-blue-700"><LocateFixed size={14}/>{t.locate}</button><button onClick={() => void requestCompass()} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 font-bold text-blue-700"><Crosshair size={14}/>{t.compass}</button></div>
           </div>
           {heading === null && <p className="mt-2 text-xs text-slate-400">{t.compassHelp}</p>}
           {headingPermission === 'denied' && <p className="mt-2 text-xs text-amber-700">{t.compassHelp}</p>}
