@@ -256,22 +256,36 @@ const Food: React.FC<FoodProps> = ({ lang, onNavigateToTarget }) => {
           ].map((r, i) => (
             <div
               key={i}
-              className="w-full flex flex-col items-center justify-center text-center gap-0.5 bg-yellow-400 text-blue-950 rounded-full px-4 py-2 shadow-xs border border-yellow-500/30 active:scale-95 transition-all"
+              className="group relative flex min-h-[58px] w-full items-center gap-2.5 overflow-hidden rounded-xl border border-blue-500/35 bg-gradient-to-r from-blue-700 via-blue-650 to-blue-800 px-3 py-1.5 shadow-[0_3px_10px_rgba(15,48,105,0.16)] transition-all active:scale-[0.985] sm:min-h-[63px] sm:rounded-xl sm:px-3.5"
             >
-              <span className="font-black text-xs sm:text-sm leading-tight">{r.name}</span>
-              {r.info && (
-                <span className="text-[10px] sm:text-xs font-medium text-blue-900/70 leading-tight">{r.info}</span>
-              )}
-              {r.website && (
+              <span className="absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-yellow-200 via-amber-400 to-yellow-600" />
+              <span className="flex h-[29px] w-[29px] shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-amber-300 shadow-inner sm:h-8 sm:w-8">
+                <UtensilsCrossed className="h-[15px] w-[15px] sm:h-4 sm:w-4" />
+              </span>
+              <div className="min-w-0 flex-1 py-0.5 text-left">
+                <span className="block text-[13px] font-extrabold leading-snug tracking-[0.01em] text-white sm:text-sm">
+                  {r.name}
+                </span>
+                {r.info && (
+                  <span className="mt-0.5 block truncate text-[10px] font-medium leading-snug text-blue-100/75 sm:text-xs">
+                    {r.info}
+                  </span>
+                )}
+              </div>
+              {r.website ? (
                 <a
                   href={r.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[10px] sm:text-xs font-bold text-blue-800 underline underline-offset-2 leading-tight"
+                  aria-label={`${r.websiteLabel || 'Website'} – ${r.name}`}
+                  className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-amber-200/50 bg-gradient-to-b from-yellow-300 to-amber-400 px-2.5 text-[9px] font-black uppercase tracking-wide text-blue-950 shadow-sm transition-all hover:from-yellow-200 hover:to-amber-300 active:scale-95 sm:min-h-9 sm:px-3 sm:text-[10px]"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {r.websiteLabel || 'Website'}
+                  <span>{r.websiteLabel || (lang === 'bs' ? 'Web' : lang === 'de' ? 'Web' : lang === 'tr' ? 'Web' : 'Visit')}</span>
+                  <ExternalLink className="h-3 w-3" />
                 </a>
+              ) : (
+                <span className="h-2 w-2 shrink-0 rounded-full bg-amber-300/80 shadow-[0_0_10px_rgba(252,211,77,0.65)]" aria-hidden="true" />
               )}
             </div>
           ))}

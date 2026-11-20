@@ -1021,9 +1021,9 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                         lon: QUEST_TARGET_COORDS[currentTarget.id].lon,
                       })
                     }
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-black text-white hover:bg-blue-700 active:scale-95 transition-all shadow-xs"
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-800 px-4 py-2 text-xs font-black text-white shadow-sm transition-all hover:from-blue-700 hover:to-blue-900 active:scale-95"
                   >
-                    <MapPin size={13} />
+                    <MapPin size={14} />
                     <span>{t.navigateBtn}</span>
                   </button>
                 )}
@@ -1031,7 +1031,64 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
             </div>
           )}
 
-
+          {/* All 12 POI objectives: completed locations are intentionally muted/darkened. */}
+          <div className="mt-4">
+            <div className="mb-2.5 flex items-center justify-between gap-2">
+              <h3 className="text-xs font-black uppercase tracking-wider text-blue-950">
+                {lang === 'bs' ? 'Svih 12 lokacija' : lang === 'de' ? 'Alle 12 Orte' : lang === 'tr' ? '12 Konumun Tamamı' : 'All 12 Locations'}
+              </h3>
+              <span className="rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-[10px] font-black tabular-nums text-blue-700">
+                {QUEST_TARGETS.filter((poi) => isPoiRewardUnlocked(poi.id, unlockedRewards) || (data?.completed_quests || []).some((q) => q.quest_id === poi.id)).length}/12
+                {' '}{lang === 'bs' ? 'otključano' : lang === 'de' ? 'entdeckt' : lang === 'tr' ? 'açıldı' : 'unlocked'}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {QUEST_TARGETS.map((poi, index) => {
+                const completed = isPoiRewardUnlocked(poi.id, unlockedRewards) ||
+                  (data?.completed_quests || []).some((q) => q.quest_id === poi.id);
+                const poiName = poi.name[lang] || poi.name.bs;
+                const coordinates = QUEST_TARGET_COORDS[poi.id];
+                return (
+                  <div
+                    key={poi.id}
+                    className={`flex min-h-[62px] items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors ${
+                      completed
+                        ? 'border-slate-300 bg-slate-200/90 text-slate-500 shadow-inner'
+                        : 'border-blue-200 bg-gradient-to-r from-blue-50 to-white text-blue-950 shadow-xs'
+                    }`}
+                  >
+                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[11px] font-black tabular-nums ${
+                      completed ? 'bg-slate-400 text-white' : 'bg-gradient-to-br from-blue-600 to-blue-800 text-amber-300'
+                    }`}>
+                      {completed ? <CheckCircle2 size={17} /> : String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className={`block truncate text-xs font-extrabold leading-snug ${
+                        completed ? 'text-slate-600' : 'text-blue-950'
+                      }`}>{poiName}</span>
+                      <span className={`mt-0.5 block text-[10px] font-bold uppercase tracking-wide ${
+                        completed ? 'text-slate-500' : 'text-blue-600'
+                      }`}>
+                        {completed
+                          ? (lang === 'bs' ? 'Otključano' : lang === 'de' ? 'Freigeschaltet' : lang === 'tr' ? 'Açıldı' : 'Unlocked')
+                          : (lang === 'bs' ? 'Čeka na otkrivanje' : lang === 'de' ? 'Noch zu entdecken' : lang === 'tr' ? 'Keşfedilmeyi bekliyor' : 'Ready to discover')}
+                      </span>
+                    </span>
+                    {onNavigateToTarget && coordinates && !completed && (
+                      <button
+                        type="button"
+                        aria-label={`${lang === 'bs' ? 'Navigacija do' : 'Navigate to'} ${poiName}`}
+                        onClick={() => onNavigateToTarget({ name: poiName, lat: coordinates.lat, lon: coordinates.lon })}
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-300/70 bg-gradient-to-b from-yellow-300 to-amber-400 text-blue-950 shadow-sm transition-all active:scale-95"
+                      >
+                        <MapPin size={16} />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </section>
 
         {/* ── 4. PLAYER DASHBOARD WITH GAME PROGRESS, POINTS ETC... ── */}
