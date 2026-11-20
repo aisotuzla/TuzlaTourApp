@@ -92,15 +92,14 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
  },[quests,refresh,stop,t]);
  const start=async()=>{
   if(busy||scanning)return;
-  setBusy(true);setCameraError('');setStatus(null);
+  setBusy(true);setCameraError('');setStatus(null);setScanning(true);
   try{
-   await new Promise(r=>requestAnimationFrame(()=>r(null)));
+   await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(null))));
    const el=document.getElementById('quest-qr-reader');
    if(!el)throw new Error('camera_container');
    const instance=new Html5Qrcode('quest-qr-reader',{verbose:false});
    scanner.current=instance;
    await instance.start({facingMode:'environment'},{fps:10,qrbox:(w:number,h:number)=>{const size=Math.floor(Math.min(w,h)*0.72);return {width:size,height:size};},aspectRatio:1},(decoded)=>void complete(decoded),()=>{});
-   setScanning(true);
   }catch(e){console.error('[QuestHub] camera start failed',e);scanner.current=null;setCameraError(t.cameraError);setScanning(false);}
   finally{setBusy(false);}
  };
@@ -128,7 +127,7 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
      {!scanning&&<div className="flex min-h-[170px] flex-col items-center justify-center px-5 py-7 text-center text-white"><div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-400/30 bg-blue-500/15 text-amber-300"><Camera size={28}/></div><p className="text-sm font-bold">{t.camera}</p><p className="mt-1 max-w-xs text-xs text-slate-400">{t.permission}</p></div>}
     </div>
     {cameraError&&<p className="mt-3 flex items-start gap-2 rounded-xl bg-rose-50 p-3 text-xs font-semibold text-rose-700"><CircleAlert size={16} className="shrink-0"/>{cameraError}</p>}
-    <button type="button" disabled={busy} onClick={()=>scanning?void stop():void start()} className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 px-4 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/15 transition active:scale-[.99] disabled:opacity-60">{busy?<LoaderCircle className="animate-spin" size={18}/>:scanning?<X size={18}/>:<Camera size={18}/ >}{scanning?t.stop:t.start}</button>
+    <button type="button" disabled={busy} onClick={()=>scanning?void stop():void start()} className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 px-4 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/15 transition active:scale-[.99] disabled:opacity-60">{busy?<LoaderCircle className="animate-spin" size={18}/>:scanning?<X size={18}/>:<Camera size={18} />}{scanning?t.stop:t.start}</button>
    </section>
    {status&&<div role="status" className={`flex items-start gap-3 rounded-2xl border p-4 ${status.kind==='success'?'border-emerald-200 bg-emerald-50 text-emerald-900':'border-rose-200 bg-rose-50 text-rose-800'}`}>{status.kind==='success'?<CheckCircle2 size={20}/>:<CircleAlert size={20}/>}<div className="min-w-0 flex-1"><p className="text-sm font-black">{status.message}</p>{status.xp? <p className="mt-1 text-xs font-bold text-emerald-700">+{status.xp} XP</p>:null}</div><button onClick={()=>setStatus(null)} aria-label="Close" className="rounded-lg p-1"><X size={16}/></button></div>}
    <section className="space-y-3">
