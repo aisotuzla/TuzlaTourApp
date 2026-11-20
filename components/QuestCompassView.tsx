@@ -35,7 +35,7 @@ function distanceAndBearing(lat1: number, lon1: number, lat2: number, lon2: numb
 
 const QuestCompassView: React.FC<Props> = ({ lang, unlockedRewards, navigationTarget, onClearNavigation }) => {
   const t = copy[lang] || copy.en;
-  const { position, hasPermission } = useGeolocationWatcher({ enabled: true, requestPermission: true });
+  const [locationRequested, setLocationRequested] = useState(false);\n  const { position, hasPermission } = useGeolocationWatcher({ enabled: true, requestPermission: locationRequested });
   const [selectedId, setSelectedId] = useState<string>(PHASE_1_POIS[0]);
   const [heading, setHeading] = useState<number | null>(null);
   const [headingPermission, setHeadingPermission] = useState<'unknown' | 'granted' | 'denied'>('unknown');
