@@ -341,19 +341,19 @@ export function getCurrentQuestPhase(unlockedRewards: string[]): number {
 export const QUEST_GAME_RULES: Record<Language, { title: string; text: string }> = {
   bs: {
     title: 'Pravila igre potrage',
-    text: 'Pronađite označene lokacije na mapi grada. Pratite GPS navigaciju ili AR vodič. Kada stignete na lokaciju, pronađite QR kod i skenirajte ga kako biste otključali sljedeće nivoe igre i osvojili nagrade.',
+    text: 'Pronađite označene lokacije na mapi grada. Pratite mapu i kompas. Kada stignete na lokaciju, pronađite QR kod i skenirajte ga kako biste otključali sljedeće nivoe igre i osvojili nagrade.',
   },
   en: {
     title: 'Quest Game Rules',
-    text: 'Find the marked locations on the city map. Follow the GPS navigation or the AR guide. Once at the location, find the QR code and scan it to unlock the next game levels and win rewards.',
+    text: 'Find the marked locations on the city map. Follow the map and compass. Once at the location, find the QR code and scan it to unlock the next game levels and win rewards.',
   },
   de: {
     title: 'Regeln für das Suchspiel',
-    text: 'Finden Sie die markierten Orte auf der Stadtkarte. Folgen Sie der GPS-Navigation oder dem AR-Guide. Finden Sie vor Ort den QR-Code und scannen Sie ihn, um die nächsten Spiel-Level und Belohnungen freizuschalten.',
+    text: 'Finden Sie die markierten Orte auf der Stadtkarte. Folgen Sie der Karte und dem Kompass. Finden Sie vor Ort den QR-Code und scannen Sie ihn, um die nächsten Spiel-Level und Belohnungen freizuschalten.',
   },
   tr: {
     title: 'Keşif Oyunu Kuralları',
-    text: 'Şehir haritasında işaretlenmiş konumları bulun. GPS navigasyonunu veya AR rehberini takip edin. Konuma ulaştığınızda QR kodunu bulun ve bir sonraki oyun seviyelerinin ve ödüllerin kilidini açmak için kodu tarayın.',
+    text: 'Şehir haritasında işaretlenmiş konumları bulun. Haritayı ve pusulayı takip edin. Konuma ulaştığınızda QR kodunu bulun ve bir sonraki oyun seviyelerinin ve ödüllerin kilidini açmak için kodu tarayın.',
   },
 };
 
