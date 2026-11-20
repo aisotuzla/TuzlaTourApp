@@ -315,6 +315,10 @@ const AppContent: React.FC = () => {
                       unlockedRewards={unlockedRewards}
                       navigationTarget={navigationTarget}
                       onClearNavigation={() => setNavigationTarget(null)}
+                      onNavigateToMap={(target) => {
+                        setNavigationTarget(target);
+                        navigateToTab(AppTab.MAP);
+                      }}
                     />
                   } />
                   <Route path="/qr-scan" element={
