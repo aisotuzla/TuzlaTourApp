@@ -52,6 +52,7 @@ const MapView = React.lazy(() => import('./components/MapView'));
 const History = React.lazy(() => import('./components/History'));
 const CityGuide = React.lazy(() => import('./components/CityGuide'));
 const Transportation = React.lazy(() => import('./components/Transportation'));
+const QRScan = React.lazy(() => import('./components/QRScan'));
 const PlayerDashboard = React.lazy(() => import('./components/PlayerDashboard'));
 const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
@@ -64,9 +65,9 @@ const getTabFromPath = (path: string): AppTab => {
     case '/transportation': return AppTab.TRANSPORTATION;
     case '/map': return AppTab.MAP;
     case '/quest': return AppTab.QUEST;
-    case '/dashboard': return AppTab.QR_SCAN;
-    case '/admin': return AppTab.QR_SCAN;
     case '/qr-scan': return AppTab.QR_SCAN;
+    case '/dashboard': return AppTab.DASHBOARD;
+    case '/admin': return AppTab.DASHBOARD;
     case '/task-manager': return AppTab.TASK_MANAGER;
     case '/food': return AppTab.FOOD;
     case '/accommodation': return AppTab.ACCOMMODATION;
@@ -84,6 +85,7 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.MAP: return '/map';
     case AppTab.QUEST: return '/quest';
     case AppTab.QR_SCAN: return '/qr-scan';
+    case AppTab.DASHBOARD: return '/dashboard';
     case AppTab.TASK_MANAGER: return '/task-manager';
     case AppTab.FOOD: return '/food';
     case AppTab.ACCOMMODATION: return '/accommodation';
@@ -339,72 +341,80 @@ const AppContent: React.FC = () => {
                 </div>
               }>
                 <Routes>
-                    <Route path="/" element={<LandingPage lang={lang} onNavigate={navigateToTab} />} />
-                    <Route path="/city-guide" element={<CityGuide lang={lang} />} />
-                    <Route path="/history" element={<History lang={lang} />} />
-                    <Route path="/transportation" element={<Transportation lang={lang} />} />
-                    <Route path="/map" element={
-                      <MapView
-                        lang={lang}
-                        features={features}
-                        unlockedRewards={unlockedRewards}
-                        navigationTarget={navigationTarget}
-                        onClearNavigation={() => setNavigationTarget(null)}
-                      />
-                    } />
-                    <Route path="/quest" element={
-                      <MapQuestView
-                        lang={lang}
-                        features={features}
-                        unlockedRewards={unlockedRewards}
-                        onRewardFound={completeQuest}
-                        navigationTarget={navigationTarget}
-                        onClearNavigation={() => setNavigationTarget(null)}
-                        initialOpenScanner={autoOpenScanner}
-                      />
-                    } />
-                    <Route path="/dashboard" element={<Navigate to="/qr-scan" replace />} />
-                    <Route path="/qr-scan" element={
-                      <PlayerDashboard
+                  <Route path="/" element={<LandingPage lang={lang} onNavigate={navigateToTab} />} />
+                  <Route path="/city-guide" element={<CityGuide lang={lang} />} />
+                  <Route path="/history" element={<History lang={lang} />} />
+                  <Route path="/transportation" element={<Transportation lang={lang} />} />
+                  <Route path="/map" element={
+                    <MapView
+                      lang={lang}
+                      features={features}
+                      unlockedRewards={unlockedRewards}
+                      navigationTarget={navigationTarget}
+                      onClearNavigation={() => setNavigationTarget(null)}
+                    />
+                  } />
+                  <Route path="/quest" element={
+                    <MapQuestView
+                      lang={lang}
+                      features={features}
+                      unlockedRewards={unlockedRewards}
+                      onRewardFound={completeQuest}
+                      navigationTarget={navigationTarget}
+                      onClearNavigation={() => setNavigationTarget(null)}
+                      initialOpenScanner={autoOpenScanner}
+                    />
+                  } />
+                  <Route path="/qr-scan" element={
+                    <QRScan
+                      lang={lang}
+                      onNavigateToTarget={(target) => {
+                        setNavigationTarget(target);
+                        navigateToTab(AppTab.QUEST);
+                      }}
+                    />
+                  } />
+                  <Route path="/dashboard" element={
+                    <PlayerDashboard
+                      lang={lang}
+                      onNavigateToTarget={(target) => {
+                        setNavigationTarget(target);
+                        navigateToTab(AppTab.QUEST);
+                      }}
+                    />
+                  } />
+                  <Route path="/admin" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/task-manager" element={<TaskManager lang={lang} />} />
+                  <Route
+                    path="/food"
+                    element={
+                      <Food
                         lang={lang}
                         onNavigateToTarget={(target) => {
                           setNavigationTarget(target);
-                          navigateToTab(AppTab.QUEST);
-                        }}
-                      />
-                    } />
-                    <Route path="/admin" element={<Navigate to="/qr-scan" replace />} />
-                    <Route path="/task-manager" element={<TaskManager lang={lang} />} />
-                    <Route
-                      path="/food"
-                      element={
-                        <Food
-                          lang={lang}
-                          onNavigateToTarget={(target) => {
-                            setNavigationTarget(target);
-                            navigateToTab(AppTab.MAP);
-                          }}
-                        />
-                      }
-                    />
-                    <Route path="/accommodation" element={<Accommodation lang={lang} />} />
-                    <Route path="/ar" element={
-                      <ARGuide
-                        lang={lang}
-                        features={features}
-                        unlockedRewards={unlockedRewards}
-                        onRewardFound={completeQuest}
-                        initialTarget={navigationTarget}
-                        onNavigate={(poi) => {
-                          setNavigationTarget(poi);
                           navigateToTab(AppTab.MAP);
                         }}
                       />
-                    } />
+                    }
+                  />
+                  <Route path="/accommodation" element={<Accommodation lang={lang} />} />
+                  <Route path="/ar" element={
+                    <ARGuide
+                      lang={lang}
+                      features={features}
+                      unlockedRewards={unlockedRewards}
+                      onRewardFound={completeQuest}
+                      initialTarget={navigationTarget}
+                      onNavigate={(poi) => {
+                        setNavigationTarget(poi);
+                        navigateToTab(AppTab.MAP);
+                      }}
+                    />
+                  } />
 
-                  </Routes>
-                </Suspense>
-              </ErrorBoundary>
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
           </main>
         </div>
       </div>

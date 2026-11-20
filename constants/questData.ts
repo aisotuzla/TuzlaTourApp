@@ -270,9 +270,9 @@ export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
 export const POI_COLORS: Record<string, string> = {
   // Phase 1 — Old Town / Čaršija — light silver/grey
   'kapija': '#3e4550ff',
-  'trg_slobode': '#7293c0ff',
-  'stara_cesma': '#94a3b8',
-  'mesa_selimovic': '#b4ac3fff',
+  'trg_slobode': '#deecffff',
+  'stara_cesma': '#6591cfff',
+  'mesa_selimovic': '#f1ec9fff',
   // Phase 2 — Bosnian Kingdom — green
   'tvrtko_park': '#109c44ff',
   'palacinkara': '#a3169cff',
@@ -280,12 +280,10 @@ export const POI_COLORS: Record<string, string> = {
   // Phase 3 — Pannonian Sailor — light blue → blue
   'panonika': '#38bdf8',
   'slapovi': '#0e60e6ff',
-  'slana_banja': '#39f070ff',
+  'slana_banja': '#5fec4dff',
   'atelje_ismet': '#7961ffff',
   // Grand Final — Salt City Winner — red
   'bingo_city_centar': '#ef4444',
-  // legacy / unused
-  'galerija': '#afcbf8ff',
 };
 
 export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
@@ -312,19 +310,18 @@ export const PHASE_META = {
   1: { badge: { en: 'Old Town', bs: 'Čaršija' }, color: '#94a3b8', colorClass: 'bg-slate-400' },
   2: { badge: { en: 'Bosnian Kingdom', bs: 'Bosansko kraljevstvo' }, color: '#16a34a', colorClass: 'bg-green-600' },
   3: { badge: { en: 'Pannonian Sailor', bs: 'Panonski mornar' }, color: '#38bdf8', colorClass: 'bg-sky-400' },
-  4: { badge: { en: 'Salt City Winner', bs: 'Pobjednik Slanog Grada' }, color: '#ef4444', colorClass: 'bg-red-500' },
+  4: { badge: { en: 'Salt City Winner', bs: 'Salt City Winner' }, color: '#ef4444', colorClass: 'bg-red-500' },
 } as const;
 
 export function isPoiRewardUnlocked(poiId: string, unlockedRewards: string[]): boolean {
   if (unlockedRewards.includes(poiId)) return true;
-  if (poiId === 'palacinkara' && unlockedRewards.includes('palacinkara')) return true;
 
   return false;
 }
 
 export function getPoiPhase(poiId: string): number {
   if (PHASE_1_POIS.includes(poiId)) return 1;
-  if (PHASE_2_POIS.includes(poiId) || poiId === 'palacinkara') return 2;
+  if (PHASE_2_POIS.includes(poiId)) return 2;
   if (PHASE_3_POIS.includes(poiId)) return 3;
   if (GRAND_FINALE_POIS.includes(poiId)) return 4;
   return 1;
