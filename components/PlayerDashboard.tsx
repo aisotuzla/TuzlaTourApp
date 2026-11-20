@@ -36,6 +36,7 @@ import {
   PHASE_1_POIS,
   PHASE_2_POIS,
   PHASE_3_POIS,
+  GRAND_FINALE_POIS,
   isPoiRewardUnlocked,
   QuestTarget,
 } from '../constants/questData';
@@ -1148,39 +1149,47 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             {[
               {
-                id: 'first_step',
-                title: lang === 'bs' ? 'Prvi korak' : 'First Step',
-                desc: lang === 'bs' ? 'Skenirana 1 lokacija' : '1 scan completed',
-                icon: '🚶‍♂️',
-                unlocked: (data?.quests_completed || ledger.length) >= 1,
+                id: 'phase_1',
+                title: lang === 'bs' ? 'Čaršija' : 'Old Town',
+                desc: lang === 'bs' ? 'Kapija, Trg slobode, Česma, Meša' : 'Kapija, Freedom Sq, Fountain, Meša',
+                icon: '🏛️',
+                accentColor: 'border-slate-300 bg-slate-100/70',
+                badgeBg: 'bg-slate-500 text-white',
+                unlocked: PHASE_1_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards)),
               },
               {
-                id: 'salt_explorer',
-                title: lang === 'bs' ? 'Slano srce' : 'Salt Heart',
-                desc: lang === 'bs' ? 'Skenirana Panonika i trg' : 'Panonika explored',
-                icon: '🌊',
-                unlocked: (data?.quests_completed || ledger.length) >= 3,
+                id: 'phase_2',
+                title: lang === 'bs' ? 'Bosansko kraljevstvo' : 'Bosnian Kingdom',
+                desc: lang === 'bs' ? 'Tvrtko park, Palačinkara, Solni trg' : 'Tvrtko Park, Crêperie, Salt Sq',
+                icon: '👑',
+                accentColor: 'border-green-300 bg-green-50/70',
+                badgeBg: 'bg-green-600 text-white',
+                unlocked: PHASE_2_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards)),
               },
               {
-                id: 'king_tvrtko',
-                title: lang === 'bs' ? 'Kraljevski trag' : 'Royal Footprint',
-                desc: lang === 'bs' ? 'Povelja i Tvrtko park' : 'King Tvrtko visited',
-                icon: '📜',
-                unlocked: (data?.quests_completed || ledger.length) >= 6,
+                id: 'phase_3',
+                title: lang === 'bs' ? 'Panonski mornar' : 'Pannonian Sailor',
+                desc: lang === 'bs' ? 'Panonika, Slapovi, Slana Banja, Atelje' : 'Panonika, Waterfalls, Banja, Atelier',
+                icon: '⛵',
+                accentColor: 'border-sky-300 bg-sky-50/70',
+                badgeBg: 'bg-sky-500 text-white',
+                unlocked: PHASE_3_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards)),
               },
               {
-                id: 'master_explorer',
-                title: lang === 'bs' ? 'Gospodar Tuzle' : 'Master Explorer',
-                desc: lang === 'bs' ? 'Sve lokacije završene' : 'All 12 quest spots',
-                icon: '🏅',
-                unlocked: (data?.quests_completed || ledger.length) >= 12,
+                id: 'grand_finale',
+                title: lang === 'bs' ? 'Pobjednik Slanog Grada' : 'Salt City Winner',
+                desc: lang === 'bs' ? 'Bingo City Center finale' : 'Bingo City Center finale',
+                icon: '🏆',
+                accentColor: 'border-red-300 bg-red-50/70',
+                badgeBg: 'bg-red-600 text-white',
+                unlocked: GRAND_FINALE_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards)),
               },
             ].map((badge) => (
               <div
                 key={badge.id}
                 className={`rounded-xl p-3 text-center border transition-all ${
                   badge.unlocked
-                    ? 'border-blue-200 bg-blue-50/50 shadow-2xs'
+                    ? `${badge.accentColor} shadow-2xs`
                     : 'border-slate-100 bg-slate-50/50 opacity-60'
                 }`}
               >
@@ -1194,7 +1203,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                 <span
                   className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[9px] font-black uppercase ${
                     badge.unlocked
-                      ? 'bg-blue-600 text-white'
+                      ? badge.badgeBg
                       : 'bg-slate-200 text-slate-500'
                   }`}
                 >

@@ -242,7 +242,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
     },
     category: 'nature',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpanonika.png',
-    Image: '/assets/Gallery/QuestQRLocations/panonsko jezero.png',
+    Image: '/assets/Gallery/QuestQRLocations/panonsko_jezero.webp',
     audio: '/audio/pois/en/02_pannonica.mp3',
     audioByLang: {
       bs: '/audio/pois/bs/02_pannonica.mp3',
@@ -268,20 +268,25 @@ export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
 ];
 
 export const POI_COLORS: Record<string, string> = {
-  'mesa_selimovic': '#4d068fff',
-  'trg_slobode': '#10b981',
-  'stara_cesma': '#0ea5e9',
-  'galerija': '#afcbf8ff',
-  'panonika': '#040e8fff',
-  'slapovi': '#0ea5e9',
-  'kapija': '#ef4444',
-  'tvrtko_park': '#18a506ff',
-  'slana_banja': '#cf0404ff',
-  'atelje_ismet': '#8b5cf6',
-  'bingo_city_centar': '#145a03ff',
-  'salt_square': '#f59e0b',
-  'palancinkara': '#ec4899',
-  'palancikara': '#ec4899',
+  // Phase 1 — Old Town / Čaršija — light silver/grey
+  'kapija':         '#94a3b8',
+  'trg_slobode':    '#94a3b8',
+  'stara_cesma':    '#94a3b8',
+  'mesa_selimovic': '#94a3b8',
+  // Phase 2 — Bosnian Kingdom — green
+  'tvrtko_park':    '#16a34a',
+  'palancinkara':   '#16a34a',
+  'palancikara':    '#16a34a',
+  'salt_square':    '#16a34a',
+  // Phase 3 — Pannonian Sailor — light blue → blue
+  'panonika':       '#38bdf8',
+  'slapovi':        '#3b82f6',
+  'slana_banja':    '#60a5fa',
+  'atelje_ismet':   '#38bdf8',
+  // Grand Final — Salt City Winner — red
+  'bingo_city_centar': '#ef4444',
+  // legacy / unused
+  'galerija':       '#afcbf8ff',
 };
 
 export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
@@ -304,6 +309,13 @@ export const PHASE_1_POIS = ['trg_slobode', 'stara_cesma', 'kapija', 'mesa_selim
 export const PHASE_2_POIS = ['tvrtko_park', 'palancinkara', 'salt_square'];
 export const PHASE_3_POIS = ['panonika', 'slapovi', 'slana_banja', 'atelje_ismet'];
 export const GRAND_FINALE_POIS = ['bingo_city_centar'];
+
+export const PHASE_META = {
+  1: { badge: { en: 'Old Town', bs: 'Čaršija' }, color: '#94a3b8', colorClass: 'bg-slate-400' },
+  2: { badge: { en: 'Bosnian Kingdom', bs: 'Bosansko kraljevstvo' }, color: '#16a34a', colorClass: 'bg-green-600' },
+  3: { badge: { en: 'Pannonian Sailor', bs: 'Panonski mornar' }, color: '#38bdf8', colorClass: 'bg-sky-400' },
+  4: { badge: { en: 'Salt City Winner', bs: 'Pobjednik Slanog Grada' }, color: '#ef4444', colorClass: 'bg-red-500' },
+} as const;
 
 export function isPoiRewardUnlocked(poiId: string, unlockedRewards: string[]): boolean {
   if (unlockedRewards.includes(poiId)) return true;

@@ -441,6 +441,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
       const popup = new maplibregl.Popup({
         offset: 24,
+        anchor: 'bottom',
         maxWidth: '300px',
         closeButton: true,
         closeOnClick: true,

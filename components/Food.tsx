@@ -241,24 +241,17 @@ const Food: React.FC<FoodProps> = ({ lang, onNavigateToTarget }) => {
         <div className="flex flex-col gap-1.5 w-full">
           {[
             { name: 'Pivnica Taverna', info: 'Maršala Tita 163, Tuzla', website: 'https://www.pivaratuzla.ba/PivnicaTaverna/' },
-            { name: 'Restoran Kvin' },
             { name: 'City Steak House', info: 'Ismeta Mujezinovića 44, Tuzla' },
-            { name: 'Restoran Favoris' },
             { name: 'Ječmište kod Tome', info: 'Ulica Husinskih rudara 385, Tuzla', website: 'https://facebook.com/Jecmiste-kod-Tome-106323481386516', websiteLabel: 'Facebook' },
-            { name: 'Pizzeria Mozaik', info: 'Trgovačka 4, Tuzla', website: 'https://www.facebook.com/pizzeriamozaik/about?locale=hr_HR', websiteLabel: 'Facebook' },
             { name: 'Sapori Bistro & Bar', info: 'Maršala Tita, do br. 34, Tuzla', website: 'https://www.facebook.com/p/Bistro-Bar-Sapori-100086337671528/', websiteLabel: 'Facebook' },
             { name: 'Sarajka', website: 'https://sarajkakorzo.ba/' },
-            { name: 'Limenka', info: 'Patriotske Lige 24, Tuzla', website: 'https://www.limenka.ba' },
-            { name: 'Restoran Sedra', info: 'Slatina 5, Tuzla', website: 'https://sedra.ba' },
             { name: 'Pizzeria Barok', info: 'Trg slobode, Tuzla', website: 'https://www.pizza-barok.com/' },
-            { name: 'En Vie', info: 'Mitra Trifunovića Uče bb' },
             { name: 'Wint Lounge Bar', info: 'ZAVNOBiH-a 13', website: 'https://barista.ba' },
             { name: 'Dolce Vita', info: 'Đorđa Mihajlovića bb, Tuzla', website: 'https://www.facebook.com/dolcevitamela/?locale=hr_HR', websiteLabel: 'Facebook' },
             { name: 'Coffee Zone', info: 'Fra Grge Martića 30, Tuzla', website: 'http://coffee-zone.weebly.com/' },
             { name: 'Fabrika Coffee', info: 'Turalibegova 2, Tuzla' },
             { name: 'Caffetteria Intermezzo', info: 'Đorđa Mihajlovica 4', website: 'https://www.facebook.com/intermezzo.tuzla/?locale=hr_HR', websiteLabel: 'Facebook' },
-            { name: 'Sloboda', info: 'Solni Trg 10, Tuzla', website: 'https://www.caffesloboda.ba' },
-            { name: 'Mama Mia Origins Steak', info: 'Trg Slobode bb, Tuzla' },
+            { name: 'Caffe Sloboda', info: 'Solni Trg 10, Tuzla', website: 'https://www.caffesloboda.ba' },
             { name: 'Restoran Čaršijska Česma', info: 'Trg žrtava genocida u Srebrenici 2' },
           ].map((r, i) => (
             <div
