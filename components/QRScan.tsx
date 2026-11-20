@@ -67,16 +67,12 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
    const {findQuestTargetFromQr}=await import('../utils/qrMatcher');
    const target=findQuestTargetFromQr(normalized);
    if(!target){setStatus({kind:'error',message:t.unknown});return;}
+   // The database verifies the QR payload and POI binding. Client GPS is only
+   // supplied for the server-side geofence; it does not authorize a reward.
    const position=await new Promise<GeolocationPosition>((resolve,reject)=>{
     if(!navigator.geolocation){reject(new Error('gps'));return;}
     navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:15000,maximumAge:0});
    }).catch(()=>{throw new Error('gps');});
-   const point=coords[target.id];
-   if(!point)throw new Error('unknown');
-   const meters=distance(position.coords.latitude,position.coords.longitude,point.lat,point.lon);
-   const quest=quests.find(q=>q.id===target.id);
-   const radius=quest?.radius_meters||20;
-   if(meters>radius){setStatus({kind:'error',message:t.far});return;}
    const {data,error}=await (supabase as any).rpc('complete_tuzla_quest',{p_quest_id:canonicalQuestId(target.id),p_qr_payload:normalized,p_lat:position.coords.latitude,p_lon:position.coords.longitude});
    if(error)throw error;
    const result=data as {ok?:boolean;code?:string;xp_awarded?:number;xp_total?:number}|null;
@@ -84,7 +80,7 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
     setStatus({kind:'success',message:result.code==='already_completed'?t.already:t.done,xp:result.xp_awarded||0});
     await refresh();
    }else{
-    const messages:Record<string,string>={invalid_qr:t.error,qr_not_configured:t.error,gps_required:t.far,outside_geofence:t.far,already_completed:t.already};
+    const messages:Record<string,string>={invalid_qr:t.error,qr_not_configured:t.error,gps_required:t.gpsError,outside_geofence:t.far,outside_radius:t.far,already_completed:t.already};
     setStatus({kind:'error',message:messages[result?.code||'']||t.error});
    }
   }catch(e){console.error('[QuestHub] completion failed',e);setStatus({kind:'error',message:e instanceof Error&&e.message==='gps'?t.gpsError:t.error});}
