@@ -1,4 +1,4 @@
-import { QUEST_TARGETS } from '../constants/questData';
+import { QUEST_TARGETS, QUEST_TARGET_COORDS } from '../constants/questData';
 import { LOCATIONS } from '../constants';
 
 export const normalizeQrText = (value: string): string =>
@@ -13,6 +13,32 @@ export const findQuestTargetFromQr = (decodedText: string) => {
   if (!decodedText) return undefined;
   const raw = decodedText.trim();
   const normalized = normalizeQrText(raw);
+
+  // Installed field QR markers encode geographic coordinates. Resolve those
+  // payloads to a known quest POI before trying legacy text/URL aliases.
+  const coordinateMatch =
+    raw.match(/geo:([-+]?\d+(?:\.\d+)?),\s*([-+]?\d+(?:\.\d+)?)/i) ||
+    raw.match(/@([-+]?\d+(?:\.\d+)?),\s*([-+]?\d+(?:\.\d+)?)/) ||
+    raw.match(/[?&](?:q|query|ll|center)=([-+]?\d+(?:\.\d+)?)(?:%2C|,|%2c)([-+]?\d+(?:\.\d+)?)/i);
+  if (coordinateMatch) {
+    const lat = Number(coordinateMatch[1]);
+    const lon = Number(coordinateMatch[2]);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      const nearest = QUEST_TARGETS
+        .map((target) => {
+          const point = QUEST_TARGET_COORDS[target.id];
+          if (!point) return { target, distance: Infinity };
+          const rad = Math.PI / 180;
+          const dLat = (point.lat - lat) * rad;
+          const dLon = (point.lon - lon) * rad;
+          const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat * rad) * Math.cos(point.lat * rad) * Math.sin(dLon / 2) ** 2;
+          return { target, distance: 6371000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) };
+        })
+        .sort((a, b) => a.distance - b.distance)[0];
+      if (nearest && nearest.distance <= 60) return nearest.target;
+    }
+  }
 
   // Extract last path segment if raw text is a URL or file path (e.g. /QRTrgSlobode.png -> QRTrgSlobode, /quest/panonika -> panonika)
   const urlSegment = raw.includes('/') ? raw.split(/[/?#]/).filter(Boolean).pop()?.split('.')[0] : '';
