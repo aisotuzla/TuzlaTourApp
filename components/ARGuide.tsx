@@ -286,6 +286,16 @@ export const ARGuide: React.FC<ARGuideProps> = ({
   // Compute active quest phase (1, 2, 3, or 4)
   const currentPhase = useMemo(() => getCurrentQuestPhase(localUnlockedRewards), [localUnlockedRewards]);
 
+  // Keep exactly one AR landmark marker active. If the player has not
+  // selected a destination yet, focus the first available POI in the active phase.
+  useEffect(() => {
+    if (targetPoi || questArPois.length === 0) return;
+    const firstActive = questArPois.find((poi) => poi.phase === currentPhase);
+    if (!firstActive) return;
+    const matched = LOCATIONS.find((location) => location.id === firstActive.id) || (firstActive as unknown as Location);
+    setTargetPoi(matched);
+  }, [targetPoi, questArPois, currentPhase]);
+
   // Phase title helper
   const currentPhaseTitle = useMemo(() => {
     if (currentPhase === 1) return t.phase1Title;
@@ -614,6 +624,12 @@ export const ARGuide: React.FC<ARGuideProps> = ({
           const refs = markerRefs.current[poi.id];
           if (!refs || !refs.dom) return;
 
+          // Render only the explicitly locked target; never stack nearby POIs.
+          if (!targetPoi || poi.id !== targetPoi.id) {
+            if (refs.dom.style.display !== 'none') refs.dom.style.display = 'none';
+            return;
+          }
+
           // Phase-based visibility:
           // In Phase 1: Only Phase 1 POIs are rendered. Phase 2 & 3 are hidden.
           // In Phase 2: Phase 1 (darkened) + Phase 2 (bright). Phase 3 hidden.
@@ -739,11 +755,14 @@ export const ARGuide: React.FC<ARGuideProps> = ({
   };
 
   const handleRewardFoundInternal = async (id: string, qrPayload: string, position: { lat: number; lon: number } | null): Promise<{ ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number }> => {
-    if (!localUnlockedRewards.includes(id)) {
-      setLocalUnlockedRewards([...localUnlockedRewards, id]);
+    const result = onRewardFound
+      ? await onRewardFound(id, qrPayload, position)
+      : { ok: true };
+    // Only unlock locally after the server confirms the reward.
+    if (result.ok && !localUnlockedRewards.includes(id)) {
+      setLocalUnlockedRewards((previous) => previous.includes(id) ? previous : [...previous, id]);
     }
-    if (onRewardFound) return onRewardFound(id, qrPayload, position);
-    return { ok: true };
+    return result;
   };
 
   // Turn guidance logic
@@ -871,8 +890,9 @@ export const ARGuide: React.FC<ARGuideProps> = ({
               const isUnlocked = isPoiRewardUnlocked(poi.id, localUnlockedRewards);
               const isFocused = targetPoi?.id === poi.id;
               const isVisiblePhase = poi.phase <= currentPhase;
+              const isLockedTarget = targetPoi?.id === poi.id;
 
-              if (!isVisiblePhase) return null;
+              if (!isVisiblePhase || !isLockedTarget) return null;
 
               return (
                 <ARMarker
