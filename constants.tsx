@@ -190,7 +190,7 @@ const LOCATIONS_RAW: Location[] = [
     address: 'Park Slana Banja, 75000 Tuzla, Bosnia and Herzegovina',
   },
   {
-    id: 'Palancinkara Bagi',
+    id: 'palacinkara Bagi',
     name: {
       en: 'Bagi Crêperie',
       bs: 'Palačinkara kod Bagija',
@@ -206,7 +206,7 @@ const LOCATIONS_RAW: Location[] = [
     image: '/assets/Gallery/Food/bagi.webp',
     coordinates: [44.5383762, 18.6775339],
     category: 'food',
-    qrCode: 'Palancinkara Bagi',
+    qrCode: 'palacinkara Bagi',
     discount: '20% Off Dessert',
     address: 'Trg Kapija, 75000 Tuzla, Bosnia and Herzegovina',
   },
@@ -281,17 +281,10 @@ const BINGO_STORE_RAW = {
     en: { monSat: '08:00 - 21:30', sun: 'Closed' },
     bs: { monSat: '08:00 - 21:30', sun: 'Zatvoreno' },
     de: { monSat: '08:00 - 21:30', sun: 'Geschlossen' },
-    tr: { monSat: '08:00 - 21:30', sun: 'Kapalı' },
+    tr: { monSat: '08:00 - 21:30', sun: 'Kapali' }
   },
-  items: [
-    { name: 'Fresh Fruit', price: 'Varies', image: '/assets/Gallery/Fruit.webp' },
-    { name: 'Quality Meat', price: 'Varies', image: '/assets/Gallery/Meat.webp' },
-    { name: 'Charcuterie', price: 'Varies', image: '/assets/Gallery/Charcuterie.webp' },
-    { name: 'Vegetables & Herbs', price: 'Varies', image: '/assets/Gallery/Vegetables___Herbs.webp' },
-  ],
+
 };
-
-
 
 const TRANSLATIONS_RAW: Record<Language, TranslationSet> = {
   en: {

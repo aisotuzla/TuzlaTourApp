@@ -210,9 +210,9 @@ export const DEFAULT_GEOFENCES: GeofenceZone[] = [
     },
   },
   {
-    id: 'palancinkara',
-    lat: QUEST_TARGET_COORDS.palancinkara.lat,
-    lon: QUEST_TARGET_COORDS.palancinkara.lon,
+    id: 'palacinkara',
+    lat: QUEST_TARGET_COORDS.palacinkara.lat,
+    lon: QUEST_TARGET_COORDS.palacinkara.lon,
     radiusMeters: 30,
     exitRadiusMeters: 65,
     title: {

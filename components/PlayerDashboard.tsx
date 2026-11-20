@@ -93,7 +93,7 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
   stara_cesma: { lat: 44.538982, lon: 18.67558 },
   salt_square: { lat: 44.5382182, lon: 18.6759398 },
-  palancinkara: { lat: 44.5383762, lon: 18.6775339 },
+  palacinkara: { lat: 44.5383762, lon: 18.6775339 },
   slana_banja: { lat: 44.536961, lon: 18.687983 },
   panonika: { lat: 44.539076, lon: 18.679488 },
   slapovi: { lat: 44.5404243, lon: 18.6819408 },
@@ -433,7 +433,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
   useEffect(() => {
     return () => {
       if (scannerRef.current) {
-        scannerRef.current.stop().catch(() => {});
+        scannerRef.current.stop().catch(() => { });
       }
     };
   }, []);
@@ -457,7 +457,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
       }
 
       if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-        try { navigator.vibrate([100, 50, 100]); } catch (_) {}
+        try { navigator.vibrate([100, 50, 100]); } catch (_) { }
       }
 
       if (!navigator.geolocation) {
@@ -596,7 +596,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           await scannerRef.current.stop();
         }
         scannerRef.current.clear();
-      } catch (_) {}
+      } catch (_) { }
       scannerRef.current = null;
     }
     setIsScanning(false);
@@ -626,7 +626,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           await scannerRef.current.stop();
         }
         scannerRef.current.clear();
-      } catch (_) {}
+      } catch (_) { }
       scannerRef.current = null;
     }
 
@@ -662,7 +662,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
         (decodedText) => {
           void processDecodedQr(decodedText);
         },
-        () => {}
+        () => { }
       );
 
       setScannerStatus('active');
@@ -704,18 +704,18 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
         lang === 'bs'
           ? 'Šta je Tuzla Tour App i kako funkcionišu Tuzla Quest nagrade?'
           : lang === 'de'
-          ? 'Was ist die Tuzla Tour App und wie funktionieren die Tuzla Quest Belohnungen?'
-          : lang === 'tr'
-          ? 'Tuzla Tour Uygulaması nedir ve Tuzla Quest ödülleri nasıl çalışır?'
-          : 'What is Tuzla Tour App & how does the Tuzla Quest reward system work?',
+            ? 'Was ist die Tuzla Tour App und wie funktionieren die Tuzla Quest Belohnungen?'
+            : lang === 'tr'
+              ? 'Tuzla Tour Uygulaması nedir ve Tuzla Quest ödülleri nasıl çalışır?'
+              : 'What is Tuzla Tour App & how does the Tuzla Quest reward system work?',
       answer:
         lang === 'bs'
           ? 'Tuzla Tour App je interaktivni turistički vodič sa 3D GPS navigacijom, kamerom sa AR vodičem i nagradnom igrom Tuzla Quest. Šetnjom kroz grad otkrivate kulturne znamenitosti, kafiće i hotele. Skeniranjem QR koda na licu mjesta otključavate naredne faze, interaktivne 3D prikaze i popuste!'
           : lang === 'de'
-          ? 'Die Tuzla Tour App ist ein interaktiver Reiseführer mit 3D-GPS-Navigation, AR-Kameraguide und dem Tuzla Quest Gewinnspiel. Beim Erkunden der Stadt schalten Sie durch QR-Scans an Denkmälern neue Inhalte, 3D-Modelle und Rabatte frei!'
-          : lang === 'tr'
-          ? 'Tuzla Tour App, 3D GPS navigasyonu ve AR rehberi içeren interaktif bir turist rehberidir. Şehirde gezerken QR kodları tarayarak yeni etapların, 3D içeriklerin ve yerel indirimlerin kilidini açarsınız!'
-          : 'Tuzla Tour App is an interactive city guide with 3D GPS navigation, an AR camera guide, and the Tuzla Quest game. By scanning on-site QR codes, you unlock subsequent stages, interactive 3D historical artifacts, and partner discounts!',
+            ? 'Die Tuzla Tour App ist ein interaktiver Reiseführer mit 3D-GPS-Navigation, AR-Kameraguide und dem Tuzla Quest Gewinnspiel. Beim Erkunden der Stadt schalten Sie durch QR-Scans an Denkmälern neue Inhalte, 3D-Modelle und Rabatte frei!'
+            : lang === 'tr'
+              ? 'Tuzla Tour App, 3D GPS navigasyonu ve AR rehberi içeren interaktif bir turist rehberidir. Şehirde gezerken QR kodları tarayarak yeni etapların, 3D içeriklerin ve yerel indirimlerin kilidini açarsınız!'
+              : 'Tuzla Tour App is an interactive city guide with 3D GPS navigation, an AR camera guide, and the Tuzla Quest game. By scanning on-site QR codes, you unlock subsequent stages, interactive 3D historical artifacts, and partner discounts!',
     },
     {
       id: 2,
@@ -724,18 +724,18 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
         lang === 'bs'
           ? 'Kako funkcioniše 3D GPS navigacija i geofencing obavijesti?'
           : lang === 'de'
-          ? 'Wie funktionieren die 3D-GPS-Navigation und Geofencing-Benachrichtigungen?'
-          : lang === 'tr'
-          ? '3D GPS navigasyonu ve geofencing bildirimleri nasıl çalışır?'
-          : 'How does 3D GPS Navigation & Geofencing work?',
+            ? 'Wie funktionieren die 3D-GPS-Navigation und Geofencing-Benachrichtigungen?'
+            : lang === 'tr'
+              ? '3D GPS navigasyonu ve geofencing bildirimleri nasıl çalışır?'
+              : 'How does 3D GPS Navigation & Geofencing work?',
       answer:
         lang === 'bs'
           ? 'Aplikacija u realnom vremenu prati vašu GPS lokaciju u odnosu na atrakcije. Čim se približite na 25 metara od zadate tačke (POI), sistem šalje pametnu push obavijest koja vas poziva da uključite AR kameru i direktno pratite stazu do cilja.'
           : lang === 'de'
-          ? 'Die App überwacht in Echtzeit Ihre GPS-Position relativ zu Sehenswürdigkeiten. Sobald Sie sich innerhalb von 25 Metern zu einem Ziel befinden, erhalten Sie eine Benachrichtigung für die AR-Führung.'
-          : lang === 'tr'
-          ? 'Uygulama, GPS konumunuzu hedeflere göre gerçek zamanlı izler. Bir hedefe 25 metre yaklaştığınızda akıllı bir bildirim alarak AR kamera rehberini açabilirsiniz.'
-          : 'The app monitors your real-time distance to attractions. Once you enter a 25-meter radius around any Point of Interest (POI), a notification alerts you to activate the camera AR Guide to lead you to the exact spot.',
+            ? 'Die App überwacht in Echtzeit Ihre GPS-Position relativ zu Sehenswürdigkeiten. Sobald Sie sich innerhalb von 25 Metern zu einem Ziel befinden, erhalten Sie eine Benachrichtigung für die AR-Führung.'
+            : lang === 'tr'
+              ? 'Uygulama, GPS konumunuzu hedeflere göre gerçek zamanlı izler. Bir hedefe 25 metre yaklaştığınızda akıllı bir bildirim alarak AR kamera rehberini açabilirsiniz.'
+              : 'The app monitors your real-time distance to attractions. Once you enter a 25-meter radius around any Point of Interest (POI), a notification alerts you to activate the camera AR Guide to lead you to the exact spot.',
     },
     {
       id: 3,
@@ -744,18 +744,18 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
         lang === 'bs'
           ? 'Zašto aplikacija traži dozvole za lokaciju, kameru i obavijesti?'
           : lang === 'de'
-          ? 'Warum benötigt die App Zugriff auf Standort, Kamera und Benachrichtigungen?'
-          : lang === 'tr'
-          ? 'Uygulama neden konum, kamera ve bildirim izinleri istiyor?'
-          : 'Why does the app ask for location, camera, and notification permissions?',
+            ? 'Warum benötigt die App Zugriff auf Standort, Kamera und Benachrichtigungen?'
+            : lang === 'tr'
+              ? 'Uygulama neden konum, kamera ve bildirim izinleri istiyor?'
+              : 'Why does the app ask for location, camera, and notification permissions?',
       answer:
         lang === 'bs'
           ? 'Pristup lokaciji omogućava prikaz vašeg položaja na mapi i precizno vođenje. Kamera se koristi za skeniranje QR kodova i AR vodič. Dozvola za obavijesti šalje podsjetnike kada ste u blizini važnih znamenitosti.'
           : lang === 'de'
-          ? 'Standortzugriff ermöglicht die Anzeige auf der Karte. Die Kamera wird zum Scannen von QR-Codes und AR-Navigation genutzt. Benachrichtigungen weisen auf nahe Sehenswürdigkeiten hin.'
-          : lang === 'tr'
-          ? 'Konum izni haritada yerinizi gösterir. Kamera QR tarama ve AR rehberi için gereklidir. Bildirimler ise yakındaki tarihi noktaları kaçırmamanızı sağlar.'
-          : 'Location access displays your real-time position on maps. Camera access is strictly used for on-device QR scanning and AR guidance. Notification permission alerts you when nearby landmarks are reached.',
+            ? 'Standortzugriff ermöglicht die Anzeige auf der Karte. Die Kamera wird zum Scannen von QR-Codes und AR-Navigation genutzt. Benachrichtigungen weisen auf nahe Sehenswürdigkeiten hin.'
+            : lang === 'tr'
+              ? 'Konum izni haritada yerinizi gösterir. Kamera QR tarama ve AR rehberi için gereklidir. Bildirimler ise yakındaki tarihi noktaları kaçırmamanızı sağlar.'
+              : 'Location access displays your real-time position on maps. Camera access is strictly used for on-device QR scanning and AR guidance. Notification permission alerts you when nearby landmarks are reached.',
     },
     {
       id: 4,
@@ -764,18 +764,18 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
         lang === 'bs'
           ? 'Kako skenirati QR kodove i osvojiti nagrade?'
           : lang === 'de'
-          ? 'Wie scanne ich QR-Codes und erhalte Rabatte?'
-          : lang === 'tr'
-          ? 'QR kodları nasıl taratıp işletmelerde indirim kazanırım?'
-          : 'How do I scan QR codes and redeem partner discounts?',
+            ? 'Wie scanne ich QR-Codes und erhalte Rabatte?'
+            : lang === 'tr'
+              ? 'QR kodları nasıl taratıp işletmelerde indirim kazanırım?'
+              : 'How do I scan QR codes and redeem partner discounts?',
       answer:
         lang === 'bs'
           ? 'Otvorite ovaj tab "Napredak & QR" i kliknite na dugme "Pokreni kameru". Usmjerite kameru prema QR kodu. Aplikacija bilježi dokaz posjete, dodjeljuje vam XP bodove i otključava nagradni sadržaj!'
           : lang === 'de'
-          ? 'Öffnen Sie diesen Tab und starten Sie die Kamera. Richten Sie die Kamera auf den QR-Code vor Ort, um Punkte und Belohnungen freizuschalten!'
-          : lang === 'tr'
-          ? 'Bu sekmedeki "Kamerayı Başlat" düğmesine tıklayın ve kameranızı mekanlardaki QR koda tutun. XP puanları ve hediyeler anında hesabınıza eklenir!'
-          : 'Click "Start Camera" right here in this tab and point your camera at the QR sign. The app confirms your visit, awards XP points, and unlocks digital rewards!',
+            ? 'Öffnen Sie diesen Tab und starten Sie die Kamera. Richten Sie die Kamera auf den QR-Code vor Ort, um Punkte und Belohnungen freizuschalten!'
+            : lang === 'tr'
+              ? 'Bu sekmedeki "Kamerayı Başlat" düğmesine tıklayın ve kameranızı mekanlardaki QR koda tutun. XP puanları ve hediyeler anında hesabınıza eklenir!'
+              : 'Click "Start Camera" right here in this tab and point your camera at the QR sign. The app confirms your visit, awards XP points, and unlocks digital rewards!',
     },
     {
       id: 5,
@@ -784,18 +784,18 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
         lang === 'bs'
           ? 'Mogu li koristiti aplikaciju i mape offline bez interneta?'
           : lang === 'de'
-          ? 'Kann ich die App und Karten offline ohne Internet nutzen?'
-          : lang === 'tr'
-          ? 'Uygulamayı ve haritaları internet olmadan çevrimdışı kullanabilir miyim?'
-          : 'Can I use the app and maps offline without internet or roaming?',
+            ? 'Kann ich die App und Karten offline ohne Internet nutzen?'
+            : lang === 'tr'
+              ? 'Uygulamayı ve haritaları internet olmadan çevrimdışı kullanabilir miyim?'
+              : 'Can I use the app and maps offline without internet or roaming?',
       answer:
         lang === 'bs'
           ? 'Da! Tuzla Tour App koristi napredne vektorske offline mape i lokalno keširanje. Sve bilješke, planovi puta, evidencija posjeta i zvučni vodiči rade u potpunosti offline bez trošenja mobilnih podataka.'
           : lang === 'de'
-          ? 'Ja! Die App nutzt moderne Vektorkarten und lokales Caching. Alle Notizen, Reisepläne und Audioguides funktionieren offline ohne Roaming-Gebühren.'
-          : lang === 'tr'
-          ? 'Evet! Çevrimdışı vektör haritalar ve yerel önbellek sayesinde seyahat planınız, sesli rehberler ve notlarınız internet olmadan da çalışır.'
-          : 'Yes! Tuzla Tour App uses vector map tiles and offline local storage. Itineraries, expense logs, notes, and audio guides operate reliably offline without data roaming.',
+            ? 'Ja! Die App nutzt moderne Vektorkarten und lokales Caching. Alle Notizen, Reisepläne und Audioguides funktionieren offline ohne Roaming-Gebühren.'
+            : lang === 'tr'
+              ? 'Evet! Çevrimdışı vektör haritalar ve yerel önbellek sayesinde seyahat planınız, sesli rehberler ve notlarınız internet olmadan da çalışır.'
+              : 'Yes! Tuzla Tour App uses vector map tiles and offline local storage. Itineraries, expense logs, notes, and audio guides operate reliably offline without data roaming.',
     },
     {
       id: 6,
@@ -804,18 +804,18 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
         lang === 'bs'
           ? 'Gdje se čuvaju moje bilješke, plan puta i lični podaci?'
           : lang === 'de'
-          ? 'Wo werden meine Notizen, Reisepläne und persönlichen Daten gespeichert?'
-          : lang === 'tr'
-          ? 'Notlarım, seyahat planım ve kişisel verilerim nerede saklanıyor?'
-          : 'Where are my notes, itinerary, and personal data stored?',
+            ? 'Wo werden meine Notizen, Reisepläne und persönlichen Daten gespeichert?'
+            : lang === 'tr'
+              ? 'Notlarım, seyahat planım ve kişisel verilerim nerede saklanıyor?'
+              : 'Where are my notes, itinerary, and personal data stored?',
       answer:
         lang === 'bs'
           ? '100% Privacy by Design: sve vaše bilješke, to-do stavke i evidencija posjeta pohranjeni su primarno lokalno u memoriji vašeg uređaja. Sukladno GDPR standardima, vaša privatnost je u potpunosti zaštićena.'
           : lang === 'de'
-          ? '100 % Datenschutz: Alle Daten und Notizen verbleiben auf Ihrem lokalen Speicher. Wir respektieren höchste GDPR-Datenschutzstandards.'
-          : lang === 'tr'
-          ? '%100 Gizlilik Odaklı Tasarım: Tüm notlarınız ve verileriniz telefonunuzda saklanır. GDPR standartlarına tam uyumludur.'
-          : '100% Privacy by Design: All your personal checklists, itinerary notes, and footprints are preserved on your local device in compliance with GDPR standards.',
+            ? '100 % Datenschutz: Alle Daten und Notizen verbleiben auf Ihrem lokalen Speicher. Wir respektieren höchste GDPR-Datenschutzstandards.'
+            : lang === 'tr'
+              ? '%100 Gizlilik Odaklı Tasarım: Tüm notlarınız ve verileriniz telefonunuzda saklanır. GDPR standartlarına tam uyumludur.'
+              : '100% Privacy by Design: All your personal checklists, itinerary notes, and footprints are preserved on your local device in compliance with GDPR standards.',
     },
   ];
 
@@ -953,11 +953,10 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           {/* Scanner Feedback Alerts */}
           {scannerFeedback && (
             <div
-              className={`mt-3 rounded-xl p-3 text-xs font-bold border transition-all ${
-                scannerFeedback.type === 'success'
+              className={`mt-3 rounded-xl p-3 text-xs font-bold border transition-all ${scannerFeedback.type === 'success'
                   ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
                   : 'border-amber-200 bg-amber-50 text-amber-900'
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2">
                 {scannerFeedback.type === 'success' ? (
@@ -1051,24 +1050,20 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                 return (
                   <div
                     key={poi.id}
-                    className={`flex min-h-[62px] items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors ${
-                      completed
+                    className={`flex min-h-[62px] items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors ${completed
                         ? 'border-slate-300 bg-slate-200/90 text-slate-500 shadow-inner'
                         : 'border-blue-200 bg-gradient-to-r from-blue-50 to-white text-blue-950 shadow-xs'
-                    }`}
+                      }`}
                   >
-                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[11px] font-black tabular-nums ${
-                      completed ? 'bg-slate-400 text-white' : 'bg-gradient-to-br from-blue-600 to-blue-800 text-amber-300'
-                    }`}>
+                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[11px] font-black tabular-nums ${completed ? 'bg-slate-400 text-white' : 'bg-gradient-to-br from-blue-600 to-blue-800 text-amber-300'
+                      }`}>
                       {completed ? <CheckCircle2 size={17} /> : String(index + 1).padStart(2, '0')}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className={`block truncate text-xs font-extrabold leading-snug ${
-                        completed ? 'text-slate-600' : 'text-blue-950'
-                      }`}>{poiName}</span>
-                      <span className={`mt-0.5 block text-[10px] font-bold uppercase tracking-wide ${
-                        completed ? 'text-slate-500' : 'text-blue-600'
-                      }`}>
+                      <span className={`block truncate text-xs font-extrabold leading-snug ${completed ? 'text-slate-600' : 'text-blue-950'
+                        }`}>{poiName}</span>
+                      <span className={`mt-0.5 block text-[10px] font-bold uppercase tracking-wide ${completed ? 'text-slate-500' : 'text-blue-600'
+                        }`}>
                         {completed
                           ? (lang === 'bs' ? 'Otključano' : lang === 'de' ? 'Freigeschaltet' : lang === 'tr' ? 'Açıldı' : 'Unlocked')
                           : (lang === 'bs' ? 'Čeka na otkrivanje' : lang === 'de' ? 'Noch zu entdecken' : lang === 'tr' ? 'Keşfedilmeyi bekliyor' : 'Ready to discover')}
@@ -1244,11 +1239,10 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
             ].map((badge) => (
               <div
                 key={badge.id}
-                className={`rounded-xl p-3 text-center border transition-all ${
-                  badge.unlocked
+                className={`rounded-xl p-3 text-center border transition-all ${badge.unlocked
                     ? `${badge.accentColor} shadow-2xs`
                     : 'border-slate-100 bg-slate-50/50 opacity-60'
-                }`}
+                  }`}
               >
                 <div className="text-2xl mb-1">{badge.icon}</div>
                 <h4 className="text-xs font-black text-slate-900 truncate">
@@ -1258,11 +1252,10 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                   {badge.desc}
                 </p>
                 <span
-                  className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[9px] font-black uppercase ${
-                    badge.unlocked
+                  className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[9px] font-black uppercase ${badge.unlocked
                       ? badge.badgeBg
                       : 'bg-slate-200 text-slate-500'
-                  }`}
+                    }`}
                 >
                   {badge.unlocked ? (lang === 'bs' ? 'Osvojeno' : 'Unlocked') : (lang === 'bs' ? 'Zaključano' : 'Locked')}
                 </span>

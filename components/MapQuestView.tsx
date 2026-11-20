@@ -4,7 +4,6 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { globalPMTilesProtocol, ensureTuzlaOfflineMapDownloaded } from '../utils/pmtilesProtocol.ts';
 import { OFFLINE_STYLE_SPEC } from '../utils/offlineMapStyle.ts';
 import { motion, AnimatePresence } from 'framer-motion';
-import CelebrationOverlay from './CelebrationOverlay.tsx';
 import { QrCode, Navigation, Info, X, Compass, Trophy, Layers, Check, ChevronUp, ChevronDown, Play, Map as MapIcon } from 'lucide-react';
 import { AppFeatures } from '../utils/platform.ts';
 import { Language } from '../types.ts';
@@ -34,7 +33,7 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
   stara_cesma: { lat: 44.538982, lon: 18.675580 },
   salt_square: { lat: 44.5382182, lon: 18.6759398 },
-  palancinkara: { lat: 44.5383762, lon: 18.6775339 },
+  palacinkara: { lat: 44.5383762, lon: 18.6775339 },
   slana_banja: { lat: 44.536961, lon: 18.687983 },
   panonika: { lat: 44.539076, lon: 18.679488 },
   slapovi: { lat: 44.5404243, lon: 18.6819408 },
@@ -49,7 +48,7 @@ export const QUEST_POI_THUMBNAILS: Record<string, string> = {
   trg_slobode: '/assets/Gallery/QuestQRLocations/trgslobode.webp',
   stara_cesma: '/assets/Gallery/QuestQRLocations/cesma13.webp',
   salt_square: '/assets/Gallery/QuestQRLocations/sonitrg.webp',
-  palancinkara: '/assets/Gallery/Food/bagi.webp',
+  palacinkara: '/assets/Gallery/Food/bagi.webp',
   slana_banja: '/assets/Gallery/QuestQRLocations/Slana_Banja.webp',
   panonika: '/assets/Gallery/QuestQRLocations/panonsko_jezero.webp',
   slapovi: '/assets/Gallery/QuestQRLocations/tzslapovi.webp',
@@ -124,7 +123,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const [showIllustratedMap, setShowIllustratedMap] = useState(false);
   const [isHudHidden, setIsHudHidden] = useState(false);
   const [activeVictoryModal, setActiveVictoryModal] = useState<'phase1' | 'phase2' | 'phase3' | 'finale' | null>(null);
-  const [showCelebration, setShowCelebration] = useState<{ phase: number } | null>(null);
   const [dismissedModals, setDismissedModals] = useState<string[]>([]);
 
   const isPhase1Done = PHASE_1_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
@@ -158,20 +156,9 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     else if (isPhase1Done && !dismissedModals.includes('phase1')) setActiveVictoryModal('phase1');
   }, [isPhase1Done, isPhase2Done, isPhase3Done, isGrandFinaleDone, dismissedModals]);
 
-  useEffect(() => {
-    if (activeVictoryModal === 'phase2') {
-      setShowCelebration({ phase: 2 });
-    } else if (activeVictoryModal === 'phase3') {
-      setShowCelebration({ phase: 3 });
-    } else {
-      setShowCelebration(null);
-    }
-  }, [activeVictoryModal]);
-
   const handleCloseVictoryModal = (modalKey: 'phase1' | 'phase2' | 'phase3' | 'finale') => {
     setDismissedModals(prev => [...prev, modalKey]);
     setActiveVictoryModal(null);
-    setShowCelebration(null);
   };
 
   const handleStartNavigation = (name: string, lat: number, lon: number) => {
@@ -783,12 +770,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
           </div>
         )}
       </AnimatePresence>
-      {showCelebration && (
-        <CelebrationOverlay
-          phase={showCelebration.phase}
-          onClose={() => setShowCelebration(null)}
-        />
-      )}
 
       {/* FLOATING ACTION BUTTONS (AR, LOCATION, RULES, LAYERS) */}
       <div

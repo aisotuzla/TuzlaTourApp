@@ -28,7 +28,7 @@ const HOTSPOTS: Record<string, { left: string; top: string }> = {
   kapija: { left: '61.5%', top: '73%' },
   mesa_selimovic: { left: '77%', top: '67%' },
   atelje_ismet: { left: '54%', top: '91%' },
-  palancinkara: { left: '90%', top: '56%' },
+  palacinkara: { left: '90%', top: '56%' },
 };
 
 const labels = {

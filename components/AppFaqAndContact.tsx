@@ -1,28 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   HelpCircle,
   ChevronDown,
-  Copy,
-  Check,
-  Bell,
   Globe,
   ShieldCheck,
   Compass,
   QrCode,
-  MapPin,
-  CheckCircle2,
-  AlertCircle
+  MapPin
 } from 'lucide-react';
 import { Language } from '../types';
-import {
-  DEFAULT_NOTIFICATION_CHANNEL_ID,
-  getStoredPushToken,
-} from '../utils/pushNotifications';
-import { LocalNotifications } from '@capacitor/local-notifications';
-import { PushNotifications } from '@capacitor/push-notifications';
-import { Capacitor } from '@capacitor/core';
-import { requestPushToken } from '../utils/firebase';
 
 interface AppFaqAndContactProps {
   lang: Language;
@@ -38,156 +25,7 @@ interface FaqItem {
 
 export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
   const [openFaq, setOpenFaq] = useState<number | null>(0); // First one open by default
-  const [copiedToken, setCopiedToken] = useState(false);
-  const [fcmToken, setFcmToken] = useState<string | null>(null);
-  const [testNotificationScheduled, setTestNotificationScheduled] = useState(false);
-  const [testNotificationError, setTestNotificationError] = useState<string | null>(null);
-  const [pushRegistrationError, setPushRegistrationError] = useState<string | null>(null);
-  const [pushRegistrationPending, setPushRegistrationPending] = useState(false);
-  const [pushRegistrationMessage, setPushRegistrationMessage] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = getStoredPushToken();
-    if (token) setFcmToken(token);
-
-    const handleToken = (event: Event) => {
-      const tokenEvent = event as CustomEvent<string>;
-      if (tokenEvent.detail) {
-        setFcmToken(tokenEvent.detail);
-        setPushRegistrationError(null);
-        setPushRegistrationMessage(null);
-      }
-    };
-    const handleRegistrationError = (event: Event) => {
-      const errorEvent = event as CustomEvent<string>;
-      setPushRegistrationError(errorEvent.detail || 'FCM registration failed.');
-      setPushRegistrationPending(false);
-    };
-    window.addEventListener('tuzla-fcm-token', handleToken);
-    window.addEventListener('tuzla-push-registration-error', handleRegistrationError);
-
-    return () => {
-      window.removeEventListener('tuzla-fcm-token', handleToken);
-      window.removeEventListener('tuzla-push-registration-error', handleRegistrationError);
-    };
-  }, []);
-
-  const handleCopyToken = () => {
-    if (!fcmToken) return;
-    navigator.clipboard.writeText(fcmToken);
-    setCopiedToken(true);
-    setTimeout(() => setCopiedToken(false), 2500);
-  };
-
-  const handleSendTestLocalNotification = async () => {
-    setTestNotificationError(null);
-    try {
-      const title = lang === 'bs'
-        ? 'Tuzla Tour Guide - Test obavijest'
-        : 'Tuzla Tour Guide - Test Notification';
-      const body = lang === 'bs'
-        ? 'Ako vidite ovu obavijest, lokalne notifikacije rade.'
-        : 'If you can see this notification, local notifications are working.';
-
-      if (!Capacitor.isNativePlatform()) {
-        if (!('Notification' in window)) {
-          throw new Error('Notifications are not supported in this browser.');
-        }
-        let permission = Notification.permission;
-        if (permission === 'default') {
-          permission = await Notification.requestPermission();
-        }
-        if (permission !== 'granted') {
-          throw new Error('Notification permission was not granted.');
-        }
-
-        const registration = 'serviceWorker' in navigator
-          ? await navigator.serviceWorker.getRegistration('/')
-          : undefined;
-        if (registration) {
-          await registration.showNotification(title, { body });
-        } else {
-          new Notification(title, { body });
-        }
-      } else {
-        let permission = await LocalNotifications.checkPermissions();
-        if (permission.display !== 'granted') {
-          permission = await LocalNotifications.requestPermissions();
-        }
-        if (permission.display !== 'granted') {
-          throw new Error('Notification permission was not granted.');
-        }
-
-        if (Capacitor.getPlatform() === 'android') {
-          await LocalNotifications.createChannel({
-            id: DEFAULT_NOTIFICATION_CHANNEL_ID,
-            name: 'Tuzla Tour Notifications',
-            description: 'General notifications and quest updates for Tuzla Tour Guide',
-            importance: 5,
-            visibility: 1,
-            vibration: true,
-          });
-        }
-
-        await LocalNotifications.schedule({
-          notifications: [
-            {
-              id: Math.floor(Date.now() % 2_147_483_647),
-              title,
-              body,
-              channelId: DEFAULT_NOTIFICATION_CHANNEL_ID,
-              schedule: { at: new Date(Date.now() + 1000) },
-            },
-          ],
-        });
-      }
-
-      setTestNotificationScheduled(true);
-      setTimeout(() => setTestNotificationScheduled(false), 4000);
-    } catch (error) {
-      console.error('Failed to schedule test notification:', error);
-      setTestNotificationError(error instanceof Error ? error.message : String(error));
-    }
-  };
-
-  const handleRegisterPush = async () => {
-    setPushRegistrationPending(true);
-    setPushRegistrationError(null);
-    setPushRegistrationMessage(null);
-    try {
-      if (Capacitor.isNativePlatform()) {
-        let permission = await PushNotifications.checkPermissions();
-        if (permission.receive !== 'granted') {
-          permission = await PushNotifications.requestPermissions();
-        }
-        if (permission.receive !== 'granted') {
-          throw new Error('Push notification permission was not granted.');
-        }
-        await PushNotifications.register();
-        setPushRegistrationMessage(
-          lang === 'bs'
-            ? 'Registracija zatražena; čeka se FCM token.'
-            : 'Registration requested; waiting for the FCM token.'
-        );
-      } else {
-        const token = await requestPushToken();
-        if (!token) {
-          throw new Error(
-            'Notification' in window && Notification.permission === 'denied'
-              ? 'Notification permission is blocked in browser settings.'
-              : 'No FCM token was returned. Check browser support and Firebase web configuration.'
-          );
-        }
-        setFcmToken(token);
-      }
-    } catch (error) {
-      console.error('Failed to register for push notifications:', error);
-      setPushRegistrationError(error instanceof Error ? error.message : String(error));
-    } finally {
-      setPushRegistrationPending(false);
-    }
-  };
 
   const faqData: FaqItem[] = [
     {
@@ -394,80 +232,7 @@ export const AppFaqAndContact: React.FC<AppFaqAndContactProps> = ({ lang }) => {
           })}
         </div>
 
-        {/* Quick Notification Diagnostic Bar */}
-        <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700 shrink-0">
-                <Bell className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="text-xs font-black uppercase tracking-wider text-slate-900">
-                  {lang === 'bs' ? 'Status Push Notifikacija' : 'Push Notification Status'}
-                </div>
-                <div className="text-xs text-slate-500">
-                  {fcmToken
-                    ? (lang === 'bs' ? 'Uređaj je registrovan za FCM obavijesti.' : 'Device registered for FCM push.')
-                    : (lang === 'bs' ? 'FCM token nije registrovan.' : 'FCM token is not registered.')}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={handleRegisterPush}
-                disabled={pushRegistrationPending}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-100 disabled:cursor-wait disabled:opacity-60"
-              >
-                <Bell className="h-3.5 w-3.5" />
-                <span>
-                  {pushRegistrationPending
-                    ? (lang === 'bs' ? 'Registracija...' : 'Registering...')
-                    : (lang === 'bs' ? 'Registruj push' : 'Register Push')}
-                </span>
-              </button>
-
-              {fcmToken && (
-                <button
-                  type="button"
-                  onClick={handleCopyToken}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-100"
-                >
-                  {copiedToken ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
-                  <span>{copiedToken ? (lang === 'bs' ? 'Kopiran token!' : 'Token Copied!') : (lang === 'bs' ? 'Kopiraj FCM Token' : 'Copy FCM Token')}</span>
-                </button>
-              )}
-
-              <button
-                type="button"
-                onClick={handleSendTestLocalNotification}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-black text-white shadow-xs hover:bg-blue-700"
-              >
-                {testNotificationScheduled ? <CheckCircle2 className="h-3.5 w-3.5 text-white" /> : <Bell className="h-3.5 w-3.5" />}
-                <span>
-                  {testNotificationScheduled
-                    ? (lang === 'bs' ? 'Zakazano!' : 'Scheduled!')
-                    : (lang === 'bs' ? 'Testiraj obavijest' : 'Test Notification')}
-                </span>
-              </button>
-            </div>
-          </div>
-          {(pushRegistrationMessage || pushRegistrationError || testNotificationError) && (
-            <div className="mt-3 space-y-1 text-xs">
-              {pushRegistrationMessage && (
-                <p className="text-slate-600">{pushRegistrationMessage}</p>
-              )}
-              {pushRegistrationError && (
-                <p role="alert" className="text-red-700">{pushRegistrationError}</p>
-              )}
-              {testNotificationError && (
-                <p role="alert" className="text-red-700">{testNotificationError}</p>
-              )}
-            </div>
-          )}
-        </div>
-        <div className="mt-2 flex justify-end">
+        <div className="mt-4 flex justify-end">
           <button type="button" onClick={() => navigate('/admin')} className="text-[10px] font-medium text-slate-400/70 hover:text-slate-600 underline underline-offset-2 decoration-slate-300/60">Admin</button>
         </div>
       </section>

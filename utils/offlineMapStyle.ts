@@ -168,7 +168,7 @@ export const POI_GEOJSON_DATA = {
       geometry: { type: "Point", coordinates: [18.677621, 44.538452] },
       properties: {
         name: "Panckaces House \"Bagi\"",
-        name_bs: "Palančinkara \"Bagi\"",
+        name_bs: "Palačinkara \"Bagi\"",
         category: "dining",
         "marker-color": "rgba(114, 61, 160, 1)",
         "marker-size": "large",

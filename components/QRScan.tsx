@@ -30,7 +30,7 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
     trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
     stara_cesma: { lat: 44.538982, lon: 18.675580 },
     salt_square: { lat: 44.5382182, lon: 18.6759398 },
-    palancinkara: { lat: 44.5383762, lon: 18.6775339 },
+    palacinkara: { lat: 44.5383762, lon: 18.6775339 },
     slana_banja: { lat: 44.536961, lon: 18.687983 },
     panonika: { lat: 44.539076, lon: 18.679488 },
     slapovi: { lat: 44.5404243, lon: 18.6819408 },
@@ -172,7 +172,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
         }
 
         if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-            try { navigator.vibrate([100, 50, 100]); } catch (_) {}
+            try { navigator.vibrate([100, 50, 100]); } catch (_) { }
         }
 
         const timestamp = new Date().toISOString();
@@ -222,7 +222,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                     await scannerRef.current.stop();
                 }
                 scannerRef.current.clear();
-            } catch (_) {}
+            } catch (_) { }
             scannerRef.current = null;
         }
         setIsScanning(false);
@@ -253,7 +253,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
                     await scannerRef.current.stop();
                 }
                 scannerRef.current.clear();
-            } catch (_) {}
+            } catch (_) { }
             scannerRef.current = null;
         }
 
@@ -271,23 +271,23 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
             try {
                 cameras = await Html5Qrcode.getCameras();
                 setAvailableCameras(cameras);
-            } catch (_) {}
+            } catch (_) { }
 
             if (preferredCamId) {
-                await scanner.start(preferredCamId, qrConfig, processDecodedQr, () => {});
+                await scanner.start(preferredCamId, qrConfig, processDecodedQr, () => { });
                 setActiveCameraId(preferredCamId);
                 setScannerStatus('active');
                 return;
             }
 
             try {
-                await scanner.start({ facingMode: 'environment' }, qrConfig, processDecodedQr, () => {});
+                await scanner.start({ facingMode: 'environment' }, qrConfig, processDecodedQr, () => { });
                 setScannerStatus('active');
             } catch (envErr) {
                 console.warn('[QRScan] Environment camera failed, trying fallback...', envErr);
                 if (cameras.length > 0) {
                     const backCam = cameras.find(c => /back|rear|environment/i.test(c.label)) || cameras[cameras.length - 1];
-                    await scanner.start(backCam.id, qrConfig, processDecodedQr, () => {});
+                    await scanner.start(backCam.id, qrConfig, processDecodedQr, () => { });
                     setActiveCameraId(backCam.id);
                     setScannerStatus('active');
                 } else {
@@ -313,7 +313,7 @@ const QRScan: React.FC<QRScanProps> = ({ lang, onNavigateToTarget }) => {
         if (scannerRef.current && scannerRef.current.isScanning) {
             try {
                 await scannerRef.current.stop();
-            } catch (_) {}
+            } catch (_) { }
         }
         startScanner(nextCam.id);
     };

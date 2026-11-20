@@ -94,7 +94,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
     }
   },
   {
-    id: 'palancinkara',
+    id: 'palacinkara',
     name: { en: 'Bagi Crêperie', bs: 'Palačinkara kod Bagija', de: 'Crêperie Bagi', tr: 'Bagi Krep' },
     description: {
       en: 'Tuzla\'s favorite dessert destination, famous for artisanal sweet and savory crêpes, pancake sushi, and delicious treats.',
@@ -269,32 +269,30 @@ export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
 
 export const POI_COLORS: Record<string, string> = {
   // Phase 1 — Old Town / Čaršija — light silver/grey
-  'kapija':         '#94a3b8',
-  'trg_slobode':    '#94a3b8',
-  'stara_cesma':    '#94a3b8',
-  'mesa_selimovic': '#94a3b8',
+  'kapija': '#3e4550ff',
+  'trg_slobode': '#7293c0ff',
+  'stara_cesma': '#94a3b8',
+  'mesa_selimovic': '#b4ac3fff',
   // Phase 2 — Bosnian Kingdom — green
-  'tvrtko_park':    '#16a34a',
-  'palancinkara':   '#16a34a',
-  'palancikara':    '#16a34a',
-  'salt_square':    '#16a34a',
+  'tvrtko_park': '#109c44ff',
+  'palacinkara': '#a3169cff',
+  'salt_square': '#e2aeaeff',
   // Phase 3 — Pannonian Sailor — light blue → blue
-  'panonika':       '#38bdf8',
-  'slapovi':        '#3b82f6',
-  'slana_banja':    '#60a5fa',
-  'atelje_ismet':   '#38bdf8',
+  'panonika': '#38bdf8',
+  'slapovi': '#0e60e6ff',
+  'slana_banja': '#39f070ff',
+  'atelje_ismet': '#7961ffff',
   // Grand Final — Salt City Winner — red
   'bingo_city_centar': '#ef4444',
   // legacy / unused
-  'galerija':       '#afcbf8ff',
+  'galerija': '#afcbf8ff',
 };
 
 export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
   trg_slobode: { lat: 44.5395175, lon: 18.6749037 },
   stara_cesma: { lat: 44.538982, lon: 18.675580 },
   salt_square: { lat: 44.5382182, lon: 18.6759398 },
-  palancinkara: { lat: 44.5383762, lon: 18.6775339 },
-  palancikara: { lat: 44.5383762, lon: 18.6775339 },
+  palacinkara: { lat: 44.5383762, lon: 18.6775339 },
   slana_banja: { lat: 44.536961, lon: 18.687983 },
   panonika: { lat: 44.539076, lon: 18.679488 },
   slapovi: { lat: 44.5404243, lon: 18.6819408 },
@@ -306,7 +304,7 @@ export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> =
 };
 
 export const PHASE_1_POIS = ['trg_slobode', 'stara_cesma', 'kapija', 'mesa_selimovic'];
-export const PHASE_2_POIS = ['tvrtko_park', 'palancinkara', 'salt_square'];
+export const PHASE_2_POIS = ['tvrtko_park', 'palacinkara', 'salt_square'];
 export const PHASE_3_POIS = ['panonika', 'slapovi', 'slana_banja', 'atelje_ismet'];
 export const GRAND_FINALE_POIS = ['bingo_city_centar'];
 
@@ -319,14 +317,14 @@ export const PHASE_META = {
 
 export function isPoiRewardUnlocked(poiId: string, unlockedRewards: string[]): boolean {
   if (unlockedRewards.includes(poiId)) return true;
-  if (poiId === 'palancinkara' && unlockedRewards.includes('palancikara')) return true;
-  if (poiId === 'palancikara' && unlockedRewards.includes('palancinkara')) return true;
+  if (poiId === 'palacinkara' && unlockedRewards.includes('palacinkara')) return true;
+
   return false;
 }
 
 export function getPoiPhase(poiId: string): number {
   if (PHASE_1_POIS.includes(poiId)) return 1;
-  if (PHASE_2_POIS.includes(poiId) || poiId === 'palancikara') return 2;
+  if (PHASE_2_POIS.includes(poiId) || poiId === 'palacinkara') return 2;
   if (PHASE_3_POIS.includes(poiId)) return 3;
   if (GRAND_FINALE_POIS.includes(poiId)) return 4;
   return 1;
