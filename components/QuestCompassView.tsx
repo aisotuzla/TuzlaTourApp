@@ -8,7 +8,8 @@ type Props = {
   lang: Language;
   unlockedRewards: string[];
   navigationTarget?: { name: string; lat: number; lon: number } | null;
-  onClearNavigation?: () => void;\n  onNavigateToMap?: (target: { name: string; lat: number; lon: number }) => void;
+  onClearNavigation?: () => void;
+  onNavigateToMap?: (target: { name: string; lat: number; lon: number }) => void;
 };
 
 const phases = [PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS];
@@ -35,7 +36,8 @@ function distanceAndBearing(lat1: number, lon1: number, lat2: number, lon2: numb
 
 const QuestCompassView: React.FC<Props> = ({ lang, unlockedRewards, navigationTarget, onClearNavigation, onNavigateToMap }) => {
   const t = copy[lang] || copy.en;
-  const [locationRequested, setLocationRequested] = useState(false);\n  const { position, hasPermission } = useGeolocationWatcher({ enabled: true, requestPermission: locationRequested });
+  const [locationRequested, setLocationRequested] = useState(false);
+  const { position, hasPermission } = useGeolocationWatcher({ enabled: true, requestPermission: locationRequested });
   const [selectedId, setSelectedId] = useState<string>(PHASE_1_POIS[0]);
   const [heading, setHeading] = useState<number | null>(null);
   const [headingPermission, setHeadingPermission] = useState<'unknown' | 'granted' | 'denied'>('unknown');
@@ -59,7 +61,16 @@ const QuestCompassView: React.FC<Props> = ({ lang, unlockedRewards, navigationTa
     return () => window.removeEventListener('deviceorientation', onOrientation, true);
   }, []);
 
-  const requestLocation = () => {\n    if (!navigator.geolocation) return;\n    navigator.geolocation.getCurrentPosition(\n      () => undefined,\n      (error) => console.warn('[QuestCompass] location permission/position:', error.message),\n      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }\n    );\n  };\n\n  const requestCompass = async () => {
+  const requestLocation = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      () => undefined,
+      (error) => console.warn('[QuestCompass] location permission/position:', error.message),
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+    );
+  };
+
+  const requestCompass = async () => {
     const orientation = DeviceOrientationEvent as typeof DeviceOrientationEvent & { requestPermission?: () => Promise<'granted' | 'denied'> };
     if (typeof orientation.requestPermission === 'function') {
       try {
