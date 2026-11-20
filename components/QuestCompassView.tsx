@@ -8,7 +8,7 @@ type Props = {
   lang: Language;
   unlockedRewards: string[];
   navigationTarget?: { name: string; lat: number; lon: number } | null;
-  onClearNavigation?: () => void;
+  onClearNavigation?: () => void;\n  onNavigateToMap?: (target: { name: string; lat: number; lon: number }) => void;
 };
 
 const phases = [PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS];
@@ -33,7 +33,7 @@ function distanceAndBearing(lat1: number, lon1: number, lat2: number, lon2: numb
   return { distance, bearing: degrees(Math.atan2(y, x)) };
 }
 
-const QuestCompassView: React.FC<Props> = ({ lang, unlockedRewards, navigationTarget, onClearNavigation }) => {
+const QuestCompassView: React.FC<Props> = ({ lang, unlockedRewards, navigationTarget, onClearNavigation, onNavigateToMap }) => {
   const t = copy[lang] || copy.en;
   const [locationRequested, setLocationRequested] = useState(false);\n  const { position, hasPermission } = useGeolocationWatcher({ enabled: true, requestPermission: locationRequested });
   const [selectedId, setSelectedId] = useState<string>(PHASE_1_POIS[0]);
@@ -112,6 +112,16 @@ const QuestCompassView: React.FC<Props> = ({ lang, unlockedRewards, navigationTa
               <div className="absolute bottom-3 text-[10px] font-bold text-slate-400">{heading === null ? t.compass : `${Math.round(heading)}°`}</div>
             </div>
           </div>
+          <button
+            onClick={() => selected?.poi && selected.coords && onNavigateToMap?.({
+              name: selected.poi.name[lang] || selected.poi.name.en,
+              lat: selected.coords.lat,
+              lon: selected.coords.lon,
+            })}
+            className="mt-1 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-800 px-4 py-3 text-sm font-black text-white shadow-sm"
+          >
+            <MapPin size={17}/>{lang === 'bs' ? 'Prikaži na gradskoj mapi' : lang === 'de' ? 'Auf der Stadtkarte anzeigen' : lang === 'tr' ? 'Şehir haritasında göster' : 'Show on city map'}
+          </button>
           <div className="grid grid-cols-2 gap-2">
             <div className="rounded-2xl bg-blue-50 p-3"><p className="text-[10px] font-bold uppercase text-blue-600">{t.distance}</p><p className="mt-1 text-2xl font-black tabular-nums text-blue-950">{distanceLabel}</p></div>
             <div className="rounded-2xl bg-slate-50 p-3"><p className="text-[10px] font-bold uppercase text-slate-500">{t.accuracy}</p><p className="mt-1 text-2xl font-black tabular-nums text-slate-900">{position ? `±${Math.round(position.accuracy)} m` : '—'}</p></div>
