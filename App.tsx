@@ -16,6 +16,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ReloadPrompt from './components/ReloadPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
 import MapQuestView from "./components/MapQuestView";
+import QuestCompassView from './components/QuestCompassView';
 import { AppTab } from './types';
 import { supabase } from './lib/supabaseClient';
 import { ensurePlayerSession } from './lib/playerSession';
@@ -309,14 +310,11 @@ const AppContent: React.FC = () => {
                     />
                   } />
                   <Route path="/quest" element={
-                    <MapQuestView
+                    <QuestCompassView
                       lang={lang}
-                      features={features}
                       unlockedRewards={unlockedRewards}
-                      onRewardFound={completeQuest}
                       navigationTarget={navigationTarget}
                       onClearNavigation={() => setNavigationTarget(null)}
-                      initialOpenScanner={autoOpenScanner}
                     />
                   } />
                   <Route path="/qr-scan" element={
