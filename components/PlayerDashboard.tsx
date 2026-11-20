@@ -107,9 +107,9 @@ const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> = {
 const copy = {
   en: {
     bannerTag: 'Tuzla Tour Guide',
-    bannerTitle: 'Explorer Dashboard & QR',
-    bannerSubtitle: 'Tvoje putovanje kroz Tuzlu',
-    guest: 'Gost istraživač',
+    bannerTitle: 'Explorer Dashboard',
+    bannerSubtitle: 'Your journey through Tuzla',
+    guest: 'Explorer',
     refresh: 'Refresh',
     loading: 'Loading profile…',
     retry: 'Retry',
@@ -145,14 +145,6 @@ const copy = {
     cancel: 'Cancel',
     viewReward: 'View Reward',
     watchVideo: 'Cinematic Video',
-    pushTitle: 'Push & Local Notifications',
-    pushSubtitle: 'Stay alerted about nearby landmarks and quest clues',
-    pushEnabled: 'Push notifications enabled',
-    enablePush: 'Enable Notifications',
-    testPush: 'Send Test Notification',
-    testSuccess: 'Test notification scheduled!',
-    copyToken: 'Copy FCM Token',
-    tokenCopied: 'Token copied!',
     faqTitle: 'Frequently Asked Questions (FAQ)',
     partnersTitle: 'Partner Agencies & Projects',
     gradskiParking: 'Gradski Parking Tuzla',
@@ -161,7 +153,7 @@ const copy = {
   },
   bs: {
     bannerTag: 'Tuzla Tour Guide',
-    bannerTitle: 'Istraživački panel & QR',
+    bannerTitle: 'Istraživački panel',
     bannerSubtitle: 'Tvoje putovanje kroz Tuzlu',
     guest: 'Gost istraživač',
     refresh: 'Osvježi',
@@ -199,14 +191,6 @@ const copy = {
     cancel: 'Odustani',
     viewReward: 'Pogledaj nagradu',
     watchVideo: 'Video snimak',
-    pushTitle: 'Push i lokalne obavijesti',
-    pushSubtitle: 'Primajte automatska upozorenja za obližnje znamenitosti',
-    pushEnabled: 'Obavijesti su aktivirane',
-    enablePush: 'Uključi obavijesti',
-    testPush: 'Testiraj obavijest',
-    testSuccess: 'Testna obavijest je poslana!',
-    copyToken: 'Kopiraj FCM token',
-    tokenCopied: 'Token kopiran!',
     faqTitle: 'Često postavljana pitanja (FAQ)',
     partnersTitle: 'Partnerske agencije i projekti',
     gradskiParking: 'Gradski Parking Tuzla',
@@ -954,8 +938,8 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           {scannerFeedback && (
             <div
               className={`mt-3 rounded-xl p-3 text-xs font-bold border transition-all ${scannerFeedback.type === 'success'
-                  ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
-                  : 'border-amber-200 bg-amber-50 text-amber-900'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+                : 'border-amber-200 bg-amber-50 text-amber-900'
                 }`}
             >
               <div className="flex items-center gap-2">
@@ -1051,8 +1035,8 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                   <div
                     key={poi.id}
                     className={`flex min-h-[62px] items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors ${completed
-                        ? 'border-slate-300 bg-slate-200/90 text-slate-500 shadow-inner'
-                        : 'border-blue-200 bg-gradient-to-r from-blue-50 to-white text-blue-950 shadow-xs'
+                      ? 'border-slate-300 bg-slate-200/90 text-slate-500 shadow-inner'
+                      : 'border-blue-200 bg-gradient-to-r from-blue-50 to-white text-blue-950 shadow-xs'
                       }`}
                   >
                     <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[11px] font-black tabular-nums ${completed ? 'bg-slate-400 text-white' : 'bg-gradient-to-br from-blue-600 to-blue-800 text-amber-300'
@@ -1240,8 +1224,8 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
               <div
                 key={badge.id}
                 className={`rounded-xl p-3 text-center border transition-all ${badge.unlocked
-                    ? `${badge.accentColor} shadow-2xs`
-                    : 'border-slate-100 bg-slate-50/50 opacity-60'
+                  ? `${badge.accentColor} shadow-2xs`
+                  : 'border-slate-100 bg-slate-50/50 opacity-60'
                   }`}
               >
                 <div className="text-2xl mb-1">{badge.icon}</div>
@@ -1253,8 +1237,8 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                 </p>
                 <span
                   className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[9px] font-black uppercase ${badge.unlocked
-                      ? badge.badgeBg
-                      : 'bg-slate-200 text-slate-500'
+                    ? badge.badgeBg
+                    : 'bg-slate-200 text-slate-500'
                     }`}
                 >
                   {badge.unlocked ? (lang === 'bs' ? 'Osvojeno' : 'Unlocked') : (lang === 'bs' ? 'Zaključano' : 'Locked')}

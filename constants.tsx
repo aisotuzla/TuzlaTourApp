@@ -1025,8 +1025,8 @@ export const TUZLA_DINING_DATA: LocationData[] = [
     rating: 4.6,
     user_ratings_total: 156,
     address: 'Muhameda H. Uskufija 8, Tuzla',
-    latitude: 44.5385,
-    longitude: 18.6770,
+    latitude: 44.540500,
+    longitude: 18.663298,
     category: 'Restaurant',
     type: 'Dining',
     image: '/assets/Gallery/Food/bosna.webp'
