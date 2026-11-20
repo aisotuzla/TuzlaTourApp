@@ -374,15 +374,7 @@ const AppContent: React.FC = () => {
                       }}
                     />
                   } />
-                  <Route path="/dashboard" element={
-                    <PlayerDashboard
-                      lang={lang}
-                      onNavigateToTarget={(target) => {
-                        setNavigationTarget(target);
-                        navigateToTab(AppTab.QUEST);
-                      }}
-                    />
-                  } />
+                  <Route path="/dashboard" element={<Navigate to="/qr-scan" replace />} />
                   <Route path="/admin" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/task-manager" element={<TaskManager lang={lang} />} />
                   <Route
