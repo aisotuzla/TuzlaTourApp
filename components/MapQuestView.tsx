@@ -405,7 +405,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         if (map.current) {
           map.current.easeTo({
             center: [coords.lon, coords.lat],
-            offset: [0, 60],
+            offset: [0, 110],
             duration: 400,
           });
         }
@@ -442,7 +442,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         if (map.current) {
           map.current.easeTo({
             center: [coords.lon, coords.lat],
-            offset: [0, 60],
+            offset: [0, 110],
             duration: 400,
           });
         }

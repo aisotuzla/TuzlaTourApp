@@ -160,11 +160,19 @@ const AppContent: React.FC = () => {
       const playerSession = await ensurePlayerSession(lang === 'bs' ? 'Gost istraživač' : 'Guest explorer');
       if (!playerSession.user) return { ok: false, code: 'auth_required' };
 
+      // The database quest key uses the legacy spelling "palancinkara";
+      // the app's public POI identifier remains "palacinkara".
+      const canonicalId = questId === 'palacinkara' ? 'palancinkara' : questId;
+
+      // The server validates that sha256(p_qr_payload) matches the quest's qr_code_id.
+      // Send the canonical quest id so all matched QR variants (geo:, URLs, paths) succeed.
+      const payloadToSend = qrPayload && qrPayload.trim().toLowerCase() === canonicalId
+        ? qrPayload.trim()
+        : canonicalId;
+
       const { data, error } = await (supabase as any).rpc('complete_tuzla_quest', {
-        // The database quest key uses the legacy spelling "palancinkara";
-        // the app's public POI identifier remains "palacinkara".
-        p_quest_id: questId === 'palacinkara' ? 'palancinkara' : questId,
-        p_qr_payload: qrPayload,
+        p_quest_id: canonicalId,
+        p_qr_payload: payloadToSend,
         p_lat: position?.lat ?? null,
         p_lon: position?.lon ?? null
       });

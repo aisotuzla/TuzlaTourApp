@@ -110,13 +110,6 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           return;
         }
 
-        // Haptic feedback on device if supported
-        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-          try {
-            navigator.vibrate([100, 50, 100]);
-          } catch (_) { }
-        }
-
         // Record in local scan ledger for history tracking
         try {
           const { value } = await Preferences.get({ key: 'tuzla_scan_ledger' });
@@ -168,21 +161,16 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         scanInProgressRef.current = true;
 
         const getGpsFix = async (): Promise<{ lat: number; lon: number } | null> => {
-          if (!navigator.geolocation || !navigator.permissions?.query) return null;
-
-          try {
-            const permission = await navigator.permissions.query({ name: 'geolocation' });
-            if (permission.state !== 'granted') return null;
-          } catch (error) {
-            console.warn('[QR Scanner] Unable to check location permission:', error);
-            return null;
-          }
+          if (!navigator.geolocation) return null;
 
           return new Promise((resolve) => {
             navigator.geolocation.getCurrentPosition(
               (position) => resolve({ lat: position.coords.latitude, lon: position.coords.longitude }),
-              () => resolve(null),
-              { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
+              (err) => {
+                console.warn('[QR Scanner] GPS fix error:', err);
+                resolve(null);
+              },
+              { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
             );
           });
         };

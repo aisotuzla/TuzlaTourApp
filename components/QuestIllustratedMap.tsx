@@ -143,7 +143,10 @@ const QuestIllustratedMap: React.FC<QuestIllustratedMapProps> = ({
       {/* MAP VIEWPORT - CLEAN IN ALL CORNERS ALL THE TIME */}
       <main className="relative flex-1 w-full min-h-0 flex items-center justify-center overflow-hidden bg-slate-950 p-0 sm:p-1">
         <div className="relative w-full h-full flex items-center justify-center">
-          <div className="relative max-w-full max-h-full aspect-[2160/3840] flex items-center justify-center">
+          <div
+            className="relative max-w-full max-h-full flex items-center justify-center"
+            style={{ aspectRatio: '2000 / 3558' }}
+          >
             <img
               src={MAP_IMAGE}
               alt="Illustrated map of Tuzla with quest landmarks"

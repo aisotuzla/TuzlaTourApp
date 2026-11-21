@@ -378,6 +378,15 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
       }
       if (dashboardData) {
         setData(dashboardData as DashboardData);
+        if (Array.isArray(dashboardData.completed_quests) && dashboardData.completed_quests.length > 0) {
+          const completedIds = dashboardData.completed_quests.map((q: any) =>
+            q.quest_id === 'palancinkara' ? 'palacinkara' : q.quest_id
+          );
+          setUnlockedRewards((prev) => {
+            const merged = Array.from(new Set([...prev, ...completedIds]));
+            return merged.length !== prev.length ? merged : prev;
+          });
+        }
       }
     } catch (err) {
       console.error('Error loading dashboard:', err);
