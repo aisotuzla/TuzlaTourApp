@@ -15,21 +15,21 @@ interface QuestIllustratedMapProps {
 
 const MAP_IMAGE = '/assets/QuestMap3.webp';
 
-// Percent positions aligned with real geographic locations in Tuzla
+// Percent positions aligned with the 12 medallion callouts in QuestMap3.webp
 const HOTSPOTS: Record<string, { left: string; top: string }> = {
-  slapovi: { left: '72%', top: '16%' },
-  panonika: { left: '60%', top: '22%' },
-  trg_slobode: { left: '38%', top: '22%' },
-  stara_cesma: { left: '42%', top: '27%' },
-  kapija: { left: '48%', top: '34%' },
-  salt_square: { left: '38%', top: '38%' },
-  palacinkara: { left: '54%', top: '40%' },
-  palancikara: { left: '54%', top: '40%' },
-  tvrtko_park: { left: '58%', top: '47%' },
-  mesa_selimovic: { left: '52%', top: '56%' },
-  atelje_ismet: { left: '68%', top: '58%' },
-  slana_banja: { left: '84%', top: '65%' },
-  bingo_city_centar: { left: '70%', top: '48%' },
+  tvrtko_park: { left: '47.5%', top: '17.2%' },
+  salt_square: { left: '23.5%', top: '27.1%' },
+  trg_slobode: { left: '81.5%', top: '27.6%' },
+  stara_cesma: { left: '50.0%', top: '35.5%' },
+  slana_banja: { left: '25.9%', top: '42.4%' },
+  bingo_city_centar: { left: '73.6%', top: '41.5%' },
+  palacinkara: { left: '89.6%', top: '51.5%' },
+  palancikara: { left: '89.6%', top: '51.5%' },
+  panonika: { left: '22.5%', top: '57.8%' },
+  mesa_selimovic: { left: '78.5%', top: '62.5%' },
+  slapovi: { left: '36.6%', top: '68.5%' },
+  kapija: { left: '61.1%', top: '71.3%' },
+  atelje_ismet: { left: '52.5%', top: '81.5%' },
 };
 
 const labels = {

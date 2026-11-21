@@ -402,6 +402,13 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
       el.addEventListener('click', () => {
         setActiveTargetId(target.id);
+        if (map.current) {
+          map.current.easeTo({
+            center: [coords.lon, coords.lat],
+            offset: [0, 60],
+            duration: 400,
+          });
+        }
       });
 
       const popupHtml = generateQuestPopupHtml(
@@ -424,13 +431,22 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       );
 
       const popup = new maplibregl.Popup({
-        offset: 24,
-        anchor: 'bottom',
+        offset: [0, -10],
         maxWidth: '300px',
         closeButton: true,
         closeOnClick: true,
         className: 'quest-poi-map-popup',
       }).setHTML(popupHtml);
+
+      popup.on('open', () => {
+        if (map.current) {
+          map.current.easeTo({
+            center: [coords.lon, coords.lat],
+            offset: [0, 60],
+            duration: 400,
+          });
+        }
+      });
 
       const marker = new maplibregl.Marker(el)
         .setLngLat([coords.lon, coords.lat])
