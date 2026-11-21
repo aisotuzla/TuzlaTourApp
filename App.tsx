@@ -28,7 +28,6 @@ import { useDraggablePopups } from './hooks/useDraggablePopups';
 import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
 import { useGeofenceNotifications } from './hooks/useGeofenceNotifications';
 import { SpeedInsights } from "@vercel/speed-insights/react"
-import ARGuide from './components/ARGuide';
 import { TvrtkoScratchCardModal } from './components/TvrtkoScratchCardModal';
 import { KulinCharterModal } from './components/KulinCharterModal';
 
@@ -71,7 +70,6 @@ const getTabFromPath = (path: string): AppTab => {
     case '/task-manager': return AppTab.TASK_MANAGER;
     case '/food': return AppTab.FOOD;
     case '/accommodation': return AppTab.ACCOMMODATION;
-    case '/ar': return AppTab.AR;
     default: return AppTab.LANDING;
   }
 };
@@ -89,7 +87,6 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.TASK_MANAGER: return '/task-manager';
     case AppTab.FOOD: return '/food';
     case AppTab.ACCOMMODATION: return '/accommodation';
-    case AppTab.AR: return '/ar';
     default: return '/';
   }
 };
@@ -392,19 +389,6 @@ const AppContent: React.FC = () => {
                     }
                   />
                   <Route path="/accommodation" element={<Accommodation lang={lang} />} />
-                  <Route path="/ar" element={
-                    <ARGuide
-                      lang={lang}
-                      features={features}
-                      unlockedRewards={unlockedRewards}
-                      onRewardFound={completeQuest}
-                      initialTarget={navigationTarget}
-                      onNavigate={(poi) => {
-                        setNavigationTarget(poi);
-                        navigateToTab(AppTab.MAP);
-                      }}
-                    />
-                  } />
 
                 </Routes>
               </Suspense>

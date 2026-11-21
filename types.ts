@@ -154,6 +154,5 @@ export enum AppTab {
   QR_SCAN = 'qr-scan',
   DASHBOARD = 'dashboard',
   TASK_MANAGER = 'taskManager',
-  AR = 'ar',
   TRAVEL_AGENCIES = 'travelAgencies',
 }

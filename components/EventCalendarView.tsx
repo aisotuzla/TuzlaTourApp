@@ -18,7 +18,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { Language } from '../types';
-import { VerifiedEvent, VerifiedEventCategory } from '../types/events';
+import { LocalEvent, LocalEventCategory } from '../types/localEvents';
 import { addToItinerary } from '../utils/itineraryUtils';
 
 interface CalendarViewProps {
@@ -40,7 +40,7 @@ const DAYS_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export const ALLOWED_YEARS = [2026, 2027];
 
-const CATEGORIES: VerifiedEventCategory[] = ['Music', 'Culture', 'Theatre', 'Sport', 'Panonnica'];
+const CATEGORIES: LocalEventCategory[] = ['Music', 'Culture', 'Theatre', 'Sport', 'Panonnica'];
 
 const SAMPLE_JSON_PROMPT = `[
   {
@@ -78,7 +78,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   const [selectedMonth, setSelectedMonth] = useState<number>(initialMonth);
   const [selectedDateStr, setSelectedDateStr] = useState<string | null>(initialDateStr);
 
-  const [events, setEvents] = useState<VerifiedEvent[]>([]);
+  const [events, setEvents] = useState<LocalEvent[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [addedEvents, setAddedEvents] = useState<string[]>([]);
 
@@ -96,14 +96,14 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
 
   // Manual Form State
   const [formTitle, setFormTitle] = useState<string>('');
-  const [formCategory, setFormCategory] = useState<VerifiedEventCategory>('Culture');
+  const [formCategory, setFormCategory] = useState<LocalEventCategory>('Culture');
   const [formDate, setFormDate] = useState<string>(initialDateStr);
   const [formTime, setFormTime] = useState<string>('20:00');
   const [formVenue, setFormVenue] = useState<string>('Tuzla');
   const [formPrice, setFormPrice] = useState<string>('Besplatno');
 
   // Default seed events for Tuzla
-  const getDefaultSeedEvents = (): VerifiedEvent[] => {
+  const getDefaultSeedEvents = (): LocalEvent[] => {
     return [
       { id: 'tuzla-evt-1', title: 'Dan Nezavisnosti BiH', category: 'Culture', start_date: '2026-03-01', start_time: '12:00', venue_name: 'Trg Slobode', city: 'Tuzla', price: 'Besplatno', source_urls: [], verification_sources: ['Tuzla Tourist Board'], verified: true, updated_at: '2026-03-01T00:00:00Z' },
       { id: 'tuzla-evt-2', title: 'TKT Fest (Teatar Kabare)', category: 'Theatre', start_date: '2026-03-27', start_time: '19:30', venue_name: 'Teatar Kabare Tuzla', city: 'Tuzla', price: '10 KM', source_urls: [], verification_sources: ['TKT'], verified: true, updated_at: '2026-03-27T00:00:00Z' },
@@ -127,7 +127,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
     ];
   };
 
-  const getLocalStoredEvents = (): VerifiedEvent[] => {
+  const getLocalStoredEvents = (): LocalEvent[] => {
     try {
       const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (stored) {
@@ -142,7 +142,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
     return seed;
   };
 
-  const saveLocalStoredEvents = (newEvents: VerifiedEvent[]) => {
+  const saveLocalStoredEvents = (newEvents: LocalEvent[]) => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newEvents));
     } catch {
@@ -161,7 +161,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
     loadEvents();
   }, []);
 
-  const handleAddToItinerary = async (evt: VerifiedEvent) => {
+  const handleAddToItinerary = async (evt: LocalEvent) => {
     await addToItinerary(evt.title, `${evt.venue_name} (${evt.start_date} @ ${evt.start_time})`, 'Attraction');
     setAddedEvents(prev => [...prev, evt.id]);
   };
@@ -183,15 +183,15 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
       throw new Error(lang === 'bs' ? 'Nisu pronađeni validni podaci u JSON-u.' : 'No valid event items found in JSON.');
     }
 
-    const normalized: VerifiedEvent[] = rawList
+    const normalized: LocalEvent[] = rawList
       .filter(item => item && typeof item === 'object' && (item.title || item.name))
       .map((item, idx) => {
         const cleanTitle = String(item.title || item.name || '').trim();
         const rawCat = String(item.category || '').trim();
 
-        let category: VerifiedEventCategory = 'Culture';
+        let category: LocalEventCategory = 'Culture';
         if (CATEGORIES.includes(rawCat as any)) {
-          category = rawCat as VerifiedEventCategory;
+          category = rawCat as LocalEventCategory;
         } else if (cleanTitle.toLowerCase().includes('jazz') || cleanTitle.toLowerCase().includes('koncert') || cleanTitle.toLowerCase().includes('dj')) {
           category = 'Music';
         } else if (cleanTitle.toLowerCase().includes('film') || cleanTitle.toLowerCase().includes('kino') || cleanTitle.toLowerCase().includes('izložba')) {
@@ -244,7 +244,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
 
     // Update local state and localStorage
     const currentLocal = getLocalStoredEvents();
-    const map = new Map<string, VerifiedEvent>();
+    const map = new Map<string, LocalEvent>();
     currentLocal.forEach(e => map.set(e.id, e));
     events.forEach(e => map.set(e.id, e));
     normalized.forEach(e => map.set(e.id, e));
@@ -353,7 +353,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
   }, [selectedYear, selectedMonth]);
 
   const eventsByDate = useMemo(() => {
-    const map: Record<string, VerifiedEvent[]> = {};
+    const map: Record<string, LocalEvent[]> = {};
     events.forEach((evt) => {
       if (!map[evt.start_date]) {
         map[evt.start_date] = [];
@@ -809,7 +809,7 @@ export const EventCalendarView: React.FC<CalendarViewProps> = ({ lang }) => {
                   </label>
                   <select
                     value={formCategory}
-                    onChange={(e) => setFormCategory(e.target.value as VerifiedEventCategory)}
+                    onChange={(e) => setFormCategory(e.target.value as LocalEventCategory)}
                     className="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500"
                   >
                     {CATEGORIES.map(cat => (

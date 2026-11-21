@@ -9,14 +9,12 @@ import { AppFeatures } from '../utils/platform.ts';
 import { Language } from '../types.ts';
 import { TUZLA_CENTER, LOCATIONS } from '../constants.tsx';
 import { useNetwork } from '../hooks/useNetwork.ts';
-import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
 import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 import { getDistance } from '../utils/geoUtils.ts';
-import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
+import { AdaptiveLowPassFilter } from '../utils/gpsSmoothing';
 import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import QuestIllustratedMap from './QuestIllustratedMap.tsx';
-import ARGuide from './ARGuide.tsx';
 import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
 import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
 import { setupPoiMarkerLayers } from '../utils/mapPoiLayers.ts';
