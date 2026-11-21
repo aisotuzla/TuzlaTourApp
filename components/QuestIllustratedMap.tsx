@@ -13,22 +13,23 @@ interface QuestIllustratedMapProps {
   onScan: () => void;
 }
 
-const MAP_IMAGE = '/assets/Gallery/QuestQRLocations/tuzlaMapTour12-optimized.webp';
+const MAP_IMAGE = '/assets/QuestMap3.webp';
 
-// Percent positions aligned to the circular landmark callouts in the map artwork
+// Percent positions aligned with real geographic locations in Tuzla
 const HOTSPOTS: Record<string, { left: string; top: string }> = {
-  tvrtko_park: { left: '47.5%', top: '15.5%' },
-  salt_square: { left: '26.5%', top: '27%' },
-  trg_slobode: { left: '77.5%', top: '26.5%' },
-  stara_cesma: { left: '49.5%', top: '40%' },
-  slana_banja: { left: '30.5%', top: '48%' },
-  bingo_city_centar: { left: '70.5%', top: '47%' },
-  panonika: { left: '21%', top: '66%' },
-  slapovi: { left: '40%', top: '73%' },
-  kapija: { left: '61.5%', top: '73%' },
-  mesa_selimovic: { left: '77%', top: '67%' },
-  atelje_ismet: { left: '54%', top: '91%' },
-  palacinkara: { left: '90%', top: '56%' },
+  slapovi: { left: '72%', top: '16%' },
+  panonika: { left: '60%', top: '22%' },
+  trg_slobode: { left: '38%', top: '22%' },
+  stara_cesma: { left: '42%', top: '27%' },
+  kapija: { left: '48%', top: '34%' },
+  salt_square: { left: '38%', top: '38%' },
+  palacinkara: { left: '54%', top: '40%' },
+  palancikara: { left: '54%', top: '40%' },
+  tvrtko_park: { left: '58%', top: '47%' },
+  mesa_selimovic: { left: '52%', top: '56%' },
+  atelje_ismet: { left: '68%', top: '58%' },
+  slana_banja: { left: '84%', top: '65%' },
+  bingo_city_centar: { left: '70%', top: '48%' },
 };
 
 const labels = {
@@ -142,7 +143,7 @@ const QuestIllustratedMap: React.FC<QuestIllustratedMapProps> = ({
       {/* MAP VIEWPORT - CLEAN IN ALL CORNERS ALL THE TIME */}
       <main className="relative flex-1 w-full min-h-0 flex items-center justify-center overflow-hidden bg-slate-950 p-0 sm:p-1">
         <div className="relative w-full h-full flex items-center justify-center">
-          <div className="relative max-w-full max-h-full aspect-[3236/2158] flex items-center justify-center">
+          <div className="relative max-w-full max-h-full aspect-[2160/3840] flex items-center justify-center">
             <img
               src={MAP_IMAGE}
               alt="Illustrated map of Tuzla with quest landmarks"

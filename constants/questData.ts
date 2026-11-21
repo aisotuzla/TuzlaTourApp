@@ -268,21 +268,21 @@ export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
 ];
 
 export const POI_COLORS: Record<string, string> = {
-  // Phase 1 — Old Town / Čaršija — light silver/grey
-  'kapija': '#3e4550ff',
-  'trg_slobode': '#deecffff',
-  'stara_cesma': '#6591cfff',
-  'mesa_selimovic': '#f1ec9fff',
-  // Phase 2 — Bosnian Kingdom — green
-  'tvrtko_park': '#109c44ff',
-  'palacinkara': '#a3169cff',
-  'salt_square': '#e2aeaeff',
-  // Phase 3 — Pannonian Sailor — light blue → blue
+  // Phase 1 — Old Town / Čaršija — light silver
+  'trg_slobode': '#94a3b8',
+  'stara_cesma': '#94a3b8',
+  'kapija': '#94a3b8',
+  'mesa_selimovic': '#94a3b8',
+  // Phase 2 — Bosnian Kingdom (Bosansko kraljevstvo) — green
+  'tvrtko_park': '#16a34a',
+  'palacinkara': '#16a34a',
+  'salt_square': '#16a34a',
+  // Phase 3 — Pannonian Sailor (Panonski mornar) — light blue to blue
   'panonika': '#38bdf8',
-  'slapovi': '#0e60e6ff',
-  'slana_banja': '#5fec4dff',
-  'atelje_ismet': '#7961ffff',
-  // Grand Final — Salt City Winner — red
+  'slapovi': '#0ea5e9',
+  'slana_banja': '#38bdf8',
+  'atelje_ismet': '#0284c7',
+  // Grand Final — Salt City Winner (Pobjednik Slanog Grada) — red
   'bingo_city_centar': '#ef4444',
 };
 
@@ -307,10 +307,10 @@ export const PHASE_3_POIS = ['panonika', 'slapovi', 'slana_banja', 'atelje_ismet
 export const GRAND_FINALE_POIS = ['bingo_city_centar'];
 
 export const PHASE_META = {
-  1: { badge: { en: 'Old Town', bs: 'Čaršija' }, color: '#94a3b8', colorClass: 'bg-slate-400' },
-  2: { badge: { en: 'Bosnian Kingdom', bs: 'Bosansko kraljevstvo' }, color: '#16a34a', colorClass: 'bg-green-600' },
-  3: { badge: { en: 'Pannonian Sailor', bs: 'Panonski mornar' }, color: '#38bdf8', colorClass: 'bg-sky-400' },
-  4: { badge: { en: 'Salt City Winner', bs: 'Salt City Winner' }, color: '#ef4444', colorClass: 'bg-red-500' },
+  1: { badge: { en: 'Old Town', bs: 'Čaršija', de: 'Altstadt', tr: 'Eski Şehir' }, color: '#94a3b8', colorClass: 'bg-slate-400' },
+  2: { badge: { en: 'Bosnian Kingdom', bs: 'Bosansko kraljevstvo', de: 'Bosnisches Königreich', tr: 'Bosna Krallığı' }, color: '#16a34a', colorClass: 'bg-green-600' },
+  3: { badge: { en: 'Pannonian Sailor', bs: 'Panonski mornar', de: 'Pannonischer Seemann', tr: 'Pannonian Denizci' }, color: '#38bdf8', colorClass: 'bg-sky-400' },
+  4: { badge: { en: 'Salt City Winner', bs: 'Pobjednik Slanog Grada', de: 'Salzstadt-Gewinner', tr: 'Tuz Şehri Kazananı' }, color: '#ef4444', colorClass: 'bg-red-500' },
 } as const;
 
 export function isPoiRewardUnlocked(poiId: string, unlockedRewards: string[]): boolean {
@@ -341,19 +341,19 @@ export function getCurrentQuestPhase(unlockedRewards: string[]): number {
 export const QUEST_GAME_RULES: Record<Language, { title: string; text: string }> = {
   bs: {
     title: 'Pravila igre potrage',
-    text: 'Pronađite označene lokacije na mapi grada. Pratite GPS navigaciju ili AR vodič. Kada stignete na lokaciju, pronađite QR kod i skenirajte ga kako biste otključali sljedeće nivoe igre i osvojili nagrade.',
+    text: 'Pronađite označene lokacije na mapi grada. Pratite kompas i GPS mjerenje udaljenosti. Kada stignete unutar 25m od lokacije, pronađite QR kod i skenirajte ga kako biste osvojili značku i prešli u sljedeću fazu.',
   },
   en: {
     title: 'Quest Game Rules',
-    text: 'Find the marked locations on the city map. Follow the GPS navigation or the AR guide. Once at the location, find the QR code and scan it to unlock the next game levels and win rewards.',
+    text: 'Find the marked locations on the city map. Follow the compass and GPS distance meter. When you are within 25m of the location, scan the QR code to claim your badge and advance to the next phase.',
   },
   de: {
     title: 'Regeln für das Suchspiel',
-    text: 'Finden Sie die markierten Orte auf der Stadtkarte. Folgen Sie der GPS-Navigation oder dem AR-Guide. Finden Sie vor Ort den QR-Code und scannen Sie ihn, um die nächsten Spiel-Level und Belohnungen freizuschalten.',
+    text: 'Finden Sie die markierten Orte auf der Stadtkarte. Folgen Sie dem Kompass und der GPS-Entfernungsmessung. Wenn Sie sich innerhalb von 25m befinden, scannen Sie den QR-Code, um Abzeichen und Belohnungen freizuschalten.',
   },
   tr: {
     title: 'Keşif Oyunu Kuralları',
-    text: 'Şehir haritasında işaretlenmiş konumları bulun. GPS navigasyonunu veya AR rehberini takip edin. Konuma ulaştığınızda QR kodunu bulun ve bir sonraki oyun seviyelerinin ve ödüllerin kilidini açmak için kodu tarayın.',
+    text: 'Şehir haritasında işaretlenmiş konumları bulun. Pusula ve GPS mesafe ölçerini takip edin. Konuma 25m yaklaştığınızda QR kodunu tarayın ve rozetler kazanarak sonraki aşamaya geçin.',
   },
 };
 

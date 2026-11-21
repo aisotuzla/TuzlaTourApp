@@ -132,19 +132,19 @@ export const POI_GEOJSON_DATA = {
     },
     {
       type: "Feature",
-      geometry: { type: "Point", coordinates: [18.661546, 44.540812] },
+      geometry: { type: "Point", coordinates: [18.6632988, 44.540500] },
       properties: {
-        name: "Stadion \"Tusanj\"",
-        name_bs: "Stadion \"Tušanj\"",
-        category: "Sport",
+        name: "Zdravljak Bosna",
+        name_bs: "Slastičarna Bosna",
+        category: "Dining",
         "marker-color": "rgba(195, 0, 0, 1)",
         "marker-size": "medium",
-        image: "trgslobodeO.webp",
-        icon: "trgslobodeO",
-        "icon-image": "trgslobodeO",
-        "marker-image": "/assets/Gallery/QuestQRLocations/QuestQR/trgslobodeO.webp",
-        "marker-symbol": "trgslobodeO",
-        visibility: false
+        image: "bosna.webp",
+        icon: "bosna",
+        "icon-image": "bosna.webp",
+        "marker-image": "/assets/Gallery/Food/bosna.webp",
+        "marker-symbol": "bosna",
+        visibility: true
       }
     },
     {

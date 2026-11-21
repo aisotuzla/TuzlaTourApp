@@ -34,9 +34,7 @@ export const AudioControlBar: React.FC<AudioControlBarProps> = ({
   const [showLongPressHint, setShowLongPressHint] = useState(false);
 
   const triggerHaptic = () => {
-    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate(25);
-    }
+    // Vibration removed per user configuration
   };
 
   const handlePlayPause = () => {

@@ -16,7 +16,7 @@ import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Impor
 import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import QuestIllustratedMap from './QuestIllustratedMap.tsx';
-import ARGuide from './ARGuide.tsx';
+import QuestCompassPanel from './QuestCompassPanel.tsx';
 import { useAudioGuide } from '../contexts/AudioGuideContext.tsx';
 import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyKeys';
 import { setupPoiMarkerLayers } from '../utils/mapPoiLayers.ts';
@@ -110,7 +110,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const userLocationRef = useRef<[number, number] | null>(null);
   const [isScannerOpen, setIsScannerOpen] = useState(initialOpenScanner);
-  const [showARGuide, setShowARGuide] = useState(true);
   const [selectedNavTarget, setSelectedNavTarget] = useState<{ name: string; lat: number; lon: number } | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [playingQuestVideo, setPlayingQuestVideo] = useState<{ url: string; title: string } | null>(null);
@@ -122,14 +121,36 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const [showRules, setShowRules] = useState(false);
   const [showIllustratedMap, setShowIllustratedMap] = useState(false);
   const [isHudHidden, setIsHudHidden] = useState(false);
-  const [activeVictoryModal, setActiveVictoryModal] = useState<'phase1' | 'phase2' | 'phase3' | 'finale' | null>(null);
-  const [dismissedModals, setDismissedModals] = useState<string[]>([]);
 
   const isPhase1Done = PHASE_1_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
   const isPhase2Done = isPhase1Done && PHASE_2_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
   const isPhase3Done = isPhase2Done && PHASE_3_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
   const isGrandFinaleDone = isPhase3Done && GRAND_FINALE_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
   const currentPhase = !isPhase1Done ? 1 : !isPhase2Done ? 2 : !isPhase3Done ? 3 : 4;
+
+  const getNextUncompletedPoi = (rewards: string[]) => {
+    for (const id of PHASE_1_POIS) {
+      if (!isPoiRewardUnlocked(id, rewards)) return id;
+    }
+    for (const id of PHASE_2_POIS) {
+      if (!isPoiRewardUnlocked(id, rewards)) return id;
+    }
+    for (const id of PHASE_3_POIS) {
+      if (!isPoiRewardUnlocked(id, rewards)) return id;
+    }
+    for (const id of GRAND_FINALE_POIS) {
+      if (!isPoiRewardUnlocked(id, rewards)) return id;
+    }
+    return PHASE_1_POIS[0];
+  };
+
+  const [activeTargetId, setActiveTargetId] = useState<string>(() => getNextUncompletedPoi(unlockedRewards));
+
+  useEffect(() => {
+    if (isPoiRewardUnlocked(activeTargetId, unlockedRewards)) {
+      setActiveTargetId(getNextUncompletedPoi(unlockedRewards));
+    }
+  }, [unlockedRewards]);
 
   const currentNavTargetColor = useMemo(() => {
     if (!selectedNavTarget) return '#10b981';
@@ -149,21 +170,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     return POI_COLORS[targetId] || '#10b981';
   }, [selectedNavTarget]);
 
-  useEffect(() => {
-    if (isGrandFinaleDone && !dismissedModals.includes('finale')) setActiveVictoryModal('finale');
-    else if (isPhase3Done && !dismissedModals.includes('phase3')) setActiveVictoryModal('phase3');
-    else if (isPhase2Done && !dismissedModals.includes('phase2')) setActiveVictoryModal('phase2');
-    else if (isPhase1Done && !dismissedModals.includes('phase1')) setActiveVictoryModal('phase1');
-  }, [isPhase1Done, isPhase2Done, isPhase3Done, isGrandFinaleDone, dismissedModals]);
-
-  const handleCloseVictoryModal = (modalKey: 'phase1' | 'phase2' | 'phase3' | 'finale') => {
-    setDismissedModals(prev => [...prev, modalKey]);
-    setActiveVictoryModal(null);
-  };
-
   const handleStartNavigation = (name: string, lat: number, lon: number) => {
-    // AR Guide and GPS navigation are mutually exclusive
-    if (showARGuide) setShowARGuide(false);
     setSelectedNavTarget({ name, lat, lon });
     setIsNavigating(true);
     if (map.current && userLocationRef.current) {
@@ -179,6 +186,12 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
   useEffect(() => {
     if (!navigationTarget || !Number.isFinite(navigationTarget.lat) || !Number.isFinite(navigationTarget.lon)) return;
+    const matched = QUEST_TARGETS.find(
+      t => t.id === navigationTarget.name || t.name.bs === navigationTarget.name || t.name.en === navigationTarget.name
+    );
+    if (matched) {
+      setActiveTargetId(matched.id);
+    }
     handleStartNavigation(navigationTarget.name, navigationTarget.lat, navigationTarget.lon);
     if (map.current) {
       map.current.flyTo({
@@ -192,15 +205,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     onClearNavigation?.();
   }, [navigationTarget]);
 
-  const handleToggleARMode = () => {
-    if (!showARGuide && isNavigating) {
-      // Turning AR on while navigating — stop GPS route but keep selectedNavTarget for AR Guide
-      setIsNavigating(false);
-      clearRoute();
-    }
-    setShowARGuide(previous => !previous);
-  };
-
   const markersRef = useRef<{ [key: string]: maplibregl.Marker }>({});
   const userMarkerRef = useRef<maplibregl.Marker | null>(null);
   const gpsFilterRef = useRef(new AdaptiveLowPassFilter()); // PRO FIX: Instantiate filter
@@ -213,17 +217,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         (popups[i] as HTMLElement).remove();
       }
       handleStartNavigation(name, lat, lon);
-    };
-    (window as any).startArTrailFromPopup = (poiId: string, name: string, lat: number, lon: number) => {
-      const popups = document.getElementsByClassName('maplibregl-popup');
-      for (let i = 0; i < popups.length; i++) {
-        (popups[i] as HTMLElement).remove();
-      }
-      // AR Guide and GPS navigation are mutually exclusive — stop any active navigation
-      setIsNavigating(false);
-      clearRoute();
-      setSelectedNavTarget({ name, lat, lon });
-      setShowARGuide(true);
     };
     (window as any).playQuestVideo = (videoUrl: string, title?: string) => {
       setPlayingQuestVideo({ url: videoUrl, title: title || (lang === 'bs' ? 'Cinematic Video' : 'Cinematic Video') });
@@ -406,6 +399,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       el.style.justifyContent = 'center';
 
       el.innerHTML = `<div class="relative flex items-center justify-center group" title="${title}"><div class="w-10 h-10 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl border-2 relative transition-transform duration-200 hover:scale-110 active:scale-95" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><img src="${poiThumb}" alt="${title}" class="w-8 h-8 rounded-xl object-cover pointer-events-none" onerror="this.style.display='none'" /><span class="absolute top-0.5 right-0.5 text-[9px] leading-none font-black drop-shadow pointer-events-none px-1 rounded-full ${isUnlocked ? 'bg-amber-400 text-black' : 'bg-slate-900/80 text-white'}">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm pointer-events-none" style="background-color: ${customPoiColor};"></div></div>`;
+
+      el.addEventListener('click', () => {
+        setActiveTargetId(target.id);
+      });
 
       const popupHtml = generateQuestPopupHtml(
         {
@@ -630,49 +627,55 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     if (onClearNavigation) onClearNavigation();
   };
 
-  const [splitHeight, setSplitHeight] = useState<number>(40);
-  const [isDraggingSplit, setIsDraggingSplit] = useState(false);
-
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    setIsDraggingSplit(true);
-  };
-
   useEffect(() => {
-    if (!isDraggingSplit) return;
-    const handleMove = (e: MouseEvent | TouchEvent) => {
-      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-      const containerHeight = window.innerHeight - 88;
-      const percentage = Math.min(80, Math.max(15, (clientY / containerHeight) * 100));
-      setSplitHeight(percentage);
-    };
-    const handleEnd = () => setIsDraggingSplit(false);
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('touchmove', handleMove);
-    window.addEventListener('mouseup', handleEnd);
-    window.addEventListener('touchend', handleEnd);
-    return () => {
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('touchmove', handleMove);
-      window.removeEventListener('mouseup', handleEnd);
-      window.removeEventListener('touchend', handleEnd);
-    };
-  }, [isDraggingSplit]);
-
-  useEffect(() => {
-    if (map.current) { const timer = setTimeout(() => { map.current?.resize(); }, 100); return () => clearTimeout(timer); }
-  }, [showARGuide, splitHeight]);
+    if (map.current) {
+      const timer = setTimeout(() => { map.current?.resize(); }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const unlockedItemsCount = unlockedRewards.length;
   const totalItemsCount = QUEST_TARGETS.length;
 
   return (
     <div className="h-[calc(100vh-70px)] w-full relative flex flex-col overflow-hidden bg-slate-950 font-quicksand select-none">
-      {/* 3D Map Container */}
+      {/* 3D Map Container (Top 65%) */}
       <div
         ref={mapContainer}
-        style={{ height: showARGuide ? `${splitHeight}%` : '100%' }}
-        className={`w-full relative overflow-hidden z-0 ${showARGuide ? 'flex-shrink-0 border-b border-amber-500/40 shadow-2xl' : 'flex-1'}`}
+        style={{ height: '65%' }}
+        className="w-full relative overflow-hidden z-0 flex-shrink-0 border-b border-white/10 shadow-xl"
       />
+
+      {/* Quest Compass & POI Distance Panel (Bottom 35%) */}
+      <div
+        style={{ height: '35%' }}
+        className="w-full relative flex flex-col bg-slate-950 overflow-hidden shadow-2xl shrink-0 z-10"
+      >
+        <QuestCompassPanel
+          lang={lang}
+          unlockedRewards={unlockedRewards}
+          userLocation={userLocation ? { lat: userLocation[0], lng: userLocation[1] } : (rawGeoPosition ? { lat: rawGeoPosition.lat, lng: rawGeoPosition.lng } : null)}
+          activeTargetId={activeTargetId}
+          onSelectTarget={(poiId) => {
+            setActiveTargetId(poiId);
+            const coords = QUEST_TARGET_COORDS[poiId];
+            if (coords && map.current) {
+              map.current.flyTo({
+                center: [coords.lon, coords.lat],
+                zoom: activeStyle === OFFLINE_STYLE ? 15 : 17,
+                pitch: 55,
+                bearing: -15,
+                duration: 1500,
+              });
+            }
+          }}
+          onOpenScanner={() => setIsScannerOpen(true)}
+          onStartNavigation={(name, lat, lon) => handleStartNavigation(name, lat, lon)}
+          onPlayAudio={(poiId, title, audioUrl) => {
+            if ((window as any).playPoiAudio) (window as any).playPoiAudio(poiId, title, audioUrl);
+          }}
+        />
+      </div>
 
       {showIllustratedMap && (
         <QuestIllustratedMap
@@ -682,99 +685,19 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
           onNavigate={(target) => {
             setShowIllustratedMap(false);
             const coordinates = QUEST_TARGET_COORDS[target.id];
-            if (coordinates) handleStartNavigation(target.name[lang] || target.name.en || target.name.bs, coordinates.lat, coordinates.lon);
+            if (coordinates) {
+              setActiveTargetId(target.id);
+              handleStartNavigation(target.name[lang] || target.name.en || target.name.bs, coordinates.lat, coordinates.lon);
+            }
           }}
           onScan={() => { setShowIllustratedMap(false); setIsScannerOpen(true); }}
         />
       )}
 
-      {showARGuide && (
-        <>
-          <div
-            onMouseDown={handleDragStart}
-            onTouchStart={handleDragStart}
-            className="h-3.5 w-full bg-slate-900/90 hover:bg-amber-500/40 active:bg-amber-500/60 cursor-ns-resize flex items-center justify-center border-y border-amber-500/40 z-40 shrink-0 transition-colors"
-            title={lang === 'bs' ? 'Povuci za promjenu veličine mape i AR vodiča' : 'Drag to resize map and AR guide'}
-          >
-            <div className="w-12 h-1 bg-amber-400/80 rounded-full" />
-          </div>
-          <div
-            style={{ height: `calc(${100 - splitHeight}% - 14px)` }}
-            className="w-full relative flex flex-col bg-slate-950 overflow-hidden shadow-2xl shrink-0 z-10"
-          >
-            <ARGuide
-              lang={lang}
-              features={features}
-              initialTarget={selectedNavTarget ? LOCATIONS.find(location => location.name.bs === selectedNavTarget.name || location.name.en === selectedNavTarget.name || location.id === selectedNavTarget.name) : null}
-              unlockedRewards={unlockedRewards}
-              onRewardFound={onRewardFound}
-              initialTrailActive={true}
-              onNavigate={(poi) => {
-                setShowARGuide(false);
-                handleStartNavigation(poi.name[lang] || poi.name.bs, poi.coordinates[0], poi.coordinates[1]);
-              }}
-            />
-          </div>
-        </>
-      )}
-
-      {/* Victory Modals */}
-      <AnimatePresence>
-        {activeVictoryModal === 'phase1' && (
-          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="w-full max-w-md bg-gradient-to-b from-slate-900 via-slate-900 to-emerald-950 border-2 border-emerald-500/50 rounded-3xl p-6 shadow-2xl text-center flex flex-col items-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center animate-bounce"><Trophy className="w-9 h-9 text-emerald-400" /></div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-400/30">FAZA 1 ZAVRŠENA! / PHASE 1 COMPLETE!</span>
-              <h3 className="text-2xl font-black text-white">Otključana Faza 2! 🚀</h3>
-              <p className="text-xs text-slate-300 leading-relaxed font-medium">Čestitamo! Uspješno ste otključali <b>Trg Slobode</b>, <b>Kapiju</b> i <b>Mešu Selimovića</b>. Sada su otključane lokacije Faze 2!</p>
-              <button onClick={() => handleCloseVictoryModal('phase1')} className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95">Kreni na Fazu 2 🎉</button>
-            </motion.div>
-          </div>
-        )}
-        {activeVictoryModal === 'phase2' && (
-          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="w-full max-w-md bg-gradient-to-b from-slate-900 via-purple-950 to-slate-900 border-2 border-purple-500/50 rounded-3xl p-6 shadow-2xl text-center flex flex-col items-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-purple-500/20 border-2 border-purple-400 flex items-center justify-center animate-pulse"><Trophy className="w-9 h-9 text-purple-300" /></div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-purple-300 bg-purple-500/20 px-3 py-1 rounded-full border border-purple-400/30">FAZA 2 ZAVRŠENA! ⚽</span>
-              <h3 className="text-2xl font-black text-white">Faza 2 Kompletirana!</h3>
-              <p className="text-xs text-slate-300 leading-relaxed font-medium">Čestitamo! Otključali ste Park Kralja Tvrtka, Palančikara Bagi i Solni Trg. Sada su dostupne lokacije Faze 3!</p>
-              <button onClick={() => handleCloseVictoryModal('phase2')} className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95">Nastavi na Fazu 3 🚀</button>
-            </motion.div>
-          </div>
-        )}
-        {activeVictoryModal === 'phase3' && (
-          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
-            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="w-full max-w-md bg-gradient-to-b from-slate-900 via-rose-950 to-slate-900 border-2 border-rose-500/50 rounded-3xl p-6 shadow-2xl text-center flex flex-col items-center space-y-4 relative overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-rose-500/20 via-transparent to-transparent animate-pulse pointer-events-none" />
-              <div className="w-20 h-20 rounded-full bg-rose-500/20 border-2 border-rose-400 flex items-center justify-center animate-bounce shadow-2xl"><span className="text-4xl">❤️</span></div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-rose-300 bg-rose-500/20 px-3 py-1 rounded-full border border-rose-400/30">FAZA 3 GRANDIOZNA POBJEDA! 🎆</span>
-              <h3 className="text-2xl font-black text-white">SRCE TUZLE! ❤️</h3>
-              <p className="text-xs text-slate-300 leading-relaxed font-medium">Fantastično! Otključali ste <b>Panoniku</b>, <b>Slapove</b>, <b>Slanu Banju</b> i <b>Atelje Ismet Mujezinović</b>.</p>
-              <button onClick={() => handleCloseVictoryModal('phase3')} className="w-full py-3.5 bg-gradient-to-r from-rose-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95">Otvori Veliko Finale (Bingo City Centar) 🏆</button>
-            </motion.div>
-          </div>
-        )}
-        {activeVictoryModal === 'finale' && (
-          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
-            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="w-full max-w-md bg-gradient-to-b from-slate-900 via-amber-950 to-slate-900 border-2 border-amber-400/60 rounded-3xl p-6 shadow-2xl text-center flex flex-col items-center space-y-4">
-              <div className="w-20 h-20 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center animate-spin-slow shadow-2xl"><Trophy className="w-10 h-10 text-amber-300" /></div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-amber-300 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-400/30">VELIKO FINALE ZAVRŠENO • ZLATNI PARTNER! 🌟</span>
-              <h3 className="text-2xl font-black text-white">Bingo City Centar Nagrada!</h3>
-              <div className="w-full bg-amber-500/10 border border-amber-400/40 rounded-2xl p-4 text-center space-y-1">
-                <span className="text-xs font-black text-amber-300 uppercase tracking-widest">Kupon Popusta Trgovine</span>
-                <p className="text-2xl font-black text-white tracking-widest font-mono">BCC-GOLDEN-TUZLA-2026</p>
-                <p className="text-[10px] text-amber-200/80">Predočite kod za posebni popust u Bingo City Centru!</p>
-              </div>
-              <button onClick={() => handleCloseVictoryModal('finale')} className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black rounded-2xl shadow-xl transition-all uppercase tracking-wider text-xs active:scale-95">Preuzmi Nagradu & Završi 👑</button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* FLOATING ACTION BUTTONS (AR, LOCATION, RULES, LAYERS) */}
+      {/* FLOATING ACTION BUTTONS (ILLUSTRATED MAP, LOCATION, RULES, LAYERS) */}
       <div
         className="absolute z-30 flex flex-col items-center gap-1.5 transition-all duration-150 left-3"
-        style={showARGuide ? { bottom: `calc(${100 - splitHeight}% + 14px)` } : { bottom: '0.85rem' }}
+        style={{ bottom: 'calc(35% + 0.85rem)' }}
       >
         <button
           onClick={() => setShowIllustratedMap(true)}
@@ -783,17 +706,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
           aria-label="Open illustrated quest map"
         >
           <MapIcon size={16} />
-        </button>
-        {/* AR guide button just above Location round button */}
-        <button
-          onClick={handleToggleARMode}
-          className={`w-9 h-9 flex items-center justify-center font-black text-xs rounded-full shadow-lg backdrop-blur-xl border transition-all active:scale-95 ${showARGuide
-            ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 border-amber-300 ring-2 ring-amber-400/50 shadow-amber-500/30'
-            : 'bg-slate-900/90 text-amber-400 border-amber-400/40 hover:text-white hover:border-amber-400'
-            }`}
-          title={lang === 'bs' ? 'AR Vodič' : 'AR Guide'}
-        >
-          AR
         </button>
 
         <button
@@ -841,7 +753,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       {/* Layer Menu Dropdown */}
       <AnimatePresence>
         {showLayerMenu && (
-          <motion.div initial={{ opacity: 0, y: 10, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.9 }} className="absolute z-30 w-64 p-3 bg-slate-900/95 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-2xl space-y-1.5 transition-all duration-150 left-14" style={{ bottom: showARGuide ? `calc(${100 - splitHeight}% + 14px)` : '4.5rem' }}>
+          <motion.div initial={{ opacity: 0, y: 10, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.9 }} className="absolute z-30 w-64 p-3 bg-slate-900/95 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-2xl space-y-1.5 transition-all duration-150 left-14" style={{ bottom: 'calc(35% + 0.85rem)' }}>
             <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2 py-1 border-b border-white/5 flex items-center justify-between"><span>{lang === 'bs' ? 'Sloj Mape' : 'Map Layer'}</span><Layers size={12} className="text-blue-400" /></div>
             {MAP_LAYER_OPTIONS.map((layerOpt) => {
               const isSelected = activeStyle === layerOpt.url;
@@ -859,7 +771,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       {/* Quest Game Rules Dialog */}
       <AnimatePresence>
         {showRules && (
-          <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute z-40 max-w-[300px] p-4 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-amber-500/40 shadow-2xl text-xs text-slate-200 left-14" style={{ bottom: showARGuide ? `calc(${100 - splitHeight}% + 14px)` : '4.5rem' }}>
+          <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute z-40 max-w-[300px] p-4 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-amber-500/40 shadow-2xl text-xs text-slate-200 left-14" style={{ bottom: 'calc(35% + 0.85rem)' }}>
             <div className="flex items-center justify-between mb-2 pb-1 border-b border-white/10">
               <span className="font-black text-amber-400 uppercase tracking-wide text-[10px]">{QUEST_GAME_RULES[lang]?.title || QUEST_GAME_RULES.en.title}</span>
               <button onClick={() => setShowRules(false)} className="text-white/60 hover:text-white"><X size={14} /></button>

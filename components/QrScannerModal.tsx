@@ -3,7 +3,8 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, AlertCircle } from 'lucide-react';
 import { Language } from '../types';
-import { QUEST_TARGETS } from '../constants/questData';
+import { QUEST_TARGETS, QUEST_TARGET_COORDS } from '../constants/questData';
+import { getDistance } from '../utils/geoUtils';
 import { findQuestTargetFromQr } from '../utils/qrMatcher';
 import { Preferences } from '@capacitor/preferences';
 import { useGlobalApp } from '../contexts/GlobalAppContext';
@@ -187,6 +188,28 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         };
 
         const gpsFix = await getGpsFix();
+
+        // 25m GPS Range Check: task is done when qr code and gps in range of 25m from POI location is matched
+        const coords = QUEST_TARGET_COORDS[target.id];
+        if (gpsFix && coords) {
+          const dist = getDistance(gpsFix.lat, gpsFix.lon, coords.lat, coords.lon);
+          if (dist > 25) {
+            setScannerFeedback({
+              text: lang === 'bs'
+                ? `Nalazite se izvan dometa (${Math.round(dist)}m). Morate biti unutar 25m od lokacije!`
+                : lang === 'de'
+                  ? `Zu weit entfernt (${Math.round(dist)}m). Maximal 25m Entfernung erlaubt!`
+                  : `You are out of range (${Math.round(dist)}m). You must be within 25m of the location!`,
+              type: 'error'
+            });
+            setTimeout(() => {
+              setScannerFeedback(null);
+              scanInProgressRef.current = false;
+            }, 4000);
+            return;
+          }
+        }
+
         let completion: { ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number };
         try {
           completion = await onRewardFound(target.id, trimmedText, gpsFix);

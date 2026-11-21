@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Award,
   BookOpen,
@@ -23,7 +24,6 @@ import {
   Zap,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Html5Qrcode } from 'html5-qrcode';
 import { Preferences } from '@capacitor/preferences';
 
 import { supabase } from '../lib/supabaseClient';
@@ -40,7 +40,6 @@ import {
   isPoiRewardUnlocked,
   QuestTarget,
 } from '../constants/questData';
-import { findQuestTargetFromQr } from '../utils/qrMatcher';
 
 interface PlayerDashboardProps {
   lang: Language;
@@ -330,6 +329,7 @@ const formatTimestamp = (timestamp: string, lang: Language): string => {
 };
 
 export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNavigateToTarget }) => {
+  const navigate = useNavigate();
   const t = copy[lang] || copy.en;
   const isOnline = useNetwork();
   const { unlockedRewards, setUnlockedRewards, setIsTvrtkoScratchOpen } = useGlobalApp();
@@ -339,16 +339,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
   const [loading, setLoading] = useState(true);
   const [dashboardError, setDashboardError] = useState('');
   const [guestId, setGuestId] = useState('');
-
-  // 2. QR Scanner State
-  const [isScanning, setIsScanning] = useState(false);
-  const [scannerStatus, setScannerStatus] = useState<'idle' | 'loading' | 'active' | 'error'>('idle');
-  const [scannerFeedback, setScannerFeedback] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
-  const [scannerError, setScannerError] = useState<string | null>(null);
-  const [availableCameras, setAvailableCameras] = useState<Array<{ id: string; label: string }>>([]);
-  const [activeCameraId, setActiveCameraId] = useState<string | null>(null);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const processingQrRef = useRef(false);
 
   // 4. Ledger & Completed Quests State
   const [ledger, setLedger] = useState<LedgerEntry[]>([]);
@@ -412,261 +402,6 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
     void loadSavedData();
     void loadDashboard();
   }, [loadDashboard]);
-
-  // Cleanup Scanner on Unmount
-  useEffect(() => {
-    return () => {
-      if (scannerRef.current) {
-        scannerRef.current.stop().catch(() => { });
-      }
-    };
-  }, []);
-
-  // Handle QR Decoding. Supabase is authoritative: never unlock locally before server approval.
-  const processDecodedQr = async (decodedText: string) => {
-    if (processingQrRef.current) return;
-    processingQrRef.current = true;
-
-    const showFailure = (message: string) => {
-      setScannerFeedback({ text: message, type: 'error' });
-      void stopScanner();
-    };
-
-    try {
-      const trimmed = decodedText?.trim() ?? '';
-      const target = findQuestTargetFromQr(trimmed);
-      if (!target) {
-        showFailure(t.scanError);
-        return;
-      }
-
-      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-        try { navigator.vibrate([100, 50, 100]); } catch (_) { }
-      }
-
-      if (!navigator.geolocation) {
-        showFailure(lang === 'bs'
-          ? 'GPS nije dostupan na ovom uređaju.'
-          : 'GPS is unavailable on this device.');
-        return;
-      }
-
-      let position: GeolocationPosition;
-      try {
-        position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0,
-          });
-        });
-      } catch (gpsError) {
-        const gpsMessage = gpsError instanceof GeolocationPositionError && gpsError.code === gpsError.PERMISSION_DENIED
-          ? (lang === 'bs' ? 'Dozvolite pristup lokaciji da biste potvrdili posjetu.' : 'Allow location access to verify this visit.')
-          : (lang === 'bs' ? 'GPS lokacija nije dostupna. Pokušajte ponovo na otvorenom.' : 'Could not obtain GPS location. Please retry outdoors.');
-        showFailure(gpsMessage);
-        return;
-      }
-
-      const { data: completion, error: completionError } = await (supabase as any).rpc(
-        'complete_tuzla_quest',
-        {
-          p_quest_id: target.id,
-          p_qr_payload: trimmed,
-          p_lat: position.coords.latitude,
-          p_lon: position.coords.longitude,
-        }
-      );
-
-      if (completionError) throw completionError;
-
-      const result = completion as { ok?: boolean; code?: string; xp_awarded?: number; xp_total?: number; distance_meters?: number; radius_meters?: number } | null;
-      const alreadyCompleted = result?.code === 'already_completed';
-
-      if (!result?.ok && !alreadyCompleted) {
-        const messages: Record<string, Record<Language, string>> = {
-          qr_not_configured: {
-            bs: 'QR kod ove lokacije još nije povezan sa serverom.',
-            en: 'This location QR code is not configured on the server yet.',
-            de: 'Dieser Standort-QR-Code ist noch nicht auf dem Server eingerichtet.',
-            tr: 'Bu konumun QR kodu henüz sunucuda yapılandırılmadı.',
-          },
-          invalid_qr: {
-            bs: 'QR kod ne odgovara ovoj lokaciji.',
-            en: 'This QR code does not match this location.',
-            de: 'Der QR-Code gehört nicht zu diesem Standort.',
-            tr: 'Bu QR kodu bu konumla eşleşmiyor.',
-          },
-          outside_radius: {
-            bs: 'Nalazite se izvan dozvoljenog GPS radijusa. Priđite lokaciji i pokušajte ponovo.',
-            en: 'You are outside the allowed GPS radius. Move closer and try again.',
-            de: 'Sie befinden sich außerhalb des GPS-Radius. Gehen Sie näher heran und versuchen Sie es erneut.',
-            tr: 'İzin verilen GPS yarıçapının dışındasınız. Yaklaşın ve tekrar deneyin.',
-          },
-          gps_required: {
-            bs: 'GPS lokacija je obavezna za potvrdu ove posjete.',
-            en: 'GPS location is required to verify this visit.',
-            de: 'Für die Bestätigung dieses Besuchs ist GPS erforderlich.',
-            tr: 'Bu ziyareti doğrulamak için GPS konumu gereklidir.',
-          },
-          auth_required: {
-            bs: 'Igračka sesija nije aktivna. Osvježite aplikaciju.',
-            en: 'Your player session is not active. Please refresh the app.',
-            de: 'Ihre Spielersitzung ist nicht aktiv. Bitte aktualisieren Sie die App.',
-            tr: 'Oyuncu oturumunuz etkin değil. Lütfen uygulamayı yenileyin.',
-          },
-        };
-        showFailure(messages[result?.code || '']?.[lang] || t.scanError);
-        return;
-      }
-
-      // The server has confirmed either a new completion or an existing one.
-      const timestamp = new Date().toISOString();
-      const newLedger = [
-        { id: target.id, timestamp },
-        ...ledger.filter((item) => item.id !== target.id),
-      ];
-      setLedger(newLedger);
-      await Preferences.set({ key: 'tuzla_scan_ledger', value: JSON.stringify(newLedger) });
-
-      if (!unlockedRewards.includes(target.id)) {
-        setUnlockedRewards((prev) => [...prev, target.id]);
-      }
-
-      await loadDashboard();
-
-      if (alreadyCompleted) {
-        setScannerFeedback({
-          text: `${target.name[lang] || target.name.bs}: ${t.alreadyScanned}`,
-          type: 'success',
-        });
-        void stopScanner();
-        return;
-      }
-
-      if (target.id === 'tvrtko_park' || target.id === 'tvrtko') {
-        void stopScanner();
-        setTimeout(() => setIsTvrtkoScratchOpen(true), 350);
-        return;
-      }
-
-      setScannerFeedback({
-        text: `${t.scanSuccess} ${target.name[lang] || target.name.bs} (+${result?.xp_awarded ?? 0} XP)`,
-        type: 'success',
-      });
-      setTimeout(() => setScannerFeedback(null), 3500);
-      void stopScanner();
-
-      if ((target as any).rewardHtml) {
-        const rewardTitle = target.name[lang] || target.name.bs;
-        setTimeout(() => {
-          setActiveRewardHtml({ url: (target as any).rewardHtml!, title: rewardTitle });
-        }, 600);
-      }
-    } catch (err) {
-      console.error('Server-side quest verification failed:', err);
-      showFailure(lang === 'bs'
-        ? 'Verifikacija nije uspjela. Provjerite internet i pokušajte ponovo.'
-        : 'Quest verification failed. Check your connection and try again.');
-    } finally {
-      processingQrRef.current = false;
-    }
-  };
-
-  const stopScanner = async () => {
-    if (scannerRef.current) {
-      try {
-        if (scannerRef.current.isScanning) {
-          await scannerRef.current.stop();
-        }
-        scannerRef.current.clear();
-      } catch (_) { }
-      scannerRef.current = null;
-    }
-    setIsScanning(false);
-    setScannerStatus('idle');
-    setScannerError(null);
-  };
-
-  const startScanner = async (preferredCamId?: string) => {
-    setIsScanning(true);
-    setScannerStatus('loading');
-    setScannerError(null);
-    setScannerFeedback(null);
-
-    await new Promise((r) => setTimeout(r, 350));
-
-    const containerId = 'unified-qr-reader';
-    const container = document.getElementById(containerId);
-    if (!container) {
-      setScannerStatus('error');
-      setScannerError(lang === 'bs' ? 'Kamera nije spremna. Pokušajte ponovo.' : 'Scanner view not ready.');
-      return;
-    }
-
-    if (scannerRef.current) {
-      try {
-        if (scannerRef.current.isScanning) {
-          await scannerRef.current.stop();
-        }
-        scannerRef.current.clear();
-      } catch (_) { }
-      scannerRef.current = null;
-    }
-
-    try {
-      const cameras = await Html5Qrcode.getCameras();
-      if (!cameras || cameras.length === 0) {
-        setScannerStatus('error');
-        setScannerError(lang === 'bs' ? 'Nema pronađenih kamera.' : 'No camera found on this device.');
-        return;
-      }
-
-      setAvailableCameras(cameras);
-      const selectedCamId =
-        preferredCamId ||
-        activeCameraId ||
-        cameras.find((c) => c.label.toLowerCase().includes('back') || c.label.toLowerCase().includes('rear'))?.id ||
-        cameras[0].id;
-      setActiveCameraId(selectedCamId);
-
-      const html5QrCode = new Html5Qrcode(containerId);
-      scannerRef.current = html5QrCode;
-
-      await html5QrCode.start(
-        selectedCamId,
-        {
-          fps: 15,
-          qrbox: (viewfinderWidth, viewfinderHeight) => {
-            const edge = Math.min(viewfinderWidth, viewfinderHeight);
-            return { width: Math.floor(edge * 0.75), height: Math.floor(edge * 0.75) };
-          },
-          aspectRatio: 1.0,
-        },
-        (decodedText) => {
-          void processDecodedQr(decodedText);
-        },
-        () => { }
-      );
-
-      setScannerStatus('active');
-    } catch (err) {
-      console.error('Camera start error:', err);
-      setScannerStatus('error');
-      setScannerError(lang === 'bs' ? 'Dozvola za kameru je odbijena ili nedostupna.' : 'Camera permission denied or camera unavailable.');
-    }
-  };
-
-  const handleFlipCamera = async () => {
-    if (availableCameras.length <= 1) return;
-    const currentIndex = availableCameras.findIndex((c) => c.id === activeCameraId);
-    const nextCamera = availableCameras[(currentIndex + 1) % availableCameras.length];
-    setActiveCameraId(nextCamera.id);
-    if (isScanning) {
-      await stopScanner();
-      await startScanner(nextCamera.id);
-    }
-  };
 
   const handleClearLedger = async () => {
     await Preferences.remove({ key: 'tuzla_scan_ledger' });
@@ -853,7 +588,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
           </div>
         </section>
 
-        {/* ── 2. QR SCANNER ── */}
+        {/* ── 2. QR SCANNER CTA (UNIFIED SINGLE SCANNER ON QUEST MAP) ── */}
         <section className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
             <div className="flex items-center gap-2.5">
@@ -865,100 +600,37 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                   {t.qrTitle}
                 </h2>
                 <p className="text-[11px] text-slate-500">
-                  {t.qrSubtitle}
+                  {lang === 'bs'
+                    ? 'Skenirajte QR kodove direktno kroz interaktivnu mapu potrage'
+                    : 'Scan QR codes directly inside the interactive quest map'}
                 </p>
               </div>
             </div>
-            {availableCameras.length > 1 && isScanning && (
-              <button
-                type="button"
-                onClick={handleFlipCamera}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-100 active:scale-95 transition-all"
-              >
-                <Camera size={13} />
-                <span>{t.flipCamera}</span>
-              </button>
-            )}
           </div>
 
-          {/* Scanner Viewport */}
-          <div className="relative mx-auto max-w-sm overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-950 aspect-square flex flex-col items-center justify-center">
-            {/* Html5Qrcode video container */}
-            <div
-              id="unified-qr-reader"
-              className={`w-full h-full ${isScanning ? 'block' : 'hidden'}`}
-            />
-
-            {!isScanning && (
-              <div className="p-6 text-center space-y-3">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
-                  <Camera className="h-7 w-7" />
-                </div>
-                <p className="text-xs text-slate-300 font-medium max-w-xs">
-                  {t.qrSubtitle}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => void startScanner()}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-md hover:from-blue-500 hover:to-indigo-500 active:scale-95 transition-all"
-                >
-                  <QrCode size={16} />
-                  <span>{t.startCamera}</span>
-                </button>
-              </div>
-            )}
-
-            {isScanning && (
-              <>
-                {/* Viewfinder reticle overlay */}
-                <div className="pointer-events-none absolute inset-6 sm:inset-10 border-2 border-cyan-400/60 rounded-2xl">
-                  <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-cyan-300 -translate-x-1 -translate-y-1" />
-                  <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-cyan-300 translate-x-1 -translate-y-1" />
-                  <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-cyan-300 -translate-x-1 translate-y-1" />
-                  <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-cyan-300 translate-x-1 translate-y-1" />
-                  <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-pulse absolute top-1/2 -translate-y-1/2" />
-                </div>
-
-                {/* Stop button overlay */}
-                <div className="absolute bottom-3 inset-x-0 flex justify-center z-20">
-                  <button
-                    type="button"
-                    onClick={() => void stopScanner()}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900/90 backdrop-blur-md px-4 py-1.5 text-xs font-black text-rose-300 border border-rose-500/30 hover:bg-rose-950/80 active:scale-95 transition-all"
-                  >
-                    <X size={14} />
-                    <span>{t.stopCamera}</span>
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Scanner Feedback Alerts */}
-          {scannerFeedback && (
-            <div
-              className={`mt-3 rounded-xl p-3 text-xs font-bold border transition-all ${scannerFeedback.type === 'success'
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
-                : 'border-amber-200 bg-amber-50 text-amber-900'
-                }`}
+          <div className="p-5 text-center space-y-3 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-2xl border border-blue-500/20 text-white">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400/20 text-amber-300 border border-amber-400/30">
+              <Compass className="h-6 w-6" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-black text-amber-300 uppercase tracking-wide">
+                {lang === 'bs' ? 'Mapa potrage & Kompas' : 'Quest Map & Compass'}
+              </h3>
+              <p className="text-xs text-slate-300 font-medium max-w-sm mx-auto">
+                {lang === 'bs'
+                  ? 'Pratite kompas, priđite unutar 25m od lokacije i skenirajte QR kod za osvajanje nagrade i prelazak u novu fazu!'
+                  : 'Follow the compass, get within 25m of the location and scan the QR code to win rewards and advance!'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/quest')}
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-6 py-3 text-xs font-black uppercase tracking-wider text-slate-950 shadow-lg shadow-amber-500/20 hover:from-amber-300 hover:to-yellow-300 active:scale-95 transition-all"
             >
-              <div className="flex items-center gap-2">
-                {scannerFeedback.type === 'success' ? (
-                  <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-                ) : (
-                  <CircleAlert size={16} className="text-amber-600 shrink-0" />
-                )}
-                <span>{scannerFeedback.text}</span>
-              </div>
-            </div>
-          )}
-
-          {scannerError && (
-            <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-bold text-rose-900 flex items-center gap-2">
-              <CircleAlert size={16} className="text-rose-600 shrink-0" />
-              <span>{scannerError}</span>
-            </div>
-          )}
+              <QrCode size={16} />
+              <span>{lang === 'bs' ? 'Otvori Potragu & Skeniraj' : 'Open Quest & Scan'}</span>
+            </button>
+          </div>
         </section>
 
         {/* ── 3. TASKS (TODOS) ── */}

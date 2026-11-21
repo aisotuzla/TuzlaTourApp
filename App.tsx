@@ -26,9 +26,7 @@ import { AudioGuideProvider, useAudioGuide } from './contexts/AudioGuideContext'
 import AudioControlBar from './components/AudioControlBar';
 import { useDraggablePopups } from './hooks/useDraggablePopups';
 import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
-import { useGeofenceNotifications } from './hooks/useGeofenceNotifications';
 import { SpeedInsights } from "@vercel/speed-insights/react"
-import ARGuide from './components/ARGuide';
 import { TvrtkoScratchCardModal } from './components/TvrtkoScratchCardModal';
 import { KulinCharterModal } from './components/KulinCharterModal';
 
@@ -65,13 +63,13 @@ const getTabFromPath = (path: string): AppTab => {
     case '/transportation': return AppTab.TRANSPORTATION;
     case '/map': return AppTab.MAP;
     case '/quest': return AppTab.QUEST;
-    case '/qr-scan': return AppTab.QR_SCAN;
+    case '/qr-scan': return AppTab.QUEST;
     case '/dashboard': return AppTab.DASHBOARD;
     case '/admin': return AppTab.DASHBOARD;
     case '/task-manager': return AppTab.TASK_MANAGER;
     case '/food': return AppTab.FOOD;
     case '/accommodation': return AppTab.ACCOMMODATION;
-    case '/ar': return AppTab.AR;
+    case '/ar': return AppTab.QUEST;
     default: return AppTab.LANDING;
   }
 };
@@ -84,12 +82,12 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.TRANSPORTATION: return '/transportation';
     case AppTab.MAP: return '/map';
     case AppTab.QUEST: return '/quest';
-    case AppTab.QR_SCAN: return '/qr-scan';
+    case AppTab.QR_SCAN: return '/quest';
     case AppTab.DASHBOARD: return '/dashboard';
     case AppTab.TASK_MANAGER: return '/task-manager';
     case AppTab.FOOD: return '/food';
     case AppTab.ACCOMMODATION: return '/accommodation';
-    case AppTab.AR: return '/ar';
+    case AppTab.AR: return '/quest';
     default: return '/';
   }
 };
@@ -128,7 +126,6 @@ const AppContent: React.FC = () => {
     enabled: isLocationTab,
     requestPermission: isLocationTab,
   });
-  useGeofenceNotifications({ userPosition: userGps, lang, enabled: true });
 
   const hasAutoOpenedCharterRef = useRef(false);
 
@@ -145,11 +142,6 @@ const AppContent: React.FC = () => {
     if (dist <= 20 && !hasAutoOpenedCharterRef.current) {
       hasAutoOpenedCharterRef.current = true;
       setIsKulinCharterCubeOpen(true);
-      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-        try {
-          navigator.vibrate([200, 100, 200]);
-        } catch (_) { }
-      }
     }
   }, [userGps, setIsKulinCharterCubeOpen]);
 
@@ -367,8 +359,9 @@ const AppContent: React.FC = () => {
                       initialOpenScanner={autoOpenScanner}
                     />
                   } />
-                  <Route path="/qr-scan" element={
-                    <QRScan
+                  <Route path="/qr-scan" element={<Navigate to="/quest" replace />} />
+                  <Route path="/dashboard" element={
+                    <PlayerDashboard
                       lang={lang}
                       onNavigateToTarget={(target) => {
                         setNavigationTarget(target);
@@ -376,7 +369,6 @@ const AppContent: React.FC = () => {
                       }}
                     />
                   } />
-                  <Route path="/dashboard" element={<Navigate to="/qr-scan" replace />} />
                   <Route path="/admin" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/task-manager" element={<TaskManager lang={lang} />} />
                   <Route
@@ -392,19 +384,7 @@ const AppContent: React.FC = () => {
                     }
                   />
                   <Route path="/accommodation" element={<Accommodation lang={lang} />} />
-                  <Route path="/ar" element={
-                    <ARGuide
-                      lang={lang}
-                      features={features}
-                      unlockedRewards={unlockedRewards}
-                      onRewardFound={completeQuest}
-                      initialTarget={navigationTarget}
-                      onNavigate={(poi) => {
-                        setNavigationTarget(poi);
-                        navigateToTab(AppTab.MAP);
-                      }}
-                    />
-                  } />
+                  <Route path="/ar" element={<Navigate to="/quest" replace />} />
 
                 </Routes>
               </Suspense>

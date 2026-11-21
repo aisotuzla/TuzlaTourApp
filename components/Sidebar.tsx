@@ -153,23 +153,6 @@ const NAV_ITEMS: NavItemConfig[] = [
     activeBorder: 'border-blue-300'
   },
   {
-    id: AppTab.QR_SCAN,
-    label: {
-      en: 'QR Scan',
-      bs: 'QR skeniranje',
-      de: 'QR-Scan',
-      tr: 'QR Tarama',
-    },
-    icon: QrCode,
-    isSubItem: true,
-    inactiveClass: 'bg-gradient-to-r from-blue-50/70 to-indigo-50/60 text-blue-900 hover:from-blue-100/80 hover:to-indigo-100/80 hover:text-blue-950',
-    inactiveIconClass: 'text-blue-700',
-    inactiveBorderClass: 'border-blue-100/60',
-    activeClass: 'bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-600 text-white font-black ring-2 ring-blue-400/80',
-    activeGlow: 'shadow-[0_4px_16px_rgba(37,99,235,0.45)]',
-    activeBorder: 'border-blue-400'
-  },
-  {
     id: AppTab.DASHBOARD,
     label: {
       en: 'My Progress',
@@ -186,8 +169,8 @@ const NAV_ITEMS: NavItemConfig[] = [
     activeGlow: 'shadow-[0_4px_16px_rgba(37,99,235,0.45)]',
     activeBorder: 'border-blue-400'
   },
-      {
-        id: AppTab.TASK_MANAGER,
+  {
+    id: AppTab.TASK_MANAGER,
       icon: CheckSquare,
       label: {en: 'Planner', bs: 'Planer', de: 'Planer', tr: 'Planlayıcı' },
       inactiveClass: 'bg-gradient-to-r from-blue-300 via-indigo-300 to-sky-300 text-slate-950 hover:from-blue-400 hover:to-indigo-400 font-bold',
