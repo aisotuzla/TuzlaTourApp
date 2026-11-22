@@ -1,0 +1,410 @@
+{
+  "ateljeO.webp": {
+    "x": 128,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "bagiO.webp": {
+    "x": 192,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "BanjaO.webp": {
+    "x": 0,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "bcctuzlaO.webp": {
+    "x": 0,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "ismetO.webp": {
+    "x": 64,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "kapijaO.webp": {
+    "x": 128,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "mesaO.webp": {
+    "x": 192,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "panonikaO.webp": {
+    "x": 0,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "slapoviO.webp": {
+    "x": 64,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "sonitrgO.webp": {
+    "x": 128,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "trgslobodeO.webp": {
+    "x": 192,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "TuzlankaO.webp": {
+    "x": 64,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "tvrtkO.webp": {
+    "x": 0,
+    "y": 192,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "ateljeO": {
+    "x": 128,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "bagiO": {
+    "x": 192,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "BanjaO": {
+    "x": 0,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "banjaO": {
+    "x": 0,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "bcctuzlaO": {
+    "x": 0,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "ismetO": {
+    "x": 64,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "kapijaO": {
+    "x": 128,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "mesaO": {
+    "x": 192,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "panonikaO": {
+    "x": 0,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "slapoviO": {
+    "x": 64,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "sonitrgO": {
+    "x": 128,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "trgslobodeO": {
+    "x": 192,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "TuzlankaO": {
+    "x": 64,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "tuzlankaO": {
+    "x": 64,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "tvrtkO": {
+    "x": 0,
+    "y": 192,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "atelje": {
+    "x": 128,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "bagi": {
+    "x": 192,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "banja": {
+    "x": 0,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "slana_banja": {
+    "x": 0,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "bcctuzla": {
+    "x": 0,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "bingo": {
+    "x": 0,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "bingo_city_centar": {
+    "x": 0,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "tuzlanka": {
+    "x": 64,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "ismet": {
+    "x": 64,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "kapija": {
+    "x": 128,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "mesa": {
+    "x": 192,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "mesa_selimovic": {
+    "x": 192,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "panonika": {
+    "x": 0,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "pannonian_lakes": {
+    "x": 0,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "slapovi": {
+    "x": 64,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "sonitrg": {
+    "x": 128,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "salt_square": {
+    "x": 128,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "trgslobode": {
+    "x": 192,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "trg_slobode": {
+    "x": 192,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "carsija": {
+    "x": 192,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "tvrtk": {
+    "x": 0,
+    "y": 192,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "tvrtko_park": {
+    "x": 0,
+    "y": 192,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  },
+  "marker": {
+    "x": 192,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2,
+    "visible": true
+  }
+}
