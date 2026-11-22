@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Camera, CheckCircle2, CircleAlert, Compass, LoaderCircle, MapPin, QrCode, RefreshCw, ShieldCheck, Sparkles, Trophy, X } from 'lucide-react';
+import { Camera, CheckCircle2, CircleAlert, Compass, LoaderCircle, MapPin, QrCode, RefreshCw, ShieldCheck, Trophy, X } from 'lucide-react';
 import { Language } from '../types';
 import { supabase } from '../lib/supabaseClient';
 import { ensurePlayerSession } from '../lib/playerSession';

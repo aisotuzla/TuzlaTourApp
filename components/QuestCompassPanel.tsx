@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Compass, Navigation, QrCode, Volume2, ChevronLeft, ChevronRight, CheckCircle2, Lock, Sparkles, MapPin } from 'lucide-react';
+import { Compass, Navigation, QrCode, Volume2, ChevronLeft, ChevronRight, CheckCircle2, Lock, MapPin } from 'lucide-react';
 import { Language } from '../types';
 import {
   QUEST_TARGETS,
@@ -357,7 +357,7 @@ export const QuestCompassPanel: React.FC<QuestCompassPanelProps> = ({
           <div className="pt-0.5">
             {isWithin25m ? (
               <span className="text-[10px] font-black text-emerald-400 flex items-center gap-1">
-                <Sparkles size={11} className="shrink-0 animate-spin" />
+                <Compass size={11} className="shrink-0 animate-spin" />
                 {lang === 'bs' ? 'Unutar 25m! Skenirajte QR za potvrdu' : 'Within 25m! Scan QR to confirm'}
               </span>
             ) : distance !== null ? (

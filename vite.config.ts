@@ -60,6 +60,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'assets/x.svg',
           'assets/bluesky.svg',
           'favicon.ico',
+          'assets/heroo.webp',
           'resources/TuzlaTourAppLogo96x96.png',
           'resources/TuzlaTourAppLogo192x192.png',
           'resources/TuzlaTourAppLogo512x512.png',
@@ -69,7 +70,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'maps/sprite@2x.png',
           'maps/poi.geojson',
           'maps/offline-vector-style.json',
-          'firebase-messaging-sw.js',
+          'assets/QuestMap3.webp',
         ],
         manifest: {
           name: 'Tuzla Tour Guide',
