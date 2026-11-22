@@ -64,7 +64,7 @@ export const KulinCharterModal: React.FC<KulinCharterModalProps> = ({
             {/* 3D Interactive Iframe */}
             <div className="flex-1 relative bg-[#2a2118]">
               <iframe
-                src="/assets/Kulin Ban Charter Cube.html"
+                src="/assets/Povelja%20Kulina%20bana%20%E2%80%93%20kameni%20spomenik.html"
                 title={lang === 'bs' ? '3D Povelja Kulina bana' : '3D Charter of Kulin Ban'}
                 className="w-full h-full border-0"
                 style={{ minHeight: '380px' }}

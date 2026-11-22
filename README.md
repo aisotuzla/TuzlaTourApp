@@ -34,15 +34,14 @@ The application is built with React 18, TypeScript, and Vite, operating as a hig
 
 ### 🎧 Audio Guides & Media
 - Multilingual location narrations with a persistent floating global audio player bar.
-- 270° and 360° panoramic photographic views.
 - Embedded documentary and historical video footage.
 
 ### 🌆 City Guide, Gastronomy & Travel Utilities
 - **History & Heritage**: Historical timeline of Tuzla from Neolithic salt extraction to the modern era.
 - **Food & Dining**: Curated traditional Bosnian cevabdzinicas, bakeries, cafes, and local food delivery integration (Korpa / Glovo styling).
-- **Transport & Logistics**: Airport transfers (Wizz Air / Tuzla Airport LQTZ), bus schedules, parking zones, and taxi directories.
-- **Accommodation**: Comprehensive hotel listings with direct GPS navigation and booking links.
-- **Task Planner & Notes**: 3-day trip planner, personal trip notebook, and local event calendar.
+- **Transport & Logistics**: Airport transfers (Wizz Air / Tuzla Airport TZL), bus schedules, parking zones, travel agencies, Rent-A-Car and taxi directories.
+- **Accommodation**: Comprehensive hotel listings with direct GPS navigation and booking links and appartment directories.
+- **Task Planner & Notes**: 3-day trip planner, personal trip notebook, and local event calendar, converter BAM/EUR.
 
 ### 🌐 Multilingual Support
 Full UI, narration, and quest support across 4 languages:
@@ -68,50 +67,6 @@ Full UI, narration, and quest support across 4 languages:
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js **20.x** or **24.x**
-- npm 10+
-- Android Studio (for native Android builds)
-
-### 1. Installation
-```powershell
-git clone https://github.com/aisotuzla/TuzlaTourApp.git
-cd TuzlaTourApp
-npm install
-```
-
-### 2. Environment Configuration
-Create a `.env.local` file in the root directory:
-```dotenv
-VITE_SUPABASE_URL=https://czfoblgsqrrccoibboca.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
-VITE_SUPABASE_PROJECT_ID=czfoblgsqrrccoibboca
-VITE_GEOAPIFY_KEY=your_geoapify_api_key
-```
-
-### 3. Development Server
-```powershell
-npm run dev
-```
-
-### 4. Production Build
-```powershell
-npm run build
-```
-
-### 5. Sync to Android (Capacitor)
-```powershell
-npx cap sync android
-```
-To run on a connected Android phone or emulator:
-```powershell
-npx cap open android
-```
-
----
-
 ## 🔒 Security & Privacy by Design
 - **No Background Tracking**: GPS coordinates are requested strictly on-demand for orientation and proximity checks. Continuous location trails are never recorded or stored.
 - **Anonymous Player Sessions**: No email, password, or personal identity is required to play the quest or earn badges.
@@ -124,6 +79,7 @@ npx cap open android
 - [Tuzla Quest Game Manual](QUEST_GAME_MANUAL.md) — Comprehensive game rules, POI coordinates, and verification mechanics.
 - [Privacy Policy](PRIVACY_POLICY.md) / [Politika Privatnosti](Politika%20Privatnosti%20za%20Tuzla%20Tour%20App.md) — Privacy principles and data protection details.
 - [Cookie Policy](COOKIE_POLICY.md) — Storage and analytics consent explanation.
+- This app complies with the General Data Protection Regulation (GDPR) and the applicable personal data protection laws of Bosnia and Herzegovina 2025.
 
 ---
 

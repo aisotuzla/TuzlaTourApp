@@ -71,44 +71,78 @@ export const TvrtkoScratchCardModal: React.FC<TvrtkoScratchCardModalProps> = ({
     // Reset composite operation
     ctx.globalCompositeOperation = 'source-over';
 
-    // Rich metallic golden gradient
-    const grad = ctx.createLinearGradient(0, 0, width, height);
-    grad.addColorStop(0, '#f59e0b');
-    grad.addColorStop(0.3, '#d97706');
-    grad.addColorStop(0.5, '#fbbf24');
-    grad.addColorStop(0.7, '#b45309');
-    grad.addColorStop(1, '#78350f');
-    ctx.fillStyle = grad;
+    const foil = ctx.createLinearGradient(0, 0, width, height);
+    foil.addColorStop(0, '#5b3b0a');
+    foil.addColorStop(0.12, '#bd8a1b');
+    foil.addColorStop(0.24, '#f8e28b');
+    foil.addColorStop(0.34, '#94600b');
+    foil.addColorStop(0.48, '#ffefaa');
+    foil.addColorStop(0.58, '#ad7911');
+    foil.addColorStop(0.74, '#f0ca55');
+    foil.addColorStop(0.87, '#875510');
+    foil.addColorStop(1, '#62400e');
+    ctx.fillStyle = foil;
     ctx.fillRect(0, 0, width, height);
 
-    // Subtle decorative speckles / pattern
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-    for (let i = 0; i < 40; i++) {
-      const rx = (i * 37) % width;
-      const ry = (i * 61) % height;
-      const r = (i % 4) + 1;
+    const sheen = ctx.createLinearGradient(0, height * 0.1, width, height * 0.85);
+    sheen.addColorStop(0, 'rgba(255, 255, 255, 0)');
+    sheen.addColorStop(0.42, 'rgba(255, 244, 190, 0.06)');
+    sheen.addColorStop(0.5, 'rgba(255, 255, 225, 0.32)');
+    sheen.addColorStop(0.56, 'rgba(255, 239, 157, 0.08)');
+    sheen.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = sheen;
+    ctx.fillRect(0, 0, width, height);
+
+    const glow = ctx.createRadialGradient(width * 0.2, height * 0.12, 0, width * 0.2, height * 0.12, width * 0.9);
+    glow.addColorStop(0, 'rgba(255, 247, 205, 0.2)');
+    glow.addColorStop(1, 'rgba(255, 247, 205, 0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, width, height);
+
+    for (let i = 0; i < Math.floor(width * 0.9); i++) {
+      const x = Math.random() * width;
+      const light = Math.random() > 0.48;
+      ctx.strokeStyle = light
+        ? `rgba(255, 246, 202, ${0.025 + Math.random() * 0.075})`
+        : `rgba(48, 30, 5, ${0.025 + Math.random() * 0.065})`;
+      ctx.lineWidth = 0.35 + Math.random() * 0.75;
       ctx.beginPath();
-      ctx.arc(rx, ry, r, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
     }
 
-    // Border inner line
-    ctx.strokeStyle = 'rgba(254, 240, 138, 0.4)';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(10, 10, width - 20, height - 20);
+    for (let i = 0; i < Math.floor((width * height) / 180); i++) {
+      const light = Math.random() > 0.45;
+      ctx.fillStyle = light
+        ? `rgba(255, 249, 218, ${0.04 + Math.random() * 0.16})`
+        : `rgba(48, 29, 4, ${0.035 + Math.random() * 0.12})`;
+      const size = 0.3 + Math.random() * 1.5;
+      ctx.fillRect(Math.random() * width, Math.random() * height, size, size);
+    }
 
-    // Scratch instruction text
+    ctx.strokeStyle = 'rgba(255, 238, 164, 0.88)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(10, 10, width - 20, height - 20);
+    ctx.strokeStyle = 'rgba(77, 48, 7, 0.72)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(15, 15, width - 30, height - 30);
+
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(255, 243, 181, 0.8)';
+    ctx.shadowOffsetY = 1;
+    ctx.shadowBlur = 1;
+    ctx.font = `700 ${Math.max(15, Math.min(20, width * 0.06))}px Georgia, serif`;
+    ctx.fillStyle = '#493009';
+    ctx.fillText(lang === 'bs' ? 'OGREBI ZA OTKRIĆE' : 'SCRATCH TO REVEAL', width / 2, height / 2 - 20, width - 36);
 
-    ctx.font = '900 20px "Quicksand", system-ui, sans-serif';
-    ctx.fillStyle = '#1e1b4b';
-    ctx.fillText(lang === 'bs' ? '🪙 OGREBI OVDJE' : '🪙 SCRATCH HERE', width / 2, height / 2 - 20);
-
-    ctx.font = 'bold 12px "Quicksand", system-ui, sans-serif';
-    ctx.fillStyle = '#312e81';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.font = `600 ${Math.max(11, Math.min(13, width * 0.04))}px Georgia, serif`;
+    ctx.fillStyle = '#52370d';
     ctx.fillText(
-      lang === 'bs' ? 'Otkrij tajnu Kralja Tvrtka' : 'Reveal King Tvrtko secret',
+      lang === 'bs' ? 'Povelju Kulina bana' : "Kulin Ban's Charter",
       width / 2,
       height / 2 + 15
     );
@@ -264,10 +298,10 @@ export const TvrtkoScratchCardModal: React.FC<TvrtkoScratchCardModalProps> = ({
                 </div>
                 <div>
                   <span className="text-[10px] font-black uppercase text-amber-400 tracking-widest block">
-                    {lang === 'bs' ? '🎉 Čestitamo! Otključano' : '🎉 Congratulations! Unlocked'}
+                    {lang === 'bs' ? 'Čestitamo! Otključano' : 'Congratulations! Unlocked'}
                   </span>
                   <h3 className="text-base sm:text-lg font-black text-white tracking-tight uppercase">
-                    Scratch For Reward
+                    {lang === 'bs' ? 'Ogrebi za otkriće' : 'Scratch to reveal'}
                   </h3>
                 </div>
               </div>
@@ -290,8 +324,8 @@ export const TvrtkoScratchCardModal: React.FC<TvrtkoScratchCardModalProps> = ({
                     ? 'Tajna je otkrivena!'
                     : 'Secret Revealed!'
                   : lang === 'bs'
-                  ? 'Prstom pređite preko kartice'
-                  : 'Scratch card with your finger'}
+                    ? 'Prstom pređite preko zlatne folije'
+                    : 'Scratch the gold foil with your finger'}
               </span>
               {!isScratched && (
                 <button
@@ -306,10 +340,10 @@ export const TvrtkoScratchCardModal: React.FC<TvrtkoScratchCardModalProps> = ({
             </div>
 
             {/* Central Scratch Container */}
-            <div className="relative flex-1 p-3.5 flex flex-col items-center justify-center overflow-hidden">
+            <div className="relative flex-1 p-3.5 flex flex-col items-center justify-center overflow-hidden scratch-card-stage">
               <div
                 ref={containerRef}
-                className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-amber-400/40 bg-slate-950 shadow-inner flex flex-col"
+                className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-amber-400/40 bg-slate-950 shadow-inner flex flex-col scratch-card-surface"
               >
                 {/* ── Beneath Canvas: Revealed Content ── */}
                 <div className="absolute inset-0 flex flex-col bg-gradient-to-b from-stone-900 via-stone-950 to-black select-none">
@@ -317,7 +351,7 @@ export const TvrtkoScratchCardModal: React.FC<TvrtkoScratchCardModalProps> = ({
                   <div className="flex-1 relative w-full overflow-hidden flex items-center justify-center p-2">
                     <img
                       src="/assets/Gallery/QuestQRLocations/TuzlaBanKulinStone.webp"
-                      alt="Tuzla Ban Kulin Stone"
+                      alt={lang === 'bs' ? 'Kameni spomenik Povelje Kulina bana' : 'Stone monument of the Charter of Kulin Ban'}
                       className="w-full h-full object-contain rounded-xl drop-shadow-[0_10px_25px_rgba(0,0,0,0.8)]"
                       onError={(e) => {
                         // Fallback in case of secondary path
@@ -329,12 +363,12 @@ export const TvrtkoScratchCardModal: React.FC<TvrtkoScratchCardModalProps> = ({
                   {/* ── Text at bottom: "I am in this park. Find Me" ── */}
                   <div className="px-4 py-3 bg-gradient-to-t from-black via-stone-900/95 to-transparent flex flex-col items-center text-center shrink-0">
                     <p className="text-base sm:text-lg font-black text-amber-300 uppercase tracking-wider drop-shadow-[0_2px_10px_rgba(251,191,36,0.5)]">
-                      "I am in this park. Find Me"
+                      {lang === 'bs' ? 'Povelja Kulina bana' : "Kulin Ban's Charter"}
                     </p>
                     <p className="text-[11px] font-bold text-amber-100/70 mt-0.5">
                       {lang === 'bs'
-                        ? '🏛️ Spomen-ploča Povelje Kulina bana nalazi se ovdje u parku Kralja Tvrtka!'
-                        : '🏛️ The memorial stone of Charter of Kulin Ban is right here in King Tvrtko Park!'}
+                        ? 'Kameni spomenik Povelje Kulina bana nalazi se ovdje u parku Kralja Tvrtka.'
+                        : 'The stone monument of the Charter of Kulin Ban stands here in King Tvrtko Park.'}
                     </p>
                   </div>
                 </div>
@@ -349,7 +383,7 @@ export const TvrtkoScratchCardModal: React.FC<TvrtkoScratchCardModalProps> = ({
                   onTouchStart={handlePointerDown}
                   onTouchMove={handlePointerMove}
                   onTouchEnd={handlePointerUp}
-                  className={`absolute inset-0 w-full h-full cursor-pointer touch-none z-10 transition-opacity duration-700 ${
+                  className={`absolute inset-0 w-full h-full cursor-pointer touch-none z-10 transition-opacity duration-700 scratch-foil-canvas ${
                     isScratched ? 'opacity-0 pointer-events-none' : 'opacity-100'
                   }`}
                   style={{ touchAction: 'none' }}

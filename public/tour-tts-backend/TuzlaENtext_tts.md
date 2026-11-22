@@ -1,31 +1,59 @@
-Pannonian Salt Lakes Complex  
-Welcome to the Pannonian Salt Lakes – Europe’s only urban salt lake resort! Did you know these lakes were created over ancient salt mining craters? The mineral‑rich water, with salinity like the sea, is famous for its healing effects. Look around – you’ll see cascading salt waterfalls and even a reconstructed Neolithic stilt village. Don’t miss the Geological Museum nearby. Pro‑tip: arrive early in the morning for the clearest water and a peaceful swim.
+Audio tour script
 
-2. Freedom Square  
-Welcome to Freedom Square – the largest city square in Bosnia and Herzegovina! At the center, notice the salt‑shaped fountain decorated with medieval motifs. Around you, Austro‑Hungarian architecture blends with Ottoman‑era streets and lively cafés. This is the heart of Tuzla’s daily life. Take a moment to explore the underground archaeological displays beneath the square. Pro‑tip: grab a coffee at one of the open‑air cafés and watch the city come alive.
+1. Pannonian Salt Lakes Complex
 
-3. Kapija Memorial  
-You are now at Kapija, a solemn gateway with deep meaning. On May 25, 1995, this spot was struck by artillery, killing 71 young people. Today, the memorial plaque and commemorative wall honor their memory. Look closely at the poem by Mak Dizdar – it speaks of resilience and peace. Pro‑tip: visit in the evening when the atmosphere is quiet, allowing you to reflect on Tuzla’s spirit of unity.
+Welcome to the Pannonian Salt Lakes, a unique lakeside resort in the heart of Tuzla. The lakes were formed in former salt-mining areas, and their mineral-rich water is known for its high salinity. As you look around, you may spot salt cascades and a reconstruction of a Neolithic stilt village. The nearby Geological Museum offers more insight into the region’s salt and geology. For a quieter visit, arrive early in the morning.
 
-4. City Park & King Tvrtko I Statue  
-Welcome to City Park, a green oasis in downtown Tuzla. At its center stands the bronze statue of King Tvrtko I, Bosnia’s first medieval king. Around you, replica stećak tombstones recall Bosnia’s heritage, and the “I Love Tuzla” landmark is perfect for photos. Pro‑tip: cross the pedestrian bridge to the Pannonian Lakes for a seamless nature‑to‑city experience.
+2. Freedom Square
 
-5. Old Town & Korzo Avenue  
-Step into Tuzla’s Old Town! Korzo, the main pedestrian street, is lined with colorful Austro‑Hungarian facades, bakeries, and boutique shops. Notice the unique street contours – they were shaped by centuries of salt mining beneath the ground. Look for the bronze monument of Meša Selimović and Ismet Mujezinović, a popular meeting spot. Pro‑tip: check out the vintage four‑faced clock on Turalibegova street – it’s a local icon.
+You’re standing in Freedom Square, one of the largest city squares in Bosnia and Herzegovina. At its center is a fountain inspired by Tuzla’s salt heritage. The surrounding streets bring together Austro-Hungarian architecture, Ottoman-era influences, and lively cafés. This is a popular place to meet and watch everyday life unfold. Look for the archaeological displays beneath the square, then enjoy a coffee at one of the outdoor cafés.
 
-6. Turalibegova Mosque  
-This is Turalibegova Mosque, built in the 16th century. Due to salt subsidence, the mosque sank below ground level, but a remarkable restoration in 2007 raised it again. Notice how the original Ottoman stone and wood blend with modern glass walls. Pro‑tip: visit at sunset when the glass reflects golden light, creating a magical view.
+3. Kapija Memorial
 
-7. Cathedral of the Dormition of the Mother of God  
-Welcome to Tuzla’s Orthodox Cathedral, built between 1874 and 1882. Its neoclassical design, bright blue onion domes, and intricate frescoes make it a national monument. Step inside to admire the three‑tiered iconostasis. Pro‑tip: look up at the towers – they shine beautifully against the evening sky.
+This is Kapija, a place of remembrance. On May twenty-fifth, nineteen ninety-five, an artillery shell struck this area, killing seventy-one people, many of them young. The memorial plaque and wall honor the victims. Take a moment to read the words of Bosnian poet Mak Dizdar, which speak of endurance and peace. In the quieter evening hours, visitors often come here to reflect.¹
 
-8. Slana Banja Park  
-This is Slana Banja, a forested hilltop park overlooking the lakes. It’s both a recreational area and a memorial site. Walk the trails, play sports, or visit monuments dedicated to WWII fighters and Kapija victims. Hidden among the trees is St. George’s Orthodox Church. Pro‑tip: bring comfortable shoes – the trails are perfect for a sunset walk.
+4. City Park and the Statue of King Tvrtko the First
 
-9. Kicelj Viewpoint  
-Welcome to Kicelj, Tuzla’s panoramic hilltop. From here, you get a 360‑degree view of the valley, Old Town rooftops, and the shimmering lakes. Notice the illuminated LED heart sign – a favorite photo spot. Pro‑tip: come at sunset for breathtaking colors over the city.
+Welcome to City Park, a green space in the center of Tuzla. Here you’ll find a statue of King Tvrtko the First, often remembered as the first king of Bosnia. Nearby, replica stećak tombstones recall the country’s medieval heritage, while the “I Love Tuzla” sign is a popular spot for photos. A pedestrian bridge connects the park area with the Pannonian Lakes.
 
-10. Local Gastronomy  
-No tour is complete without food! Tuzla’s ćevapi are unique – served in somun bread soaked in rich broth. Try them at Limenka near the lakes. Tuzlanska pita, a thin‑crust savory pie, is another must. And don’t miss Tuzlanska Pivara, one of Bosnia’s oldest breweries, famous for its pilsner. Pro‑tip: pair your meal with a local beer for the full Tuzla experience.
+5. Old Town and Korzo Avenue
 
-👉 These scripts are ready to feed into your AI speech agent. Each one is short, engaging, and structured for natural narration. Do you want me to bundle them into a single “tour route” script (so the narration flows attraction‑to‑attraction like a guided walk), or keep them modular for individual triggers at each location?
+Welcome to Tuzla’s Old Town. Korzo is the main pedestrian street, lined with cafés, bakeries, shops, and colorful historic façades. The city’s landscape has been shaped in part by centuries of salt mining beneath the ground. Look for the monument to writer Meša Selimović and painter Ismet Mujezinović, a familiar meeting point. On Turalibegova Street, you can also see a distinctive four-faced clock.
+
+6. Turalibegova Mosque
+
+This is Turalibegova Mosque, a historic mosque dating to the sixteenth century. Ground subsidence caused by salt mining affected the building, and it was restored in two thousand seven. The site brings together historic Ottoman features and more modern elements. If you visit near sunset, the changing light can create striking reflections on the glass.
+
+7. Cathedral of the Dormition of the Mother of God
+
+This is Tuzla’s Orthodox Cathedral, built between eighteen seventy-four and eighteen eighty-two. Its neoclassical design, blue onion domes, and interior frescoes make it a notable landmark. Inside, visitors can see a three-tiered iconostasis. Look up at the towers as you approach; they stand out against the sky, especially in the evening light.
+
+8. Slana Banja Park
+
+Welcome to Slana Banja, a wooded park on a hillside above the lakes. It’s a place for walking and recreation, as well as a memorial site. Follow the paths to monuments honoring those who died in the Second World War and the victims of the Kapija attack. St. George’s Orthodox Church is also tucked among the trees. Comfortable shoes are useful on the park’s trails.
+
+9. Kicelj Viewpoint
+
+You’re at Kicelj, a viewpoint overlooking Tuzla. From here, you can take in the valley, the rooftops of the Old Town, and the lakes. Look for the illuminated heart sign, a popular photo spot. Sunset is a lovely time to see the colors change across the city.
+
+10. Local Food and Drink
+
+To round out your visit, try some local food. Tuzla’s ćevapi are often served in somun bread, while Tuzlanska pita is a thin-crust savory pie. Limenka, near the lakes, is one place visitors go for ćevapi. You could also sample a beer from Tuzlanska Pivara, a local brewery. Ask about local specialties and enjoy your meal at an easy pace.
+Pronunciation key
+
+These are approximate English-language guides, not exact Bosnian pronunciation:
+
+    Tuzla — TOOZ-lah
+    Pannonian — puh-NOH-nee-un
+    Kapija — KAH-pee-yah
+    Mak Dizdar — mahk DEEZ-dar
+    stećak — STEH-chak
+    Meša Selimović — MEH-shah seh-lee-MOH-vich
+    Ismet Mujezinović — EES-met moo-yeh-ZEE-no-vich
+    Turalibegova — too-rah-lee-beh-GOH-vah
+    Slana Banja — SLAH-nah BAHN-yah
+    Kicelj — KEE-tsely
+    ćevapi — cheh-VAH-pee
+    somun — SOH-moon
+    Tuzlanska pita — TOOZ-lan-skah PEE-tah
+    Tuzlanska Pivara — TOOZ-lan-skah pee-VAH-rah

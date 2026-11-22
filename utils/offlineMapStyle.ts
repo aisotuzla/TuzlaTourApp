@@ -1,5 +1,5 @@
 import type { StyleSpecification } from 'maplibre-gl';
-import baseOfflineStyle from '/public/maps/offline-vector-style.json';
+import baseOfflineStyle from '../src/maps/offline-vector-style.json';
 
 export const POI_GEOJSON_DATA = {
   type: "FeatureCollection",

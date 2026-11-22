@@ -62,6 +62,27 @@ body {
     box-shadow: 0 10px 40px rgba(78, 31, 8, 0.656), 0 0 10px rgba(61, 18, 1, 0.45);
 }
 
+.scratch-card-stage {
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(119, 85, 29, 0.16), transparent 68%),
+        #090806;
+}
+
+.scratch-card-surface {
+    background: linear-gradient(145deg, #261b0b, #090806 72%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 232, 164, 0.28),
+        inset 0 0 28px rgba(0, 0, 0, 0.72),
+        0 16px 38px rgba(0, 0, 0, 0.52);
+}
+
+.scratch-foil-canvas {
+    cursor: crosshair;
+    filter: saturate(1.12) contrast(1.05);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
 /* History 3D Card Depth */
 .history-card-3d {
     background: rgb(83, 31, 1);
@@ -89,7 +110,7 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -97,7 +118,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #3b82f6;
+    background: #cee1ff;
     border-radius: 10px;
 }
 
@@ -288,7 +309,7 @@ body {
     left: 10%;
     right: 10%;
     height: 3px;
-    background: linear-gradient(to right, transparent, #3b82f6, #60a5fa, #3b82f6, transparent);
+    background: linear-gradient(to right, transparent, #2a7cff, #81b9ff, #2a7cff, transparent);
     box-shadow: 0 0 15px 2px rgba(59, 130, 246, 0.8), 0 0 30px 5px rgba(59, 130, 246, 0.4);
     z-index: 5;
     animation: scanner-laser 2.5s ease-in-out infinite;
