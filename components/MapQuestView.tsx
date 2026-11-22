@@ -402,13 +402,6 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
       el.addEventListener('click', () => {
         setActiveTargetId(target.id);
-        if (map.current) {
-          map.current.easeTo({
-            center: [coords.lon, coords.lat],
-            offset: [0, 110],
-            duration: 400,
-          });
-        }
       });
 
       const popupHtml = generateQuestPopupHtml(
@@ -431,6 +424,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       );
 
       const popup = new maplibregl.Popup({
+        anchor: 'bottom',
         offset: [0, -10],
         maxWidth: '300px',
         closeButton: true,
@@ -440,9 +434,10 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
       popup.on('open', () => {
         if (map.current) {
+          const mapHeight = map.current.getContainer().clientHeight;
           map.current.easeTo({
             center: [coords.lon, coords.lat],
-            offset: [0, 110],
+            offset: [0, Math.max(0, mapHeight / 2 - 45)],
             duration: 400,
           });
         }

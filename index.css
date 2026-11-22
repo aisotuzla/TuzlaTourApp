@@ -190,6 +190,12 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
+.quest-poi-map-popup .maplibregl-popup-content {
+    max-height: max(120px, calc(65vh - 100px));
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+}
+
 .maplibregl-popup-close-button {
     padding: 10px !important;
     font-size: 18px !important;
