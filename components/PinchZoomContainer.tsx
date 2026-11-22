@@ -9,7 +9,7 @@ interface PinchZoomContainerProps {
 
 export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
   children,
-  maxScale = 3.0,
+  maxScale = 2.0,
   minScale = 1.0,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
