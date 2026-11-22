@@ -1,17 +1,34 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { computeTiltCompensatedHeading, smoothHeading } from '../utils/arProjection';
 
-export function useCompassHeading(): { heading: number | null; accuracy: number | null } {
+export function useCompassHeading(): {
+  heading: number | null;
+  accuracy: number | null;
+  requestPermission: () => Promise<boolean>;
+} {
   const [heading, setHeading] = useState<number | null>(null);
   const [accuracy, setAccuracy] = useState<number | null>(null);
-  const smoothedAlphaRef = useRef<number | null>(null);
+  const smoothedHeadingRef = useRef<number | null>(null);
   const lastUpdateTimeRef = useRef<number>(0);
-  const lastEmittedRef = useRef<number | null>(null);
+
+  const requestPermission = useCallback(async (): Promise<boolean> => {
+    if (typeof (DeviceOrientationEvent as any)?.requestPermission === 'function') {
+      try {
+        const response = await (DeviceOrientationEvent as any).requestPermission();
+        return response === 'granted';
+      } catch (err) {
+        console.warn('DeviceOrientation permission notice:', err);
+        return false;
+      }
+    }
+    return true;
+  }, []);
 
   useEffect(() => {
     let hasAbsolute = false;
 
     const handleOrientation = (e: DeviceOrientationEvent, isAbs: boolean) => {
+      // Prefer geomagnetic absolute orientation when available
       if (hasAbsolute && !isAbs) return;
       if (isAbs) hasAbsolute = true;
 
@@ -22,20 +39,18 @@ export function useCompassHeading(): { heading: number | null; accuracy: number 
 
       const rawHeading = computeTiltCompensatedHeading(e.alpha, e.beta, e.gamma, webkitHeading);
       if (rawHeading !== null) {
-        const screenAngle = window.screen?.orientation?.angle || (window.orientation as number) || 0;
-        const adjustedHeading = (rawHeading + screenAngle) % 360;
-        const smoothed = smoothHeading(adjustedHeading, smoothedAlphaRef.current, 0.2);
-        smoothedAlphaRef.current = smoothed;
+        const screenAngle = window.screen?.orientation?.angle ?? (typeof window.orientation === 'number' ? window.orientation : 0);
+        const adjustedHeading = (rawHeading + screenAngle + 360) % 360;
+
+        // Smooth heading across 0/360 boundary
+        const smoothed = smoothHeading(adjustedHeading, smoothedHeadingRef.current, 0.25);
+        smoothedHeadingRef.current = smoothed;
 
         const now = performance.now();
-        // Throttle updates to ~15fps and only when angle changes > 1 degree to keep UI snappy and save CPU
-        if (
-          now - lastUpdateTimeRef.current >= 66 &&
-          (lastEmittedRef.current === null || Math.abs(smoothed - lastEmittedRef.current) > 1.0)
-        ) {
+        // Update at ~30 FPS for fluid dial motion while preventing CPU overload
+        if (now - lastUpdateTimeRef.current >= 33) {
           lastUpdateTimeRef.current = now;
-          lastEmittedRef.current = smoothed;
-          setHeading(smoothed);
+          setHeading(Math.round(smoothed * 10) / 10);
         }
       }
     };
@@ -56,6 +71,6 @@ export function useCompassHeading(): { heading: number | null; accuracy: number 
     };
   }, []);
 
-  return { heading, accuracy };
+  return { heading, accuracy, requestPermission };
 }
 

@@ -1,153 +1,186 @@
-# Tuzla Quest — Player Guide
+# Tuzla Quest — Game & Verification Manual
 
 **Project:** Tuzla Tour Guide  
 **Location:** Tuzla, Bosnia and Herzegovina  
-**Current game content:** 12 points of interest across four phases  
-**Current verification implementation:** Live camera QR scan connected to Supabase guest sessions and server-side completion checks  
-**Setup still required:** Enable anonymous sign-ins and configure the real QR payload hashes for each quest
-
-This manual describes the game as it is currently implemented and clearly labels planned features. It does not promise that every reward, partner offer or online service is available at all times.
-
-## 1. What is Tuzla Quest?
-
-Tuzla Quest is a city-discovery game inside Tuzla Tour Guide. It encourages players to explore cultural landmarks, public spaces, local attractions and selected businesses.
-
-The app provides a map and optional GPS/AR navigation to help you find each point of interest (POI). At a quest location, the current test flow lets you scan the associated QR code with the live camera to unlock that POI on your device.
-
-**A local QR unlock is a game-testing action, not a verified proof of physical presence.** Static QR codes can be photographed, copied or scanned by someone who is not at the location.
-
-## 2. How to play
-
-1. Open Tuzla Tour Guide and navigate to the Quest section.
-2. Review the active phase and its POIs.
-3. Select a POI to view its description and location.
-4. If you choose, enable location permission and use the map/GPS/AR guidance to navigate there.
-5. At the location, find the relevant quest QR code.
-6. Open the in-app scanner and scan the code using the live camera.
-7. The app sends the decoded QR payload and GPS coordinates to Supabase. The server checks the configured QR hash, GPS radius, and whether the quest was already completed before awarding XP.
-8. Continue exploring the remaining POIs after the server confirms completion.
-
-**Current setup limitation:** The 12 database quest rows still have empty QR identifiers. Until each real printed QR payload is decoded and configured, scans cannot award server-verified XP. Guest sign-in must also be enabled in Supabase Authentication.
-
-The scanner requires camera permission. If permission is denied, enable it in your browser or device settings and retry.
-
-### Current testing rules
-
-- Use the live in-app camera scanner.
-- QR images selected from the photo gallery are not an accepted quest-unlock method in the updated test branch.
-- The quest screen and AR scanner submit completion attempts to Supabase; the server is authoritative for XP and completion records.
-- A scan is not a successful quest completion until Supabase confirms it.
-- QR payload hashes are not yet configured for the 12 quest rows, so production-style completion is not ready for player testing.
-
-## 3. Quest phases and points of interest
-
-The current quest configuration contains **12 POIs**.
-
-### Phase 1 — Foundations of Tuzla (4 POIs)
-
-1. **Freedom Square (Trg slobode)** — the central city square and its historic urban setting.
-2. **Stara Česma (Old Town Fountain)** — the historic fountain at Freedom Square.
-3. **Kapija Memorial** — a memorial to the young people killed on 25 May 1995.
-4. **Meša Selimović Monument** — a monument commemorating the Tuzla-born writer.
-
-### Phase 2 — Culture, Dining and Salt Heritage (3 POIs)
-
-1. **King Tvrtko Park** — the central park and monument to King Tvrtko I Kotromanić.
-2. **Bagi Crêperie (Palačinkara kod Bagija)** — a local dessert and food stop.
-3. **Salt Square (Solni trg)** — a place presenting Tuzla's salt-mining heritage.
-
-### Phase 3 — Lakes, Waterfalls and Art (4 POIs)
-
-1. **Pannonian Salt Lakes (Panonska jezera)** — the salt-lake complex in central Tuzla.
-2. **Saline Waterfalls (Slani slapovi)** — the saline waterfalls within the Pannonian complex.
-3. **Slana Banja Park** — a memorial and recreational park.
-4. **Atelier Ismet Mujezinović** — a memorial studio and art gallery.
-
-**QR setup note:** The current quest data has no QR asset configured for Atelier Ismet Mujezinović. Its QR checkpoint should not be considered ready until a real code is prepared, its payload is tested and the mapping is configured.
-
-### Phase 4 — Grand Finale (1 POI)
-
-1. **Bingo City Center (Bingo City Centar)** — the shopping, dining and entertainment centre.
-
-## 4. GPS and AR navigation
-
-Location permission is optional. If you enable it, the app can use device location to show your position and estimate distance to a POI. Camera and device-orientation access may be used for AR navigation overlays.
-
-GPS accuracy varies with the device, buildings, weather, satellite visibility and other conditions. Compass and AR overlays can drift. A marker appearing aligned or a displayed distance reaching zero does not prove that you are at an exact entrance or inside a building.
-
-The current test-stage quest unlock is based on QR matching, not a server-enforced 20-metre GPS check.
-
-## 5. Planned production verification
-
-The intended production completion flow is:
-
-1. The player signs in.
-2. The player scans the QR code for a specific POI.
-3. The app obtains a location sample and its reported accuracy.
-4. The server checks the QR identifier against that POI.
-5. The server checks whether the location sample is within the POI's configured **20-metre radius**, taking the reported accuracy into account.
-6. The server checks that the player has not already completed that POI.
-7. The server records the completion and awards the configured XP in one protected operation.
-
-The database has been prepared with 12 POIs and a 20-metre radius. The QR identifier field is intentionally not populated until the actual printed QR payloads have been verified.
-
-The player app is now wired to this Supabase-backed flow, including the server-side completion function, authenticated guest sessions, and duplicate-completion protection. However, the flow is **not yet ready for live player testing**: anonymous sign-ins must be enabled in Supabase, and each real QR payload must be configured as a server-side SHA-256 hash. The 12 quest rows currently have no QR hashes.
-
-### Anti-cheat limitations
-
-A QR code printed at a location can still be photographed and shared. GPS readings can be inaccurate or spoofed on some devices. Combining QR, GPS, account authentication, accuracy checks, rate limits and one-completion rules can deter casual abuse, but it cannot guarantee that every player is physically present or eliminate all fraud.
-
-## 6. Rewards and partner offers
-
-The app may display in-game progress, media, badges or other milestone content as the quest develops. Quest rewards are presented in the app.
-
-A discount, voucher or business benefit is valid only if:
-
-- it is explicitly displayed as an active offer in the app;
-- the participating business has confirmed the offer and its terms; and
-- the player presents it in the way specified by the business.
-
-Do not assume a fixed discount percentage or guaranteed redemption. Offers may have exclusions, expiry dates, limited quantities or partner-specific conditions.
-
-## 7. Safety and respectful use
-
-- Follow pedestrian rules and traffic signals. Do not scan while driving or crossing a road.
-- Stop in a safe place before using the camera or reading the screen.
-- Respect private property, opening hours, staff instructions and restricted areas.
-- Do not enter a business or venue solely because it appears as a map marker; ask staff where public access is permitted.
-- Do not photograph people, staff or private interiors without permission.
-- Be respectful at memorials, religious sites and cultural institutions.
-- Keep your device secure and be aware of your surroundings.
-
-## 8. Permissions and troubleshooting
-
-| Feature | Permission / requirement | If it does not work |
-| --- | --- | --- |
-| Map positioning | Location permission and device location services | Enable location and retry; check device accuracy |
-| AR guidance | Camera and, where supported, orientation sensors | Allow camera/orientation access; move to a safe, well-lit place |
-| QR scan | Camera permission | Enable camera access and retry; use the live scanner |
-| Audio guide | Device audio output | Check volume, silent mode and network availability for remote content |
-| Online map/content | Internet connection unless content is cached | Reconnect or retry later |
-
-If a QR code does not scan, check that the lens is clean, the code is well lit and fully visible. Make sure the code belongs to the selected POI. Report a damaged, missing or mismatched code to the project contact rather than repeatedly scanning unrelated codes.
-
-## 9. Progress, accounts and privacy
-
-The app now includes a multilingual player dashboard backed by Supabase guest authentication and server-side XP records. Guest sign-in must be enabled in the Supabase Authentication settings before a new guest profile can be created. Anonymous users are not recoverable if they clear browser data or move to another device unless an identity is later linked.
-
-Quest completion and XP are intended to synchronize through Supabase. This cannot be tested end-to-end until the 12 real QR payloads are configured and guest sign-in is enabled. The privacy notice should explain the account information and location verification data processed by the service before public launch.
-
-Read the [Privacy Policy](PRIVACY_POLICY.md) and [Cookie Policy](COOKIE_POLICY.md) for more information.
-
-## 10. Support and feedback
-
-For a missing QR code, incorrect POI information, accessibility issue or technical problem, contact:
-
-**AISO Tuzla / Tuzla Tour Guide**  
-[aisotuzla@proton.me](mailto:aisotuzla@proton.me)
-
-When reporting a problem, include the POI name, device/browser and a short description. Do not send passwords or authentication tokens.
+**Architecture:** Snappy Native UI (65% 3D Tactical Map + 35% Tactical Compass HUD) + Illustrated Artistic Map  
+**Backend:** Authoritative Supabase PostGIS & Cryptographic QR Verification  
+**Total Points of Interest:** 12 Historic Monuments across 4 Gated Phases  
 
 ---
 
-*This guide describes the current test branch. Screens, rewards and verification behaviour may change as the app moves from local QR testing to the production Supabase-backed quest system.*
+## 1. Overview of Tuzla Quest
+
+**Tuzla Quest** is an interactive, location-based city exploration game embedded inside Tuzla Tour Guide. Players navigate through Tuzla's historic core, discovering monuments spanning centuries of history—from medieval Bosnian royalty to modern cultural icons.
+
+The game is designed for fast, snappy, battery-efficient gameplay without clunky camera AR overlays or vibration interruptions. Players navigate using a tactical compass and an illustrated hand-drawn map, physical QR markers at each location, and real-time GPS proximity validation.
+
+---
+
+## 2. Gameplay Flow & Interface
+
+The Quest interface is divided into two focused sections:
+
+1. **Upper 65% — Interactive 3D Tactical Map (`MapQuestView`)**:
+   - Vector 3D buildings and streets powered by MapLibre GL with offline PMTiles vector fallback.
+   - Interactive markers color-coded by quest phase.
+   - Smooth viewport centering with vertical offset compensation so informational popups open in the middle of the frame without clipping.
+   - Shortcut buttons for pedestrian GPS routing, audio narrations, panoramic views, and the Illustrated Map viewer.
+
+2. **Lower 35% — Tactical Compass HUD (`QuestCompassPanel`)**:
+   - **Tactical Compass Rose**: Live-rotating cardinal dial (N/E/S/W) driven by device orientation sensors.
+   - **Directional Needle**: Points towards the active quest target.
+   - **Real-Time Distance Meter**: Dynamic geodesic distance readout in meters or kilometers.
+   - **25-Meter Proximity Alert**: When a player approaches within 25 meters of the landmark, the compass dial illuminates in emerald green (`ZONA / IN ZONE`) and the QR scanner CTA pulses.
+   - **POI Carousel**: Next/previous buttons and progress pills to review targets in the active phase.
+
+3. **Illustrated Artistic Map (`QuestIllustratedMap`)**:
+   - Hand-crafted commemorative artwork (`QuestMap3.webp`, 2000×3558).
+   - 12 medallions perfectly aligned with real physical coordinates.
+   - Tap any medallion to view phase status, start navigation, or launch the QR scanner directly.
+
+---
+
+## 3. Quest Phases & Points of Interest
+
+The game consists of **12 points of interest** organized into 4 sequentially unlocked phases. A phase is marked complete once all of its locations have been claimed and verified.
+
+```mermaid
+flowchart LR
+    P1["Phase 1: Stara čaršija\n(4 POIs)"] --> P2["Phase 2: Bosansko kraljevstvo\n(3 POIs)"]
+    P2 --> P3["Phase 3: Panonski mornar\n(4 POIs)"]
+    P3 --> P4["Phase 4: Grand Finale\n(1 POI)"]
+```
+
+### Phase 1 — Foundations of Tuzla / Stara čaršija (4 POIs)
+*Focus: The historical heart and founding spaces of Old Town Tuzla.*
+
+1. **Trg slobode (Freedom Square)**
+   - **Coordinates:** `44.5395175, 18.6749037`
+   - **XP Reward:** 100 XP
+   - **Description:** The largest open city square in Bosnia and Herzegovina, centered around the landmark fountain.
+2. **Stara česma (Old Town Fountain)**
+   - **Coordinates:** `44.5389820, 18.6755800`
+   - **XP Reward:** 100 XP
+   - **Description:** Historic stone public fountain dating back to the late 19th century.
+3. **Kapija Memorial**
+   - **Coordinates:** `44.5386300, 18.6768050`
+   - **XP Reward:** 100 XP
+   - **Description:** Sacred city memorial honoring the youth killed on 25 May 1995.
+4. **Meša Selimović & Ismet Mujezinović Monument**
+   - **Coordinates:** `44.5370993, 18.6781216`
+   - **XP Reward:** 100 XP
+   - **Description:** Sculptures commemorating the world-renowned novelist and prominent painter.
+
+### Phase 2 — Bosnian Kingdom & Heritage / Bosansko kraljevstvo (3 POIs)
+*Focus: Medieval sovereignty, traditional gastronomy, and salt extraction.*
+
+5. **Tvrtko Park (King Tvrtko I Monument)**
+   - **Coordinates:** `44.5380826, 18.6783327`
+   - **XP Reward:** 100 XP + King Tvrtko Scratch Card
+   - **Description:** Monument of the first King of Bosnia, Tvrtko I Kotromanić.
+6. **Palačinkara kod Bagija (Bagi Crêperie)**
+   - **Coordinates:** `44.5383762, 18.6775339`
+   - **XP Reward:** 100 XP
+   - **Description:** Iconic local sweet gastronomy destination in the city pedestrian core.
+7. **Soni trg (Salt Square)**
+   - **Coordinates:** `44.5382182, 18.6759398`
+   - **XP Reward:** 100 XP
+   - **Description:** Archaeological museum fountain celebrating over 7,000 years of salt extraction.
+
+### Phase 3 — Lakes, Waterfalls & Art / Panonski mornar (4 POIs)
+*Focus: Nature, saline therapy, and artistic expression.*
+
+8. **Panonska jezera (Pannonian Salt Lakes)**
+   - **Coordinates:** `44.5390760, 18.6794880`
+   - **XP Reward:** 100 XP
+   - **Description:** The only salt lakes in Europe located right in the center of a city.
+9. **Slani slapovi (Saline Waterfalls)**
+   - **Coordinates:** `44.5404243, 18.6819408`
+   - **XP Reward:** 100 XP
+   - **Description:** Therapeutic cascading saltwater falls within the Pannonica complex.
+10. **Slana Banja Park**
+    - **Coordinates:** `44.5369610, 18.6879830`
+    - **XP Reward:** 100 XP
+    - **Description:** Expansive forested park and memorial avenue overlooking Tuzla.
+11. **Atelje Ismet Mujezinović**
+    - **Coordinates:** `44.5371465, 18.6810454`
+    - **XP Reward:** 100 XP
+    - **Description:** Preserved studio and gallery of one of Bosnia's greatest visual artists.
+
+### Phase 4 — Grand Finale / Pobjednik Grada soli (1 POI)
+*Focus: Modern commercial life and quest culmination.*
+
+12. **Bingo City Centar (BCC Tuzla)**
+    - **Coordinates:** `44.5321770, 18.6517430`
+    - **XP Reward:** 100 XP + Grand Finale Master Badge
+    - **Description:** Major modern retail, cinema, and gathering hub marking quest completion.
+
+---
+
+## 4. End-to-End Verification Architecture
+
+Verification is entirely cloud-authoritative using Supabase PostGIS. Client-side state changes are never applied until the database confirms successful validation.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Player as Player (Device)
+    participant Client as App (QrScannerModal)
+    participant Auth as Supabase Auth
+    participant RPC as complete_tuzla_quest (PostgreSQL)
+    participant DB as Supabase PostGIS DB
+
+    Player->>Client: Point camera at physical QR
+    Client->>Client: Match QR payload (findQuestTargetFromQr)
+    Client->>Client: Read device GPS (navigator.geolocation)
+    Client->>Client: Validate client proximity (<= 25m)
+    Client->>Auth: ensurePlayerSession() (Anonymous Auth)
+    Auth-->>Client: Return Session & Guest UID
+    Client->>RPC: complete_tuzla_quest(quest_id, qr_payload, lat, lon)
+    RPC->>DB: Check quest_completions (anti-duplicate)
+    RPC->>DB: Compare sha256(qr_payload) == quests.qr_code_id
+    RPC->>DB: ST_Distance(POINT(lon,lat), location) <= 20m
+    alt Check passed
+        RPC->>DB: Insert quest_completions record
+        RPC->>DB: Increment player XP and calculate Level
+        RPC-->>Client: { ok: true, code: 'completed', xp_awarded: 100, xp_total: ... }
+        Client->>Player: Visual unlock celebration & update dashboard
+    else Outside geofence
+        RPC-->>Client: { ok: false, code: 'outside_radius', distance_meters: X }
+        Client->>Player: Error: Move closer to monument
+    else Already completed
+        RPC-->>Client: { ok: false, code: 'already_completed' }
+        Client->>Player: Notice: Already claimed
+    end
+```
+
+### Verification Criteria
+1. **Authenticated Session**: The player must have an active session (automatically provisioned as an anonymous guest explorer).
+2. **Cryptographic QR Validation**: The server verifies that `sha256(p_qr_payload)` strictly matches `quests.qr_code_id`.
+3. **Geodesic PostGIS Distance Check**:
+   - The server converts `(p_lat, p_lon)` into a spatial point with SRID 4326.
+   - It computes the true spherical distance to the landmark's coordinates.
+   - The user must be within the configured **20-meter radius**; otherwise, the server rejects the claim and reports the exact distance excess.
+4. **Idempotency & Replay Protection**:
+   - Re-scanning an already unlocked POI is rejected with `code: 'already_completed'`.
+   - The transaction is atomic: XP, level calculations, and completion timestamps are logged in a single database transaction.
+
+---
+
+## 5. Interactive Rewards & Easter Eggs
+
+- **King Tvrtko Scratch Card**:
+  - Scanning the King Tvrtko monument unlocks a digital golden scratch card modal ([TvrtkoScratchCardModal.tsx](file:///f:/TuzlaTourApp/components/TvrtkoScratchCardModal.tsx)).
+  - Scratching reveals historical heraldry and navigation instructions to the Stone of Kulin Ban.
+- **3D Charter of Kulin Ban Cube**:
+  - Reaching coordinates `(44.538791, 18.678778)` automatically activates a rotating 3D historical cube showcasing the Charter of Kulin Ban (1189) with medieval script and modern translations.
+
+---
+
+## 6. Player Dashboard & Progression
+
+The **My Progress** tab ([PlayerDashboard.tsx](file:///f:/TuzlaTourApp/components/PlayerDashboard.tsx)) reflects live server data:
+- **Total XP & Level**: Level titles advance from *Explorer* (Level 1) to *Knight of Tuzla* and *Pannonian Master*.
+- **Completed Quest Ledger**: Full timestamped ledger of verified scans.
+- **Phase Badges**: Visual badges unlock as each phase is conquered.
+- **Local Fallback Sync**: In-memory and Preferences state seamlessly reconcile with Supabase records upon dashboard load.

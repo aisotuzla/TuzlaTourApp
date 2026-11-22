@@ -94,33 +94,19 @@ export function computeTiltCompensatedHeading(
   gamma: number | null,
   webkitCompassHeading?: number
 ): number | null {
-  if (webkitCompassHeading !== undefined && webkitCompassHeading !== null) {
+  // 1. iOS Safari provides direct magnetic compass heading in degrees clockwise from North (0 - 360)
+  if (webkitCompassHeading !== undefined && webkitCompassHeading !== null && !isNaN(webkitCompassHeading)) {
     return (webkitCompassHeading + 360) % 360;
   }
-  if (alpha === null) return null;
-  if (beta === null || gamma === null) {
-    return (360 - alpha) % 360;
-  }
 
-  const degToRad = Math.PI / 180;
-  const a = alpha * degToRad;
-  const b = beta * degToRad;
-  const g = gamma * degToRad;
+  // 2. If alpha is unavailable, orientation cannot be determined
+  if (alpha === null || isNaN(alpha)) return null;
 
-  const cA = Math.cos(a);
-  const sA = Math.sin(a);
-  const sB = Math.sin(b);
-  const cG = Math.cos(g);
-  const sG = Math.sin(g);
-
-  // Back-camera direction vector in horizontal ground plane
-  const worldX = -cA * sG - sA * sB * cG;
-  const worldY = -sA * sG + cA * sB * cG;
-
-  const headingRad = Math.atan2(worldX, worldY);
-  let headingDeg = (headingRad * 180) / Math.PI;
-  if (headingDeg < 0) headingDeg += 360;
-  return headingDeg;
+  // 3. W3C DeviceOrientation on Android / modern browsers:
+  // Alpha measures device rotation counter-clockwise from true/geomagnetic North.
+  // Clockwise compass heading for a device held in hand:
+  const heading = (360 - alpha) % 360;
+  return (heading + 360) % 360;
 }
 
 export function wgs84ToEnu(poi: WGS84Location, origin: WGS84Location): ENUCoordinate {

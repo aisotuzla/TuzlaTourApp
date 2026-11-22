@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Compass, Navigation, QrCode, Volume2, ChevronLeft, ChevronRight, CheckCircle2, Lock, Sparkles, MapPin } from 'lucide-react';
 import { Language } from '../types';
 import {
@@ -48,7 +48,14 @@ export const QuestCompassPanel: React.FC<QuestCompassPanelProps> = ({
   onStartNavigation,
   onPlayAudio,
 }) => {
-  const { heading } = useCompassHeading();
+  const { heading, requestPermission } = useCompassHeading();
+  const [calibrating, setCalibrating] = useState(false);
+
+  const handleCompassTap = async () => {
+    setCalibrating(true);
+    setTimeout(() => setCalibrating(false), 800);
+    await requestPermission();
+  };
 
   // Determine current active phase
   const isP1Done = PHASE_1_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
@@ -157,51 +164,143 @@ export const QuestCompassPanel: React.FC<QuestCompassPanelProps> = ({
 
       {/* Main Center Area: Compass Dial + Active POI Details */}
       <div className="flex items-center justify-between gap-3 my-auto py-1">
-        {/* Left: Tactical Compass Dial */}
-        <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 flex items-center justify-center">
-          {/* Compass Outer Ring */}
+        {/* Left: Redesigned High-Precision Tactical Compass Instrument */}
+        <div
+          onClick={handleCompassTap}
+          title={lang === 'bs' ? 'Dodirnite za kalibraciju kompasa' : 'Tap to calibrate compass'}
+          className={`relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 flex items-center justify-center cursor-pointer select-none group transition-transform active:scale-95 ${
+            calibrating ? 'animate-pulse' : ''
+          }`}
+        >
+          {/* Outer Machined Titanium Bezel */}
           <div
-            className="absolute inset-0 rounded-full border-2 border-slate-700 bg-slate-950/80 shadow-inner flex items-center justify-center"
+            className="absolute inset-0 rounded-full border-2 bg-gradient-to-br from-slate-800 via-slate-950 to-slate-900 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-300"
             style={{
-              boxShadow: isWithin25m ? '0 0 16px rgba(16, 185, 129, 0.4)' : '0 0 12px rgba(59, 130, 246, 0.25)',
-              borderColor: isWithin25m ? '#10b981' : '#334155',
+              borderColor: isWithin25m ? '#10b981' : '#475569',
+              boxShadow: isWithin25m
+                ? '0 0 20px rgba(16, 185, 129, 0.5), inset 0 0 12px rgba(16, 185, 129, 0.2)'
+                : '0 0 14px rgba(15, 23, 42, 0.9), inset 0 0 10px rgba(0, 0, 0, 0.8)',
             }}
           >
-            {/* Rotating Cardinal Rose */}
-            <div
-              className="absolute inset-0 transition-transform duration-100 ease-out flex items-center justify-center pointer-events-none"
-              style={{ transform: `rotate(${dialRotation}deg)` }}
+            {/* Static Radial Graduation Ring (Every 30° Major, 10° Minor) */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none opacity-50"
+              viewBox="0 0 100 100"
             >
-              <span className="absolute top-1 text-[8px] font-black text-rose-500 tracking-tighter">N</span>
-              <span className="absolute right-1.5 text-[8px] font-bold text-slate-400">E</span>
-              <span className="absolute bottom-1 text-[8px] font-bold text-slate-400">S</span>
-              <span className="absolute left-1.5 text-[8px] font-bold text-slate-400">W</span>
-            </div>
-
-            {/* Glowing Distance Core */}
-            <div className="flex flex-col items-center justify-center z-10 text-center px-1">
-              <span className={`text-xs sm:text-sm font-black font-mono tracking-tight leading-none ${isWithin25m ? 'text-emerald-400 animate-pulse' : 'text-white'}`}>
-                {distance !== null ? (distance < 1000 ? `${Math.round(distance)}m` : `${(distance / 1000).toFixed(1)}km`) : '--'}
-              </span>
-              <span className="text-[8px] font-bold text-slate-400 leading-none mt-0.5 uppercase">
-                {isWithin25m ? (lang === 'bs' ? 'ZONA' : 'IN ZONE') : (lang === 'bs' ? 'udaljenost' : 'distance')}
-              </span>
-            </div>
-
-            {/* Pointer Needle pointing to target POI */}
-            <div
-              className="absolute inset-0 transition-transform duration-150 ease-out flex items-center justify-center pointer-events-none"
-              style={{ transform: `rotate(${pointerAngle}deg)` }}
-            >
-              <div className="relative w-full h-full flex flex-col items-center justify-between py-1">
-                {/* Arrowhead */}
-                <div
-                  className={`w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent transition-colors ${isWithin25m ? 'border-b-[14px] border-b-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.9)]' : 'border-b-[14px] border-b-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]'
-                    }`}
+              <circle cx="50" cy="50" r="46" fill="none" stroke="#334155" strokeWidth="0.8" />
+              <circle cx="50" cy="50" r="41" fill="none" stroke="#1e293b" strokeWidth="0.5" strokeDasharray="1.5 3" />
+              {/* 12 Hour / 30° Perimeter Tick Marks */}
+              {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
+                <line
+                  key={deg}
+                  x1="50"
+                  y1="5"
+                  x2="50"
+                  y2={deg % 90 === 0 ? "10" : "7.5"}
+                  stroke={deg === 0 ? "#f43f5e" : deg % 90 === 0 ? "#cbd5e1" : "#64748b"}
+                  strokeWidth={deg % 90 === 0 ? "1.5" : "0.8"}
+                  transform={`rotate(${deg} 50 50)`}
                 />
-                {/* Tail */}
-                <div className="w-1 h-2 rounded-full bg-slate-600/60" />
+              ))}
+            </svg>
+
+            {/* Rotating Cardinal Rose Dial (N/E/S/W points to true North) */}
+            <div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              style={{
+                transform: `rotate(${dialRotation}deg)`,
+                transition: 'transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+                willChange: 'transform',
+              }}
+            >
+              {/* North: Luminous Ruby Red Chevron + Letter */}
+              <div className="absolute top-1.5 flex flex-col items-center">
+                <span className="w-0 h-0 border-l-[3.5px] border-l-transparent border-r-[3.5px] border-r-transparent border-b-[5px] border-b-rose-500 drop-shadow-[0_0_4px_rgba(244,63,94,0.9)]" />
+                <span className="text-[8px] font-black tracking-tighter text-rose-500 drop-shadow-[0_0_3px_rgba(244,63,94,0.7)] leading-none mt-0.5">
+                  N
+                </span>
               </div>
+
+              {/* East */}
+              <span className="absolute right-2 text-[8px] font-bold text-slate-300 drop-shadow">E</span>
+              {/* South */}
+              <span className="absolute bottom-1.5 text-[8px] font-bold text-slate-400 drop-shadow">S</span>
+              {/* West */}
+              <span className="absolute left-2 text-[8px] font-bold text-slate-300 drop-shadow">W</span>
+
+              {/* Sub-cardinal diamond pips (NE, SE, SW, NW) */}
+              {[45, 135, 225, 315].map((deg) => (
+                <div
+                  key={deg}
+                  className="absolute w-1 h-1 bg-amber-400/50 rotate-45 rounded-[0.5px]"
+                  style={{
+                    top: '8px',
+                    left: 'calc(50% - 2px)',
+                    transformOrigin: '2px 42px',
+                    transform: `rotate(${deg}deg)`,
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Tactical Dual-Tone Pointer Needle (Points at Target POI) */}
+            <div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              style={{
+                transform: `rotate(${pointerAngle}deg)`,
+                transition: 'transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+                willChange: 'transform',
+              }}
+            >
+              <div className="relative w-full h-full flex flex-col items-center justify-between py-1.5">
+                {/* Target Arrowhead with Luminous Glow */}
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent transition-colors duration-200 ${
+                      isWithin25m
+                        ? 'border-b-[16px] border-b-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,1)]'
+                        : 'border-b-[16px] border-b-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.9)]'
+                    }`}
+                  />
+                  <div
+                    className={`w-1 h-3 -mt-0.5 rounded-full ${
+                      isWithin25m ? 'bg-emerald-300 shadow-sm' : 'bg-amber-300 shadow-sm'
+                    }`}
+                  />
+                </div>
+
+                {/* Counter-Balance Skeletonized Tail */}
+                <div className="flex flex-col items-center opacity-70">
+                  <div className="w-1 h-2.5 bg-slate-500 rounded-full" />
+                  <div className="w-2.5 h-2.5 border border-slate-400/80 rounded-full mt-0.5" />
+                </div>
+              </div>
+            </div>
+
+            {/* Digital Center Hub Core (Distance & Heading Readout) */}
+            <div className="absolute z-20 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-slate-950/90 backdrop-blur-md border border-white/15 shadow-inner flex flex-col items-center justify-center text-center p-0.5">
+              <span
+                className={`text-[11px] sm:text-xs font-black font-mono tracking-tight leading-none ${
+                  isWithin25m ? 'text-emerald-400 animate-pulse' : 'text-white'
+                }`}
+              >
+                {distance !== null
+                  ? distance < 1000
+                    ? `${Math.round(distance)}m`
+                    : `${(distance / 1000).toFixed(1)}k`
+                  : '--'}
+              </span>
+              <span
+                className={`text-[7px] font-black leading-none mt-0.5 uppercase tracking-wider ${
+                  isWithin25m ? 'text-emerald-300' : 'text-amber-400/90'
+                }`}
+              >
+                {isWithin25m
+                  ? (lang === 'bs' ? 'ZONA' : 'IN ZONE')
+                  : heading !== null
+                  ? `${Math.round(heading)}°`
+                  : (lang === 'bs' ? 'CILJ' : 'TARGET')}
+              </span>
             </div>
           </div>
         </div>
