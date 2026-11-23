@@ -7,6 +7,21 @@ interface PinchZoomContainerProps {
   minScale?: number;
 }
 
+// Helper: check if target is inside an interactive map or media element that has its own multi-touch handlers
+const isExcludedTarget = (target: EventTarget | null): boolean => {
+  if (!target || !(target instanceof HTMLElement)) return false;
+  return Boolean(
+    target.closest('.maplibregl-map') ||
+    target.closest('.maplibregl-canvas') ||
+    target.closest('.mapboxgl-map') ||
+    target.closest('canvas.ar-canvas') ||
+    target.closest('[role="dialog"]') ||
+    target.closest('input') ||
+    target.closest('textarea') ||
+    target.closest('video')
+  );
+};
+
 export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
   children,
   maxScale = 2.0,
@@ -15,6 +30,7 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState<number>(1.0);
   const [translate, setTranslate] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
 
   // Refs to track gestures without causing re-renders during 60fps touchmove
   const stateRef = useRef({
@@ -23,6 +39,7 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
     translateY: 0,
     isPinching: false,
     isPanning: false,
+    isUnlocked: false,
     initialDistance: 0,
     initialScale: 1.0,
     startX: 0,
@@ -73,6 +90,8 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
     stateRef.current.translateY = 0;
     stateRef.current.isPinching = false;
     stateRef.current.isPanning = false;
+    stateRef.current.isUnlocked = false;
+    setIsUnlocked(false);
     setScale(1.0);
     setTranslate({ x: 0, y: 0 });
 
@@ -97,10 +116,23 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
     stateRef.current.scale = finalScale;
     stateRef.current.translateX = bounded.x;
     stateRef.current.translateY = bounded.y;
+    stateRef.current.isUnlocked = true;
+    setIsUnlocked(true);
     setScale(finalScale);
     setTranslate(bounded);
     applyTransform(finalScale, bounded.x, bounded.y);
   }, [applyTransform, clampPan, clampScale, resetZoom]);
+
+  const handleDoubleClick = useCallback((e: React.MouseEvent) => {
+    if (isExcludedTarget(e.target)) return;
+    if (stateRef.current.isUnlocked || stateRef.current.scale > 1.05) {
+      resetZoom();
+    } else {
+      stateRef.current.isUnlocked = true;
+      setIsUnlocked(true);
+      zoomTo(maxScale);
+    }
+  }, [maxScale, resetZoom, zoomTo]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -123,21 +155,6 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
       };
     };
 
-    // Helper: check if target is inside an interactive map or AR video that has its own multi-touch handlers
-    const isExcludedTarget = (target: EventTarget | null): boolean => {
-      if (!target || !(target instanceof HTMLElement)) return false;
-      return Boolean(
-        target.closest('.maplibregl-map') ||
-        target.closest('.maplibregl-canvas') ||
-        target.closest('.mapboxgl-map') ||
-        target.closest('canvas.ar-canvas') ||
-        target.closest('[role="dialog"]') ||
-        target.closest('input') ||
-        target.closest('textarea') ||
-        target.closest('video')
-      );
-    };
-
     const handleTouchStart = (e: TouchEvent) => {
       if (isExcludedTarget(e.target)) return;
 
@@ -145,9 +162,13 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
       if (e.touches.length === 1) {
         if (now - stateRef.current.lastTapTime < 300) {
           e.preventDefault();
-          if (stateRef.current.scale > 1.05) {
+          if (stateRef.current.isUnlocked || stateRef.current.scale > 1.05) {
+            // Double-tap while unlocked: lock and reset to 1x
             resetZoom();
           } else {
+            // Double-tap: unlock pinch to zoom x2
+            stateRef.current.isUnlocked = true;
+            setIsUnlocked(true);
             zoomTo(maxScale);
           }
           stateRef.current.lastTapTime = 0;
@@ -155,8 +176,8 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
         }
         stateRef.current.lastTapTime = now;
 
-        // If already zoomed, allow single-finger panning
-        if (stateRef.current.scale > 1.05) {
+        // If unlocked and zoomed in, allow single-finger panning
+        if (stateRef.current.isUnlocked && stateRef.current.scale > 1.05) {
           stateRef.current.isPanning = true;
           stateRef.current.lastTouchX = e.touches[0].clientX;
           stateRef.current.lastTouchY = e.touches[0].clientY;
@@ -164,7 +185,12 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
       }
 
       if (e.touches.length === 2) {
-        // Two fingers detected: begin pinch gesture
+        // Pinch to zoom is locked until unlocked by double tap!
+        if (!stateRef.current.isUnlocked && stateRef.current.scale <= 1.05) {
+          return;
+        }
+
+        // Two fingers detected and zoom is unlocked: begin pinch gesture
         stateRef.current.isPinching = true;
         stateRef.current.isPanning = false;
         stateRef.current.initialDistance = getTouchDistance(e);
@@ -182,8 +208,11 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
     const handleTouchMove = (e: TouchEvent) => {
       if (isExcludedTarget(e.target)) return;
 
-      // Handle two-finger pinch to zoom
+      // Handle two-finger pinch to zoom (only active when unlocked)
       if (e.touches.length === 2 && stateRef.current.isPinching) {
+        if (!stateRef.current.isUnlocked && stateRef.current.scale <= 1.05) {
+          return;
+        }
         e.preventDefault(); // Prevent standard browser scroll while pinching
         const currentDistance = getTouchDistance(e);
         if (stateRef.current.initialDistance > 0) {
@@ -206,7 +235,7 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
         return;
       }
 
-      // Handle panning when zoomed in (> 1.05x)
+      // Handle panning when unlocked and zoomed in (> 1.05x)
       if (e.touches.length === 1 && stateRef.current.isPanning && stateRef.current.scale > 1.05) {
         const dx = e.touches[0].clientX - stateRef.current.lastTouchX;
         const dy = e.touches[0].clientY - stateRef.current.lastTouchY;
@@ -274,27 +303,21 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
   }, [applyTransform, clampPan, clampScale, maxScale, resetZoom, zoomTo]);
 
   return (
-    <div className="relative w-full min-h-full flex-1 flex flex-col">
-      {/* Zoom Indicator and Quick Reset Button (Visible only when zoomed in) */}
-      {scale > 1.05 && (
-        <div className="fixed top-16 right-4 z-[9999] flex items-center gap-2 bg-slate-900/90 text-amber-300 border border-amber-400/50 shadow-2xl rounded-full px-3 py-1.5 backdrop-blur-md animate-in fade-in zoom-in duration-200">
+    <div
+      className="relative w-full min-h-full flex-1 flex flex-col"
+      onDoubleClick={handleDoubleClick}
+    >
+      {/* Zoom Indicator and Quick Lock/Reset Button (Visible only when unlocked or zoomed in) */}
+      {(scale > 1.05 || isUnlocked) && (
+        <div className="fixed top-16 right-4 z-[9999] flex items-center gap-2 bg-slate-900/95 text-amber-300 border border-amber-400/60 shadow-2xl rounded-full px-3 py-1.5 backdrop-blur-md animate-in fade-in zoom-in duration-200">
           <ZoomIn className="w-3.5 h-3.5 text-amber-400" />
           <span className="text-xs font-black tracking-wide">{scale.toFixed(1)}x</span>
-          {scale < maxScale && (
-            <button
-              type="button"
-              onClick={() => zoomTo(Math.min(scale + 1, maxScale))}
-              className="px-1.5 py-0.5 rounded-full bg-sky-500 text-white hover:bg-sky-400 active:scale-95 transition-all flex items-center justify-center cursor-pointer shadow-sm text-[10px] font-black"
-              title={`Zoom to ${Math.min(scale + 1, maxScale)}x`}
-            >
-              +1
-            </button>
-          )}
+          <span className="text-[10px] text-amber-200/80 font-bold tracking-wider uppercase">Unlocked</span>
           <button
             type="button"
             onClick={resetZoom}
             className="ml-1 p-1 rounded-full bg-amber-400 text-slate-950 hover:bg-amber-300 active:scale-95 transition-all flex items-center justify-center cursor-pointer shadow-sm"
-            title="Reset Zoom (1x)"
+            title="Lock & Reset Zoom (1x)"
           >
             <RotateCcw className="w-3 h-3" />
           </button>
@@ -315,4 +338,5 @@ export const PinchZoomContainer: React.FC<PinchZoomContainerProps> = ({
     </div>
   );
 };
+
 

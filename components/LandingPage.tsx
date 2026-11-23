@@ -313,7 +313,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             padding: 8px; /* Tanji okvir */
             transition: all 0.3s ease;
             margin: 0 auto;
-            touch-action: pan-y;
+            touch-action: pan-y pinch-zoom;
         }
 
         /* Unutrašnji ekran na desktopu - crna unutrašnjost */
@@ -326,7 +326,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             border: 1px solid rgba(184, 199, 219, 0.18);
             overflow: hidden; 
             z-index: 1;
-            touch-action: pan-y;
+            touch-action: pan-y pinch-zoom;
         }
 
         /* Video element */
@@ -377,7 +377,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 height: calc(100vh - 56px - env(safe-area-inset-top, 0px)) !important;
                 height: calc(100dvh - 56px - env(safe-area-inset-top, 0px)) !important;
                 min-height: calc(100dvh - 56px - env(safe-area-inset-top, 0px)) !important;
-                touch-action: pan-y;
+                touch-action: pan-y pinch-zoom;
             }
 
             /* Pretvaramo okvir u full-screen kontejner */
@@ -390,7 +390,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 padding: 0 !important;
                 box-shadow: none !important;
                 background-color: transparent !important;
-                touch-action: pan-y;
+                touch-action: pan-y pinch-zoom;
             }
 
             /* Ekran telefona zauzima 100% mobilnog ekrana */
@@ -400,7 +400,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
                 border-radius: 0 !important;
                 border: none !important;
                 background-color: #ffffff !important;
-                touch-action: pan-y;
+                touch-action: pan-y pinch-zoom;
             }
 
             /* Sakrivamo selfie kameru jer je korisnik na pravom telefonu */

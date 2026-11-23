@@ -42,7 +42,6 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRTrgSlobode.png',
     Image: '/assets/Gallery/QuestQRLocations/trgslobode.webp',
-    audio: '/audio/pois/en/01_freedom_square.mp3',
     audioByLang: {
       bs: '/audio/pois/bs/01_freedom_square.mp3',
       en: '/audio/pois/en/01_freedom_square.mp3',
@@ -66,12 +65,6 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRStaraCesma.png',
     Image: '/assets/Gallery/QuestQRLocations/cesma13.webp',
-    audio: '/audio/pois/en/01_freedom_square.mp3',
-    audioByLang: {
-      bs: '/audio/pois/bs/01_freedom_square.mp3',
-      en: '/audio/pois/en/01_freedom_square.mp3',
-      de: '/audio/pois/de/01_freedom_square.mp3',
-    },
 
   },
   {
@@ -86,7 +79,6 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'history',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRsonitrg.png',
     Image: '/assets/Gallery/QuestQRLocations/sonitrg.webp',
-    audio: '/audio/pois/en/03_salt_square.mp3',
     audioByLang: {
       bs: '/audio/pois/bs/03_salt_square.mp3',
       en: '/audio/pois/en/03_salt_square.mp3',
@@ -118,7 +110,6 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'nature',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRBanja.png',
     Image: '/assets/Gallery/QuestQRLocations/Slana_Banja.webp',
-    audio: '/audio/pois/en/07_slana_banja.mp3',
     audioByLang: {
       bs: '/audio/pois/bs/07_slana_banja.mp3',
       en: '/audio/pois/en/07_slana_banja.mp3',
@@ -137,7 +128,6 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRkapija.png',
     Image: '/assets/Gallery/QuestQRLocations/kapija.webp',
-    audio: '/audio/pois/en/04_kapija.mp3',
     audioByLang: {
       bs: '/audio/pois/bs/04_kapija.mp3',
       en: '/audio/pois/en/04_kapija.mp3',
@@ -156,7 +146,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'nature',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRslapovi.png',
     Image: '/assets/Gallery/QuestQRLocations/tzslapovi.webp',
-    audio: '/audio/slapovi.mp3'
+    audio: '/audio/pois/bs/08_slapovi.mp3'
   },
   {
     id: 'atelje_ismet',
@@ -170,12 +160,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'art',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRAtelje.png',
     Image: '/assets/Gallery/QuestQRLocations/atelje.webp',
-    audio: '/audio/pois/en/05_mesa_i_ismet.mp3',
-    audioByLang: {
-      bs: '/audio/pois/bs/05_mesa_i_ismet.mp3',
-      en: '/audio/pois/en/05_mesa_i_ismet.mp3',
-      de: '/audio/pois/de/05_mesa_i_ismet.mp3',
-    }
+
   },
   {
     id: 'bingo_city_centar',
@@ -189,7 +174,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'shopping',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRBingoCityCenter.png',
     Image: '/assets/icons/Bingo-supermarket.webp',
-    audio: '/audio/bingocitycentar.mp3',
+    audio: '/audio/pois/bs/09_bingocitycentar.mp3',
     website: 'https://tuzla.bingocitycenter.ba/'
   },
   {
@@ -204,7 +189,6 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'culture',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRMesaStatue.png',
     Image: '/assets/Gallery/QuestQRLocations/TuzlaMesaS.webp',
-    audio: '/audio/pois/en/05_mesa_i_ismet.mp3',
     audioByLang: {
       bs: '/audio/pois/bs/05_mesa_i_ismet.mp3',
       en: '/audio/pois/en/05_mesa_i_ismet.mp3',
@@ -224,7 +208,6 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'history',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRtvrtko.png',
     Image: '/assets/Gallery/QuestQRLocations/ParkKraljaTvrtka.webp',
-    audio: '/audio/pois/en/06_king_tvrtko.mp3',
     audioByLang: {
       bs: '/audio/pois/bs/06_king_tvrtko.mp3',
       en: '/audio/pois/en/06_king_tvrtko.mp3',
@@ -243,7 +226,6 @@ export const QUEST_TARGETS: QuestTarget[] = [
     category: 'nature',
     Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpanonika.png',
     Image: '/assets/Gallery/QuestQRLocations/panonsko_jezero.webp',
-    audio: '/audio/pois/en/02_pannonica.mp3',
     audioByLang: {
       bs: '/audio/pois/bs/02_pannonica.mp3',
       en: '/audio/pois/en/02_pannonica.mp3',
