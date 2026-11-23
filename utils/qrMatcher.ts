@@ -64,6 +64,7 @@ export const findQuestTargetFromQr = (decodedText: string) => {
 
     const candidates = [
       target.id,
+      target.id === 'palacinkara' ? 'palacinkara_bagi' : '',
       target.name?.en,
       target.name?.bs,
       (target as any).Html5Qrcode,

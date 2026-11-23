@@ -95,7 +95,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
       tr: 'Tuzla\'nın en sevilen tatlı mekanı; lezzetli tatlı ve tuzlu krepleri, krep suşisi ve enfes tatlılarıyla ünlüdür.'
     },
     category: 'food',
-    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpalacinkara.png',
+    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpalacinkara_bagi.png',
     Image: '/assets/Gallery/Food/bagi.webp'
   },
   {
@@ -273,6 +273,7 @@ export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> =
   stara_cesma: { lat: 44.538982, lon: 18.675580 },
   salt_square: { lat: 44.5382182, lon: 18.6759398 },
   palacinkara: { lat: 44.5383762, lon: 18.6775339 },
+  palacinkara_bagi: { lat: 44.5383762, lon: 18.6775339 },
   slana_banja: { lat: 44.536961, lon: 18.687983 },
   panonika: { lat: 44.539076, lon: 18.679488 },
   slapovi: { lat: 44.5404243, lon: 18.6819408 },
