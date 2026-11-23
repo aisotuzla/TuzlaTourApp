@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Camera, CheckCircle2, CircleAlert, Compass, LoaderCircle, MapPin, QrCode, RefreshCw, ShieldCheck, Trophy, X } from 'lucide-react';
+import { Camera, CheckCircle2, CircleAlert, Compass, LoaderCircle, MapPin, QrCode, RefreshCw, ShieldCheck, Trophy, X, ZoomIn } from 'lucide-react';
 import { Language } from '../types';
 import { supabase } from '../lib/supabaseClient';
 import { ensurePlayerSession } from '../lib/playerSession';
@@ -31,8 +31,31 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
  const [status,setStatus]=useState<{kind:'success'|'error'|'info';message:string;xp?:number}|null>(null);
  const [cameraError,setCameraError]=useState('');
  const [playerId,setPlayerId]=useState('');
+ const [zoomLevel,setZoomLevel]=useState(1);
  const scanner=useRef<Html5Qrcode|null>(null);
  const processing=useRef(false);
+
+ const applyZoom = async (zoom: number) => {
+  setZoomLevel(zoom);
+  try {
+   const caps = scanner.current?.getRunningTrackCameraCapabilities();
+   const zoomFeat = caps?.zoomFeature();
+   if (zoomFeat && zoomFeat.isSupported()) {
+    const min = zoomFeat.min();
+    const max = zoomFeat.max();
+    await zoomFeat.apply(Math.min(Math.max(zoom, min), max));
+   }
+  } catch (_) {}
+  try {
+   const el = document.getElementById('quest-qr-reader');
+   const video = el?.querySelector('video');
+   if (video) {
+    video.style.transformOrigin = 'center center';
+    video.style.transform = zoom > 1 ? `scale(${zoom})` : 'none';
+    video.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)';
+   }
+  } catch (_) {}
+ };
  const completed=useMemo(()=>new Set(dashboard?.completed_quests?.map(q=>q.quest_id)||[]),[dashboard]);
  const ordered=useMemo(()=>phases.flatMap((ids,i)=>ids.map(id=>({id,phase:i+1}))).map(item=>({...item,quest:quests.find(q=>q.id===item.id),target:QUEST_TARGETS.find(q=>q.id===item.id)})).filter(x=>x.quest&&x.target),[quests]);
  const refresh=useCallback(async()=>{
@@ -88,14 +111,31 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
  },[quests,refresh,stop,t]);
  const start=async()=>{
   if(busy||scanning)return;
-  setBusy(true);setCameraError('');setStatus(null);setScanning(true);
+  setBusy(true);setCameraError('');setStatus(null);setScanning(true);setZoomLevel(1);
   try{
    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(null))));
    const el=document.getElementById('quest-qr-reader');
    if(!el)throw new Error('camera_container');
    const instance=new Html5Qrcode('quest-qr-reader',{verbose:false});
    scanner.current=instance;
-   await instance.start({facingMode:'environment'},{fps:10,qrbox:(w:number,h:number)=>{const size=Math.floor(Math.min(w,h)*0.72);return {width:size,height:size};},aspectRatio:1},(decoded)=>void complete(decoded),()=>{});
+   const hdConstraints: MediaTrackConstraints = {
+     facingMode: 'environment',
+     width: { min: 1080, ideal: 1920 },
+     height: { min: 720, ideal: 1080 },
+   };
+   const qrConfig = {
+     fps: 15,
+     qrbox: (w: number, h: number) => {
+       const size = Math.floor(Math.min(w, h) * 0.90);
+       return { width: size, height: size };
+     },
+     aspectRatio: 1,
+   };
+   try {
+     await instance.start(hdConstraints, qrConfig, (decoded)=>void complete(decoded), ()=>{});
+   } catch (_) {
+     await instance.start({facingMode:'environment'}, qrConfig, (decoded)=>void complete(decoded), ()=>{});
+   }
   }catch(e){console.error('[QuestHub] camera start failed',e);scanner.current=null;setCameraError(t.cameraError);setScanning(false);}
   finally{setBusy(false);}
  };
@@ -119,7 +159,24 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
     <div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-[.18em] text-amber-600">{t.secure}</p><h2 className="mt-1 text-lg font-black text-blue-950">{t.scan}</h2></div><div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-700"><QrCode size={25}/></div></div>
     <p className="mt-2 text-xs leading-relaxed text-slate-500">{t.scanHelp} {t.gps}</p>
     <div className="mt-4 overflow-hidden rounded-2xl bg-slate-950">
-     <div id="quest-qr-reader" className={scanning?'min-h-[260px] w-full overflow-hidden':'hidden'}/>
+     <div id="quest-qr-reader" className={scanning?'min-h-[280px] w-full overflow-hidden':'hidden'}/>
+     {scanning && (
+       <div className="flex items-center justify-center gap-1.5 bg-slate-900/90 border border-blue-400/30 rounded-full px-3 py-1.5 mx-auto my-2.5 w-fit">
+         <ZoomIn className="w-3.5 h-3.5 text-amber-400 mr-1" />
+         {[1, 1.5, 2, 2.5].map((z) => (
+           <button
+             key={z}
+             type="button"
+             onClick={() => applyZoom(z)}
+             className={`px-2 py-0.5 rounded-full text-xs font-black transition-all ${
+               zoomLevel === z ? 'bg-amber-400 text-slate-950 shadow' : 'text-blue-200 hover:text-white'
+             }`}
+           >
+             {z}x
+           </button>
+         ))}
+       </div>
+     )}
      {!scanning&&<div className="flex min-h-[170px] flex-col items-center justify-center px-5 py-7 text-center text-white"><div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-400/30 bg-blue-500/15 text-amber-300"><Camera size={28}/></div><p className="text-sm font-bold">{t.camera}</p><p className="mt-1 max-w-xs text-xs text-slate-400">{t.permission}</p></div>}
     </div>
     {cameraError&&<p className="mt-3 flex items-start gap-2 rounded-xl bg-rose-50 p-3 text-xs font-semibold text-rose-700"><CircleAlert size={16} className="shrink-0"/>{cameraError}</p>}

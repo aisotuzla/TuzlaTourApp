@@ -95,7 +95,7 @@ export const QUEST_TARGETS: QuestTarget[] = [
       tr: 'Tuzla\'nın en sevilen tatlı mekanı; lezzetli tatlı ve tuzlu krepleri, krep suşisi ve enfes tatlılarıyla ünlüdür.'
     },
     category: 'food',
-    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpalacinkara_bagi.png',
+    Html5Qrcode: '/assets/Gallery/QuestQRLocations/QuestQR/QRpalacinkara.png',
     Image: '/assets/Gallery/Food/bagi.webp'
   },
   {
@@ -252,18 +252,18 @@ export const ROUTE_POI_PRESETS: RoutePoiPreset[] = [
 export const POI_COLORS: Record<string, string> = {
   // Phase 1 — Old Town / Čaršija — light silver
   'trg_slobode': '#94a3b8',
-  'stara_cesma': '#94a3b8',
-  'kapija': '#94a3b8',
-  'mesa_selimovic': '#94a3b8',
+  'stara_cesma': '#8e98a8ff',
+  'kapija': '#52575eff',
+  'mesa_selimovic': '#849dc0ff',
   // Phase 2 — Bosnian Kingdom (Bosansko kraljevstvo) — green
-  'tvrtko_park': '#16a34a',
+  'tvrtko_park': '#7cd49dff',
   'palacinkara': '#16a34a',
-  'salt_square': '#16a34a',
+  'salt_square': '#53c77eff',
   // Phase 3 — Pannonian Sailor (Panonski mornar) — light blue to blue
-  'panonika': '#38bdf8',
-  'slapovi': '#0ea5e9',
-  'slana_banja': '#38bdf8',
-  'atelje_ismet': '#0284c7',
+  'panonika': '#00b3ffff',
+  'slapovi': '#51c8ffff',
+  'slana_banja': '#0c36f5ff',
+  'atelje_ismet': '#3602c7ff',
   // Grand Final — Salt City Winner (Pobjednik Slanog Grada) — red
   'bingo_city_centar': '#ef4444',
 };
@@ -273,7 +273,6 @@ export const QUEST_TARGET_COORDS: Record<string, { lat: number; lon: number }> =
   stara_cesma: { lat: 44.538982, lon: 18.675580 },
   salt_square: { lat: 44.5382182, lon: 18.6759398 },
   palacinkara: { lat: 44.5383762, lon: 18.6775339 },
-  palacinkara_bagi: { lat: 44.5383762, lon: 18.6775339 },
   slana_banja: { lat: 44.536961, lon: 18.687983 },
   panonika: { lat: 44.539076, lon: 18.679488 },
   slapovi: { lat: 44.5404243, lon: 18.6819408 },

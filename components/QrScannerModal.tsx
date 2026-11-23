@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, AlertCircle } from 'lucide-react';
+import { Globe, CheckCircle2, Lock, Play, X, Trophy, BookOpen, Camera, RefreshCw, AlertCircle, ZoomIn } from 'lucide-react';
 import { Language } from '../types';
 import { QUEST_TARGETS, QUEST_TARGET_COORDS } from '../constants/questData';
 import { getDistance } from '../utils/geoUtils';
@@ -37,6 +37,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   const [isStartingCamera, setIsStartingCamera] = useState<boolean>(false);
   const [activeVideoModal, setActiveVideoModal] = useState<{ url: string; title: string } | null>(null);
   const [activeRewardHtml, setActiveRewardHtml] = useState<{ url: string; title: string } | null>(null);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
   const { setIsTvrtkoScratchOpen } = useGlobalApp();
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const scanInProgressRef = useRef(false);
@@ -45,6 +46,29 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
     isOpenRef.current = isOpen;
   }, [isOpen]);
   const scannerContainerId = 'map-quest-reader';
+
+  const applyZoom = async (zoom: number) => {
+    setZoomLevel(zoom);
+    try {
+      const caps = html5QrCodeRef.current?.getRunningTrackCameraCapabilities();
+      const zoomFeat = caps?.zoomFeature();
+      if (zoomFeat && zoomFeat.isSupported()) {
+        const min = zoomFeat.min();
+        const max = zoomFeat.max();
+        await zoomFeat.apply(Math.min(Math.max(zoom, min), max));
+      }
+    } catch (_) {}
+
+    try {
+      const container = document.getElementById(scannerContainerId);
+      const video = container?.querySelector('video');
+      if (video) {
+        video.style.transformOrigin = 'center center';
+        video.style.transform = zoom > 1 ? `scale(${zoom})` : 'none';
+        video.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      }
+    } catch (_) {}
+  };
 
   // Scanner initialization lifecycle
   useEffect(() => {
@@ -309,40 +333,63 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
       const qrConfig = {
         fps: Math.max(scannerFps, 15),
-        qrbox: { width: Math.min(window.innerWidth * 0.7, 260), height: Math.min(window.innerWidth * 0.7, 260) },
+        qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+          const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+          const size = Math.floor(minEdge * 0.88);
+          return { width: size, height: size };
+        },
         disableFlip: false,
       };
 
+      const hdConstraints: MediaTrackConstraints = {
+        facingMode: 'environment',
+        width: { min: 1080, ideal: 1920 },
+        height: { min: 720, ideal: 1080 },
+      };
+
       try {
-        await html5QrCode.start({ facingMode: 'environment' }, qrConfig, onScanSuccess, () => { });
+        await html5QrCode.start(hdConstraints, qrConfig, onScanSuccess, () => { });
         setIsStartingCamera(false);
+        setZoomLevel(1);
         if (!isOpenRef.current) {
           stopScanner();
           return;
         }
-      } catch (err) {
-        console.warn('[QR Scanner] Environment camera failed, trying fallback to any camera...', err);
+      } catch (hdErr) {
+        console.warn('[QR Scanner] HD camera start failed, trying basic environment camera...', hdErr);
         try {
-          const devices = await Html5Qrcode.getCameras();
-          if (devices && devices.length > 0) {
-            const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
-            await html5QrCode.start(backCam.id, qrConfig, onScanSuccess, () => { });
-            setIsStartingCamera(false);
-            if (!isOpenRef.current) {
-              stopScanner();
-              return;
-            }
-          } else {
-            throw new Error('No cameras found on device.');
-          }
-        } catch (fallbackErr: any) {
-          console.error('[QR Scanner] Fallback failed:', fallbackErr);
+          await html5QrCode.start({ facingMode: 'environment' }, qrConfig, onScanSuccess, () => { });
           setIsStartingCamera(false);
-          setCameraError(
-            lang === 'bs'
-              ? 'Kamera nije dostupna ili nema dozvole. Omogućite pristup kameri i pokušajte ponovo.'
-              : 'Camera unavailable or permission denied. Enable camera access and try again.'
-          );
+          setZoomLevel(1);
+          if (!isOpenRef.current) {
+            stopScanner();
+            return;
+          }
+        } catch (err) {
+          console.warn('[QR Scanner] Environment camera failed, trying fallback to any camera...', err);
+          try {
+            const devices = await Html5Qrcode.getCameras();
+            if (devices && devices.length > 0) {
+              const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
+              await html5QrCode.start(backCam.id, qrConfig, onScanSuccess, () => { });
+              setIsStartingCamera(false);
+              setZoomLevel(1);
+              if (!isOpenRef.current) {
+                stopScanner();
+                return;
+              }
+            } else {
+              throw new Error('No cameras found on device.');
+            }
+          } catch (fallbackErr: any) {
+            console.error('[QR Scanner] Fallback failed:', fallbackErr);
+            setIsStartingCamera(false);
+            setCameraError(
+              lang === 'bs'
+                ? 'Kamera nije dostupna ili nema dozvole. Omogućite pristup kameri i pokušajte ponovo.'
+                : 'Camera unavailable or permission denied. Enable camera access and try again.'
+            );
+          }
         }
       }
     } catch (err: any) {
@@ -395,7 +442,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                 </>
               )}
 
-              <div className="relative w-72 h-72">
+              <div className="relative w-80 h-80 sm:w-96 sm:h-96 max-w-[88vw] max-h-[46vh] aspect-square">
                 {/* Real Camera Feed */}
                 <div
                   id={scannerContainerId}
@@ -480,6 +527,25 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                 ) : (
                   <div className="absolute left-0 top-1/2 w-full h-[3px] -translate-y-1/2 bg-gradient-to-r from-transparent via-sky-400 via-amber-300 via-sky-400 to-transparent shadow-[0_0_20px_#fbbf24,0_0_35px_#38bdf8] z-20 pointer-events-none" />
                 )}
+
+                {/* Floating Zoom Control Pill */}
+                <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-slate-900/95 border border-sky-400/50 rounded-full px-3 py-1.5 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
+                  <ZoomIn className="w-3.5 h-3.5 text-amber-400 mr-0.5" />
+                  {[1, 1.5, 2, 2.5].map((z) => (
+                    <button
+                      key={z}
+                      type="button"
+                      onClick={() => applyZoom(z)}
+                      className={`px-2 py-0.5 rounded-full text-[11px] font-black transition-all ${
+                        zoomLevel === z
+                          ? 'bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 shadow-md scale-105'
+                          : 'text-sky-200/80 hover:text-white active:scale-95'
+                      }`}
+                    >
+                      {z}x
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="mt-8 flex flex-col items-center">

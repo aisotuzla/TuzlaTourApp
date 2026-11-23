@@ -332,7 +332,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
   const navigate = useNavigate();
   const t = copy[lang] || copy.en;
   const isOnline = useNetwork();
-  const { unlockedRewards, setUnlockedRewards, setIsTvrtkoScratchOpen } = useGlobalApp();
+  const { unlockedRewards, setUnlockedRewards, setIsTvrtkoScratchOpen, setActivePhaseCelebration } = useGlobalApp();
 
   // 1. Dashboard State
   const [data, setData] = useState<DashboardData | null>(null);
@@ -867,35 +867,43 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
             {[
               {
                 id: 'phase_1',
+                phaseNumber: 1 as const,
                 title: lang === 'bs' ? 'Čaršija' : 'Old Town',
                 desc: lang === 'bs' ? 'Kapija, Trg slobode, Česma, Meša' : 'Kapija, Freedom Sq, Fountain, Meša',
+                rewardHint: lang === 'bs' ? '🎁 3D Stara česma' : '🎁 3D Old Fountain',
                 icon: '🏛️',
-                accentColor: 'border-slate-300 bg-slate-100/70',
+                accentColor: 'border-slate-300 bg-slate-100/70 hover:border-slate-400',
                 badgeBg: 'bg-slate-500 text-white',
                 unlocked: PHASE_1_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards)),
               },
               {
                 id: 'phase_2',
+                phaseNumber: 2 as const,
                 title: lang === 'bs' ? 'Bosansko kraljevstvo' : 'Bosnian Kingdom',
                 desc: lang === 'bs' ? 'Tvrtko park, Palačinkara, Solni trg' : 'Tvrtko Park, Crêperie, Salt Sq',
+                rewardHint: lang === 'bs' ? '👑 3D Povelja Kulina bana' : '👑 3D Charter of Kulin Ban',
                 icon: '👑',
-                accentColor: 'border-green-300 bg-green-50/70',
+                accentColor: 'border-green-300 bg-green-50/70 hover:border-green-400',
                 badgeBg: 'bg-green-600 text-white',
                 unlocked: PHASE_2_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards)),
               },
               {
                 id: 'phase_3',
+                phaseNumber: 3 as const,
                 title: lang === 'bs' ? 'Panonski mornar' : 'Pannonian Sailor',
                 desc: lang === 'bs' ? 'Panonika, Slapovi, Slana Banja, Atelje' : 'Panonika, Waterfalls, Banja, Atelier',
+                rewardHint: lang === 'bs' ? '🎫 Digitalni vaučer' : '🎫 Digital Voucher',
                 icon: '⛵',
-                accentColor: 'border-sky-300 bg-sky-50/70',
+                accentColor: 'border-sky-300 bg-sky-50/70 hover:border-sky-400',
                 badgeBg: 'bg-sky-500 text-white',
                 unlocked: PHASE_3_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards)),
               },
               {
                 id: 'grand_finale',
+                phaseNumber: null,
                 title: lang === 'bs' ? 'Pobjednik Slanog Grada' : 'Salt City Winner',
                 desc: lang === 'bs' ? 'Bingo City Center finale' : 'Bingo City Center finale',
+                rewardHint: null,
                 icon: '🏆',
                 accentColor: 'border-red-300 bg-red-50/70',
                 badgeBg: 'bg-red-600 text-white',
@@ -904,8 +912,13 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
             ].map((badge) => (
               <div
                 key={badge.id}
+                onClick={() => {
+                  if (badge.unlocked && badge.phaseNumber) {
+                    setActivePhaseCelebration(badge.phaseNumber);
+                  }
+                }}
                 className={`rounded-xl p-3 text-center border transition-all ${badge.unlocked
-                  ? `${badge.accentColor} shadow-2xs`
+                  ? `${badge.accentColor} shadow-2xs ${badge.phaseNumber ? 'cursor-pointer active:scale-95' : ''}`
                   : 'border-slate-100 bg-slate-50/50 opacity-60'
                   }`}
               >
@@ -916,13 +929,18 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                 <p className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">
                   {badge.desc}
                 </p>
+                {badge.unlocked && badge.rewardHint && (
+                  <p className="text-[9px] font-bold text-amber-600 line-clamp-1 mt-1">
+                    {badge.rewardHint}
+                  </p>
+                )}
                 <span
                   className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[9px] font-black uppercase ${badge.unlocked
                     ? badge.badgeBg
                     : 'bg-slate-200 text-slate-500'
                     }`}
                 >
-                  {badge.unlocked ? (lang === 'bs' ? 'Osvojeno' : 'Unlocked') : (lang === 'bs' ? 'Zaključano' : 'Locked')}
+                  {badge.unlocked ? (lang === 'bs' ? 'Osvojeno · Pogledaj' : 'Unlocked · View') : (lang === 'bs' ? 'Zaključano' : 'Locked')}
                 </span>
               </div>
             ))}

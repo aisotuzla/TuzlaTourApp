@@ -50,7 +50,7 @@ export const findQuestTargetFromQr = (decodedText: string) => {
     try {
       const qPart = raw.split(/[?&]q=/)[1]?.split('&')[0];
       if (qPart) queryText = decodeURIComponent(qPart);
-    } catch (_) {}
+    } catch (_) { }
   }
   const normalizedQuery = queryText ? normalizeQrText(queryText) : '';
 
@@ -64,7 +64,6 @@ export const findQuestTargetFromQr = (decodedText: string) => {
 
     const candidates = [
       target.id,
-      target.id === 'palacinkara' ? 'palacinkara_bagi' : '',
       target.name?.en,
       target.name?.bs,
       (target as any).Html5Qrcode,

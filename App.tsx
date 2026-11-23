@@ -29,6 +29,7 @@ import { useGeolocationWatcher } from './hooks/useGeolocationWatcher';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { TvrtkoScratchCardModal } from './components/TvrtkoScratchCardModal';
 import { KulinCharterModal } from './components/KulinCharterModal';
+import { PhaseCelebrationModal } from './components/PhaseCelebrationModal';
 
 const KULIN_BAN_STONE_COORDS = { lat: 44.538791, lon: 18.678778 };
 
@@ -103,6 +104,8 @@ const AppContent: React.FC = () => {
     setIsTvrtkoScratchOpen,
     isKulinCharterCubeOpen,
     setIsKulinCharterCubeOpen,
+    activePhaseCelebration,
+    setActivePhaseCelebration,
   } = useGlobalApp();
   const {
     currentNarration,
@@ -440,6 +443,18 @@ const AppContent: React.FC = () => {
         isOpen={isKulinCharterCubeOpen}
         onClose={() => setIsKulinCharterCubeOpen(false)}
         lang={lang}
+      />
+
+      {/* Phase Completion Celebration & Reward Modal (Old Town, Bosnian Kingdom, Pannonian Sailor) */}
+      <PhaseCelebrationModal
+        phase={activePhaseCelebration}
+        isOpen={activePhaseCelebration !== null}
+        onClose={() => setActivePhaseCelebration(null)}
+        lang={lang}
+        onContinue={() => {
+          setActivePhaseCelebration(null);
+          navigateToTab(AppTab.QUEST);
+        }}
       />
     </ImageProvider>
   );

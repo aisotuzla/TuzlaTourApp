@@ -618,7 +618,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       if (!userMarkerRef.current) {
         const el = document.createElement('div');
         el.className = 'user-gps-marker';
-        el.innerHTML = `<div class="relative flex items-center justify-center w-6 h-6"><div class="absolute w-full h-full bg-purple-500 rounded-full animate-ping opacity-75"></div><div class="relative w-4 h-4 bg-purple-600 border-2 border-white rounded-full shadow-lg"></div></div>`;
+        el.innerHTML = `<div class="relative flex items-center justify-center w-6 h-6"><div class="absolute w-full h-full bg-blue-500 rounded-full animate-ping opacity-75"></div><div style="background:#3b82f6;width:20px;height:20px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.8);"><div style="width:6px;height:6px;background:#fff;border-radius:50%;"></div></div></div>`;
         userMarkerRef.current = new maplibregl.Marker(el).setLngLat([longitude, latitude]).addTo(map.current);
       } else {
         userMarkerRef.current.setLngLat([longitude, latitude]);

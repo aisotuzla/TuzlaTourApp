@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, BookOpen, Globe, MapPin } from 'lucide-react';
+import { X, BookOpen, Globe, MapPin, Download, Check } from 'lucide-react';
 import { Language } from '../types';
 
 interface KulinCharterModalProps {
@@ -14,6 +14,41 @@ export const KulinCharterModal: React.FC<KulinCharterModalProps> = ({
   onClose,
   lang,
 }) => {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    const assetUrl = '/assets/povelja_kulina_bana_3d.html';
+    const filename = 'Povelja_Kulina_Bana_3D.html';
+    try {
+      const response = await fetch(assetUrl);
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 3000);
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 4000);
+    } catch (e) {
+      const link = document.createElement('a');
+      link.href = assetUrl;
+      link.download = filename;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 4000);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
   return (
     <AnimatePresence>
       {isOpen && (
@@ -74,18 +109,39 @@ export const KulinCharterModal: React.FC<KulinCharterModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-amber-400/30 bg-gradient-to-r from-amber-950 via-slate-950 to-amber-950 flex items-center justify-between shrink-0">
-              <span className="text-xs font-bold text-amber-300/80">
+            <div className="p-4 border-t border-amber-400/30 bg-gradient-to-r from-amber-950 via-slate-950 to-amber-950 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+              <span className="text-xs font-bold text-amber-300/80 text-center sm:text-left">
                 {lang === 'bs'
                   ? 'Rotirajte i istražite 3D Povelju Kulina bana'
                   : 'Rotate and explore the 3D Charter of Kulin Ban'}
               </span>
-              <button
-                onClick={onClose}
-                className="px-6 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer"
-              >
-                {lang === 'bs' ? 'Zatvori' : 'Close'}
-              </button>
+              <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+                <button
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                  className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 font-black text-xs uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all shadow-md cursor-pointer"
+                >
+                  {downloadSuccess ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-green-800" />
+                      <span>{lang === 'bs' ? 'Preuzeto!' : 'Downloaded!'}</span>
+                    </>
+                  ) : isDownloading ? (
+                    <span>{lang === 'bs' ? 'Preuzimanje...' : 'Downloading...'}</span>
+                  ) : (
+                    <>
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{lang === 'bs' ? 'Preuzmi 3D model' : 'Download 3D Model'}</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={onClose}
+                  className="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  {lang === 'bs' ? 'Zatvori' : 'Close'}
+                </button>
+              </div>
             </div>
           </motion.div>
         </motion.div>
