@@ -13,7 +13,7 @@ import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
 import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
-import { QUEST_TARGETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
+import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import QuestIllustratedMap from './QuestIllustratedMap.tsx';
 import QuestCompassPanel from './QuestCompassPanel.tsx';
@@ -382,7 +382,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       el.style.alignItems = 'center';
       el.style.justifyContent = 'center';
 
-      el.innerHTML = `<div class="relative flex items-center justify-center group" title="${title}"><div class="w-10 h-10 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl border-2 relative transition-transform duration-200 hover:scale-110 active:scale-95" style="background-color: ${customPoiColor}; border-color: ${isUnlocked ? '#fef08a' : '#ffffff'}; box-shadow: 0 0 12px ${customPoiColor};"><img src="${poiThumb}" alt="${title}" class="w-8 h-8 rounded-xl object-cover pointer-events-none" onerror="this.style.display='none'" /><span class="absolute top-0.5 right-0.5 text-[9px] leading-none font-black drop-shadow pointer-events-none px-1 rounded-full ${isUnlocked ? 'bg-amber-400 text-black' : 'bg-slate-900/80 text-white'}">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm pointer-events-none" style="background-color: ${customPoiColor};"></div></div>`;
+      el.innerHTML = `<div class="relative flex items-center justify-center group" title="${title}"><div class="w-10 h-10 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl border-[3px] relative transition-transform duration-200 hover:scale-110 active:scale-95" style="background-color: #0f172a; border-color: ${customPoiColor}; box-shadow: 0 0 0 2px #0f172a, 0 0 12px ${customPoiColor};"><img src="${poiThumb}" alt="${title}" class="w-8 h-8 rounded-xl object-cover pointer-events-none" onerror="this.style.display='none'" /><span class="absolute top-0.5 right-0.5 text-[9px] leading-none font-black drop-shadow pointer-events-none px-1 rounded-full ${isUnlocked ? 'bg-amber-400 text-black' : 'bg-slate-900/80 text-white'}">${isUnlocked ? '★' : '🔒'}</span></div><div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 rounded-sm pointer-events-none" style="background-color: ${customPoiColor};"></div></div>`;
 
       el.addEventListener('click', () => {
         setActiveTargetId(target.id);

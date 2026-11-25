@@ -561,42 +561,6 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
 
   return (
     <div className="w-full space-y-6">
-      {/* Prominent Dismissible Warning Banner */}
-      {!isWarningDismissed ? (
-        <div className="relative overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 via-amber-100/60 to-orange-50 p-5 shadow-sm">
-          <div className="flex items-start gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white shadow-md shadow-amber-500/20">
-              <AlertTriangle className="h-5 w-5" />
-            </div>
-            <div className="flex-1 pr-6">
-              <div className="text-xs font-black uppercase tracking-wider text-amber-900">
-                {lang === 'bs' ? 'Službeno upozorenje za putnike' : lang === 'de' ? 'Offizieller Reisehinweis' : lang === 'tr' ? 'Resmi Seyahat Uyarısı' : 'Official Travel Advisory'}
-              </div>
-              <p className="mt-1 text-sm sm:text-base font-bold leading-snug text-amber-950">
-                {t.warningBanner}
-              </p>
-            </div>
-            <button
-              onClick={() => setIsWarningDismissed(true)}
-              className="absolute right-3 top-3 rounded-full p-2 text-amber-700 transition-colors hover:bg-amber-200/60"
-              aria-label="Dismiss warning"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex justify-end">
-          <button
-            onClick={() => setIsWarningDismissed(false)}
-            className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-bold text-amber-800 transition-colors hover:bg-amber-100"
-          >
-            <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
-            {t.showWarning}
-          </button>
-        </div>
-      )}
-
       {/* Hero Header with Quick Link to 3-Day Plan */}
       <div className="relative overflow-hidden rounded-[2rem] border border-blue-100 bg-gradient-to-br from-blue-900 via-indigo-950 to-slate-900 p-6 sm:p-8 text-white shadow-lg">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -884,6 +848,42 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
               💡 {t.bus.taxiAlternative}
             </div>
           </section>
+        )}
+
+        {/* Official travel advisory follows bus information and precedes border/customs rules. */}
+        {!isWarningDismissed ? (
+          <div className="relative overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 via-amber-100/60 to-orange-50 p-5 shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white shadow-md shadow-amber-500/20">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <div className="flex-1 pr-6">
+                <div className="text-xs font-black uppercase tracking-wider text-amber-900">
+                  {lang === 'bs' ? 'Službeno upozorenje za putnike' : lang === 'de' ? 'Offizieller Reisehinweis' : lang === 'tr' ? 'Resmi Seyahat Uyarısı' : 'Official Travel Advisory'}
+                </div>
+                <p className="mt-1 text-sm sm:text-base font-bold leading-snug text-amber-950">
+                  {t.warningBanner}
+                </p>
+              </div>
+              <button
+                onClick={() => setIsWarningDismissed(true)}
+                className="absolute right-3 top-3 rounded-full p-2 text-amber-700 transition-colors hover:bg-amber-200/60"
+                aria-label="Dismiss warning"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-end">
+            <button
+              onClick={() => setIsWarningDismissed(false)}
+              className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-bold text-amber-800 transition-colors hover:bg-amber-100"
+            >
+              <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+              {t.showWarning}
+            </button>
+          </div>
         )}
 
         {/* SECTION 3: Entry & Border Requirements */}

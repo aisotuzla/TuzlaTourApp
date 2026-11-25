@@ -114,7 +114,7 @@ export const ThreeDayPlanView: React.FC<ThreeDayPlanViewProps> = ({
             'Take  Airport Taxi (~30–40 BAM / €15–20) or local Bus Line 34 (direct to airport) / Line 11 via Dubrave (2.50 – 5.50 BAM cash only)',
             'Reach Tuzla city center in approximately 20–50 minutes',
           ],
-          tip: 'Tip: Bus lines 34 and 11 require cash in BAM (KM), costing 2.50–5.50 BAM depending on distance. Check Practical Info for full schedules.',
+          tip: 'Tip: Bus lines 34 and 11 require cash in BAM (KM), costing 2.50–5.50 BAM depending on distance. Check Tourist Info for full schedules.',
           actionLabel: 'Airport & Bus Guide',
           actionType: 'practicalInfo',
         },
@@ -890,7 +890,7 @@ export const ThreeDayPlanView: React.FC<ThreeDayPlanViewProps> = ({
 
   return (
     <div className="w-full space-y-6">
-      {/* Top Banner Notice: Switch to Practical Info */}
+      {/* Top Banner Notice: Switch to Tourist Info */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-cyan-200 bg-gradient-to-r from-cyan-50 via-blue-50 to-indigo-50 p-4 sm:p-5 shadow-sm">
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-600 text-white shadow-md shadow-cyan-600/20">

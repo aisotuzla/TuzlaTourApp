@@ -49,6 +49,7 @@ const copy = {
   en: {
     title: 'Personal Notebook',
     subtitle: 'Your unified notebook for itinerary and travel expenses.',
+    touristInfo: 'Tourist Info',
     notebook: 'Notebook',
     all: 'All',
     expenses: 'Expenses',
@@ -68,6 +69,7 @@ const copy = {
   bs: {
     title: 'Lični planer',
     subtitle: 'Tvoja jedinstvena bilježnica za plan puta i evidenciju troškova.',
+    touristInfo: 'Turističke informacije',
     notebook: 'Planer',
     all: 'Sve',
     expenses: 'Troškovi',
@@ -87,6 +89,7 @@ const copy = {
   de: {
     title: 'Persönliches Notizbuch',
     subtitle: 'Dein einheitliches Notizbuch für Reiseplan und Reisekosten.',
+    touristInfo: 'Touristeninfo',
     notebook: 'Notizbuch',
     all: 'Alle',
     expenses: 'Ausgaben',
@@ -106,6 +109,7 @@ const copy = {
   tr: {
     title: 'Kişisel Not Defteri',
     subtitle: 'Güzergah ve seyahat harcamalarınız için kişisel not defteriniz.',
+    touristInfo: 'Turist Bilgileri',
     notebook: 'Not Defteri',
     all: 'Tümü',
     expenses: 'Harcamalar',
@@ -433,6 +437,17 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
           {/* Mode Switcher Buttons */}
           <div className="mt-4 flex items-center gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:pb-0">
             <button
+              onClick={() => setView('practicalInfo')}
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-black transition-all ${
+                view === 'practicalInfo'
+                  ? 'bg-white text-blue-900 shadow-sm'
+                  : 'bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/20'
+              }`}
+            >
+              <Compass className="h-3.5 w-3.5" />
+              {t.touristInfo}
+            </button>
+            <button
               onClick={() => setView('notebook')}
               className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-black transition-all ${
                 view === 'notebook'
@@ -469,17 +484,6 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
               }`}
             >
               {lang === 'bs' ? '3 Dnevni plan' : lang === 'de' ? '3-Tage-Plan' : lang === 'tr' ? '3 Günlük Plan' : '3 Day Plan'}
-            </button>
-            <button
-              onClick={() => setView('practicalInfo')}
-              className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-black transition-all ${
-                view === 'practicalInfo'
-                  ? 'bg-white text-blue-900 shadow-sm'
-                  : 'bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/20'
-              }`}
-            >
-              <Compass className="h-3.5 w-3.5" />
-              {lang === 'bs' ? 'Praktične info' : lang === 'de' ? 'Praktische Infos' : lang === 'tr' ? 'Pratik Bilgiler' : 'Practical Info'}
             </button>
             <button
               onClick={() => setView('media')}
