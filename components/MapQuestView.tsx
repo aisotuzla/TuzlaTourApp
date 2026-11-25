@@ -13,7 +13,7 @@ import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
 import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
 import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
-import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
+import { QUEST_TARGETS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
 import { QrScannerModal } from './QrScannerModal.tsx';
 import QuestIllustratedMap from './QuestIllustratedMap.tsx';
 import QuestCompassPanel from './QuestCompassPanel.tsx';
@@ -141,34 +141,18 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     for (const id of GRAND_FINALE_POIS) {
       if (!isPoiRewardUnlocked(id, rewards)) return id;
     }
-    return PHASE_1_POIS[0];
+    return null;
   };
 
-  const [activeTargetId, setActiveTargetId] = useState<string>(() => getNextUncompletedPoi(unlockedRewards));
+  const [activeTargetId, setActiveTargetId] = useState<string | null>(() => getNextUncompletedPoi(unlockedRewards));
 
   useEffect(() => {
-    if (isPoiRewardUnlocked(activeTargetId, unlockedRewards)) {
+    if (isGrandFinaleDone) {
+      setActiveTargetId(null);
+    } else if (!activeTargetId || isPoiRewardUnlocked(activeTargetId, unlockedRewards)) {
       setActiveTargetId(getNextUncompletedPoi(unlockedRewards));
     }
-  }, [unlockedRewards]);
-
-  const currentNavTargetColor = useMemo(() => {
-    if (!selectedNavTarget) return '#10b981';
-    const target = QUEST_TARGETS.find(
-      (q) =>
-        q.id === selectedNavTarget.name ||
-        q.name.bs === selectedNavTarget.name ||
-        q.name.en === selectedNavTarget.name
-    );
-    const matchedLoc = LOCATIONS.find(
-      (l) =>
-        l.id === selectedNavTarget.name ||
-        l.name.bs === selectedNavTarget.name ||
-        l.name.en === selectedNavTarget.name
-    );
-    const targetId = target?.id || matchedLoc?.id || '';
-    return POI_COLORS[targetId] || '#10b981';
-  }, [selectedNavTarget]);
+  }, [activeTargetId, isGrandFinaleDone, unlockedRewards]);
 
   const handleStartNavigation = (name: string, lat: number, lon: number) => {
     setSelectedNavTarget({ name, lat, lon });
@@ -662,30 +646,40 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
         style={{ height: '35%' }}
         className="w-full relative flex flex-col bg-slate-950 overflow-hidden shadow-2xl shrink-0 z-10"
       >
-        <QuestCompassPanel
-          lang={lang}
-          unlockedRewards={unlockedRewards}
-          userLocation={userLocation ? { lat: userLocation[0], lng: userLocation[1] } : (rawGeoPosition ? { lat: rawGeoPosition.lat, lng: rawGeoPosition.lng } : null)}
-          activeTargetId={activeTargetId}
-          onSelectTarget={(poiId) => {
-            setActiveTargetId(poiId);
-            const coords = QUEST_TARGET_COORDS[poiId];
-            if (coords && map.current) {
-              map.current.flyTo({
-                center: [coords.lon, coords.lat],
-                zoom: activeStyle === OFFLINE_STYLE ? 15 : 17,
-                pitch: 55,
-                bearing: -15,
-                duration: 1500,
-              });
-            }
-          }}
-          onOpenScanner={() => setIsScannerOpen(true)}
-          onStartNavigation={(name, lat, lon) => handleStartNavigation(name, lat, lon)}
-          onPlayAudio={(poiId, title, audioUrl) => {
-            if ((window as any).playPoiAudio) (window as any).playPoiAudio(poiId, title, audioUrl);
-          }}
-        />
+        {isGrandFinaleDone ? (
+          <div className="flex h-full w-full items-center justify-center bg-white p-3">
+            <img
+              src="/assets/Gallery/ilovebos.webp"
+              alt={lang === 'bs' ? 'Volim Bosnu i Hercegovinu' : 'I love Bosnia and Herzegovina'}
+              className="h-full w-full object-contain"
+            />
+          </div>
+        ) : activeTargetId ? (
+          <QuestCompassPanel
+            lang={lang}
+            unlockedRewards={unlockedRewards}
+            userLocation={userLocation ? { lat: userLocation[0], lng: userLocation[1] } : (rawGeoPosition ? { lat: rawGeoPosition.lat, lng: rawGeoPosition.lng } : null)}
+            activeTargetId={activeTargetId}
+            onSelectTarget={(poiId) => {
+              setActiveTargetId(poiId);
+              const coords = QUEST_TARGET_COORDS[poiId];
+              if (coords && map.current) {
+                map.current.flyTo({
+                  center: [coords.lon, coords.lat],
+                  zoom: activeStyle === OFFLINE_STYLE ? 15 : 17,
+                  pitch: 55,
+                  bearing: -15,
+                  duration: 1500,
+                });
+              }
+            }}
+            onOpenScanner={() => setIsScannerOpen(true)}
+            onStartNavigation={(name, lat, lon) => handleStartNavigation(name, lat, lon)}
+            onPlayAudio={(poiId, title, audioUrl) => {
+              if ((window as any).playPoiAudio) (window as any).playPoiAudio(poiId, title, audioUrl);
+            }}
+          />
+        ) : null}
       </div>
 
       {showIllustratedMap && (
@@ -793,18 +787,20 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
       </AnimatePresence>
 
 
-      <QrScannerModal
-        isOpen={isScannerOpen}
-        onClose={() => setIsScannerOpen(false)}
-        lang={lang}
-        unlockedRewards={unlockedRewards}
-        onRewardFound={onRewardFound}
-        onSelectVideo={(videoUrl) => {
-          const target = QUEST_TARGETS.find(q => (q as any).video === videoUrl);
-          const name = target ? (target.name[lang as keyof typeof target.name] || target.name.en || target.name.bs) : 'Cinematic Video';
-          setPlayingQuestVideo({ url: videoUrl, title: name });
-        }}
-      />
+      {!isGrandFinaleDone && (
+        <QrScannerModal
+          isOpen={isScannerOpen}
+          onClose={() => setIsScannerOpen(false)}
+          lang={lang}
+          unlockedRewards={unlockedRewards}
+          onRewardFound={onRewardFound}
+          onSelectVideo={(videoUrl) => {
+            const target = QUEST_TARGETS.find(q => (q as any).video === videoUrl);
+            const name = target ? (target.name[lang as keyof typeof target.name] || target.name.en || target.name.bs) : 'Cinematic Video';
+            setPlayingQuestVideo({ url: videoUrl, title: name });
+          }}
+        />
+      )}
 
       {/* Direct Video Overlay in Map View */}
       <AnimatePresence>

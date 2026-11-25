@@ -138,8 +138,8 @@ const copy = {
     completedTitle: 'Completed Quests & Locations',
     completedSubtitle: 'Verified footprints & rewards',
     noCompleted: 'No completed locations yet. Start scanning QR codes!',
-    clearHistory: 'Clear scan history',
-    confirmClear: 'Clear all history?',
+    clearHistory: 'Reset quest & scan history',
+    confirmClear: 'Clear scan history and reset the quest?',
     yesClear: 'Yes, clear',
     cancel: 'Cancel',
     viewReward: 'View Reward',
@@ -184,8 +184,8 @@ const copy = {
     completedTitle: 'Otkrivene lokacije i riješeni zadaci',
     completedSubtitle: 'Potvrđene posjete i otključane nagrade',
     noCompleted: 'Još nema završenih lokacija. Započni skeniranje!',
-    clearHistory: 'Obriši historiju skeniranja',
-    confirmClear: 'Sigurno obrisati historiju?',
+    clearHistory: 'Resetuj potragu i historiju skeniranja',
+    confirmClear: 'Obrisati historiju skeniranja i resetovati potragu?',
     yesClear: 'Da, obriši',
     cancel: 'Odustani',
     viewReward: 'Pogledaj nagradu',
@@ -230,8 +230,8 @@ const copy = {
     completedTitle: 'Entdeckte Orte & Quests',
     completedSubtitle: 'Besuchte Sehenswürdigkeiten',
     noCompleted: 'Noch keine Orte entdeckt.',
-    clearHistory: 'Verlauf löschen',
-    confirmClear: 'Verlauf wirklich löschen?',
+    clearHistory: 'Quest und Scan-Verlauf zurücksetzen',
+    confirmClear: 'Scan-Verlauf löschen und Quest zurücksetzen?',
     yesClear: 'Ja, löschen',
     cancel: 'Abbrechen',
     viewReward: 'Belohnung ansehen',
@@ -284,8 +284,8 @@ const copy = {
     completedTitle: 'Tamamlanan Görevler ve Yerler',
     completedSubtitle: 'Onaylanan ziyaretler ve ödüller',
     noCompleted: 'Henüz tamamlanan yer yok.',
-    clearHistory: 'Geçmişi temizle',
-    confirmClear: 'Geçmiş silinsin mi?',
+    clearHistory: 'Görevi ve tarama geçmişini sıfırla',
+    confirmClear: 'Tarama geçmişi silinip görev sıfırlansın mı?',
     yesClear: 'Evet, sil',
     cancel: 'İptal',
     viewReward: 'Ödülü Gör',
@@ -332,7 +332,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
   const navigate = useNavigate();
   const t = copy[lang] || copy.en;
   const isOnline = useNetwork();
-  const { unlockedRewards, setUnlockedRewards, setIsTvrtkoScratchOpen, setActivePhaseCelebration } = useGlobalApp();
+  const { unlockedRewards, setUnlockedRewards, resetQuestProgress, setIsTvrtkoScratchOpen, setActivePhaseCelebration } = useGlobalApp();
 
   // 1. Dashboard State
   const [data, setData] = useState<DashboardData | null>(null);
@@ -413,9 +413,31 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
   }, [loadDashboard]);
 
   const handleClearLedger = async () => {
-    await Preferences.remove({ key: 'tuzla_scan_ledger' });
-    setLedger([]);
-    setShowClearConfirm(false);
+    setDashboardError('');
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      if (session && !session.user.is_anonymous) {
+        setDashboardError('Quest progress for this signed-in account is stored online and cannot be reset from this device.');
+        return;
+      }
+
+      if (session) {
+        const { error: signOutError } = await supabase.auth.signOut({ scope: 'local' });
+        if (signOutError) throw signOutError;
+      }
+
+      await resetQuestProgress();
+      setLedger([]);
+      setShowClearConfirm(false);
+      setData(null);
+      setGuestId('');
+      await loadDashboard();
+    } catch (error) {
+      console.error('[Quest progress] Unable to reset quest history:', error);
+      setDashboardError(error instanceof Error ? error.message : 'Unable to reset quest progress.');
+    }
   };
 
   // Level progress percentage
@@ -596,6 +618,12 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
             </div>
           </div>
         </section>
+
+        {dashboardError && (
+          <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-800">
+            {dashboardError}
+          </p>
+        )}
 
         {/* ── 2. QR SCANNER CTA (UNIFIED SINGLE SCANNER ON QUEST MAP) ── */}
         <section className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs">
@@ -1055,6 +1083,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
                   </button>
                 )}
               </div>
+
             </div>
           ) : (
             <div className="py-4 text-center text-xs text-slate-400 font-medium">

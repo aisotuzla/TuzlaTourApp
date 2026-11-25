@@ -184,3 +184,4 @@ The **My Progress** tab ([PlayerDashboard.tsx](file:///f:/TuzlaTourApp/component
 - **Completed Quest Ledger**: Full timestamped ledger of verified scans.
 - **Phase Badges**: Visual badges unlock as each phase is conquered.
 - **Local Fallback Sync**: In-memory and Preferences state seamlessly reconcile with Supabase records upon dashboard load.
+- **Quest completion and reset**: After all 12 locations are verified, the compass panel is replaced by the Bosnia and Herzegovina completion image and scanning is disabled. To restart as a guest, clear the scan history from the dashboard; this clears local quest progress and starts a fresh anonymous session. Previous guest records remain on the server and are not deleted.

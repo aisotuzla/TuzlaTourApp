@@ -708,7 +708,7 @@ const MapView: React.FC<MapViewProps> = ({ lang, features, unlockedRewards = [],
     userLocationRef.current = [lng, lat];
     if (!userMarker.current) {
       const el = document.createElement('div');
-      el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.6);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
+      el.innerHTML = `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50%;border:3px solid #d8d400;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(23, 106, 240, 0.77);"><div style="width:8px;height:8px;background:#fff;border-radius:50%;" /></div>`;
       userMarker.current = new maplibregl.Marker(el)
         .setLngLat([lng, lat])
         .addTo(map.current);

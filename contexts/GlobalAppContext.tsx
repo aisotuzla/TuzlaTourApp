@@ -10,6 +10,7 @@ interface GlobalAppContextProps {
   features: AppFeatures;
   unlockedRewards: string[];
   setUnlockedRewards: React.Dispatch<React.SetStateAction<string[]>>;
+  resetQuestProgress: () => Promise<void>;
   isTvrtkoScratchOpen: boolean;
   setIsTvrtkoScratchOpen: (open: boolean) => void;
   isKulinCharterCubeOpen: boolean;
@@ -33,6 +34,17 @@ export const GlobalAppProvider: React.FC<React.PropsWithChildren> = ({ children 
   celebratedPhasesRef.current = celebratedPhases;
 
   const features = getAppFeatures();
+
+  const resetQuestProgress = async (): Promise<void> => {
+    await Promise.all([
+      Preferences.remove({ key: 'tuzla_unlocked' }),
+      Preferences.remove({ key: 'tuzla_celebrated_phases' }),
+      Preferences.remove({ key: 'tuzla_scan_ledger' }),
+    ]);
+    setUnlockedRewards([]);
+    setCelebratedPhases([]);
+    setActivePhaseCelebration(null);
+  };
 
   useEffect(() => {
     const loadState = async () => {
@@ -117,6 +129,7 @@ export const GlobalAppProvider: React.FC<React.PropsWithChildren> = ({ children 
         features,
         unlockedRewards,
         setUnlockedRewards,
+        resetQuestProgress,
         isTvrtkoScratchOpen,
         setIsTvrtkoScratchOpen,
         isKulinCharterCubeOpen,

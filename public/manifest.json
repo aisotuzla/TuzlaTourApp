@@ -25,37 +25,16 @@
   ],
   "lang": "en",
   "dir": "ltr",
-  "icons": [
-    {
-      "src": "/resources/TuzlaTourAppLogo96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/resources/TuzlaTourAppLogo192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/resources/TuzlaTourAppLogo512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/resources/TuzlaTourAppLogo512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
+  "icons": {
+    "96": "/resources/TuzlaTourAppLogo96x96.png",
+    "192": "/resources/TuzlaTourAppLogo192x192.png",
+    "512": "/resources/TuzlaTourAppLogo512x512.png"
+  },
   "shortcuts": [
     {
-      "name": "AR Quest & Scavenger Hunt",
-      "short_name": "AR Quest",
-      "description": "Explore Tuzla landmarks in Augmented Reality, scan QR codes and earn rewards",
+      "name": "QR Quest & Scavenger Hunt",
+      "short_name": "QR Quest",
+      "description": "Explore Tuzla landmarks with QR codes, scan and earn rewards",
       "url": "/?tab=quest",
       "icons": [
         {
