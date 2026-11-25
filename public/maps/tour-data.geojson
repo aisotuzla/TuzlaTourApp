@@ -33,11 +33,12 @@
         "id": "palacinkara"
       },
       "geometry": {
-        "type": "Point",
+        "type": "Circle",
         "coordinates": [
           18.677533,
           44.538376
-        ]
+        ],
+        "radius": 100
       }
     },
     {
@@ -111,11 +112,12 @@
         "id": "bingo_city_centar"
       },
       "geometry": {
-        "type": "Point",
+        "type": "Circle",
         "coordinates": [
           18.651743,
           44.532177
-        ]
+        ],
+        "radius": 500
       }
     },
     {
