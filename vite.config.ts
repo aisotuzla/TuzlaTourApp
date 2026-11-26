@@ -112,6 +112,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         },
         workbox: {
           // Precache the app shell: all built JS/CSS/HTML + icons
+          clientsClaim: true,
           globPatterns: mode === 'development' ? [] : [
             '**/*.{js,css,html,ico,svg}',
             'assets/Gallery/City Guide/*.{webp,png,jpg,jpeg}',
@@ -125,6 +126,21 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           navigateFallback: 'index.html',
           navigateFallbackDenylist: [/^\/api\//, /^\/manifest\.json$/],
           runtimeCaching: [
+            // Three.js used by the standalone Kulin Ban keepsake page
+            {
+              urlPattern: /^https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/three\.js\/r128\/three\.min\.js$/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'threejs-library',
+                expiration: {
+                  maxEntries: 1,
+                  maxAgeSeconds: 365 * 24 * 60 * 60,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
             // 1. Google Fonts stylesheets (lightweight, changes rarely)
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

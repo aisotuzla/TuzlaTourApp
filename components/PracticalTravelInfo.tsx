@@ -622,45 +622,46 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
               {t.flights.description}
             </p>
 
-            {/* Germany Direct Routes */}
-            <div className="mt-6 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-5">
-              <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
-                {t.flights.germanyHeading}
-              </h4>
-              <p className="mt-1 text-sm text-slate-600">
-                {t.flights.germanyDesc}
-              </p>
+            {/* Flight routes grouped in one panel by region */}
+            <div className="mt-6 space-y-5 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-5">
+              <div>
+                <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
+                  {t.flights.germanyHeading}
+                </h4>
+                <p className="mt-1 text-sm text-slate-600">
+                  {t.flights.germanyDesc}
+                </p>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {t.flights.germanyAirports.map((item) => (
-                  <div key={item.code} className="rounded-xl border border-white bg-white p-4 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-lg bg-blue-100 px-2 py-0.5 text-xs font-black text-blue-800">{item.code}</span>
-                      <span className="text-xs font-semibold text-slate-500">{item.time}</span>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {t.flights.germanyAirports.map((item) => (
+                    <div key={item.code} className="rounded-xl border border-white bg-white p-4 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="rounded-lg bg-blue-100 px-2 py-0.5 text-xs font-black text-blue-800">{item.code}</span>
+                        <span className="text-xs font-semibold text-slate-500">{item.time}</span>
+                      </div>
+                      <div className="mt-2 text-sm font-black text-slate-900">{item.city}</div>
+                      <div className="mt-1 text-xs text-blue-700 font-bold">{item.freq}</div>
                     </div>
-                    <div className="mt-2 text-sm font-black text-slate-900">{item.city}</div>
-                    <div className="mt-1 text-xs text-blue-700 font-bold">{item.freq}</div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Other European Countries */}
-            <div className="mt-4 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-5">
-              <h4 className="text-base font-black text-slate-900">
-                {t.flights.otherCountriesHeading}
-              </h4>
-              <p className="mt-1 text-sm text-slate-600">
-                {t.flights.otherCountriesDesc}
-              </p>
+              <div className="border-t border-slate-200 pt-5">
+                <h4 className="text-base font-black text-slate-900">
+                  {t.flights.otherCountriesHeading}
+                </h4>
+                <p className="mt-1 text-sm text-slate-600">
+                  {t.flights.otherCountriesDesc}
+                </p>
 
-              <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
-                {t.flights.otherCountriesList.map((c) => (
-                  <div key={c.country} className="flex items-start gap-3 rounded-xl bg-white p-3.5 border border-slate-100 shadow-sm">
-                    <div className="text-base font-black text-slate-900 min-w-[110px]">{c.country}</div>
-                    <div className="text-xs font-semibold text-slate-600 leading-relaxed">{c.routes}</div>
-                  </div>
-                ))}
+                <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
+                  {t.flights.otherCountriesList.map((c) => (
+                    <div key={c.country} className="flex items-start gap-3 rounded-xl bg-white p-3.5 border border-slate-100 shadow-sm">
+                      <div className="text-base font-black text-slate-900 min-w-[110px]">{c.country}</div>
+                      <div className="text-xs font-semibold text-slate-600 leading-relaxed">{c.routes}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
