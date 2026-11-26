@@ -52,6 +52,11 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         includeAssets: [
           // Critical UI icons & logos precached for offline shell
           'assets/Gallery/heroo.webp',
+          'assets/slaptz.webp',
+          'assets/Questcard.webp',
+          'assets/bus.webp',
+          'assets/Gallery/QuestQRLocations/mapa.webp',
+          'assets/Gallery/QuestQRLocations/jelo.webp',
           'assets/panonikalogo.webp',
           'assets/icons/Icon.png',
           'assets/icons/TuzlaTourAppLogo192x192.webp',
@@ -107,7 +112,12 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         },
         workbox: {
           // Precache the app shell: all built JS/CSS/HTML + icons
-          globPatterns: mode === 'development' ? [] : ['**/*.{js,css,html,ico,svg}'],
+          globPatterns: mode === 'development' ? [] : [
+            '**/*.{js,css,html,ico,svg}',
+            'assets/Gallery/City Guide/*.{webp,png,jpg,jpeg}',
+            'assets/Gallery/Food/*.{webp,png,jpg,jpeg}',
+            'assets/Gallery/Accommodation/*.{webp,png,jpg,jpeg}',
+          ],
           globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js', 'maps/tiles/**/*'],
           maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6MB limit for precached shell files
           cleanupOutdatedCaches: true,

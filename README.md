@@ -10,7 +10,7 @@ The application is built with React 18, TypeScript, and Vite, operating as a hig
 
 ### 🗺️ Interactive 3D Tactical Map & Offline Engine
 - **3D Vector Map**: Built on MapLibre GL with Geoapify 3D buildings and custom styling.
-- **Offline Capability**: Local PMTiles vector map database (`offline-vector-style.json`) pre-cached for full offline navigation without mobile data.
+- **Offline Content**: Local PMTiles data and cached content support selected offline views. The installed PWA precaches its app shell, navigation-card images, and City Guide, Food, and Accommodation imagery for offline use after the initial online load. Routing, Quest verification, event feeds, and external content may require an internet connection.
 - **Dynamic Layer Switcher**: Seamlessly toggle between Geoapify 3D (Primary), OpenStreetMap Raster (Fallback), and Local PMTiles (Offline).
 - **Centered Interactive Popups**: POI popups with automatic viewport centering, instant audio playback, pedestrian GPS route generation, and direct QR scanner launch.
 - **Bottom Sheet Drawer**: Expandable inspection panel with search, route details, distance, and travel time estimates.
@@ -18,12 +18,11 @@ The application is built with React 18, TypeScript, and Vite, operating as a hig
 
 ### 🧭 Tuzla Quest — Exploration Game
 - **Tactical Compass HUD**: Real-time tilt-compensated compass dial, cardinal rose, target POI carousel, and live geodesic distance meter occupying the bottom 35% of the Quest screen.
-- **25m GPS Proximity Detection**: Dynamic visual feedback when players enter the 25-meter perimeter of historic monuments.
-- **Authoritative Supabase Verification**:
-  - Anonymous guest player authentication (`auth.signInAnonymously()`).
-  - Server-side PostGIS geodesic radius check (enforcing a strict 20m physical radius).
-  - Cryptographic SHA-256 QR payload verification against `quests.qr_code_id`.
-  - Automatic XP awards, level progression, and duplicate-scan prevention.
+- **Location-Aware Quest**: The map and compass present quest targets; location permission is used by location-based features. The client can submit available coordinates and QR data to the Supabase Quest RPC.
+- **Supabase Guest Session**:
+  - Anonymous guest authentication (`auth.signInAnonymously()`), without requiring an email or password.
+  - Quest progress and scans are sent for server verification. Check the deployed RPC and database configuration before relying on specific radius, QR-security, retention, or anti-fraud guarantees.
+  - The app presents quest progress, rewards, and scan history according to the response and local state.
 - **Progression Phases**:
   - **Phase 1: Foundations of Tuzla (Stara čaršija)** — Trg slobode, Stara česma, Kapija, Meša Selimović.
   - **Phase 2: Bosnian Kingdom & Heritage (Bosansko kraljevstvo)** — Tvrtko Park, Palačinkara kod Bagija, Soni trg.
@@ -169,29 +168,33 @@ docker run -p 3000:3000 tuzla-tour-guide
 ---
 
 ## 🔒 Security & Privacy by Design
-- **No Background Tracking**: GPS coordinates are requested strictly on-demand for orientation and proximity checks. Continuous location trails are never recorded or stored.
-- **Anonymous Player Sessions**: No email, password, or personal identity is required to play the quest or earn badges.
-- **Strict Anti-Spoofing**: Supabase database RPC verifies geodesic distance using PostGIS geography mathematics. QR codes cannot be claimed from outside the physical perimeter.
-- **No Third-Party Advertising**: Completely ad-free, with no tracking pixels or invasive cookies.
-- **Cookie Consent**: GDPR-compliant cookie consent banner with versioned consent storage.
+- **Location and Quest**: Location is requested for location-based features. The Quest client can send available coordinates with a scan-verification request; server-side retention and logging must be confirmed before claiming that coordinates are not stored.
+- **Guest Quest Sessions**: Playing does not require an email address, password, or entered name. Supabase anonymous authentication creates a pseudonymous player identifier.
+- **Quest Verification**: The app submits scan details to a Supabase RPC. Verify the deployed RPC implementation, QR checks, geospatial rules, and database policies before describing its anti-fraud guarantees.
+- **Analytics**: Vercel Analytics and Speed Insights are gated on the optional performance-consent choice. The consent banner currently appears only for the Bosnian language, so consent messaging needs review for other supported languages.
+- **Data protection status**: The repository does not certify compliance with privacy laws. See the [Bosnian privacy-by-design working document](docs/PRIVATNOST_PO_DIZAJNU_I_ZZLP_BIH.md) for verified client-side data flows and open legal/technical checks.
 - **Events API Security**: Public `GET /api/events` is readable without auth; `POST`/`DELETE` require an admin bearer token (`EVENTS_ADMIN_TOKEN`).
 
 ---
 
 ## 📄 Documentation Links
+- [Projektni dosje i plan razvoja (bosanski)](docs/PROJEKTNI_DOSJE_TUZLA_TOUR_GUIDE.md)
+- [Privatnost po dizajnu i zaštita ličnih podataka BiH (bosanski)](docs/PRIVATNOST_PO_DIZAJNU_I_ZZLP_BIH.md)
+- [Prijedlog saradnje s Gradom Tuzla](docs/PONUDA_PARTNERSTVO_GRAD_TUZLA.md)
+- [Poziv na partnerstvo privatnom sektoru](docs/PONUDA_PARTNERSTVO_PRIVATNI_SEKTOR.md)
 - [Tuzla Quest Game Manual](QUEST_GAME_MANUAL.md) — Comprehensive game rules, POI coordinates, and verification mechanics.
-- [User Manual & Quest Guide](docs/USER_MANUAL_AND_QUEST_GUIDE.md) — App usage instructions in Bosnian and English.
-- [Privacy Policy](PRIVACY_POLICY.md) / [Politika Privatnosti](Politika%20Privatnosti%20za%20Tuzla%20Tour%20App.md) — Privacy principles and data protection details.
+- [Korisničko uputstvo i vodič kroz Quest (bosanski)](docs/USER_MANUAL_AND_QUEST_GUIDE.md)
+- [Politika privatnosti za aplikaciju](public/PRIVACY_POLICY.md)
 - [Cookie Policy](COOKIE_POLICY.md) — Storage and analytics consent explanation.
 - [Events API Security](docs/EVENTS_API_SECURITY.md) — Admin token configuration for protected event routes.
-- [Pitch Presentation](docs/PITCH_PISMO_TUZLA_TURIZAM.md) — Project pitch for tourism partners.
+- [Predlozi partnerstva](docs/PONUDA_PARTNERSTVO_GRAD_TUZLA.md) · [privatni sektor](docs/PONUDA_PARTNERSTVO_PRIVATNI_SEKTOR.md)
 - [Battery Saver Feature](BATTERY_SAVER_FEATURE.md) — Power optimization architecture and verification.
 
-This app complies with the General Data Protection Regulation (GDPR) and the applicable personal data protection laws of Bosnia and Herzegovina 2025.
+The repository describes privacy-related design measures but does not establish legal compliance. The current data flows, controller identity, retention periods, vendor arrangements, and user-rights procedures require confirmation. See the [Privacy by Design working document](docs/PRIVATNOST_PO_DIZAJNU_I_ZZLP_BIH.md); it is not legal advice or a compliance certification.
 
 ---
 
-## 👥 Organization & Contact
-Developed and maintained by **AISO Tuzla**.  
-Email: [aisotuzla@proton.me](mailto:aisotuzla@proton.me)  
-Location: Tuzla, Bosnia and Herzegovina
+## 👥 Predlagač i kontakt
+Predlagač projekta: **Amir Mulaosmanović**. „AISO Tuzla“ je radni naziv budućeg startupa i trenutno nije registrovano pravno lice.
+Email: [aisotuzla@proton.me](mailto:aisotuzla@proton.me)
+Lokacija: Tuzla, Bosna i Hercegovina

@@ -460,52 +460,52 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
               : 'What is Tuzla Tour App & how does the Tuzla Quest reward system work?',
       answer:
         lang === 'bs'
-          ? 'Tuzla Tour App je interaktivni turistički vodič sa 3D GPS navigacijom, kamerom sa AR vodičem i nagradnom igrom Tuzla Quest. Šetnjom kroz grad otkrivate kulturne znamenitosti, kafiće i hotele. Skeniranjem QR koda na licu mjesta otključavate naredne faze, interaktivne 3D prikaze i popuste!'
+          ? 'Tuzla Tour App je turistički vodič s mapom, informacijama o gradu i potragom Tuzla Quest. U Questu pratite lokacije na mapi i skenirate zvanične QR kodove da biste napredovali kroz dostupne zadatke i sadržaje.'
           : lang === 'de'
-            ? 'Die Tuzla Tour App ist ein interaktiver Reiseführer mit 3D-GPS-Navigation, AR-Kameraguide und dem Tuzla Quest Gewinnspiel. Beim Erkunden der Stadt schalten Sie durch QR-Scans an Denkmälern neue Inhalte, 3D-Modelle und Rabatte frei!'
+            ? 'Die Tuzla Tour App ist ein Reiseführer mit Karte, Stadtinformationen und der Tuzla Quest-Schnitzeljagd. Im Quest folgen Sie den Standorten auf der Karte und scannen offizielle QR-Codes, um verfügbare Aufgaben und Inhalte freizuschalten.'
             : lang === 'tr'
-              ? 'Tuzla Tour App, 3D GPS navigasyonu ve AR rehberi içeren interaktif bir turist rehberidir. Şehirde gezerken QR kodları tarayarak yeni etapların, 3D içeriklerin ve yerel indirimlerin kilidini açarsınız!'
-              : 'Tuzla Tour App is an interactive city guide with 3D GPS navigation, an AR camera guide, and the Tuzla Quest game. By scanning on-site QR codes, you unlock subsequent stages, interactive 3D historical artifacts, and partner discounts!',
+              ? 'Tuzla Tour App; harita, şehir bilgileri ve Tuzla Quest adlı QR keşif oyununu içeren bir turist rehberidir. Quest bölümünde haritadaki konumları takip edip resmi QR kodlarını tarayarak mevcut görevlerde ve içeriklerde ilerlersiniz.'
+              : 'Tuzla Tour App is a city guide with a map, local information, and the Tuzla Quest QR exploration game. Follow the locations on the map and scan official QR codes to progress through available tasks and content.',
     },
     {
       id: 2,
       icon: <Compass className="h-5 w-5 text-sky-500" />,
       question:
         lang === 'bs'
-          ? 'Kako funkcioniše 3D GPS navigacija i geofencing obavijesti?'
+          ? 'Kako pronaći lokaciju i koristiti navigaciju?'
           : lang === 'de'
-            ? 'Wie funktionieren die 3D-GPS-Navigation und Geofencing-Benachrichtigungen?'
+            ? 'Wie finde ich einen Ort und nutze die Navigation?'
             : lang === 'tr'
-              ? '3D GPS navigasyonu ve geofencing bildirimleri nasıl çalışır?'
-              : 'How does 3D GPS Navigation & Geofencing work?',
+              ? 'Bir konumu nasıl bulur ve navigasyonu nasıl kullanırım?'
+              : 'How do I find a location and use navigation?',
       answer:
         lang === 'bs'
-          ? 'Aplikacija u realnom vremenu prati vašu GPS lokaciju u odnosu na atrakcije. Čim se približite na 25 metara od zadate tačke (POI), sistem šalje pametnu push obavijest koja vas poziva da uključite AR kameru i direktno pratite stazu do cilja.'
+          ? 'Otvorite mapu i izaberite tačku interesa. Ako želite prikaz svoje pozicije ili rutu, dozvolite lokaciju kada je uređaj zatraži. Dostupnost rute zavisi od internet veze i mapnog servisa.'
           : lang === 'de'
-            ? 'Die App überwacht in Echtzeit Ihre GPS-Position relativ zu Sehenswürdigkeiten. Sobald Sie sich innerhalb von 25 Metern zu einem Ziel befinden, erhalten Sie eine Benachrichtigung für die AR-Führung.'
+            ? 'Öffnen Sie die Karte und wählen Sie einen Ort aus. Wenn Sie Ihre Position oder eine Route anzeigen möchten, erlauben Sie den Standortzugriff, wenn das Gerät danach fragt. Routen können eine Internetverbindung und einen Kartendienst benötigen.'
             : lang === 'tr'
-              ? 'Uygulama, GPS konumunuzu hedeflere göre gerçek zamanlı izler. Bir hedefe 25 metre yaklaştığınızda akıllı bir bildirim alarak AR kamera rehberini açabilirsiniz.'
-              : 'The app monitors your real-time distance to attractions. Once you enter a 25-meter radius around any Point of Interest (POI), a notification alerts you to activate the camera AR Guide to lead you to the exact spot.',
+              ? 'Haritayı açıp bir konum seçin. Konumunuzu veya rotayı görmek istiyorsanız cihaz istediğinde konum izni verin. Rota için internet bağlantısı ve harita hizmeti gerekebilir.'
+              : 'Open the map and select a point of interest. Allow location access if you want to see your position or use a route. Routing may require an internet connection and a map service.',
     },
     {
       id: 3,
       icon: <ShieldCheck className="h-5 w-5 text-emerald-500" />,
       question:
         lang === 'bs'
-          ? 'Zašto aplikacija traži dozvole za lokaciju, kameru i obavijesti?'
+          ? 'Zašto aplikacija traži dozvolu za lokaciju i kameru?'
           : lang === 'de'
-            ? 'Warum benötigt die App Zugriff auf Standort, Kamera und Benachrichtigungen?'
+            ? 'Warum fragt die App nach Standort- und Kameraberechtigungen?'
             : lang === 'tr'
-              ? 'Uygulama neden konum, kamera ve bildirim izinleri istiyor?'
-              : 'Why does the app ask for location, camera, and notification permissions?',
+              ? 'Uygulama neden konum ve kamera izni istiyor?'
+              : 'Why does the app ask for location and camera permissions?',
       answer:
         lang === 'bs'
-          ? 'Pristup lokaciji omogućava prikaz vašeg položaja na mapi i precizno vođenje. Kamera se koristi za skeniranje QR kodova i AR vodič. Dozvola za obavijesti šalje podsjetnike kada ste u blizini važnih znamenitosti.'
+          ? 'Lokacija se koristi za mapu i navigaciju. Kamera se koristi za skeniranje Quest QR kodova. Tokom Quest provjere aplikacija može poslati dostupne koordinate serveru. Dozvole možete odbiti ili opozvati u postavkama uređaja; funkcije koje ih koriste tada neće raditi.'
           : lang === 'de'
-            ? 'Standortzugriff ermöglicht die Anzeige auf der Karte. Die Kamera wird zum Scannen von QR-Codes und AR-Navigation genutzt. Benachrichtigungen weisen auf nahe Sehenswürdigkeiten hin.'
+            ? 'Der Standort wird für Karte und Navigation verwendet. Die Kamera dient zum Scannen von Quest-QR-Codes. Bei einer Quest-Prüfung kann die App verfügbare Koordinaten an den Server senden. Berechtigungen können Sie in den Geräteeinstellungen ablehnen oder widerrufen.'
             : lang === 'tr'
-              ? 'Konum izni haritada yerinizi gösterir. Kamera QR tarama ve AR rehberi için gereklidir. Bildirimler ise yakındaki tarihi noktaları kaçırmamanızı sağlar.'
-              : 'Location access displays your real-time position on maps. Camera access is strictly used for on-device QR scanning and AR guidance. Notification permission alerts you when nearby landmarks are reached.',
+              ? 'Konum, harita ve navigasyon için kullanılır. Kamera Quest QR kodlarını taramak içindir. Quest doğrulaması sırasında uygulama mevcut koordinatları sunucuya gönderebilir. İzinleri cihaz ayarlarından reddedebilir veya iptal edebilirsiniz.'
+              : 'Location is used for maps and navigation. The camera is used to scan Quest QR codes. Quest verification may send available coordinates to the server. You can deny or revoke permissions in your device settings; features that need them will then be unavailable.',
     },
     {
       id: 4,
@@ -514,18 +514,18 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
         lang === 'bs'
           ? 'Kako skenirati QR kodove i osvojiti nagrade?'
           : lang === 'de'
-            ? 'Wie scanne ich QR-Codes und erhalte Rabatte?'
+            ? 'Wie scanne ich Quest-QR-Codes?'
             : lang === 'tr'
-              ? 'QR kodları nasıl taratıp işletmelerde indirim kazanırım?'
-              : 'How do I scan QR codes and redeem partner discounts?',
+              ? 'Quest QR kodlarını nasıl tararım?'
+              : 'How do I scan Quest QR codes?',
       answer:
         lang === 'bs'
-          ? 'Otvorite ovaj tab "Napredak & QR" i kliknite na dugme "Pokreni kameru". Usmjerite kameru prema QR kodu. Aplikacija bilježi dokaz posjete, dodjeljuje vam XP bodove i otključava nagradni sadržaj!'
+          ? 'Otvorite tab „Napredak & QR“, pokrenite kameru i skenirajte zvanični Quest QR kod na lokaciji. Aplikacija pokušava provjeriti skeniranje; nakon uspješne provjere prikazuje otključani napredak i sadržaj koji je dostupan za tu lokaciju. Popusti nisu garantovani.'
           : lang === 'de'
-            ? 'Öffnen Sie diesen Tab und starten Sie die Kamera. Richten Sie die Kamera auf den QR-Code vor Ort, um Punkte und Belohnungen freizuschalten!'
+            ? 'Öffnen Sie „Fortschritt & QR“, starten Sie die Kamera und scannen Sie den offiziellen Quest-QR-Code vor Ort. Nach erfolgreicher Prüfung zeigt die App den freigeschalteten Fortschritt und verfügbaren Inhalt an. Rabatte sind nicht garantiert.'
             : lang === 'tr'
-              ? 'Bu sekmedeki "Kamerayı Başlat" düğmesine tıklayın ve kameranızı mekanlardaki QR koda tutun. XP puanları ve hediyeler anında hesabınıza eklenir!'
-              : 'Click "Start Camera" right here in this tab and point your camera at the QR sign. The app confirms your visit, awards XP points, and unlocks digital rewards!',
+              ? '„İlerleme & QR“ sekmesini açın, kamerayı başlatın ve konumdaki resmi Quest QR kodunu tarayın. Doğrulama başarılı olursa uygulama açılan ilerlemeyi ve konum için mevcut içeriği gösterir. İndirim garantisi yoktur.'
+              : 'Open “Progress & QR,” start the camera, and scan the official Quest QR code at the location. If verification succeeds, the app shows unlocked progress and content available for that location. Discounts are not guaranteed.',
     },
     {
       id: 5,
@@ -540,12 +540,12 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
               : 'Can I use the app and maps offline without internet or roaming?',
       answer:
         lang === 'bs'
-          ? 'Da! Tuzla Tour App koristi napredne vektorske offline mape i lokalno keširanje. Sve bilješke, planovi puta, evidencija posjeta i zvučni vodiči rade u potpunosti offline bez trošenja mobilnih podataka.'
+          ? 'Dio podataka i mapa može biti dostupan iz keša, a planer i bilješke koriste lokalnu pohranu. Navigacija, Quest provjera skeniranja, događaji i vanjski sadržaj mogu zahtijevati internet.'
           : lang === 'de'
-            ? 'Ja! Die App nutzt moderne Vektorkarten und lokales Caching. Alle Notizen, Reisepläne und Audioguides funktionieren offline ohne Roaming-Gebühren.'
+            ? 'Einige Karten- und App-Daten können aus dem Cache verfügbar sein; Notizen und Reisepläne nutzen lokale Speicherung. Navigation, Quest-Prüfung, Veranstaltungen und externe Inhalte können eine Internetverbindung benötigen.'
             : lang === 'tr'
-              ? 'Evet! Çevrimdışı vektör haritalar ve yerel önbellek sayesinde seyahat planınız, sesli rehberler ve notlarınız internet olmadan da çalışır.'
-              : 'Yes! Tuzla Tour App uses vector map tiles and offline local storage. Itineraries, expense logs, notes, and audio guides operate reliably offline without data roaming.',
+              ? 'Bazı harita ve uygulama verileri önbellekten kullanılabilir; notlar ve seyahat planı yerel depolamayı kullanır. Navigasyon, Quest doğrulaması, etkinlikler ve harici içerikler internet bağlantısı gerektirebilir.'
+              : 'Some map and app data may be available from cache, while notes and itineraries use local storage. Navigation, Quest scan verification, events, and external content may require an internet connection.',
     },
     {
       id: 6,
@@ -560,12 +560,12 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ lang, onNaviga
               : 'Where are my notes, itinerary, and personal data stored?',
       answer:
         lang === 'bs'
-          ? '100% Privacy by Design: sve vaše bilješke, to-do stavke i evidencija posjeta pohranjeni su primarno lokalno u memoriji vašeg uređaja. Sukladno GDPR standardima, vaša privatnost je u potpunosti zaštićena.'
+          ? 'Postavke, planer i bilješke mogu se čuvati lokalno na uređaju. Quest koristi pseudonimni Supabase gostujući identifikator, a provjera skeniranja može poslati ID zadatka, QR vrijednost i dostupne koordinate. Reset lokalne historije ne mora obrisati serverske zapise.'
           : lang === 'de'
-            ? '100 % Datenschutz: Alle Daten und Notizen verbleiben auf Ihrem lokalen Speicher. Wir respektieren höchste GDPR-Datenschutzstandards.'
+            ? 'Einstellungen, Reiseplan und Notizen können lokal gespeichert werden. Quest verwendet eine pseudonyme Supabase-Gastkennung; bei der Scan-Prüfung können Aufgaben-ID, QR-Wert und verfügbare Koordinaten gesendet werden. Das Zurücksetzen des lokalen Verlaufs löscht nicht unbedingt Serverdaten.'
             : lang === 'tr'
-              ? '%100 Gizlilik Odaklı Tasarım: Tüm notlarınız ve verileriniz telefonunuzda saklanır. GDPR standartlarına tam uyumludur.'
-              : '100% Privacy by Design: All your personal checklists, itinerary notes, and footprints are preserved on your local device in compliance with GDPR standards.',
+              ? 'Ayarlar, seyahat planı ve notlar cihazda yerel olarak saklanabilir. Quest, takma adlı bir Supabase misafir kimliği kullanır; tarama doğrulaması görev kimliğini, QR değerini ve mevcut koordinatları gönderebilir. Yerel geçmişi sıfırlamak sunucu kayıtlarını mutlaka silmez.'
+              : 'Settings, itineraries, and notes may be stored locally. Quest uses a pseudonymous Supabase guest identifier; scan verification may submit the task ID, QR value, and available coordinates. Resetting local history does not necessarily delete server records.',
     },
   ];
 

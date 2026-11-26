@@ -46,7 +46,14 @@ android/**/*.jks
 *.sln
 *.sw?
 pannellum-2.5.7/
-docs
+docs/*
+!docs/
+!docs/PITCH_PISMO_TUZLA_TURIZAM.md
+!docs/PROJEKTNI_DOSJE_TUZLA_TOUR_GUIDE.md
+!docs/PRIVATNOST_PO_DIZAJNU_I_ZZLP_BIH.md
+!docs/PONUDA_PARTNERSTVO_GRAD_TUZLA.md
+!docs/PONUDA_PARTNERSTVO_PRIVATNI_SEKTOR.md
+!docs/USER_MANUAL_AND_QUEST_GUIDE.md
 .env
 .env.*
 !.env.example

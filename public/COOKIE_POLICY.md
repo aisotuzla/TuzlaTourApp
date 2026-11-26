@@ -1,41 +1,35 @@
-# Cookie Policy — Tuzla Tour Guide
+# Politika kolačića i lokalne pohrane
 
-**Last reviewed:** 19 November 2026
-**Applies to:** The Tuzla Tour Guide website and PWA.
+**Posljednji pregled koda:** 26. novembar 2026.
 
-This policy explains the cookies and similar browser technologies used by Tuzla Tour Guide. Native Capacitor builds may use platform storage for preferences.
+Ova politika objašnjava upotrebu kolačića, browser pohrane i sličnih tehnologija u Tuzla Tour Guide. Radni je dokument, a ne pravno mišljenje. Prije javne objave treba potvrditi produkcijsku konfiguraciju i pružaoce usluga.
 
-## 1. Storage and consent
+## 1. Kolačići i lokalna pohrana
 
-The app uses browser storage or Capacitor Preferences for app settings and the saved consent choice. The consent record is stored under `tuzla_cookie_consent`; it is a preference record, not a tracking cookie.
+Aplikacija koristi browser `localStorage` ili Capacitor Preferences, zavisno od platforme, za pamćenje odabranih postavki i funkcionalnog stanja. U pregledanom kodu odluka o pristanku čuva se pod ključem `tuzla_cookie_consent`. Ostale vrijednosti mogu uključivati jezik, Quest napredak i evidenciju skeniranja. Supabase SDK može lokalno čuvati podatke anonimne sesije.
 
-A compact consent banner appears only when the app language is Bosnian and no valid choice is saved. Users can allow optional analytics or choose necessary storage only. Necessary storage supports app operation and cannot be disabled. Optional analytics are off unless accepted.
+Lokalna pohrana nije isto što i serverska pohrana. Brisanje lokalnih postavki ili historije ne potvrđuje brisanje prethodnih serverskih Quest zapisa.
 
-The record includes consent version `v2_202611`, the analytics choice and a timestamp. Clearing browser or app storage resets the choice.
+## 2. Pristanak i opcionalna analitika
 
-## 2. Analytics
+Opcionalni Vercel Analytics i Speed Insights učitavaju se kroz aplikacijski tok samo kada je odabrana opcionalna analitika. Odluka se pamti lokalno; nakon brisanja lokalnih podataka može se ponovo tražiti izbor.
 
-Google Tag Manager and Google Analytics are not used by the app. Vercel Analytics and Speed Insights are loaded only after optional analytics is accepted. See the [Vercel Privacy Policy](https://vercel.com/legal/privacy).
+Trenutna komponenta prikazuje traku za pristanak samo kada je jezik aplikacije bosanski (`bs`). To znači da jezička pokrivenost pristanka nije potpuna za sve podržane jezike. Prije oslanjanja na ovaj tok za produkcijsku obavijest, potrebno je dodati odgovarajuće prijevode i provjeriti ponašanje na svim platformama.
 
-## 3. External content
+## 3. Vanjski sadržaj i tehnički podaci
 
-The app may request content from hosting/CDN, map-style and map-tile services, Google Fonts and other external providers. Such requests expose technical connection information, including IP address and request headers, required to deliver that content.
+Za isporuku aplikacije, mapa, ruta, fontova, medija i drugih vanjskih resursa mogu se slati standardni mrežni zahtjevi pružaocima hostinga, CDN-a, mapa i sadržaja. Takvi zahtjevi mogu pružaocu otkriti IP adresu, vrijeme i tehnička zaglavlja potrebna za isporuku resursa.
 
-- [Vercel Privacy Policy](https://vercel.com/legal/privacy)
-- [Google Privacy Policy](https://policies.google.com/privacy)
+Tačan spisak aktivnih servisa, njihova konfiguracija, logovi i rokovi čuvanja trebaju se potvrditi prema produkcijskoj postavci.
 
-## 4. Managing preferences
+## 4. Upravljanje i reset
 
-To change your consent choice, clear site data in your browser settings. This also clears local app preferences. On mobile, reset app data or uninstall the app.
+Pristanak i lokalne postavke možete resetovati brisanjem podataka web-stranice u pregledniku. Na Android uređaju brisanje pohrane ili ponovna instalacija može ukloniti lokalne postavke i napredak. Efekti se mogu razlikovati po platformi.
 
-## 5. Contact
+Reset uređaja ne mora obrisati podatke koji su ranije poslani na server. Za zahtjev koji se odnosi na serverske podatke pišite na [aisotuzla@proton.me](mailto:aisotuzla@proton.me).
 
-Questions about this policy can be sent to:
+## 5. Kontakt i povezani dokumenti
 
-**AISO Tuzla / Tuzla Tour Guide**  
-[aisotuzla@proton.me](mailto:aisotuzla@proton.me)  
-Tuzla, Bosnia and Herzegovina
+Za pitanja pišite na [aisotuzla@proton.me](mailto:aisotuzla@proton.me).
 
-## Related documents
-
-- [Privacy Policy](PRIVACY_POLICY.md)
+- [Politika privatnosti](./PRIVACY_POLICY.md)
