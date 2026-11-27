@@ -13,7 +13,8 @@ import {
   Bed,
   X,
   History as HistoryIcon,
-  Bus
+  Bus,
+  Compass
 } from 'lucide-react';
 
 const PodiumIcon: React.FC<{ className?: string }> = ({ className = "w-4.5 h-4.5" }) => (
@@ -179,6 +180,17 @@ const NAV_ITEMS: NavItemConfig[] = [
     activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black',
     activeGlow: 'shadow-[0_8px_25px_rgba(245,158,11,0.6)]',
     activeBorder: 'border-yellow-300',
+  },
+  {
+    id: AppTab.QUICK_TOUR_INFO,
+    icon: Compass,
+    label: { en: 'Quick Tour Info', bs: 'Brze Info', de: 'Kurze Reiseinfo', tr: 'Hızlı Tur Bilgisi' },
+    inactiveClass: 'bg-gradient-to-r from-sky-100 via-blue-100 to-cyan-100 text-blue-950 hover:from-sky-200 hover:to-cyan-200 font-bold',
+    inactiveIconClass: 'text-blue-700',
+    inactiveBorderClass: 'border-sky-300/70',
+    activeClass: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black',
+    activeGlow: 'shadow-[0_8px_24px_rgba(245,158,11,0.55)]',
+    activeBorder: 'border-amber-300',
   },
 ];
 

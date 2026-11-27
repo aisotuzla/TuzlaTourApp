@@ -125,25 +125,25 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
        const size = Math.floor(Math.min(w, h) * 0.90);
        return { width: size, height: size };
      },
-     aspectRatio: 1,
    };
    try {
      await instance.start({facingMode:'environment'}, qrConfig, (decoded)=>void complete(decoded), ()=>{});
      instance.applyVideoConstraints({
-       width: { min: 1080, ideal: 1920 },
-       height: { min: 720, ideal: 1080 },
+       width: { min: 640, ideal: 1920 },
+       height: { min: 480, ideal: 1080 },
      }).catch(() => {});
    } catch (_) {
      try { instance.clear(); } catch {}
      const devices = await Html5Qrcode.getCameras();
      if (!devices || devices.length === 0) throw new Error('no_camera');
+     await new Promise((resolve) => setTimeout(resolve, 250));
      const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
      const fallbackInstance = new Html5Qrcode('quest-qr-reader',{verbose:false});
      scanner.current = fallbackInstance;
      await fallbackInstance.start(backCam.id, qrConfig, (decoded)=>void complete(decoded), ()=>{});
      fallbackInstance.applyVideoConstraints({
-       width: { min: 1080, ideal: 1920 },
-       height: { min: 720, ideal: 1080 },
+       width: { min: 640, ideal: 1920 },
+       height: { min: 480, ideal: 1080 },
      }).catch(() => {});
    }
   }catch(e){console.error('[QuestHub] camera start failed',e);scanner.current=null;setCameraError(t.cameraError);setScanning(false);}

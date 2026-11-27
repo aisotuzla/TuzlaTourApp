@@ -5,7 +5,6 @@ import {
   Calendar as CalendarIcon,
   CheckCircle2,
   Circle,
-  Compass,
   CreditCard,
   Headphones,
   MapPin,
@@ -18,10 +17,9 @@ import { Preferences } from '@capacitor/preferences';
 import { EventCalendarView } from './EventCalendarView';
 import { MediaAudioGuideTab } from './MediaAudioGuideTab';
 import { ThreeDayPlanView } from './ThreeDayPlanView';
-import { PracticalTravelInfo } from './PracticalTravelInfo';
 import { StickyNotesBoard } from './StickyNotesBoard';
 
-type Mode = 'notebook' | 'calendar' | 'threeDayPlan' | 'practicalInfo' | 'media';
+type Mode = 'notebook' | 'calendar' | 'threeDayPlan' | 'media';
 type NotebookSubTab = 'all' | 'itinerary' | 'expenses' | 'notes';
 
 type ExpenseItem = {
@@ -41,6 +39,7 @@ type ItineraryItem = {
 
 interface TaskManagerProps {
   lang: Language;
+  onOpenQuickTourInfo?: () => void;
 }
 
 const storageKey = 'tuzla_task_manager_v1';
@@ -146,7 +145,7 @@ const readState = async (): Promise<{ expenses: ExpenseItem[]; itinerary: Itiner
   }
 };
 
-const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
+const TaskManager: React.FC<TaskManagerProps> = ({ lang, onOpenQuickTourInfo }) => {
   const t = copy[lang] ?? copy.en;
   const [view, setView] = useState<Mode>('notebook');
   const [notebookSubTab, setNotebookSubTab] = useState<NotebookSubTab>('all');
@@ -437,17 +436,6 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
           {/* Mode Switcher Buttons */}
           <div className="mt-4 flex items-center gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:pb-0">
             <button
-              onClick={() => setView('practicalInfo')}
-              className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-black transition-all ${
-                view === 'practicalInfo'
-                  ? 'bg-white text-blue-900 shadow-sm'
-                  : 'bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/20'
-              }`}
-            >
-              <Compass className="h-3.5 w-3.5" />
-              {t.touristInfo}
-            </button>
-            <button
               onClick={() => setView('notebook')}
               className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-black transition-all ${
                 view === 'notebook'
@@ -511,14 +499,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ lang }) => {
           <div className="p-4 sm:p-8 w-full">
             <ThreeDayPlanView
               lang={lang}
-              onSwitchToPracticalInfo={() => setView('practicalInfo')}
-            />
-          </div>
-        ) : view === 'practicalInfo' ? (
-          <div className="p-4 sm:p-8 w-full">
-            <PracticalTravelInfo
-              lang={lang}
-              onSwitchToItinerary={() => setView('threeDayPlan')}
+              onSwitchToPracticalInfo={onOpenQuickTourInfo}
             />
           </div>
         ) : view === 'media' ? (

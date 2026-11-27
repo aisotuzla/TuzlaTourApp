@@ -10,7 +10,7 @@
 
 Tuzla Tour Guide je višejezični turistički vodič dostupan kroz web/PWA i Android aplikaciju. Povezuje informacije o gradu, turističkim atrakcijama, mapu i navigaciju, audio sadržaj, praktične informacije za putnike i alat za planiranje boravka.
 
-Tuzla Quest je interaktivni modul koji posjetioce vodi do odabranih javnih turističkih atrakcija. Pilot se oslanja na navigaciju, fizičke QR kodove i digitalni napredak. U budućnosti se, uz saglasnost partnera, mogu razmotriti dodatne lokacije i pogodnosti. Uvrštavanje u aplikaciju samo po sebi ne znači da je neka ustanova ili firma partner.
+Tuzla Quest je interaktivni modul koji postiće posjetioce i vodi do odabranih javnih turističkih atrakcija. Pilot se oslanja na navigaciju, fizičke QR kodove i digitalni napredak. U budućnosti se, uz saglasnost partnera, mogu razmotriti dodatne lokacije i pogodnosti. Uvrštavanje u aplikaciju samo po sebi ne znači da je neka ustanova ili firma partner.
 
 ## 2. Cilj i vrijednost
 
@@ -39,7 +39,7 @@ Ove koristi su ciljevi za pilot, a ne obećani broj posjeta, prodaja ili povrat 
 ## 3. Funkcije aplikacije
 
 | Modul | Šta pruža |
-|---|---|
+| --- | --- |
 | Početna stranica | Ulaz u glavne dijelove vodiča, odabrani sadržaj i galeriju |
 | Interaktivna mapa | Pregled atrakcija i usluga, lokacija korisnika, mape i navigacijski prikazi |
 | Tuzla Quest | Faze potrage, lokacije, QR skeniranje, napredak i nagrade |
@@ -65,7 +65,7 @@ Quest se sada koristi kao pilot s javnim turističkim atrakcijama. Uključivanje
 ## 5. Tehnologije
 
 | Sloj | Tehnologije koje koristi projekat |
-|---|---|
+| --- | --- |
 | Korisnički interfejs | React 18, TypeScript, Vite |
 | Stilovi i animacije | Tailwind CSS, Framer Motion, Lucide |
 | Mape | MapLibre GL, Geoapify servisi, PMTiles |

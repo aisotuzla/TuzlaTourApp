@@ -52,6 +52,7 @@ import CityGuide from './components/CityGuide';
 import Transportation from './components/Transportation';
 import PlayerDashboard from './components/PlayerDashboard';
 import TaskManager from './components/TaskManager';
+import { PracticalTravelInfo } from './components/PracticalTravelInfo';
 
 const History = React.lazy(() => import('./components/History'));
 const Food = React.lazy(() => import('./components/Food'));
@@ -68,6 +69,7 @@ const getTabFromPath = (path: string): AppTab => {
     case '/dashboard': return AppTab.DASHBOARD;
     case '/admin': return AppTab.DASHBOARD;
     case '/task-manager': return AppTab.TASK_MANAGER;
+    case '/quick-tour-info': return AppTab.QUICK_TOUR_INFO;
     case '/food': return AppTab.FOOD;
     case '/accommodation': return AppTab.ACCOMMODATION;
     case '/ar': return AppTab.QUEST;
@@ -86,6 +88,7 @@ const getPathFromTab = (tab: AppTab): string => {
     case AppTab.QR_SCAN: return '/quest';
     case AppTab.DASHBOARD: return '/dashboard';
     case AppTab.TASK_MANAGER: return '/task-manager';
+    case AppTab.QUICK_TOUR_INFO: return '/quick-tour-info';
     case AppTab.FOOD: return '/food';
     case AppTab.ACCOMMODATION: return '/accommodation';
     case AppTab.AR: return '/quest';
@@ -381,7 +384,18 @@ const AppContent: React.FC = () => {
                     />
                   } />
                   <Route path="/admin" element={<Navigate to="/dashboard" replace />} />
-                  <Route path="/task-manager" element={<TaskManager lang={lang} />} />
+                  <Route path="/task-manager" element={<TaskManager lang={lang} onOpenQuickTourInfo={() => navigateToTab(AppTab.QUICK_TOUR_INFO)} />} />
+                  <Route
+                    path="/quick-tour-info"
+                    element={
+                      <div className="w-full mx-auto max-w-5xl px-3 sm:px-6 py-4 sm:py-6 pb-28">
+                        <PracticalTravelInfo
+                          lang={lang}
+                          onSwitchToItinerary={() => navigateToTab(AppTab.TASK_MANAGER)}
+                        />
+                      </div>
+                    }
+                  />
                   <Route
                     path="/food"
                     element={
