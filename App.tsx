@@ -47,13 +47,13 @@ function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
-const MapView = React.lazy(() => import('./components/MapView'));
+import MapView from './components/MapView';
+import CityGuide from './components/CityGuide';
+import Transportation from './components/Transportation';
+import PlayerDashboard from './components/PlayerDashboard';
+import TaskManager from './components/TaskManager';
+
 const History = React.lazy(() => import('./components/History'));
-const CityGuide = React.lazy(() => import('./components/CityGuide'));
-const Transportation = React.lazy(() => import('./components/Transportation'));
-const QRScan = React.lazy(() => import('./components/QRScan'));
-const PlayerDashboard = React.lazy(() => import('./components/PlayerDashboard'));
-const TaskManager = React.lazy(() => import('./components/TaskManager'));
 const Food = React.lazy(() => import('./components/Food'));
 const Accommodation = React.lazy(() => import('./components/Accommodation'));
 const getTabFromPath = (path: string): AppTab => {

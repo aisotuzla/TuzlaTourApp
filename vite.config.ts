@@ -45,7 +45,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
 
       VitePWA({
         strategies: 'generateSW',
-        registerType: 'prompt',
+        registerType: 'autoUpdate',
         devOptions: {
           enabled: false,
         },
@@ -58,22 +58,23 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           'assets/Gallery/QuestQRLocations/mapa.webp',
           'assets/Gallery/QuestQRLocations/jelo.webp',
           'assets/panonikalogo.webp',
-          'assets/icons/Icon.png',
           'assets/icons/TuzlaTourAppLogo192x192.webp',
           'assets/icons/TuzlaTourAppLogo512x512.webp',
           'assets/x.svg',
           'assets/bluesky.svg',
+          'assets/digital_voucher_pannonian_sailor.webp',
           'favicon.ico',
           'resources/TuzlaTourAppLogo96x96.png',
           'resources/TuzlaTourAppLogo192x192.png',
           'resources/TuzlaTourAppLogo512x512.png',
-          'src/maps/sprite.json',
-          'src/maps/sprite.png',
-          'src/maps/sprite@2x.json',
-          'src/maps/sprite@2x.png',
-          'src/maps/poi.geojson',
-          'src/maps/offline-vector-style.json',
-          'firebase-messaging-sw.js',
+          'maps/sprite.json',
+          'maps/sprite.png',
+          'maps/sprite@2x.json',
+          'maps/sprite@2x.png',
+          'maps/poi.geojson',
+          'maps/offline-style.json',
+          'maps/offline-vector-style.json',
+          'maps/tour-data.geojson',
         ],
         manifest: {
           name: 'Tuzla Tour Guide',
@@ -112,6 +113,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         },
         workbox: {
           // Precache the app shell: all built JS/CSS/HTML + icons
+          skipWaiting: true,
           clientsClaim: true,
           globPatterns: mode === 'development' ? [] : [
             '**/*.{js,css,html,ico,svg}',
@@ -119,7 +121,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
             'assets/Gallery/Food/*.{webp,png,jpg,jpeg}',
             'assets/Gallery/Accommodation/*.{webp,png,jpg,jpeg}',
           ],
-          globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js', 'maps/tiles/**/*'],
+          globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js', 'maps/tiles/**/*', 'assets/*.html'],
           maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6MB limit for precached shell files
           cleanupOutdatedCaches: true,
           // SPA navigation fallback — serves index.html for all navigation requests when offline

@@ -144,12 +144,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
   const { openGallery } = useImage();
   const { platform } = getAppFeatures();
 
+  const [hasPlayedInSession] = useState(() => {
+    try {
+      return typeof window !== 'undefined' && sessionStorage.getItem('tuzla_hero_video_played') === 'true';
+    } catch {
+      return false;
+    }
+  });
   const [heroLoopCount, setHeroLoopCount] = useState(0);
   const [isHeroPlaying, setIsHeroPlaying] = useState(false);
   const [isHeroReady, setIsHeroReady] = useState(false);
   const [isHeroMuted, setIsHeroMuted] = useState(true);
   const [isBuffering, setIsBuffering] = useState(false);
-  const [hasVideoEnded, setHasVideoEnded] = useState(false);
+  const [hasVideoEnded, setHasVideoEnded] = useState(hasPlayedInSession);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
 
@@ -165,8 +172,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
 
   const [videoSrc, setVideoSrc] = useState(initialWebSrc);
 
-  // Attempt autoplay immediately (muted for mobile compatibility)
+  // Attempt autoplay immediately on first visit in session (muted for mobile compatibility)
   useEffect(() => {
+    if (hasPlayedInSession) return;
     const video = heroVideoRef.current;
     if (!video) return;
 
@@ -184,6 +192,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
             if (isMounted) {
               setIsHeroPlaying(true);
               setIsHeroReady(true);
+              try {
+                sessionStorage.setItem('tuzla_hero_video_played', 'true');
+              } catch {}
             }
           })
           .catch((err) => {
@@ -199,7 +210,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
       isMounted = false;
       clearTimeout(timer);
     };
-  }, [videoSrc]);
+  }, [videoSrc, hasPlayedInSession]);
 
   const toggleHeroVideo = () => {
     if (heroVideoRef.current) {
@@ -246,6 +257,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
     // Stop playback after the first play completes
     setIsHeroPlaying(false);
     setHasVideoEnded(true);
+    try {
+      sessionStorage.setItem('tuzla_hero_video_played', 'true');
+    } catch {}
   };
 
   const handleReplay = (e?: React.MouseEvent) => {
@@ -444,30 +458,25 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               </div>
             )}
 
-            {/* Fallback image */}
+            {/* Fallback / default background image (always visible behind video and when idle/ended) */}
             <img
               src="/assets/slaptz.webp"
               alt="Tuzla Hero Fallback"
               loading="eager"
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none ${isHeroPlaying ? 'opacity-0' : 'opacity-100'
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none select-none ${isHeroPlaying ? 'opacity-0' : 'opacity-100'
                 }`}
             />
 
-            {/* Solid white background cover while video is loading up (hides gray play sign on phone) */}
-            {!isHeroPlaying && (
-              <div className="absolute inset-0 z-[15] bg-white pointer-events-none transition-opacity duration-500" />
-            )}
-
-            {/* Video koji na mobilnom postaje Full Size - pušta se 2 puta */}
+            {/* Video koji na mobilnom postaje Full Size - pušta se jednom po sesiji */}
             <video
               ref={heroVideoRef}
-              autoPlay
+              autoPlay={!hasPlayedInSession}
               muted={isHeroMuted}
               playsInline
-              preload="metadata"
+              preload={hasPlayedInSession ? 'none' : 'metadata'}
               disablePictureInPicture
               controls={false}
-              poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect width='1' height='1' fill='white'/%3E"
+              poster="/assets/slaptz.webp"
               src={videoSrc}
               onPlay={() => {
                 setIsHeroPlaying(true);
@@ -476,7 +485,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ lang, onNavigate }) => {
               onLoadedData={() => setIsHeroReady(true)}
               onError={handleVideoError}
               onEnded={handleHeroVideoEnd}
-              style={{ backgroundColor: '#ffffff' }}
               className={`w-full h-full object-cover transition-opacity duration-700 pointer-events-none select-none ${isHeroPlaying ? 'opacity-100' : 'opacity-0'
                 }`}
             >

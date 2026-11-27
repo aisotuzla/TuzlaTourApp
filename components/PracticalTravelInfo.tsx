@@ -59,13 +59,13 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         germanyHeading: '🇩🇪 Direct Flights from Germany (Wizz Air)',
         germanyDesc: 'Direct non-stop flights to TZL operate from 7 German airports, typically ~2–4 times weekly each, with an average flight time of ≈ 1h 25m–1h 50m:',
         germanyAirports: [
-          { code: 'BER', city: 'Berlin Brandenburg', freq: '~2–3 weekly', time: '≈ 1h 40m' },
-          { code: 'CGN', city: 'Cologne / Köln', freq: '~2–3 weekly', time: '≈ 1h 45m' },
-          { code: 'DTM', city: 'Dortmund', freq: '~2–4 weekly', time: '≈ 1h 45m' },
-          { code: 'HHN', city: 'Frankfurt Hahn', freq: '~2–3 weekly', time: '≈ 1h 40m' },
-          { code: 'HAM', city: 'Hamburg', freq: '~2–3 weekly', time: '≈ 1h 50m' },
-          { code: 'FKB', city: 'Karlsruhe / Baden-Baden', freq: 'NEW • ~2 weekly', time: '≈ 1h 35m' },
-          { code: 'FMM', city: 'Memmingen / Munich West', freq: '~2–4 weekly', time: '≈ 1h 25m' },
+          { code: 'BER', city: 'Berlin Brandenburg' },
+          { code: 'CGN', city: 'Cologne / Köln' },
+          { code: 'DTM', city: 'Dortmund' },
+          { code: 'HHN', city: 'Frankfurt Hahn' },
+          { code: 'HAM', city: 'Hamburg' },
+          { code: 'FKB', city: 'Karlsruhe / Baden-Baden' },
+          { code: 'FMM', city: 'Memmingen / Munich West' },
         ],
         otherCountriesHeading: '🇪🇺 Direct Flights from Other European Countries',
         otherCountriesDesc: 'Wizz Air regularly connects Tuzla with destinations across Europe:',
@@ -86,7 +86,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         priceNotice: 'Ticket Price: Depending on distance, bus fares range from 2.50 KM to 5.50 KM.',
         stats: [
           { label: 'Travel Time', value: '~35–55 min' },
-          { label: 'Ticket Price', value: '2.50 – 5.50 KM' },
+          { label: 'Ticket Price', value: '1.50 - 2.50 – 5.50 KM' },
           { label: 'Payment', value: 'Cash only (KM)' },
           { label: 'Airport Direct', value: 'Line 34 (Direct)' },
         ],
@@ -190,13 +190,13 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         germanyHeading: '🇩🇪 Direktni letovi iz Njemačke (Wizz Air)',
         germanyDesc: 'Wizz Air nudi direktne letove do TZL-a iz 7 njemačkih gradova, oko 2–4 puta sedmično po liniji, uz vrijeme leta ≈ 1h 25m–1h 50m:',
         germanyAirports: [
-          { code: 'BER', city: 'Berlin Brandenburg', freq: '~2–3 sedmično', time: '≈ 1h 40m' },
-          { code: 'CGN', city: 'Cologne / Köln', freq: '~2–3 sedmično', time: '≈ 1h 45m' },
-          { code: 'DTM', city: 'Dortmund', freq: '~2–4 sedmično', time: '≈ 1h 45m' },
-          { code: 'HHN', city: 'Frankfurt Hahn', freq: '~2–3 sedmično', time: '≈ 1h 40m' },
-          { code: 'HAM', city: 'Hamburg', freq: '~2–3 sedmično', time: '≈ 1h 50m' },
-          { code: 'FKB', city: 'Karlsruhe / Baden-Baden', freq: 'NOVO • ~2 sedmično', time: '≈ 1h 35m' },
-          { code: 'FMM', city: 'Memmingen / Minhen Zapad', freq: '~2–4 sedmično', time: '≈ 1h 25m' },
+          { code: 'BER', city: 'Berlin Brandenburg', },
+          { code: 'CGN', city: 'Cologne / Köln' },
+          { code: 'DTM', city: 'Dortmund' },
+          { code: 'HHN', city: 'Frankfurt Hahn' },
+          { code: 'HAM', city: 'Hamburg' },
+          { code: 'FKB', city: 'Karlsruhe / Baden-Baden' },
+          { code: 'FMM', city: 'Memmingen / Minhen Zapad' },
         ],
         otherCountriesHeading: '🇪🇺 Letovi iz drugih evropskih zemalja',
         otherCountriesDesc: 'Wizz Air također povezuje Tuzlu sa destinacijama širom Evrope:',
@@ -319,13 +319,13 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         germanyHeading: '🇩🇪 Direktflüge aus Deutschland (Wizz Air)',
         germanyDesc: 'Direkte Flüge nach TZL gibt es von 7 deutschen Flughäfen, ca. 2–4 Mal wöchentlich, Flugdauer ≈ 1h 25m–1h 50m:',
         germanyAirports: [
-          { code: 'BER', city: 'Berlin Brandenburg', freq: '~2–3x wöchentlich', time: '≈ 1h 40m' },
-          { code: 'CGN', city: 'Köln / Bonn (CGN)', freq: '~2–3x wöchentlich', time: '≈ 1h 45m' },
-          { code: 'DTM', city: 'Dortmund', freq: '~2–4x wöchentlich', time: '≈ 1h 45m' },
-          { code: 'HHN', city: 'Frankfurt-Hahn', freq: '~2–3x wöchentlich', time: '≈ 1h 40m' },
-          { code: 'HAM', city: 'Hamburg', freq: '~2–3x wöchentlich', time: '≈ 1h 50m' },
-          { code: 'FKB', city: 'Karlsruhe / Baden-Baden', freq: 'NEU • ~2x wöchentlich', time: '≈ 1h 35m' },
-          { code: 'FMM', city: 'Memmingen / München-West', freq: '~2–4x wöchentlich', time: '≈ 1h 25m' },
+          { code: 'BER', city: 'Berlin Brandenburg' },
+          { code: 'CGN', city: 'Köln / Bonn (CGN)' },
+          { code: 'DTM', city: 'Dortmund', },
+          { code: 'HHN', city: 'Frankfurt-Hahn', },
+          { code: 'HAM', city: 'Hamburg', },
+          { code: 'FKB', city: 'Karlsruhe / Baden-Baden', },
+          { code: 'FMM', city: 'Memmingen / München-West', },
         ],
         otherCountriesHeading: '🇪🇺 Flüge aus weiteren Ländern',
         otherCountriesDesc: 'Wizz Air bedient Tuzla zudem aus folgenden Regionen:',
@@ -448,13 +448,13 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
         germanyHeading: '🇩🇪 Almanya’dan Direkt Uçuşlar (Wizz Air)',
         germanyDesc: 'Wizz Air, Almanya’nın 7 havalimanından Tuzla’ya haftada ~2–4 kez direkt sefer düzenlemektedir. Uçuş süresi yaklaşık 1s 25dk–1s 50dk:',
         germanyAirports: [
-          { code: 'BER', city: 'Berlin Brandenburg', freq: 'Haftada ~2–3', time: '≈ 1s 40dk' },
-          { code: 'CGN', city: 'Köln / Bonn (CGN)', freq: 'Haftada ~2–3', time: '≈ 1s 45dk' },
-          { code: 'DTM', city: 'Dortmund', freq: 'Haftada ~2–4', time: '≈ 1s 45dk' },
-          { code: 'HHN', city: 'Frankfurt Hahn', freq: 'Haftada ~2–3', time: '≈ 1s 40dk' },
-          { code: 'HAM', city: 'Hamburg', freq: 'Haftada ~2–3', time: '≈ 1s 50dk' },
-          { code: 'FKB', city: 'Karlsruhe / Baden-Baden', freq: 'YENİ • Haftada ~2', time: '≈ 1s 35dk' },
-          { code: 'FMM', city: 'Memmingen / Münih Batı', freq: 'Haftada ~2–4', time: '≈ 1s 25dk' },
+          { code: 'BER', city: 'Berlin Brandenburg', },
+          { code: 'CGN', city: 'Köln / Bonn (CGN)', },
+          { code: 'DTM', city: 'Dortmund', },
+          { code: 'HHN', city: 'Frankfurt Hahn', },
+          { code: 'HAM', city: 'Hamburg', },
+          { code: 'FKB', city: 'Karlsruhe / Baden-Baden', },
+          { code: 'FMM', city: 'Memmingen / Münih Batı', },
         ],
         otherCountriesHeading: '🇪🇺 Diğer Ülkelerden Direkt Seferler',
         otherCountriesDesc: 'Wizz Air ayrıca şu ülkelerden Tuzla’ya direkt uçuşlar sağlamaktadır:',
@@ -637,10 +637,8 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
                     <div key={item.code} className="rounded-xl border border-white bg-white p-4 shadow-sm">
                       <div className="flex items-center justify-between">
                         <span className="rounded-lg bg-blue-100 px-2 py-0.5 text-xs font-black text-blue-800">{item.code}</span>
-                        <span className="text-xs font-semibold text-slate-500">{item.time}</span>
                       </div>
                       <div className="mt-2 text-sm font-black text-slate-900">{item.city}</div>
-                      <div className="mt-1 text-xs text-blue-700 font-bold">{item.freq}</div>
                     </div>
                   ))}
                 </div>
@@ -1057,10 +1055,10 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
                     {lang === 'bs'
                       ? 'Pronađite lokalne organizatore i zvanične turističke zajednice za informacije o turama, izletima i atrakcijama regije.'
                       : lang === 'de'
-                      ? 'Entdecken Sie lokale Anbieter und offizielle Tourismusverbände mit Informationen zu Führungen, Ausflügen und regionalen Sehenswürdigkeiten.'
-                      : lang === 'tr'
-                      ? 'Yerel tur acentelerini ve rehberli turlar, günübirlik geziler ve bölgesel cazibe merkezleri hakkında bilgi sunan resmî turizm kuruluşlarını keşfedin.'
-                      : 'Find local tour operators and official tourism boards for guided tours, day trips, visitor information, and regional attractions.'}
+                        ? 'Entdecken Sie lokale Anbieter und offizielle Tourismusverbände mit Informationen zu Führungen, Ausflügen und regionalen Sehenswürdigkeiten.'
+                        : lang === 'tr'
+                          ? 'Yerel tur acentelerini ve rehberli turlar, günübirlik geziler ve bölgesel cazibe merkezleri hakkında bilgi sunan resmî turizm kuruluşlarını keşfedin.'
+                          : 'Find local tour operators and official tourism boards for guided tours, day trips, visitor information, and regional attractions.'}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
@@ -1083,10 +1081,10 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
                   {lang === 'bs'
                     ? 'Ovaj imenik obuhvata turističke organizacije i pružaoce usluga. Ponude, cijene, termini, dostupnost i rezervacije potvrdite direktno kod navedene organizacije.'
                     : lang === 'de'
-                    ? 'Dieses Verzeichnis umfasst Tourismusorganisationen und Anbieter. Angebote, Preise, Termine, Verfügbarkeit und Buchungen sollten direkt bei der jeweiligen Organisation bestätigt werden.'
-                    : lang === 'tr'
-                    ? 'Bu rehber turizm kuruluşlarını ve hizmet sağlayıcılarını içerir. Tur ayrıntılarını, fiyatları, tarihleri, müsaitliği ve rezervasyonları doğrudan ilgili kuruluşla teyit edin.'
-                    : 'This directory includes tourism organizations and service providers. Confirm current offers, prices, dates, availability, and bookings directly with the relevant organization.'}
+                      ? 'Dieses Verzeichnis umfasst Tourismusorganisationen und Anbieter. Angebote, Preise, Termine, Verfügbarkeit und Buchungen sollten direkt bei der jeweiligen Organisation bestätigt werden.'
+                      : lang === 'tr'
+                        ? 'Bu rehber turizm kuruluşlarını ve hizmet sağlayıcılarını içerir. Tur ayrıntılarını, fiyatları, tarihleri, müsaitliği ve rezervasyonları doğrudan ilgili kuruluşla teyit edin.'
+                        : 'This directory includes tourism organizations and service providers. Confirm current offers, prices, dates, availability, and bookings directly with the relevant organization.'}
                 </div>
               </div>
 
@@ -1205,7 +1203,7 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-xs sm:text-sm leading-relaxed text-blue-900">
                   <li>{lang === 'bs' ? 'Prije plaćanja potvrdite naziv ture, datum, trajanje, mjesto polaska i šta je uključeno u cijenu.' : lang === 'de' ? 'Bestätigen Sie vor der Zahlung Tourname, Datum, Dauer, Abfahrtsort und enthaltene Leistungen.' : lang === 'tr' ? 'Ödeme öncesinde tur adını, tarihi, süreyi, kalkış noktasını ve fiyata dahil olanları teyit edin.' : 'Before paying, confirm the tour name, date, duration, departure point, and what the price includes.'}</li>
                   <li>{lang === 'bs' ? 'Tražite konačnu cijenu, uslove otkazivanja i potvrdu rezervacije u pisanom obliku.' : lang === 'de' ? 'Lassen Sie sich Endpreis, Stornierungsbedingungen und Buchungsbestätigung schriftlich geben.' : lang === 'tr' ? 'Nihai fiyatı, iptal koşullarını ve rezervasyon onayını yazılı olarak isteyin.' : 'Request the final price, cancellation terms, and written booking confirmation.'}</li>
-                  <li>{lang === 'bs' ? 'Tuzla Virtual Tour Guide trenutno prikazuje kontakt-podatke; dostupnost i rezervacije potvrđuje direktno pružalac usluge.' : lang === 'de' ? 'Tuzla Virtual Tour Guide zeigt derzeit Kontaktdaten; Verfügbarkeit und Buchungen bestätigt der Anbieter direkt.' : lang === 'tr' ? 'Tuzla Virtual Tour Guide şu anda iletişim bilgilerini sunar; müsaitlik ve rezervasyon sağlayıcı tarafından doğrulanır.' : 'Tuzla Virtual Tour Guide currently provides contact details; the operator confirms availability and bookings directly.'}</li>
+                  <li>{lang === 'bs' ? 'Tuzla Tour Guide trenutno prikazuje kontakt-podatke; dostupnost i rezervacije potvrđuje direktno pružalac usluge.' : lang === 'de' ? 'Tuzla Virtual Tour Guide zeigt derzeit Kontaktdaten; Verfügbarkeit und Buchungen bestätigt der Anbieter direkt.' : lang === 'tr' ? 'Tuzla Virtual Tour Guide şu anda iletişim bilgilerini sunar; müsaitlik ve rezervasyon sağlayıcı tarafından doğrulanır.' : 'Tuzla Virtual Tour Guide currently provides contact details; the operator confirms availability and bookings directly.'}</li>
                 </ul>
               </div>
             </div>
