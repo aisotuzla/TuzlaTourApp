@@ -48,6 +48,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   const scannerContainerId = 'map-quest-reader';
 
   const applyZoom = async (zoom: number) => {
+    if (isStartingCamera || !html5QrCodeRef.current?.isScanning) return;
     setZoomLevel(zoom);
     try {
       const caps = html5QrCodeRef.current?.getRunningTrackCameraCapabilities();
@@ -341,55 +342,60 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         disableFlip: false,
       };
 
-      const hdConstraints: MediaTrackConstraints = {
-        facingMode: 'environment',
-        width: { min: 1080, ideal: 1920 },
-        height: { min: 720, ideal: 1080 },
+      const startWithFreshInstance = async (cameraConfig: string | { facingMode: string }) => {
+        const instance = new Html5Qrcode(scannerContainerId, { verbose: false });
+        html5QrCodeRef.current = instance;
+        await instance.start(cameraConfig, qrConfig, onScanSuccess, () => { });
+        return instance;
       };
 
       try {
-        await html5QrCode.start(hdConstraints, qrConfig, onScanSuccess, () => { });
+        await html5QrCode.start({ facingMode: 'environment' }, qrConfig, onScanSuccess, () => { });
         setIsStartingCamera(false);
         setZoomLevel(1);
         if (!isOpenRef.current) {
           stopScanner();
           return;
         }
-      } catch (hdErr) {
-        console.warn('[QR Scanner] HD camera start failed, trying basic environment camera...', hdErr);
+        // Best-effort HD upgrade after camera is already running
+        html5QrCode.applyVideoConstraints({
+          width: { min: 1080, ideal: 1920 },
+          height: { min: 720, ideal: 1080 },
+        }).catch(() => { });
+      } catch (err) {
+        console.warn('[QR Scanner] Environment camera failed, trying fallback to any camera...', err);
         try {
-          await html5QrCode.start({ facingMode: 'environment' }, qrConfig, onScanSuccess, () => { });
-          setIsStartingCamera(false);
-          setZoomLevel(1);
-          if (!isOpenRef.current) {
-            stopScanner();
-            return;
-          }
-        } catch (err) {
-          console.warn('[QR Scanner] Environment camera failed, trying fallback to any camera...', err);
           try {
-            const devices = await Html5Qrcode.getCameras();
-            if (devices && devices.length > 0) {
-              const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
-              await html5QrCode.start(backCam.id, qrConfig, onScanSuccess, () => { });
-              setIsStartingCamera(false);
-              setZoomLevel(1);
-              if (!isOpenRef.current) {
-                stopScanner();
-                return;
-              }
-            } else {
-              throw new Error('No cameras found on device.');
-            }
-          } catch (fallbackErr: any) {
-            console.error('[QR Scanner] Fallback failed:', fallbackErr);
+            html5QrCode.clear();
+          } catch (_) { }
+          html5QrCodeRef.current = null;
+
+          const devices = await Html5Qrcode.getCameras();
+          if (devices && devices.length > 0) {
+            await new Promise((resolve) => setTimeout(resolve, 250));
+            const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
+            const fallbackInstance = await startWithFreshInstance(backCam.id);
             setIsStartingCamera(false);
-            setCameraError(
-              lang === 'bs'
-                ? 'Kamera nije dostupna ili nema dozvole. Omogućite pristup kameri i pokušajte ponovo.'
-                : 'Camera unavailable or permission denied. Enable camera access and try again.'
-            );
+            setZoomLevel(1);
+            if (!isOpenRef.current) {
+              stopScanner();
+              return;
+            }
+            fallbackInstance.applyVideoConstraints({
+              width: { min: 1080, ideal: 1920 },
+              height: { min: 720, ideal: 1080 },
+            }).catch(() => { });
+          } else {
+            throw new Error('No cameras found on device.');
           }
+        } catch (fallbackErr: any) {
+          console.error('[QR Scanner] Fallback failed:', fallbackErr);
+          setIsStartingCamera(false);
+          setCameraError(
+            lang === 'bs'
+              ? 'Kamera nije dostupna ili nema dozvole. Omogućite pristup kameri i pokušajte ponovo.'
+              : 'Camera unavailable or permission denied. Enable camera access and try again.'
+          );
         }
       }
     } catch (err: any) {
@@ -624,9 +630,6 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                             )}
                             <div className="absolute bottom-0 left-0 h-1 bg-amber-500 transition-all duration-500 w-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
                           </motion.div>
-                          {'}'}{'}'}
-
-                          ){'}'}
                         </div>
                       );
                     })}

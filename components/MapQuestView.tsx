@@ -11,6 +11,8 @@ import { TUZLA_CENTER, LOCATIONS } from '../constants.tsx';
 import { useNetwork } from '../hooks/useNetwork.ts';
 import { useQuestRuntimePolicy } from '../hooks/useQuestRuntimePolicy.ts';
 import { useGeolocationWatcher } from '../hooks/useGeolocationWatcher.ts';
+import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
 import { getDistance } from '../utils/geoUtils.ts';
 import { AdaptiveLowPassFilter } from '../utils/arProjection'; // PRO FIX: Import centralized filter
 import { QUEST_TARGETS, POI_COLORS, PHASE_1_POIS, PHASE_2_POIS, PHASE_3_POIS, GRAND_FINALE_POIS, QUEST_GAME_RULES, isPoiRewardUnlocked } from '../constants/questData.ts';
@@ -22,7 +24,8 @@ import { getGeoapifyRoutingKey, getGeoapifyGeneralKey } from '../utils/geoapifyK
 import { setupPoiMarkerLayers } from '../utils/mapPoiLayers.ts';
 import { generateQuestPopupHtml } from '../utils/questPopupHtml.ts';
 import { useGlobalApp } from '../contexts/GlobalAppContext.tsx';
-
+import { getQuestProximityNotification } from '../constants/questNotificationTemplates.ts';
+import { isWithinQuestProximity } from '../utils/questProximity.ts';
 export interface MapQuestViewProps {
   lang: Language; features: AppFeatures; unlockedRewards: string[];
   onRewardFound: (id: string, qrPayload: string, position: { lat: number; lon: number } | null) => Promise<{ ok: boolean; code?: string; xp_awarded?: number; xp_total?: number; level?: number }>;
@@ -85,6 +88,39 @@ export const handlePoiMarkerMissingImage = async (mapInstance: maplibregl.Map, i
 };
 
 
+const QUEST_NOTIFICATION_MESSAGES: Record<Language, { denied: string; unavailable: string; failed: string }> = {
+  en: {
+    denied: 'Proximity notifications are disabled. Allow notifications in your device settings.',
+    unavailable: 'Proximity notifications are unavailable on this device or browser.',
+    failed: 'Could not display the proximity notification for this location.',
+  },
+  bs: {
+    denied: 'Obavijesti za blizinu su isključene. Dozvolite obavijesti u postavkama uređaja.',
+    unavailable: 'Obavijesti za blizinu nisu dostupne na ovom uređaju ili pregledniku.',
+    failed: 'Nije moguće prikazati obavijest za ovu lokaciju.',
+  },
+  de: {
+    denied: 'Nähe-Benachrichtigungen sind deaktiviert. Erlauben Sie Benachrichtigungen in den Geräteeinstellungen.',
+    unavailable: 'Nähe-Benachrichtigungen sind auf diesem Gerät oder in diesem Browser nicht verfügbar.',
+    failed: 'Die Nähe-Benachrichtigung für diesen Ort konnte nicht angezeigt werden.',
+  },
+  tr: {
+    denied: 'Yakınlık bildirimleri kapalı. Cihaz ayarlarından bildirimlere izin verin.',
+    unavailable: 'Yakınlık bildirimleri bu cihazda veya tarayıcıda kullanılamıyor.',
+    failed: 'Bu konum için yakınlık bildirimi gösterilemedi.',
+  },
+};
+
+const notifiedQuestTargetIds = new Set<string>();
+
+const getStableNotificationId = (poiId: string): number => {
+  let hash = 0;
+  for (let i = 0; i < poiId.length; i++) {
+    hash = (hash * 31 + poiId.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash) % 2147483647 || 1;
+};
+
 const GEOAPIFY_API_KEY = getGeoapifyGeneralKey();
 const VITE_PROTOMAPS_CARTO_API = '78417d24f3c5d515';
 export const GEOAPIFY_MAPTILER_3D = `https://maps.geoapify.com/v1/styles/maptiler-3d/style.json?apiKey=${GEOAPIFY_API_KEY}`;
@@ -121,6 +157,52 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const [showRules, setShowRules] = useState(false);
   const [showIllustratedMap, setShowIllustratedMap] = useState(false);
   const [isHudHidden, setIsHudHidden] = useState(false);
+  const [proximityNotice, setProximityNotice] = useState<string | null>(null);
+  const proximityNoticeTimerRef = useRef<number | null>(null);
+
+  const showProximityNotice = (message: string) => {
+    setProximityNotice(message);
+    if (proximityNoticeTimerRef.current !== null) {
+      window.clearTimeout(proximityNoticeTimerRef.current);
+    }
+    proximityNoticeTimerRef.current = window.setTimeout(() => {
+      setProximityNotice(null);
+      proximityNoticeTimerRef.current = null;
+    }, 5500);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (proximityNoticeTimerRef.current !== null) {
+        window.clearTimeout(proximityNoticeTimerRef.current);
+      }
+    };
+  }, []);
+
+  const ensureNotificationPermission = async (): Promise<'granted' | 'denied' | 'unavailable'> => {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        let perm = await LocalNotifications.checkPermissions();
+        if (perm.display === 'prompt' || perm.display === 'prompt-with-rationale') {
+          perm = await LocalNotifications.requestPermissions();
+        }
+        return perm.display === 'granted' ? 'granted' : 'denied';
+      }
+
+      if (typeof window === 'undefined' || !('Notification' in window)) {
+        return 'unavailable';
+      }
+
+      if (Notification.permission === 'default') {
+        const res = await Notification.requestPermission();
+        return res === 'granted' ? 'granted' : 'denied';
+      }
+
+      return Notification.permission === 'granted' ? 'granted' : 'denied';
+    } catch {
+      return 'unavailable';
+    }
+  };
 
   const isPhase1Done = PHASE_1_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
   const isPhase2Done = isPhase1Done && PHASE_2_POIS.every(id => isPoiRewardUnlocked(id, unlockedRewards));
@@ -157,6 +239,7 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
   const handleStartNavigation = (name: string, lat: number, lon: number) => {
     setSelectedNavTarget({ name, lat, lon });
     setIsNavigating(true);
+    void ensureNotificationPermission();
     if (map.current && userLocationRef.current) {
       map.current.flyTo({
         center: [userLocationRef.current[0], userLocationRef.current[1]],
@@ -617,6 +700,90 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
     }
   }, [rawGeoPosition, isLoaded, navigationTarget, unlockedRewards, selectedNavTarget, activeStyle]);
 
+  // Trigger a one-time local notification when navigating within 10m of an unfinished quest target
+  useEffect(() => {
+    if (!isNavigating || !userLocation) return;
+
+    const target =
+      (selectedNavTarget
+        ? QUEST_TARGETS.find(
+            (t) =>
+              t.id === selectedNavTarget.name ||
+              t.name.en === selectedNavTarget.name ||
+              t.name.bs === selectedNavTarget.name ||
+              t.name.de === selectedNavTarget.name ||
+              t.name.tr === selectedNavTarget.name
+          )
+        : undefined) || QUEST_TARGETS.find((t) => t.id === activeTargetId);
+
+    if (!target) return;
+    if (isPoiRewardUnlocked(target.id, unlockedRewards)) return;
+    if (notifiedQuestTargetIds.has(target.id)) return;
+
+    const coords =
+      QUEST_TARGET_COORDS[target.id] ||
+      (selectedNavTarget ? { lat: selectedNavTarget.lat, lon: selectedNavTarget.lon } : null);
+    if (!coords) return;
+
+    const distanceMeters = getDistance(userLocation[0], userLocation[1], coords.lat, coords.lon);
+    if (!isWithinQuestProximity(distanceMeters)) return;
+
+    notifiedQuestTargetIds.add(target.id);
+
+    const poiName = target.name[lang] || target.name.en || target.name.bs;
+    const { title, body } = getQuestProximityNotification(target.id, poiName, lang);
+    const msgs = QUEST_NOTIFICATION_MESSAGES[lang] || QUEST_NOTIFICATION_MESSAGES.en;
+
+    void (async () => {
+      const permStatus = await ensureNotificationPermission();
+      if (permStatus === 'denied') {
+        showProximityNotice(msgs.denied);
+        return;
+      }
+      if (permStatus === 'unavailable') {
+        showProximityNotice(msgs.unavailable);
+        return;
+      }
+
+      try {
+        if (Capacitor.isNativePlatform()) {
+          if (Capacitor.getPlatform() === 'android') {
+            try {
+              await LocalNotifications.createChannel({
+                id: 'tuzla_quest_proximity',
+                name: 'Tuzla Quest Proximity',
+                importance: 4,
+                visibility: 1,
+              });
+            } catch (_) {
+              /* channel may already exist */
+            }
+          }
+          await LocalNotifications.schedule({
+            notifications: [
+              {
+                id: getStableNotificationId(target.id),
+                title,
+                body,
+                schedule: { at: new Date(Date.now() + 200) },
+                channelId: 'tuzla_quest_proximity',
+              },
+            ],
+          });
+        } else {
+          new Notification(title, {
+            body,
+            icon: '/assets/icons/icon-192x192.png',
+            tag: `quest-proximity-${target.id}`,
+          });
+        }
+      } catch (err) {
+        console.warn('[Quest Proximity] Notification failed:', err);
+        showProximityNotice(msgs.failed);
+      }
+    })();
+  }, [isNavigating, selectedNavTarget, activeTargetId, userLocation, unlockedRewards, lang]);
+
   const handleEndNavigation = () => {
     setIsNavigating(false); setSelectedNavTarget(null); setRouteDistance(null); setRouteTime(null);
     if (onClearNavigation) onClearNavigation();
@@ -634,6 +801,29 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
 
   return (
     <div className="h-[calc(100vh-70px)] w-full relative flex flex-col overflow-hidden bg-slate-950 font-quicksand select-none">
+      {/* Proximity Notification Status Banner */}
+      <AnimatePresence>
+        {proximityNotice && (
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            className="absolute top-3 left-3 right-3 z-50 mx-auto max-w-md rounded-2xl border border-amber-400/40 bg-slate-900/95 px-3.5 py-2.5 text-xs font-semibold text-amber-100 shadow-2xl backdrop-blur-xl flex items-center gap-2.5"
+          >
+            <Info size={16} className="shrink-0 text-amber-400" />
+            <span className="flex-1 leading-snug">{proximityNotice}</span>
+            <button
+              type="button"
+              onClick={() => setProximityNotice(null)}
+              className="rounded-lg p-1 text-slate-400 hover:text-white"
+              aria-label="Dismiss"
+            >
+              <X size={14} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* 3D Map Container (Top 65%) */}
       <div
         ref={mapContainer}

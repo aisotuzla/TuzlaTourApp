@@ -35,6 +35,9 @@ The application is built with React 18, TypeScript, and Vite, operating as a hig
   - Phase completion celebrations with confetti and reward modals.
 - **QR Code Scanner**: Camera-based QR scanning with zoom controls, secure server-side verification, and scan history ledger.
 
+### 🔔 Quest Proximity Reminder
+When navigating to an unfinished quest target, the app sends a local notification once you are within 10 meters. Location and notification permissions must be allowed, and the quest screen must remain open; background or closed-app alerts are not supported. Edit `constants/questNotificationTemplates.ts` to change the default message or add a POI-specific message. Use `{poiName}` to insert the localized target name.
+
 ### 🎧 Audio Guides & Media
 - Multilingual location narrations with a persistent floating global audio player bar.
 - Embedded documentary and historical video footage.

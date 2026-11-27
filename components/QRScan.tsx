@@ -79,6 +79,7 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
   const current=scanner.current;
   scanner.current=null;
   if(current){try{if(current.isScanning) await current.stop();}catch(e){console.warn('[QuestHub] camera stop',e);}try{current.clear();}catch{}}
+  setZoomLevel(1);
   setScanning(false);
  },[]);
  useEffect(()=>()=>{const current=scanner.current;if(current?.isScanning)void current.stop().catch(()=>{});},[]);
@@ -118,11 +119,6 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
    if(!el)throw new Error('camera_container');
    const instance=new Html5Qrcode('quest-qr-reader',{verbose:false});
    scanner.current=instance;
-   const hdConstraints: MediaTrackConstraints = {
-     facingMode: 'environment',
-     width: { min: 1080, ideal: 1920 },
-     height: { min: 720, ideal: 1080 },
-   };
    const qrConfig = {
      fps: 15,
      qrbox: (w: number, h: number) => {
@@ -132,9 +128,23 @@ const QRScan: React.FC<Props> = ({lang,onNavigateToTarget}) => {
      aspectRatio: 1,
    };
    try {
-     await instance.start(hdConstraints, qrConfig, (decoded)=>void complete(decoded), ()=>{});
-   } catch (_) {
      await instance.start({facingMode:'environment'}, qrConfig, (decoded)=>void complete(decoded), ()=>{});
+     instance.applyVideoConstraints({
+       width: { min: 1080, ideal: 1920 },
+       height: { min: 720, ideal: 1080 },
+     }).catch(() => {});
+   } catch (_) {
+     try { instance.clear(); } catch {}
+     const devices = await Html5Qrcode.getCameras();
+     if (!devices || devices.length === 0) throw new Error('no_camera');
+     const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
+     const fallbackInstance = new Html5Qrcode('quest-qr-reader',{verbose:false});
+     scanner.current = fallbackInstance;
+     await fallbackInstance.start(backCam.id, qrConfig, (decoded)=>void complete(decoded), ()=>{});
+     fallbackInstance.applyVideoConstraints({
+       width: { min: 1080, ideal: 1920 },
+       height: { min: 720, ideal: 1080 },
+     }).catch(() => {});
    }
   }catch(e){console.error('[QuestHub] camera start failed',e);scanner.current=null;setCameraError(t.cameraError);setScanning(false);}
   finally{setBusy(false);}
