@@ -1037,6 +1037,62 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
           </section>
         )}
 
+        {/* SECTION 5: SIM, Wi-Fi & Money */}
+        {(selectedFilter === 'all' || selectedFilter === 'simMoney') && (
+          <section className="rounded-[1.75rem] border border-blue-100 bg-white p-6 sm:p-8 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+                <Coins className="h-6 w-6" />
+              </div>
+              <div>
+                <span className="text-xs font-black uppercase tracking-wider text-emerald-600">{t.simMoney.badge}</span>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900">{t.simMoney.title}</h3>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+              {/* SIM & Data */}
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-3">
+                <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-emerald-600" />
+                  {t.simMoney.simTitle}
+                </h4>
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs sm:text-sm font-bold text-amber-950">
+                  {t.simMoney.simWarning}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+                  {t.simMoney.simOptions}
+                </p>
+                <div className="pt-2 border-t border-slate-200">
+                  <h5 className="text-xs font-black uppercase text-slate-500 mb-1 flex items-center gap-1.5">
+                    <Wifi className="h-4 w-4 text-blue-600" />
+                    {t.simMoney.wifiTitle}
+                  </h5>
+                  <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                    {t.simMoney.wifiDesc}
+                  </p>
+                </div>
+              </div>
+
+              {/* Currency & Cash */}
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-3">
+                <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-blue-600" />
+                  {t.simMoney.moneyTitle}
+                </h4>
+                <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs sm:text-sm font-black text-blue-950">
+                  {t.simMoney.peggedRate}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+                  {t.simMoney.cashAdvice}
+                </p>
+                <div className="rounded-xl bg-white p-3.5 border border-slate-200 text-xs sm:text-sm text-slate-600 font-medium">
+                  🏧 <strong className="text-slate-900">ATM Pro-tip:</strong> {t.simMoney.atmAdvice}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* SECTION 6: TOUR AGENCIES & EXPERIENCES MARKETPLACE */}
         {(selectedFilter === 'all' || selectedFilter === 'tourAgency') && (
@@ -1205,63 +1261,6 @@ export const PracticalTravelInfo: React.FC<PracticalTravelInfoProps> = ({
                   <li>{lang === 'bs' ? 'Tražite konačnu cijenu, uslove otkazivanja i potvrdu rezervacije u pisanom obliku.' : lang === 'de' ? 'Lassen Sie sich Endpreis, Stornierungsbedingungen und Buchungsbestätigung schriftlich geben.' : lang === 'tr' ? 'Nihai fiyatı, iptal koşullarını ve rezervasyon onayını yazılı olarak isteyin.' : 'Request the final price, cancellation terms, and written booking confirmation.'}</li>
                   <li>{lang === 'bs' ? 'Tuzla Tour Guide trenutno prikazuje kontakt-podatke; dostupnost i rezervacije potvrđuje direktno pružalac usluge.' : lang === 'de' ? 'Tuzla Virtual Tour Guide zeigt derzeit Kontaktdaten; Verfügbarkeit und Buchungen bestätigt der Anbieter direkt.' : lang === 'tr' ? 'Tuzla Virtual Tour Guide şu anda iletişim bilgilerini sunar; müsaitlik ve rezervasyon sağlayıcı tarafından doğrulanır.' : 'Tuzla Virtual Tour Guide currently provides contact details; the operator confirms availability and bookings directly.'}</li>
                 </ul>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* SECTION 5: SIM, Wi-Fi & Money */}
-        {(selectedFilter === 'all' || selectedFilter === 'simMoney') && (
-          <section className="rounded-[1.75rem] border border-blue-100 bg-white p-6 sm:p-8 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100">
-                <Coins className="h-6 w-6" />
-              </div>
-              <div>
-                <span className="text-xs font-black uppercase tracking-wider text-emerald-600">{t.simMoney.badge}</span>
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900">{t.simMoney.title}</h3>
-              </div>
-            </div>
-
-            <div className="mt-6 grid gap-4 lg:grid-cols-2">
-              {/* SIM & Data */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-3">
-                <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
-                  <Smartphone className="h-5 w-5 text-emerald-600" />
-                  {t.simMoney.simTitle}
-                </h4>
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs sm:text-sm font-bold text-amber-950">
-                  {t.simMoney.simWarning}
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
-                  {t.simMoney.simOptions}
-                </p>
-                <div className="pt-2 border-t border-slate-200">
-                  <h5 className="text-xs font-black uppercase text-slate-500 mb-1 flex items-center gap-1.5">
-                    <Wifi className="h-4 w-4 text-blue-600" />
-                    {t.simMoney.wifiTitle}
-                  </h5>
-                  <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                    {t.simMoney.wifiDesc}
-                  </p>
-                </div>
-              </div>
-
-              {/* Currency & Cash */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-3">
-                <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-blue-600" />
-                  {t.simMoney.moneyTitle}
-                </h4>
-                <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs sm:text-sm font-black text-blue-950">
-                  {t.simMoney.peggedRate}
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
-                  {t.simMoney.cashAdvice}
-                </p>
-                <div className="rounded-xl bg-white p-3.5 border border-slate-200 text-xs sm:text-sm text-slate-600 font-medium">
-                  🏧 <strong className="text-slate-900">ATM Pro-tip:</strong> {t.simMoney.atmAdvice}
-                </div>
               </div>
             </div>
           </section>

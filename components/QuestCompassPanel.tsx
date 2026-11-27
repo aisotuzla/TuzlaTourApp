@@ -168,9 +168,8 @@ export const QuestCompassPanel: React.FC<QuestCompassPanelProps> = ({
         <div
           onClick={handleCompassTap}
           title={lang === 'bs' ? 'Dodirnite za kalibraciju kompasa' : 'Tap to calibrate compass'}
-          className={`relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 flex items-center justify-center cursor-pointer select-none group transition-transform active:scale-95 ${
-            calibrating ? 'animate-pulse' : ''
-          }`}
+          className={`relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 flex items-center justify-center cursor-pointer select-none group transition-transform active:scale-95 ${calibrating ? 'animate-pulse' : ''
+            }`}
         >
           {/* Outer Machined Titanium Bezel */}
           <div
@@ -256,16 +255,14 @@ export const QuestCompassPanel: React.FC<QuestCompassPanelProps> = ({
                 {/* Target Arrowhead with Luminous Glow */}
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent transition-colors duration-200 ${
-                      isWithin25m
-                        ? 'border-b-[16px] border-b-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,1)]'
-                        : 'border-b-[16px] border-b-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.9)]'
-                    }`}
+                    className={`w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent transition-colors duration-200 ${isWithin25m
+                      ? 'border-b-[16px] border-b-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,1)]'
+                      : 'border-b-[16px] border-b-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.9)]'
+                      }`}
                   />
                   <div
-                    className={`w-1 h-3 -mt-0.5 rounded-full ${
-                      isWithin25m ? 'bg-emerald-300 shadow-sm' : 'bg-amber-300 shadow-sm'
-                    }`}
+                    className={`w-1 h-3 -mt-0.5 rounded-full ${isWithin25m ? 'bg-emerald-300 shadow-sm' : 'bg-amber-300 shadow-sm'
+                      }`}
                   />
                 </div>
 
@@ -280,9 +277,8 @@ export const QuestCompassPanel: React.FC<QuestCompassPanelProps> = ({
             {/* Digital Center Hub Core (Distance & Heading Readout) */}
             <div className="absolute z-20 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-slate-950/90 backdrop-blur-md border border-white/15 shadow-inner flex flex-col items-center justify-center text-center p-0.5">
               <span
-                className={`text-[11px] sm:text-xs font-black font-mono tracking-tight leading-none ${
-                  isWithin25m ? 'text-emerald-400 animate-pulse' : 'text-white'
-                }`}
+                className={`text-[11px] sm:text-xs font-black font-mono tracking-tight leading-none ${isWithin25m ? 'text-emerald-400 animate-pulse' : 'text-white'
+                  }`}
               >
                 {distance !== null
                   ? distance < 1000
@@ -291,15 +287,14 @@ export const QuestCompassPanel: React.FC<QuestCompassPanelProps> = ({
                   : '--'}
               </span>
               <span
-                className={`text-[7px] font-black leading-none mt-0.5 uppercase tracking-wider ${
-                  isWithin25m ? 'text-emerald-300' : 'text-amber-400/90'
-                }`}
+                className={`text-[7px] font-black leading-none mt-0.5 uppercase tracking-wider ${isWithin25m ? 'text-emerald-300' : 'text-amber-400/90'
+                  }`}
               >
                 {isWithin25m
                   ? (lang === 'bs' ? 'ZONA' : 'IN ZONE')
                   : heading !== null
-                  ? `${Math.round(heading)}°`
-                  : (lang === 'bs' ? 'CILJ' : 'TARGET')}
+                    ? `${Math.round(heading)}°`
+                    : (lang === 'bs' ? 'CILJ' : 'TARGET')}
               </span>
             </div>
           </div>

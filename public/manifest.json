@@ -3,7 +3,7 @@
   "version": "1",
   "name": "Tuzla Tour Guide App",
   "short_name": "Tuzla Guide",
-  "description": "Multilingual tour guide for Tuzla with GPS, AR quests, audio guides, itinerary, and all local info to explore the city of Tuzla.",
+  "description": "Multilingual tour guide for Tuzla with GPS, QRquests, audio guides, itinerary, and all local info to explore the city of Tuzla.",
   "id": "/",
   "start_url": "/",
   "scope": "/",

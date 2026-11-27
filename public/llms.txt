@@ -1,7 +1,7 @@
 # Tuzla Virtual Tour Guide
 
 > Official companion and comprehensive knowledge guide for visitors, tourists, and travelers exploring Tuzla, Bosnia and Herzegovina. Curated by local tourism experts and verified against official transit timetables, hotel registers, and municipal archives.
-> Quest Tuzla - GPS navigated interactive map with AR features, challenges and rewards for exploring Tuzla. 
+> Quest Tuzla - GPS navigated interactive map with QRfeatures, challenges and rewards for exploring Tuzla. 
 > Last updated: October 2026. Official URL: https://tuzlatour.vercel.app; https://tuzlatourguide.netlify.app/; https://masterminds.ba/tuzla-tour-guide/
 
 ## Overview

@@ -12,7 +12,7 @@
 
 **Tuzla Quest** is an interactive, location-based city exploration game embedded inside Tuzla Tour Guide. Players navigate through Tuzla's historic core, discovering monuments spanning centuries of history—from medieval Bosnian royalty to modern cultural icons.
 
-The game is designed for fast, snappy, battery-efficient gameplay without clunky camera AR overlays or vibration interruptions. Players navigate using a tactical compass and an illustrated hand-drawn map, physical QR markers at each location, and real-time GPS proximity validation.
+The game is designed for fast, snappy, battery-efficient gameplay without clunky camera QRoverlays or vibration interruptions. Players navigate using a tactical compass and an illustrated hand-drawn map, physical QR markers at each location, and real-time GPS proximity validation.
 
 ---
 
@@ -52,6 +52,7 @@ flowchart LR
 ```
 
 ### Phase 1 — Foundations of Tuzla / Stara čaršija (4 POIs)
+
 *Focus: The historical heart and founding spaces of Old Town Tuzla.*
 
 1. **Trg slobode (Freedom Square)**
@@ -72,45 +73,48 @@ flowchart LR
    - **Description:** Sculptures commemorating the world-renowned novelist and prominent painter.
 
 ### Phase 2 — Bosnian Kingdom & Heritage / Bosansko kraljevstvo (3 POIs)
+
 *Focus: Medieval sovereignty, traditional gastronomy, and salt extraction.*
 
-5. **Tvrtko Park (King Tvrtko I Monument)**
+1. **Tvrtko Park (King Tvrtko I Monument)**
    - **Coordinates:** `44.5380826, 18.6783327`
    - **XP Reward:** 100 XP + King Tvrtko Scratch Card
    - **Description:** Monument of the first King of Bosnia, Tvrtko I Kotromanić.
-6. **Palačinkara kod Bagija (Bagi Crêperie)**
+2. **Palačinkara kod Bagija (Bagi Crêperie)**
    - **Coordinates:** `44.5383762, 18.6775339`
    - **XP Reward:** 100 XP
    - **Description:** Iconic local sweet gastronomy destination in the city pedestrian core.
-7. **Soni trg (Salt Square)**
+3. **Soni trg (Salt Square)**
    - **Coordinates:** `44.5382182, 18.6759398`
    - **XP Reward:** 100 XP
    - **Description:** Archaeological museum fountain celebrating over 7,000 years of salt extraction.
 
 ### Phase 3 — Lakes, Waterfalls & Art / Panonski mornar (4 POIs)
+
 *Focus: Nature, saline therapy, and artistic expression.*
 
-8. **Panonska jezera (Pannonian Salt Lakes)**
+1. **Panonska jezera (Pannonian Salt Lakes)**
    - **Coordinates:** `44.5390760, 18.6794880`
    - **XP Reward:** 100 XP
    - **Description:** The only salt lakes in Europe located right in the center of a city.
-9. **Slani slapovi (Saline Waterfalls)**
+2. **Slani slapovi (Saline Waterfalls)**
    - **Coordinates:** `44.5404243, 18.6819408`
    - **XP Reward:** 100 XP
    - **Description:** Therapeutic cascading saltwater falls within the Pannonica complex.
-10. **Slana Banja Park**
+3. **Slana Banja Park**
     - **Coordinates:** `44.5369610, 18.6879830`
     - **XP Reward:** 100 XP
     - **Description:** Expansive forested park and memorial avenue overlooking Tuzla.
-11. **Atelje Ismet Mujezinović**
+4. **Atelje Ismet Mujezinović**
     - **Coordinates:** `44.5371465, 18.6810454`
     - **XP Reward:** 100 XP
     - **Description:** Preserved studio and gallery of one of Bosnia's greatest visual artists.
 
 ### Phase 4 — Grand Finale / Pobjednik Grada soli (1 POI)
+
 *Focus: Modern commercial life and quest culmination.*
 
-12. **Bingo City Centar (BCC Tuzla)**
+ 1. **Bingo City Centar (BCC Tuzla)**
     - **Coordinates:** `44.5321770, 18.6517430`
     - **XP Reward:** 100 XP + Grand Finale Master Badge
     - **Description:** Major modern retail, cinema, and gathering hub marking quest completion.
@@ -155,6 +159,7 @@ sequenceDiagram
 ```
 
 ### Verification Criteria
+
 1. **Authenticated Session**: The player must have an active session (automatically provisioned as an anonymous guest explorer).
 2. **Cryptographic QR Validation**: The server verifies that `sha256(p_qr_payload)` strictly matches `quests.qr_code_id`.
 3. **Geodesic PostGIS Distance Check**:
@@ -180,6 +185,7 @@ sequenceDiagram
 ## 6. Player Dashboard & Progression
 
 The **My Progress** tab ([PlayerDashboard.tsx](file:///f:/TuzlaTourApp/components/PlayerDashboard.tsx)) reflects live server data:
+
 - **Total XP & Level**: Level titles advance from *Explorer* (Level 1) to *Knight of Tuzla* and *Pannonian Master*.
 - **Completed Quest Ledger**: Full timestamped ledger of verified scans.
 - **Phase Badges**: Visual badges unlock as each phase is conquered.

@@ -80,7 +80,7 @@ const autoQualityDecision = (
   }
 
   // Automatic decision defaults to balanced (30 FPS, 720p). 
-  // High quality (60 FPS, 1080p, max AR FX) is strictly manual-only for PC & flagship phones.
+  // High quality (60 FPS, 1080p, max QRFX) is strictly manual-only for PC & flagship phones.
   return { quality: 'balanced', reasonTag: features.isAndroidLight ? 'android-balanced' : 'auto-balanced' };
 };
 

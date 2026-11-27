@@ -51,7 +51,7 @@ export interface PathNodeWithElevation {
 }
 
 /**
- * 2D projected screen coordinate result from the AR projection engine
+ * 2D projected screen coordinate result from the QRprojection engine
  */
 export interface ScreenPoint2D {
   x: number;       // Pixel X coordinate on viewport canvas

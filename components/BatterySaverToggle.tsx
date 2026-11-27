@@ -35,9 +35,9 @@ const BATTERY_LOCALIZATION: Record<Language, any> = {
     saveBattery: 'Battery Saver',
     powerOptimized: 'Power Optimized',
     highQuality: 'High Quality',
-    highQualityDesc: '60 FPS AR • 1080p • 3D',
-    balancedDesc: '30 FPS AR • 720p',
-    saverDesc: '15 FPS AR • 360p (Eco)',
+    highQualityDesc: '60 FPS QR• 1080p • 3D',
+    balancedDesc: '30 FPS QR• 720p',
+    saverDesc: '15 FPS QR• 360p (Eco)',
     forFlagships: 'PC & High-end devices',
   },
   bs: {
@@ -64,9 +64,9 @@ const BATTERY_LOCALIZATION: Record<Language, any> = {
     saveBattery: 'Štednja Baterije',
     powerOptimized: 'Optimizirano za energiju',
     highQuality: 'Visok Kvalitet',
-    highQualityDesc: '60 FPS AR • 1080p • 3D',
-    balancedDesc: '30 FPS AR • 720p',
-    saverDesc: '15 FPS AR • 360p (Eko)',
+    highQualityDesc: '60 FPS QR• 1080p • 3D',
+    balancedDesc: '30 FPS QR• 720p',
+    saverDesc: '15 FPS QR• 360p (Eko)',
     forFlagships: 'PC i jači telefoni',
   },
   de: {
@@ -93,9 +93,9 @@ const BATTERY_LOCALIZATION: Record<Language, any> = {
     saveBattery: 'Akku sparen',
     powerOptimized: 'Energieoptimiert',
     highQuality: 'Hohe Qualität',
-    highQualityDesc: '60 FPS AR • 1080p • 3D',
-    balancedDesc: '30 FPS AR • 720p',
-    saverDesc: '15 FPS AR • 360p (Eco)',
+    highQualityDesc: '60 FPS QR• 1080p • 3D',
+    balancedDesc: '30 FPS QR• 720p',
+    saverDesc: '15 FPS QR• 360p (Eco)',
     forFlagships: 'PC & High-End-Geräte',
   },
   tr: {
@@ -122,9 +122,9 @@ const BATTERY_LOCALIZATION: Record<Language, any> = {
     saveBattery: 'Pil Tasarrufu',
     powerOptimized: 'Enerji Optimize',
     highQuality: 'Yüksek Kalite',
-    highQualityDesc: '60 FPS AR • 1080p • 3D',
-    balancedDesc: '30 FPS AR • 720p',
-    saverDesc: '15 FPS AR • 360p (Eko)',
+    highQualityDesc: '60 FPS QR• 1080p • 3D',
+    balancedDesc: '30 FPS QR• 720p',
+    saverDesc: '15 FPS QR• 360p (Eko)',
     forFlagships: 'PC ve Güçlü Telefonlar',
   },
 };
@@ -184,7 +184,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                 <h3 className="text-lg font-bold text-red-600">{t.criticalBattery}</h3>
               </div>
               <p className="text-slate-600 mb-4">
-                {lang === 'bs' 
+                {lang === 'bs'
                   ? `Nivo baterije je kritično nizak ${formatBatteryPercentage(state.batteryLevel)}. Preporučujemo da omogućite štednju baterije.`
                   : lang === 'de'
                     ? `Akku-Stand ist kritisch niedrig (${formatBatteryPercentage(state.batteryLevel)}). Bitte aktivieren Sie den Akku-Sparmodus.`
@@ -217,19 +217,18 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
         {compact ? (
           <button
             onClick={() => setShowModal(true)}
-            className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-lg active:scale-95 transition-all shrink-0 border ${
-              state.isHighQualityActive
+            className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-lg active:scale-95 transition-all shrink-0 border ${state.isHighQualityActive
                 ? 'bg-purple-500/25 border-purple-400 text-purple-300 ring-2 ring-purple-400/40 shadow-[0_0_12px_rgba(168,85,247,0.4)]'
                 : activeSaver
-                ? 'bg-amber-500/25 border-amber-400 text-amber-300 ring-2 ring-amber-400/40 shadow-[0_0_12px_rgba(251,191,36,0.35)]'
-                : 'bg-slate-900/60 border-white/20 text-slate-300 hover:text-white hover:border-white/40'
-            } ${className}`}
+                  ? 'bg-amber-500/25 border-amber-400 text-amber-300 ring-2 ring-amber-400/40 shadow-[0_0_12px_rgba(251,191,36,0.35)]'
+                  : 'bg-slate-900/60 border-white/20 text-slate-300 hover:text-white hover:border-white/40'
+              } ${className}`}
             title={
               state.isHighQualityActive
                 ? `${t.highQuality} (60 FPS • 1080p • 3D)`
                 : activeSaver
-                ? `${t.saverActive} (15 FPS)`
-                : `${t.batterySaver} (30 FPS)`
+                  ? `${t.saverActive} (15 FPS)`
+                  : `${t.batterySaver} (30 FPS)`
             }
             aria-label={t.batterySaver}
           >
@@ -250,8 +249,8 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
               backgroundColor: state.isHighQualityActive
                 ? 'rgba(168, 85, 247, 0.15)'
                 : activeSaver
-                ? 'rgba(245, 158, 11, 0.15)'
-                : 'rgba(59, 130, 246, 0.1)',
+                  ? 'rgba(245, 158, 11, 0.15)'
+                  : 'rgba(59, 130, 246, 0.1)',
             }}
             title={state.isHighQualityActive ? t.highQuality : activeSaver ? t.saverActive : t.normalMode}
           >
@@ -263,21 +262,20 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
               getBatteryIconComponent()
             )}
             <span
-              className={`font-semibold text-sm ${
-                state.isHighQualityActive
+              className={`font-semibold text-sm ${state.isHighQualityActive
                   ? 'text-purple-600'
                   : activeSaver
-                  ? 'text-amber-500'
-                  : getBatteryColor()
-              }`}
+                    ? 'text-amber-500'
+                    : getBatteryColor()
+                }`}
             >
               {state.isHighQualityActive
                 ? 'HQ 60 FPS'
                 : state.isBatteryApiSupported && state.batteryLevel !== null
-                ? formatBatteryPercentage(state.batteryLevel)
-                : activeSaver
-                ? (lang === 'bs' ? 'Štednja 15 FPS' : 'Eco 15 FPS')
-                : (lang === 'bs' ? 'Standard 30 FPS' : '30 FPS')}
+                  ? formatBatteryPercentage(state.batteryLevel)
+                  : activeSaver
+                    ? (lang === 'bs' ? 'Štednja 15 FPS' : 'Eco 15 FPS')
+                    : (lang === 'bs' ? 'Standard 30 FPS' : '30 FPS')}
             </span>
             {state.isHighQualityActive ? (
               <Zap className="w-4 h-4 text-purple-500 fill-current" />
@@ -306,8 +304,8 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                       {state.isHighQualityActive
                         ? `${t.highQuality} (60 FPS • 1080p)`
                         : activeSaver
-                        ? `${t.saverActive} (15 FPS)`
-                        : `${t.normalMode} (30 FPS)`}
+                          ? `${t.saverActive} (15 FPS)`
+                          : `${t.normalMode} (30 FPS)`}
                     </p>
                   </div>
                 </div>
@@ -346,18 +344,17 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                   <div className="mb-2">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-semibold text-slate-700">{t.batteryLevel}</span>
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                        state.isHighQualityActive
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${state.isHighQualityActive
                           ? 'bg-purple-100 text-purple-800'
                           : activeSaver
-                          ? 'bg-amber-100 text-amber-800'
-                          : 'bg-blue-100 text-blue-800'
-                      }`}>
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
                         {state.isHighQualityActive
                           ? 'HQ 60 FPS'
                           : activeSaver
-                          ? (lang === 'bs' ? 'Štednja 15 FPS' : 'Eco 15 FPS')
-                          : (lang === 'bs' ? 'Standard 30 FPS' : '30 FPS')}
+                            ? (lang === 'bs' ? 'Štednja 15 FPS' : 'Eco 15 FPS')
+                            : (lang === 'bs' ? 'Standard 30 FPS' : '30 FPS')}
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 leading-tight">
@@ -391,15 +388,13 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                     actions.enableBatterySaver();
                     setShowModal(false);
                   }}
-                  className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${
-                    activeSaver
+                  className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${activeSaver
                       ? 'border-amber-500 bg-amber-50 shadow-sm ring-1 ring-amber-400'
                       : 'border-slate-200 bg-white hover:border-slate-300'
-                  }`}
+                    }`}
                 >
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
-                    activeSaver ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-400'
-                  }`}>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${activeSaver ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-400'
+                    }`}>
                     <Zap className="w-4 h-4 fill-current" />
                   </div>
                   <span className="font-bold text-xs text-slate-800 leading-tight">{t.saveBattery}</span>
@@ -414,15 +409,13 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                     actions.disableBatterySaver();
                     setShowModal(false);
                   }}
-                  className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${
-                    !activeSaver && !state.isHighQualityActive
+                  className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${!activeSaver && !state.isHighQualityActive
                       ? 'border-blue-500 bg-blue-50 shadow-sm ring-1 ring-blue-400'
                       : 'border-slate-200 bg-white hover:border-slate-300'
-                  }`}
+                    }`}
                 >
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
-                    !activeSaver && !state.isHighQualityActive ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-400'
-                  }`}>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${!activeSaver && !state.isHighQualityActive ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-400'
+                    }`}>
                     <Check className="w-4 h-4" />
                   </div>
                   <span className="font-bold text-xs text-slate-800 leading-tight">{t.normalMode}</span>
@@ -437,18 +430,16 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                     actions.setHighQualityMode();
                     setShowModal(false);
                   }}
-                  className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center relative overflow-hidden ${
-                    state.isHighQualityActive
+                  className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center relative overflow-hidden ${state.isHighQualityActive
                       ? 'border-purple-500 bg-purple-50 shadow-sm ring-1 ring-purple-400'
                       : 'border-slate-200 bg-white hover:border-slate-300'
-                  }`}
+                    }`}
                 >
                   <span className="absolute top-0 right-0 bg-purple-600 text-[8px] font-bold text-white px-1 py-0.5 rounded-bl">
                     HQ
                   </span>
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
-                    state.isHighQualityActive ? 'bg-purple-600 text-white' : 'bg-slate-100 text-purple-400'
-                  }`}>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${state.isHighQualityActive ? 'bg-purple-600 text-white' : 'bg-slate-100 text-purple-400'
+                    }`}>
                     <Zap className="w-4 h-4 fill-current" />
                   </div>
                   <span className="font-bold text-xs text-slate-800 leading-tight">{t.highQuality}</span>
@@ -528,7 +519,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
         </div>
       </div>
 
-      {/* Battery Status Bar */}
+      {/* Battery Status BQR*/}
       {state.isBatteryApiSupported && state.batteryLevel !== null && (
         <div className="w-full bg-slate-200 rounded-full h-2 mb-4">
           <div
@@ -578,7 +569,7 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
               <h3 className="text-lg font-bold text-red-600">{t.criticalBattery}</h3>
             </div>
             <p className="text-slate-600 mb-4">
-              {lang === 'bs' 
+              {lang === 'bs'
                 ? `Nivo baterije je kritično nizak ${formatBatteryPercentage(state.batteryLevel)}.`
                 : lang === 'de'
                   ? `Akku-Stand ist kritisch niedrig (${formatBatteryPercentage(state.batteryLevel)}).`
@@ -626,8 +617,8 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                     {state.isHighQualityActive
                       ? `${t.highQuality} (60 FPS • 1080p)`
                       : activeSaver
-                      ? `${t.saverActive} (15 FPS)`
-                      : `${t.normalMode} (30 FPS)`}
+                        ? `${t.saverActive} (15 FPS)`
+                        : `${t.normalMode} (30 FPS)`}
                   </p>
                 </div>
               </div>
@@ -648,15 +639,13 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                   actions.enableBatterySaver();
                   setShowModal(false);
                 }}
-                className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${
-                  activeSaver
+                className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${activeSaver
                     ? 'border-amber-500 bg-amber-50 shadow-sm ring-1 ring-amber-400'
                     : 'border-slate-200 bg-white hover:border-slate-300'
-                }`}
+                  }`}
               >
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
-                  activeSaver ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-400'
-                }`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${activeSaver ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-400'
+                  }`}>
                   <Zap className="w-4 h-4 fill-current" />
                 </div>
                 <span className="font-bold text-xs text-slate-800 leading-tight">{t.saveBattery}</span>
@@ -671,15 +660,13 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                   actions.disableBatterySaver();
                   setShowModal(false);
                 }}
-                className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${
-                  !activeSaver && !state.isHighQualityActive
+                className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center ${!activeSaver && !state.isHighQualityActive
                     ? 'border-blue-500 bg-blue-50 shadow-sm ring-1 ring-blue-400'
                     : 'border-slate-200 bg-white hover:border-slate-300'
-                }`}
+                  }`}
               >
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
-                  !activeSaver && !state.isHighQualityActive ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-400'
-                }`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${!activeSaver && !state.isHighQualityActive ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-400'
+                  }`}>
                   <Check className="w-4 h-4" />
                 </div>
                 <span className="font-bold text-xs text-slate-800 leading-tight">{t.normalMode}</span>
@@ -694,18 +681,16 @@ export const BatterySaverToggle: React.FC<BatterySaverToggleProps> = ({
                   actions.setHighQualityMode();
                   setShowModal(false);
                 }}
-                className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center relative overflow-hidden ${
-                  state.isHighQualityActive
+                className={`flex flex-col items-center justify-between p-2.5 rounded-xl border-2 transition-all text-center relative overflow-hidden ${state.isHighQualityActive
                     ? 'border-purple-500 bg-purple-50 shadow-sm ring-1 ring-purple-400'
                     : 'border-slate-200 bg-white hover:border-slate-300'
-                }`}
+                  }`}
               >
                 <span className="absolute top-0 right-0 bg-purple-600 text-[8px] font-bold text-white px-1 py-0.5 rounded-bl">
                   HQ
                 </span>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${
-                  state.isHighQualityActive ? 'bg-purple-600 text-white' : 'bg-slate-100 text-purple-400'
-                }`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-1 ${state.isHighQualityActive ? 'bg-purple-600 text-white' : 'bg-slate-100 text-purple-400'
+                  }`}>
                   <Zap className="w-4 h-4 fill-current" />
                 </div>
                 <span className="font-bold text-xs text-slate-800 leading-tight">{t.highQuality}</span>

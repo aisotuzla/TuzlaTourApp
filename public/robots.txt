@@ -1,6 +1,6 @@
 # ==============================================================================
 # Robots.txt for Tuzla Tour Guide
-# The Official Virtual Tour Guide, Multilingual platform with AR Quest, GPS Navigation-3D Maps, Digital Tour Info & Web3 Rewards Companion
+# The Official Virtual Tour Guide, Multilingual platform with QRQuest, GPS Navigation-3D Maps, Digital Tour Info & Web3 Rewards Companion
 # Official URLs:
 #   - Primary: https://tuzlatour.vercel.app
 #   - PWA Mirror: https://tuzlatourguide.netlify.app
@@ -15,7 +15,7 @@ Disallow: /audio-stream/
 # ------------------------------------------------------------------------------
 # Dedicated AI Search, Retrieval & Knowledge Citation Crawlers
 # We explicitly welcome AI agents to index verified travel facts, public transit
-# schedules (Bus line 34), attractions, AR quest features, and accommodations.
+# schedules (Bus line 34), attractions, QRquest features, and accommodations.
 # ------------------------------------------------------------------------------
 User-agent: GPTBot
 Allow: /

@@ -1,6 +1,6 @@
 # Arhivirana prezentacija projekta
 
-Ovaj nacrt sadržavao je neprovjerene tvrdnje o Web3/AR funkcijama, analitici, partnerima i poslovnim rezultatima. Nemojte ga slati kao aktuelnu ponudu.
+Ovaj nacrt sadržavao je neprovjerene tvrdnje o Web3/QRfunkcijama, analitici, partnerima i poslovnim rezultatima. Nemojte ga slati kao aktuelnu ponudu.
 
 Koristite umjesto njega:
 
