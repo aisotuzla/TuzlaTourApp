@@ -33,7 +33,7 @@ android/**/*.jks
 .cursor
 .kiro
 .deepsec
-
+plugins/journey.html
 
 # Editor directories and files
 .vscode/*
