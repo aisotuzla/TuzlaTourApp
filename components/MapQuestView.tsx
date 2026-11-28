@@ -771,11 +771,37 @@ const MapQuestView: React.FC<MapQuestViewProps> = ({ lang, features, unlockedRew
             ],
           });
         } else {
-          new Notification(title, {
-            body,
-            icon: '/assets/icons/icon-192x192.png',
-            tag: `quest-proximity-${target.id}`,
-          });
+          let shown = false;
+          if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+            try {
+              const registration = await navigator.serviceWorker.getRegistration();
+              if (registration && typeof registration.showNotification === 'function') {
+                await registration.showNotification(title, {
+                  body,
+                  icon: '/assets/icons/icon-192x192.png',
+                  tag: `quest-proximity-${target.id}`,
+                });
+                shown = true;
+              }
+            } catch (_) {
+              /* fall back to Notification constructor or in-app banner */
+            }
+          }
+          if (!shown) {
+            try {
+              new Notification(title, {
+                body,
+                icon: '/assets/icons/icon-192x192.png',
+                tag: `quest-proximity-${target.id}`,
+              });
+              shown = true;
+            } catch (_) {
+              /* Mobile browsers disallow new Notification() without SW; fall back to in-app banner */
+            }
+          }
+          if (!shown) {
+            showProximityNotice(`${title} — ${body}`);
+          }
         }
       } catch (err) {
         console.warn('[Quest Proximity] Notification failed:', err);
